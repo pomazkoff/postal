@@ -7,14 +7,14 @@
       "hour": 0,
       "skyTop": "#07131F",
       "skyBottom": "#15304A",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     },
     {
       "hour": 4.5,
       "skyTop": "#07131F",
       "skyBottom": "#1A3350",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     },
     {
@@ -52,14 +52,14 @@
       "hour": 20,
       "skyTop": "#142540",
       "skyBottom": "#6A4E6E",
-      "tint": "#9A8FB0",
+      "tint": "#D2CDDB",
       "stars": 0.6
     },
     {
       "hour": 21.5,
       "skyTop": "#07131F",
       "skyBottom": "#15304A",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     }
   ],
