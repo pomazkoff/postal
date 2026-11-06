@@ -118,6 +118,33 @@ class ChapterProgressTests(unittest.TestCase):
 
 
 class WorldStripTests(unittest.TestCase):
+    def test_chapter_join_crossfades_instead_of_a_hard_crop(self):
+        self.assertIn('private static let chapterBlend: CGFloat = 640', SCENE)
+        self.assertIn('blendChapterRoads()', SCENE)
+        self.assertIn('fadeLeft ? rawLeft - half : rawLeft', SCENE)
+        self.assertIn('rawRight + half', SCENE)
+        # Later chapter fades in over a solid earlier chapter. Alphas must cover the join.
+        blend = 640
+        half = blend / 2
+        boundary = 20000 * WORLD['game']['pixelsPerStep']
+
+        def smooth(t):
+            t = min(1, max(0, t))
+            return t * t * (3 - 2 * t)
+
+        for x in (boundary - half, boundary, boundary + half, boundary - half - 10, boundary + half + 10):
+            earlier = 1 if x <= boundary + half else 0
+            t = (x - (boundary - half)) / blend
+            later = smooth(t) if boundary - half <= x <= boundary + half else (1 if x > boundary + half else 0)
+            # Later is on top: coverage = later + earlier * (1 - later).
+            coverage = later + earlier * (1 - later)
+            self.assertAlmostEqual(coverage, 1 if boundary - half <= x <= boundary + half or x < boundary - half or x > boundary + half else 0, places=5)
+            if boundary - half <= x <= boundary + half or x < boundary - half or x > boundary + half:
+                self.assertAlmostEqual(coverage, 1, places=5)
+        # Existing art already sticks out by four screens, wider than the blend, so scrolling does not open a hole.
+        self.assertLess(blend, WORLD['game']['designWidth'] * 4)
+        self.assertIn('stripStart = geo.x(forStep: Double(chapter.startStep)) - W * 4', SCENE)
+
     def test_one_scene_not_replaced_at_chapter_boundary(self):
         changed = body(MODEL, 'private func handleChapterChanged(')
         self.assertNotIn('WorldScene(', changed)

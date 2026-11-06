@@ -15,6 +15,16 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var layerNodes: [(node: SKNode, parallax: CGFloat)] = []
     private var tiledStrips: [(node: TiledStripNode, parallax: CGFloat, kind: LayerKind)] = []
     private var chapterCrops: [(node: SKCropNode, range: ClosedRange<CGFloat>)] = []
+    /// Переход глав. Уже запаса контента за границей (ширина экрана × 4), поэтому дыр при скролле нет.
+    private static let chapterBlend: CGFloat = 640
+    private struct RoadSpan {
+        let node: SKSpriteNode
+        let chapterIndex: Int
+        let worldLeft: CGFloat
+        let width: CGFloat
+        let z: CGFloat
+    }
+    private var roadSpans: [RoadSpan] = []
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
     private var postman: PostmanRigNode!
     private var actorLayerRef: SKNode?
@@ -139,6 +149,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         for (index, chapter) in config.chapters.enumerated() {
             buildChapter(chapter, index: index, actorLayer: actorLayer)
         }
+        blendChapterRoads()
 
         // Почтальон
         let pc = config.game.postman
@@ -164,18 +175,22 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
     /// Маска закреплена в мировых координатах; параллакс двигается ВНУТРИ неё.
-    /// Поэтому граница главы не уплывает за камерой, а предыдущие главы остаются позади.
+    /// Соседние главы заходят друг на друга на chapterBlend: нижняя остаётся сплошной,
+    /// верхняя (добавлена позже, тот же z) проявляется. Сумма покрытия 1, без дыры и без тёмной ямы.
     private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
-        let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
-        let right = index + 1 < config.chapters.count
+        let half = Self.chapterBlend / 2
+        let rawLeft = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
+        let rawRight = index + 1 < config.chapters.count
             ? geo.x(forStep: Double(config.chapters[index + 1].startStep))
             : geo.x(forStep: Double(chapter.endStep)) + margin
+        let fadeLeft = index > 0
+        let fadeRight = false
+        let left = fadeLeft ? rawLeft - half : rawLeft
+        let right = index + 1 < config.chapters.count ? rawRight + half : rawRight
         let crop = SKCropNode()
         crop.zPosition = z
-        let mask = SKSpriteNode(color: .white, size: CGSize(width: right - left, height: 16000))
-        mask.anchorPoint = .zero
-        mask.position = CGPoint(x: left, y: worldBottomY - 4000)
+        let mask = chapterMaskSprite(left: left, right: right, fadeLeft: fadeLeft, fadeRight: fadeRight)
         crop.maskNode = mask
         addChild(crop)
         chapterCrops.append((crop, left...right))
@@ -183,6 +198,81 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         crop.addChild(layer)
         addLayer(layer, parallax: parallax)
         return layer
+    }
+
+    /// Появление следующей главы слева направо. Предыдущая в этом же окне не гасится: она под низом.
+    private func chapterMaskSprite(left: CGFloat, right: CGFloat, fadeLeft: Bool, fadeRight: Bool) -> SKSpriteNode {
+        let span = max(1, right - left)
+        let pixels = 1024
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let image = UIGraphicsImageRenderer(size: CGSize(width: pixels, height: 4), format: format).image { ctx in
+            let cg = ctx.cgContext
+            for i in 0..<pixels {
+                let x = left + span * (CGFloat(i) + 0.5) / CGFloat(pixels)
+                var alpha: CGFloat = 1
+                if fadeLeft {
+                    let t = min(1, max(0, (x - left) / Self.chapterBlend))
+                    let s = t * t * (3 - 2 * t)
+                    alpha = min(alpha, s)
+                }
+                if fadeRight {
+                    let t = min(1, max(0, (x - (right - Self.chapterBlend)) / Self.chapterBlend))
+                    let s = t * t * (3 - 2 * t)
+                    alpha = min(alpha, 1 - s)
+                }
+                cg.setFillColor(UIColor(white: 1, alpha: alpha).cgColor)
+                cg.fill(CGRect(x: i, y: 0, width: 1, height: 4))
+            }
+        }
+        let mask = SKSpriteNode(texture: SKTexture(image: image), size: CGSize(width: span, height: 16000))
+        mask.anchorPoint = .zero
+        mask.position = CGPoint(x: left, y: worldBottomY - 4000)
+        return mask
+    }
+
+    /// Дорога не в маске главы. Верхний тайл гаснет, нижний остаётся сплошным — поверхность не обрезается ступенькой.
+    private func blendChapterRoads() {
+        let half = Self.chapterBlend / 2
+        for i in 0..<(config.chapters.count - 1) {
+            let boundary = geo.x(forStep: Double(config.chapters[i + 1].startStep))
+            let zone = (boundary - half)...(boundary + half)
+            let lefts = roadSpans.filter { $0.chapterIndex == i && roadOverlaps($0, zone) }
+            let rights = roadSpans.filter { $0.chapterIndex == i + 1 && roadOverlaps($0, zone) }
+            guard !lefts.isEmpty, !rights.isEmpty else { continue }
+            let leftZ = lefts.map(\.z).max() ?? 0
+            let rightZ = rights.map(\.z).max() ?? 0
+            let fadeLeftChapter = leftZ >= rightZ
+            for road in fadeLeftChapter ? lefts : rights {
+                applyRoadFade(road, boundary: boundary, half: half, fadeOutToTheRight: fadeLeftChapter)
+            }
+        }
+    }
+
+    private func roadOverlaps(_ road: RoadSpan, _ zone: ClosedRange<CGFloat>) -> Bool {
+        road.worldLeft < zone.upperBound && road.worldLeft + road.width > zone.lowerBound
+    }
+
+    private func applyRoadFade(_ road: RoadSpan, boundary: CGFloat, half: CGFloat, fadeOutToTheRight: Bool) {
+        let fade0 = Float((boundary - half - road.worldLeft) / road.width)
+        let fade1 = Float((boundary + half - road.worldLeft) / road.width)
+        let src = """
+        void main() {
+            vec4 c = texture2D(u_texture, v_tex_coord);
+            float t = clamp((v_tex_coord.x - u_fade0) / max(0.0001, u_fade1 - u_fade0), 0.0, 1.0);
+            float a = mix(u_a0, u_a1, t);
+            gl_FragColor = c * a;
+        }
+        """
+        let shader = SKShader(source: src)
+        shader.uniforms = [
+            SKUniform(name: "u_fade0", float: fade0),
+            SKUniform(name: "u_fade1", float: fade1),
+            SKUniform(name: "u_a0", float: fadeOutToTheRight ? 1 : 0),
+            SKUniform(name: "u_a1", float: fadeOutToTheRight ? 0 : 1),
+        ]
+        road.node.shader = shader
     }
 
     private func buildChapter(_ chapter: ChapterConfig, index: Int, actorLayer: SKNode) {
@@ -266,6 +356,10 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             node.zPosition = CGFloat(p.z ?? 0)
             target.addChild(node)
             lazyNodes.append((node, target))
+            if p.layer == .main && p.image.contains("road/road_main") {
+                roadSpans.append(RoadSpan(node: node, chapterIndex: index, worldLeft: worldLeft,
+                                          width: w, z: node.zPosition))
+            }
             ambient?.decorate(prop: node, image: p.image,
                               pixelSize: CGSize(width: p.pixelSize[0], height: p.pixelSize[1]),
                               seed: p.step &* 31 &+ Int(p.dx))
@@ -582,8 +676,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var nightShaderOn = false
 
-    /// Вечер/ночь: фигуры ярче одним множителем на все каналы, оттенок ночи не снимается.
-    /// Днём (тон белый) шейдер снят. Дорога и небо остаются на умножении суток.
+    /// Вечер/ночь: отдельный шейдер только если nightFigureGain > 1.
+    /// Сейчас герой темнеет общим тоном, как дома и земля. Днём шейдер снят.
     private func updateNightFigures() {
         let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
         let n = Readability.enabled ? Readability.updateNight(tint: tint) : 0
