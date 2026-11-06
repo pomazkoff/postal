@@ -448,8 +448,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         guard let id, let fig = companionFigures[id], let layer = actorLayerRef else { return }
         let w = fig.image.size.width, h = fig.image.size.height
-        guard w > 0, h > 0 else { return }
-        let node = SKSpriteNode(texture: SKTexture(image: fig.image))
+        guard w > 0, h > 0, fig.image.cgImage != nil else { return }
+        let node = SKSpriteNode(texture: TextureStore.shared.spriteTexture(fig.image, name: "companion/\(id)"))
         let drawH = fig.height / max(0.5, fig.groundFraction)
         node.size = CGSize(width: drawH * w / h, height: drawH)
         node.anchorPoint = CGPoint(x: 0.5, y: 1 - fig.groundFraction)
@@ -494,28 +494,22 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             residentNodes.removeValue(forKey: key)?.removeFromParent()
         }
         for r in residents {
-            let tex = SKTexture(image: r.image)
-            let node = SKSpriteNode(texture: tex)
             let w = r.image.size.width, h = r.image.size.height
-            guard w > 0, h > 0 else { continue }
+            guard w > 0, h > 0, r.image.cgImage != nil else { continue }
             let drawH = r.height / max(0.5, r.groundFraction)
-            node.size = CGSize(width: drawH * w / h, height: drawH)
-            node.anchorPoint = CGPoint(x: 0.5, y: 1 - r.groundFraction)
-            if let idle = r.idle {
-                // Дыхание 12 fps из листа: кадр в тех же единицах, что и картинка фигуры.
-                let sheet = SKTexture(image: idle.sheet)
-                let n = CGFloat(idle.frames)
-                let frames = (0..<idle.frames).map { i in
-                    SKTexture(rect: CGRect(x: CGFloat(i) / n, y: 0, width: 1 / n, height: 1), in: sheet)
-                }
+            // Кадр листа — отдельная картинка, не подтекстура всего листа.
+            // Лист Пимена 8256×443 шире лимита Metal в симуляторе (8192): SKTexture всего листа
+            // обрывает процесс в validateWithDevice, даже если на экране один кадр.
+            let idleFrame = r.idle?.frameImage(at: 0)
+            let tex = TextureStore.shared.spriteTexture(idleFrame ?? r.image, name: "\(prefix)\(r.id)")
+            let node = SKSpriteNode(texture: tex)
+            if let idle = r.idle, idleFrame != nil {
                 let unit = drawH / h * idle.figureUnitsPerFramePx
-                node.texture = frames[0]
                 node.size = CGSize(width: idle.frameSize.width * unit, height: idle.frameSize.height * unit)
                 node.anchorPoint = idle.anchor
                 // Покадровое дыхание из листа убрано: в кадрах листа зашит сдвиг тела 1–3 px от кадра
                 // к кадру (фазовая корреляция по листам) — это и было дрожание жителей. Статичный кадр +
                 // плавное дыхание scaleY от стоп (якорь на линии земли), 60 fps.
-                _ = frames
                 let period = Double.random(in: 3.0...3.8)
                 let phase = Double.random(in: 0...(2 * Double.pi))
                 let breath = SKAction.customAction(withDuration: period, actionBlock: { n, t in
@@ -523,6 +517,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                     n.yScale = CGFloat(1 + 0.006 * sin(a))
                 })
                 node.run(.repeatForever(breath), withKey: "breath")
+            } else {
+                node.size = CGSize(width: drawH * w / h, height: drawH)
+                node.anchorPoint = CGPoint(x: 0.5, y: 1 - r.groundFraction)
             }
             node.position = CGPoint(x: geo.x(forStep: Double(r.step)) + r.dx, y: geo.roadY - 4)
             node.zPosition = 80
