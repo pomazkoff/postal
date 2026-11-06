@@ -26,3 +26,5 @@ playground.xcworkspace
 *.bak_*
 _reg_shots/
 *.xcarchive/
+_asc_shots/
+store/asc_screenshots/
