@@ -582,7 +582,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var nightShaderOn = false
 
-    /// Вечер/ночь: шейдер на пикселях фигур возвращает глину и поднимает тени.
+    /// Вечер/ночь: фигуры ярче одним множителем на все каналы, оттенок ночи не снимается.
     /// Днём (тон белый) шейдер снят. Дорога и небо остаются на умножении суток.
     private func updateNightFigures() {
         let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
