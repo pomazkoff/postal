@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Политика конфиденциальности — Тишина. Последний почтальон</title>
+  <meta name="description" content="Политика конфиденциальности iOS-игры «Тишина. Последний почтальон» (games.mazkof.postman): шаги HealthKit на устройстве, необязательная грубая геолокация для погоды Open-Meteo, локальные сохранения. Без аккаунтов, рекламы и SDK аналитики.">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="canonical" href="https://pomazkoff.github.io/postal/privacy/">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../">Тишина. Последний почтальон<span>games.mazkof.postman</span></a>
+      <nav aria-label="Разделы">
+        <a href="../">Поддержка</a>
+        <a href="./" aria-current="page">Конфиденциальность</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Политика конфиденциальности</h1>
+    <p class="lead">Privacy Policy · «Тишина. Последний почтальон»</p>
+    <p class="meta">Дата / Effective date: 6 ноября 2026 / 6 November 2026</p>
+    <p class="langs"><a href="#ru">Русский</a> · <a href="#en">English</a></p>
+
+    <section id="ru" lang="ru">
+      <h2>Русский</h2>
+      <p>Эта страница описывает только iOS-игру «Тишина. Последний почтальон», идентификатор <code>games.mazkof.postman</code>. На экране «Домой» приложение может называться «Почтальон». Разработчик — Илья Помазков / Mazkof Games.</p>
+
+      <h3>Коротко</h3>
+      <p>Это шагомер-путешествие: реальные шаги двигают почтальона по дороге. Аккаунт не нужен. Рекламы нет. SDK аналитики и рекламы в игре нет, рекламный идентификатор не читается. Прогресс и сохранения остаются на устройстве.</p>
+      <p>Наружу уходит только необязательный запрос погоды. Если разрешить геолокацию, игра берёт примерные координаты, округляет их и спрашивает у Open-Meteo код погоды, чтобы в мире было ясно, дождь, снег или туман. Если геолокацию не давать, погода выбирается по сезону, и координаты никуда не отправляются.</p>
+
+      <h3>Шаги: HealthKit и движение</h3>
+      <p>Игра читает количество шагов через HealthKit (приложение «Здоровье»), тип <code>stepCount</code>, только чтение. Шаги — это данные о движении, которые устройство уже записывает само. Отдельного SDK движения нет, в «Здоровье» игра ничего не пишет: список данных для записи пустой.</p>
+      <p>Сумма шагов с момента начала игры двигает героя и открывает сюжет. Число шагов не отправляется разработчику и не отправляется в Open-Meteo. На устройстве сохраняются дата старта и игровой прогресс, а не лента записей HealthKit.</p>
+      <p>Если доступ к шагам не дан, запросы возвращают ноль: почтальон не идёт от реальной ходьбы. iOS может будить игру в фоне (фоновая доставка HealthKit и фоновое обновление), чтобы пересчитать шаги и показать локальное уведомление о событии сюжета. Это по-прежнему обработка на устройстве.</p>
+
+      <h3>Геолокация и погода</h3>
+      <p>Геолокация необязательна. Игра запрашивает доступ «при использовании» и пониженную точность (<code>kCLLocationAccuracyReduced</code>). Непрерывного слежения нет: место спрашивается только чтобы обновить погоду.</p>
+      <p>Перед запросом широта и долгота округляются до двух знаков после запятой. Координаты на устройстве не сохраняются. Уходит только такой запрос, без ключа и без имени:</p>
+      <p><code>https://api.open-meteo.com/v1/forecast?latitude=…&amp;longitude=…&amp;current=weather_code</code></p>
+      <p>Ответ — числовой код погоды. Игра переводит его в одно из четырёх состояний: ясно, дождь, снег, туман. На устройстве кэшируются этот код и время запроса, не координаты. Новое место спрашивается примерно раз в час; сохранённый код может использоваться около трёх часов.</p>
+      <p>Если доступ запрещён, геолокация недоступна или сеть не ответила, запрос в Open-Meteo не отправляется. Тогда погода на день берётся по сезону: зимой чаще снег, осенью дождь и туман, летом чаще ясно.</p>
+      <p>Open-Meteo — сторонний сервис (<a href="https://open-meteo.com/">open-meteo.com</a>). Вместе с округлёнными координатами он, как любой сайт по HTTPS, может увидеть IP-адрес устройства. Почта, имя и шаги ему не передаются.</p>
+
+      <h3>Что остаётся на устройстве</h3>
+      <ul>
+        <li>UserDefaults: пройден ли первый запуск, дата старта, показанный прогресс в шагах, режим источника шагов, код погоды и время кэша.</li>
+        <li>Файлы в Application Support (<code>chapterN_state.json</code>): сюжет — письма, выборы, журнал, флаги главы.</li>
+        <li>Локальные уведомления iOS о событиях сюжета. Они создаются на устройстве. Своего сервера push-уведомлений нет.</li>
+      </ul>
+      <p>Игра не просит имя, почту и телефон. Нет кросс-приложенческого трекинга.</p>
+
+      <h3>Чего нет</h3>
+      <p>Нет продажи данных, нет рекламы, нет аккаунтов, нет SDK аналитики. Данные о шагах разработчику не передаются. В HealthKit ничего не записывается.</p>
+
+      <h3>Как удалить данные</h3>
+      <p>Удаление игры стирает локальные сохранения и кэш погоды. Записи шагов в «Здоровье» остаются: их ведёт система, не игра. Доступ к шагам и к геолокации отзывается в «Настройках» iOS, в разделах «Здоровье» и «Конфиденциальность и безопасность». Сброс истории в игре очищает сюжетный прогресс на устройстве.</p>
+
+      <h3>Дети</h3>
+      <p>Игра не предлагает регистрацию и не собирает имя или контакт через свой интерфейс.</p>
+
+      <h3>Изменения</h3>
+      <p>Новая редакция публикуется на этой странице, дата вверху меняется вместе с текстом.</p>
+
+      <h3>Контакты</h3>
+      <address>
+        <p>Илья Помазков / Mazkof Games</p>
+        <p>Почта: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a></p>
+        <p>Telegram: <a href="https://t.me/oloid_vn">https://t.me/oloid_vn</a></p>
+      </address>
+    </section>
+
+    <section id="en" lang="en">
+      <h2>English</h2>
+      <p>This page covers only the iOS game «Тишина. Последний почтальон», bundle ID <code>games.mazkof.postman</code>. On the Home Screen the app may be labeled «Почтальон». The developer is Илья Помазков (Ilya Pomazkov) / Mazkof Games.</p>
+
+      <h3>Summary</h3>
+      <p>It is a walking game: your real steps move the postman along the road. There is no account. There are no ads. The game includes no analytics SDK and no advertising SDK, and it does not read an advertising identifier. Progress and saves stay on the device.</p>
+      <p>The only data that leaves the device is an optional weather request. If you allow location, the game takes an approximate position, rounds it, and asks Open-Meteo for a weather code so the world can be clear, rain, snow, or fog. If you deny location, weather follows the season and no coordinates are sent.</p>
+
+      <h3>Steps: HealthKit and motion</h3>
+      <p>The game reads your step count through HealthKit (the Health app), type <code>stepCount</code>, read-only. Steps are motion and fitness data the device already records. There is no separate motion SDK. The game writes nothing to Health: the share list in the authorization request is empty.</p>
+      <p>The step total since you started the game moves the character and advances the story. Step counts are not sent to the developer and are not sent to Open-Meteo. The device stores the start date and in-game progress, not the HealthKit sample log.</p>
+      <p>If step access is not granted, queries return zero and the postman does not advance from real walking. iOS may wake the app in the background (HealthKit background delivery and background refresh) to update the step total and post a local notification about a story beat. That processing stays on the device.</p>
+
+      <h3>Location and weather</h3>
+      <p>Location is optional. The game requests When In Use access and reduced accuracy (<code>kCLLocationAccuracyReduced</code>). It does not track continuously. It asks for a location only to refresh the weather.</p>
+      <p>Before the request, latitude and longitude are rounded to two decimal places. Coordinates are not stored on the device. The only request, with no API key and no name, is:</p>
+      <p><code>https://api.open-meteo.com/v1/forecast?latitude=…&amp;longitude=…&amp;current=weather_code</code></p>
+      <p>The response is a numeric weather code. The game maps it to one of four states: clear (ясно), rain (дождь), snow (снег), or fog (туман). The device caches that code and the time of the request, not the coordinates. A new location is requested about once an hour; the saved code can be used for about three hours.</p>
+      <p>If access is denied, location is unavailable, or the network does not answer, no request is sent to Open-Meteo. Weather for the day then follows the season: snow is more common in winter, rain and fog in autumn, clear skies in summer.</p>
+      <p>Open-Meteo is a third party (<a href="https://open-meteo.com/">open-meteo.com</a>). Along with the rounded coordinates, it can see the device IP address, as with any HTTPS request. Email, name, and step counts are not sent to it.</p>
+
+      <h3>What stays on the device</h3>
+      <ul>
+        <li>UserDefaults: whether onboarding is done, the start date, displayed step progress, the step-source mode, the weather code, and the cache time.</li>
+        <li>Files in Application Support (<code>chapterN_state.json</code>): story progress — letters, choices, the journal, chapter flags.</li>
+        <li>Local iOS notifications for story events. They are created on the device. The game has no push-notification server.</li>
+      </ul>
+      <p>The game does not ask for your name, email, or phone number. It does not track you across apps.</p>
+
+      <h3>What the game does not do</h3>
+      <p>It does not sell data, show ads, or offer accounts, and it does not include an analytics SDK. Step data is not transmitted to the developer. Nothing is written to HealthKit.</p>
+
+      <h3>Deleting data</h3>
+      <p>Deleting the app removes local saves and the weather cache. Step records in Health remain: the system keeps them, not the game. Step and location access can be revoked in iOS Settings, under Health and under Privacy &amp; Security. Resetting history inside the game clears story progress stored on the device.</p>
+
+      <h3>Children</h3>
+      <p>The game does not offer registration and does not collect a name or contact details through its interface.</p>
+
+      <h3>Changes</h3>
+      <p>A newer version of this policy is published on this page. The date at the top changes with the text.</p>
+
+      <h3>Contact</h3>
+      <address>
+        <p>Илья Помазков (Ilya Pomazkov) / Mazkof Games</p>
+        <p>Email: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a></p>
+        <p>Telegram: <a href="https://t.me/oloid_vn">https://t.me/oloid_vn</a></p>
+      </address>
+    </section>
+
+    <footer class="site-footer">
+      <p>Илья Помазков / Mazkof Games · «Тишина. Последний почтальон» · <code>games.mazkof.postman</code></p>
+    </footer>
+  </main>
+</body>
+</html>
