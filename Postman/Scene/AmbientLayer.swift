@@ -61,7 +61,7 @@ final class AmbientAtlas {
               let frames = obj["frames"] as? [String: [Double]] else { return nil }
         let W = Double(image.size.width), H = Double(image.size.height)
         guard W > 0, H > 0 else { return nil }
-        let sheet = SKTexture(image: image)
+        let sheet = TextureStore.shared.spriteTexture(image, name: path)
         for (name, r) in frames where r.count == 4 {
             let rect = CGRect(x: r[0] / W, y: 1 - (r[1] + r[3]) / H, width: r[2] / W, height: r[3] / H)
             textures[name] = SKTexture(rect: rect, in: sheet)

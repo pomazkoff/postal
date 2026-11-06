@@ -28,6 +28,24 @@ enum ResidentLibrary {
         let frameSize: CGSize
         let anchor: CGPoint
         let figureUnitsPerFramePx: CGFloat
+
+        /// Один кадр отдельным битмапом. Весь лист (у Пимена 8256 px) нельзя отдавать в SKTexture:
+        /// симулятор обрывает Metal, если сторона больше 8192.
+        func frameImage(at index: Int) -> UIImage? {
+            guard (0..<frames).contains(index), let cg = sheet.cgImage else { return nil }
+            let scale = sheet.scale
+            let frameW = Int((frameSize.width * scale).rounded())
+            let frameH = Int((frameSize.height * scale).rounded())
+            let originX = Int((frameSize.width * CGFloat(index) * scale).rounded())
+            guard frameW >= 1, frameH >= 1, originX >= 0,
+                  originX + frameW <= cg.width, frameH <= cg.height else { return nil }
+            let rect = CGRect(x: originX, y: 0, width: frameW, height: frameH)
+            // cropping иногда отдаёт тот же широкий буфер. Нужен ровно один кадр,
+            // иначе SKTexture снова получит лист шире лимита Metal.
+            guard let cropped = cg.cropping(to: rect),
+                  cropped.width == frameW, cropped.height == frameH else { return nil }
+            return UIImage(cgImage: cropped, scale: scale, orientation: .up)
+        }
     }
 
     private static var cache: [String: Figure?] = [:]

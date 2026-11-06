@@ -160,7 +160,9 @@ enum ProceduralTextures {
 
     /// Тайл с альфа-рампой сверху (переход дальнего плана в небо, как в compose_places.py).
     static func fadedTop(_ relativePath: String, fraction: CGFloat) -> SKTexture {
-        guard fraction > 0, let image = UIImage(contentsOfFile: TextureStore.url(for: relativePath).path) else {
+        guard fraction > 0,
+              let image = UIImage(contentsOfFile: TextureStore.url(for: relativePath).path),
+              image.size.width >= 1, image.size.height >= 1 else {
             return TextureStore.shared.texture(relativePath)
         }
         let format = UIGraphicsImageRendererFormat()
@@ -176,7 +178,7 @@ enum ProceduralTextures {
                                                  options: [.drawsAfterEndLocation])
             }
         }
-        return SKTexture(image: img)
+        return TextureStore.shared.spriteTexture(img, name: relativePath)
     }
 }
 
