@@ -15,8 +15,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var layerNodes: [(node: SKNode, parallax: CGFloat)] = []
     private var tiledStrips: [(node: TiledStripNode, parallax: CGFloat, kind: LayerKind)] = []
     private var chapterCrops: [(node: SKCropNode, range: ClosedRange<CGFloat>)] = []
-    /// Окно, в котором верхний тайл дороги/разреза проявляется альфой своей текстуры.
-    private static let chapterBlend: CGFloat = 640
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
     private var postman: PostmanRigNode!
     private var actorLayerRef: SKNode?
@@ -164,16 +162,14 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
-    /// Маска сплошная. На разрезе соседние главы заходят друг на друга: переход делает альфа их собственных тайлов.
-    private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double, overlap: Bool) -> SKNode {
+    /// Маска сплошная и ровно по границе главы. Альфа тайлов здесь не трогается:
+    /// на Release 17746c5 она открывала пустую заливку вместо соседней земли.
+    private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
-        let half = Self.chapterBlend / 2
-        var left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
-        var right = index + 1 < config.chapters.count
+        let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
+        let right = index + 1 < config.chapters.count
             ? geo.x(forStep: Double(config.chapters[index + 1].startStep))
             : geo.x(forStep: Double(chapter.endStep)) + margin
-        if overlap && index > 0 { left -= half }
-        if overlap && index + 1 < config.chapters.count { right += half }
         let crop = SKCropNode()
         crop.zPosition = z
         let mask = SKSpriteNode(color: .white, size: CGSize(width: max(1, right - left), height: 16000))
@@ -188,50 +184,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         return layer
     }
 
-    private func joinFade(worldLeft: CGFloat, width: CGFloat, boundary: CGFloat, fadeIn: Bool) -> HorizontalFade? {
-        let half = Self.chapterBlend / 2
-        let start = boundary - half
-        let end = boundary + half
-        guard worldLeft < end, worldLeft + width > start else { return nil }
-        if fadeIn, worldLeft >= end { return nil }
-        if !fadeIn, worldLeft + width <= start { return nil }
-        return HorizontalFade(worldLeft: worldLeft, displayWidth: width, start: start, end: end, fadeIn: fadeIn)
-    }
-
-    /// Гаснет тайл, который рисуется сверху. Нижний остаётся сплошным.
-    private func roadEdgeFade(chapterIndex: Int, worldLeft: CGFloat, width: CGFloat) -> HorizontalFade? {
-        for i in 0..<(config.chapters.count - 1) {
-            let boundary = geo.x(forStep: Double(config.chapters[i + 1].startStep))
-            let leftZ = maxRoadZ(config.chapters[i], boundary: boundary)
-            let rightZ = maxRoadZ(config.chapters[i + 1], boundary: boundary)
-            let leftIsFront = leftZ >= rightZ
-            if chapterIndex == i, leftIsFront {
-                return joinFade(worldLeft: worldLeft, width: width, boundary: boundary, fadeIn: false)
-            }
-            if chapterIndex == i + 1, !leftIsFront {
-                return joinFade(worldLeft: worldLeft, width: width, boundary: boundary, fadeIn: true)
-            }
-        }
-        return nil
-    }
-
-    private func maxRoadZ(_ chapter: ChapterConfig, boundary: CGFloat) -> CGFloat {
-        let pps = CGFloat(config.game.pixelsPerStep)
-        var z = -CGFloat.greatestFiniteMagnitude
-        for p in chapter.props where p.layer == .main && p.image.contains("road/road_main") {
-            let width = CGFloat(p.height) * CGFloat(p.pixelSize[0]) / CGFloat(max(1, p.pixelSize[1]))
-            let left = CGFloat(chapter.startStep + p.step) * pps + CGFloat(p.dx)
-            guard left < boundary + Self.chapterBlend, left + width > boundary - Self.chapterBlend else { continue }
-            z = max(z, CGFloat(p.z ?? 0))
-        }
-        return z
-    }
-
     private func buildChapter(_ chapter: ChapterConfig, index: Int, actorLayer: SKNode) {
         let L = config.layers
         let W = CGFloat(config.game.designWidth)
-        let farLayer = croppedLayer(chapter: chapter, index: index, z: -500, parallax: L.far.parallax, overlap: false)
-        let midLayer = croppedLayer(chapter: chapter, index: index, z: -400, parallax: L.mid.parallax, overlap: false)
+        let farLayer = croppedLayer(chapter: chapter, index: index, z: -500, parallax: L.far.parallax)
+        let midLayer = croppedLayer(chapter: chapter, index: index, z: -400, parallax: L.mid.parallax)
         for (kind, spec, layer) in [(LayerKind.far, L.far, farLayer), (.mid, L.mid, midLayer)] {
             let tex = ProceduralTextures.fadedTop(spec.image.inChapter(chapter), fraction: CGFloat(spec.fadeTopFraction ?? 0))
             let strip = TiledStripNode(texture: tex, tileHeight: CGFloat(spec.height),
@@ -247,8 +204,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let mainLayer = SKNode()
         mainLayer.zPosition = 0
         addLayer(mainLayer, parallax: L.mainParallax)
-        let ugLayer = croppedLayer(chapter: chapter, index: index, z: 100, parallax: L.undergroundParallax, overlap: true)
-        buildUnderground(in: ugLayer, chapter: chapter, index: index)
+        let ugLayer = croppedLayer(chapter: chapter, index: index, z: 100, parallax: L.undergroundParallax)
+        buildUnderground(in: ugLayer, chapter: chapter)
         let fgLayer = SKNode()
         fgLayer.zPosition = 500
         fgLayer.alpha = 0.9
@@ -257,17 +214,12 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         // Толща под разрезом — только заливка отзума, не замена движущимся UG-тайлам.
         let ugBottom = geo.sceneY(fromTop: chapter.underground.top)
             - CGFloat(chapter.underground.tilePixelSize[1] * chapter.underground.scale)
-        let half = Self.chapterBlend / 2
-        var soilLeft = geo.x(forStep: Double(chapter.startStep)) - W * 4
-        var soilRight = geo.x(forStep: Double(chapter.endStep)) + W * 4
-        if index > 0 { soilLeft = max(soilLeft, geo.x(forStep: Double(chapter.startStep)) + half) }
-        if index + 1 < config.chapters.count {
-            soilRight = min(soilRight, geo.x(forStep: Double(config.chapters[index + 1].startStep)) + half)
-        }
+        let left = geo.x(forStep: Double(chapter.startStep)) - W * 4
+        let width = CGFloat(chapter.lengthSteps) * CGFloat(config.game.pixelsPerStep) + W * 8
         let soil = SKSpriteNode(color: UIColor(hex: ambient?.config.deepSoilColor ?? "#2A1D16"),
-                                size: CGSize(width: max(1, soilRight - soilLeft), height: max(10, ugBottom - worldBottomY + 200)))
+                                size: CGSize(width: width, height: max(10, ugBottom - worldBottomY + 200)))
         soil.anchorPoint = CGPoint(x: 0, y: 1)
-        soil.position = CGPoint(x: soilLeft, y: ugBottom + 4)
+        soil.position = CGPoint(x: left, y: ugBottom + 4)
         soil.zPosition = -1
         ugLayer.addChild(soil)
 
@@ -311,10 +263,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             let localLeft = worldLeft - camAtStep * CGFloat(1 - k)
             node.position = CGPoint(x: localLeft, y: geo.roadY - CGFloat(p.sink ?? 0))
             node.zPosition = CGFloat(p.z ?? 0)
-            if p.layer == .main, p.image.contains("road/road_main"),
-               let fade = roadEdgeFade(chapterIndex: index, worldLeft: worldLeft, width: w) {
-                node.edgeFade = fade
-            }
             target.addChild(node)
             lazyNodes.append((node, target))
             ambient?.decorate(prop: node, image: p.image,
@@ -353,7 +301,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     /// Разрез: тематические модули в своих местах, промежутки — нейтральный тайл N
     /// (все модули имеют общие края с N, поэтому стыки бесшовны). N растягивается по X,
     /// чтобы промежуток заполнялся целым числом тайлов.
-    private func buildUnderground(in layer: SKNode, chapter: ChapterConfig, index: Int) {
+    private func buildUnderground(in layer: SKNode, chapter: ChapterConfig) {
         let ug = chapter.underground
         let tileW = CGFloat(ug.tilePixelSize[0] * ug.scale)
         let tileH = CGFloat(ug.tilePixelSize[1] * ug.scale)
@@ -365,17 +313,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let stripStart = geo.x(forStep: Double(chapter.startStep)) - W * 4
         let stripEnd = geo.x(forStep: Double(chapter.endStep)) + W * 4
 
-        let reveal = index > 0 ? geo.x(forStep: Double(chapter.startStep)) : nil
         func addNeutral(left: CGFloat, width: CGFloat) {
             let s = SKSpriteNode(texture: neutral)
             s.anchorPoint = .zero
             s.size = CGSize(width: width + 1, height: tileH)
             s.position = CGPoint(x: left, y: bottomY)
-            if let reveal, let fade = joinFade(worldLeft: left, width: s.size.width, boundary: reveal, fadeIn: true),
-               let image = UIImage(contentsOfFile: TextureStore.url(for: neutralPath).path),
-               let texture = fade.texture(from: image) {
-                s.texture = texture
-            }
             layer.addChild(s)
         }
 
@@ -406,9 +348,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             node.anchorPoint = .zero
             node.position = CGPoint(x: left, y: bottomY)
             node.zPosition = 1
-            if let reveal {
-                node.edgeFade = joinFade(worldLeft: left, width: tileW, boundary: reveal, fadeIn: true)
-            }
             layer.addChild(node)
             lazyNodes.append((node, layer))
             cursor = left + tileW

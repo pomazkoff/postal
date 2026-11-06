@@ -53,68 +53,84 @@ def resolve(total, forced=None, chapters=None):
     return max(i for i, c in enumerate(chapters) if c['startStep'] <= max(0, min(total, WORLD['game']['totalSteps'])))
 
 
-def boundary_alpha_composite():
-    """Front road keeps its pixels and only loses alpha. No second sprite is introduced."""
+def boundary_coverage():
+    """Place the real road and underground tiles at their scene X and require opaque ground.
+
+    Crops meet at the chapter boundary. Nothing is faded. This is the geometry after
+    removing the alpha that opened holes in 17746c5.
+    """
     pps = WORLD['game']['pixelsPerStep']
     boundary = 20000 * pps
-    blend = 640
-    half = blend / 2
+    design_w = WORLD['game']['designWidth']
+    ch1, ch2 = WORLD['chapters']
 
-    def road(chapter):
-        best = None
+    def roads(chapter):
+        spans = []
         for prop in chapter['props']:
             if prop['layer'] != 'main' or 'road/road_main' not in prop['image']:
                 continue
             height = prop['height']
             width = height * prop['pixelSize'][0] / max(1, prop['pixelSize'][1])
             left = (chapter['startStep'] + prop['step']) * pps + prop['dx']
-            if left < boundary < left + width:
-                best = (prop, left, width, height, prop.get('z') or 0)
-                break
-        return best
+            spans.append((left, left + width, prop['image'], chapter))
+        return spans
 
-    def sample(im, origin, width, height, world_x, y_from_bottom):
-        src_x = (world_x - origin) / width * im.size[0]
-        src_y = y_from_bottom / height * im.size[1]
-        ix, iy = int(src_x), im.size[1] - 1 - int(src_y)
-        if ix < 0 or iy < 0 or ix >= im.size[0] or iy >= im.size[1]:
-            return (0, 0, 0, 0)
-        p = im.getpixel((ix, iy))
-        return (p[0], p[1], p[2], p[3] / 255)
+    def ug_tiles(chapter):
+        ug = chapter['underground']
+        tile_w = ug['tilePixelSize'][0] * ug['scale']
+        spans = []
+        # Neutral strip covers the chapter plus four screens, then the crop cuts it.
+        margin = design_w * 4
+        strip_left = chapter['startStep'] * pps - margin
+        strip_right = (chapter['startStep'] + chapter['lengthSteps']) * pps + margin
+        crop_left = margin * -1 if chapter['id'] == 1 else chapter['startStep'] * pps
+        crop_right = (chapter['startStep'] + chapter['lengthSteps']) * pps if chapter['id'] == 1 else strip_right
+        if chapter['id'] == 1:
+            crop_left = -margin
+            crop_right = boundary
+        else:
+            crop_left = boundary
+            crop_right = (chapter['startStep'] + chapter['lengthSteps']) * pps + margin
+        spans.append((max(strip_left, crop_left), min(strip_right, crop_right), ug['neutralTile'], chapter))
+        for module in ug['modules']:
+            left = (chapter['startStep'] + module['step']) * pps + module['dx'] - tile_w / 2
+            spans.append((max(left, crop_left), min(left + tile_w, crop_right), module['image'], chapter))
+        return spans
 
-    def factor(world_x, fade_in):
-        t = min(1, max(0, (world_x - (boundary - half)) / blend))
-        s = t * t * (3 - 2 * t)
-        return s if fade_in else 1 - s
+    def covered(spans, x):
+        return any(a <= x < b for a, b, _, _ in spans)
 
-    ch1, ch2 = WORLD['chapters']
-    p1, left1, width1, height1, z1 = road(ch1)
-    p2, left2, width2, height2, z2 = road(ch2)
-    im1 = Image.open(ASSETS / ch1['assetsFolder'] / (p1['image'] + '.png')).convert('RGBA')
-    im2 = Image.open(ASSETS / ch2['assetsFolder'] / (p2['image'] + '.png')).convert('RGBA')
-    y = 80
-    # Chapter 1 is in front (higher z) and fades out to the right.
-    assert z1 >= z2
+    road = roads(ch1) + roads(ch2)
+    ug = ug_tiles(ch1) + ug_tiles(ch2)
+    holes = []
+    for x in range(int(boundary - 2 * design_w), int(boundary + 2 * design_w), 20):
+        if not covered(road, x):
+            holes.append(('road', x))
+        if not covered(ug, x):
+            holes.append(('ug', x))
+    # Sample the opaque ground row of whichever road owns this x. No alpha was removed.
+    def owner(spans, x):
+        hits = [s for s in spans if s[0] <= x < s[1]]
+        return hits[-1] if hits else None
 
-    def over(world_x):
-        a = sample(im1, left1, width1, height1, world_x, y)
-        b = sample(im2, left2, width2, height2, world_x, y)
-        fa = factor(world_x, False) * a[3]
-        top = tuple(a[i] * fa for i in range(3))
-        bottom = tuple(b[i] * b[3] for i in range(3))
-        return tuple(top[i] + bottom[i] * (1 - fa) for i in range(3))
-
-    left = over(boundary - half - 40)
-    right = over(boundary + half + 40)
-    mid = over(boundary)
-    solo_left = sample(im1, left1, width1, height1, boundary - half - 40, y)
-    solo_right = sample(im2, left2, width2, height2, boundary + half + 40, y)
-    butt = sum(abs(solo_left[i] * solo_left[3] - solo_right[i] * solo_right[3]) for i in range(3))
-    # Outside the window the picture is exactly one original tile, so no patch edge is added.
-    left_err = sum(abs(left[i] - solo_left[i] * solo_left[3]) for i in range(3))
-    right_err = sum(abs(right[i] - solo_right[i] * solo_right[3]) for i in range(3))
-    return {'left_err': left_err, 'right_err': right_err, 'butt': butt,
-            'mid_gap': sum(abs(mid[i] - left[i]) for i in range(3))}
+    y_from_bottom = 40
+    opaque = 0
+    checked = 0
+    for x in range(int(boundary - 400), int(boundary + 400), 40):
+        hit = owner(road, x)
+        if hit is None:
+            continue
+        left, right, image, chapter = hit
+        im = Image.open(ASSETS / chapter['assetsFolder'] / (image + '.png')).convert('RGBA')
+        width = right - left
+        src_x = int((x - left) / width * im.size[0])
+        src_y = im.size[1] - 1 - int(y_from_bottom / 700 * im.size[1])
+        src_x = min(max(src_x, 0), im.size[0] - 1)
+        src_y = min(max(src_y, 0), im.size[1] - 1)
+        if im.getpixel((src_x, src_y))[3] > 200:
+            opaque += 1
+        checked += 1
+    return {'holes': holes, 'opaque': opaque, 'checked': checked}
 
 
 class ChapterProgressTests(unittest.TestCase):
@@ -182,19 +198,17 @@ class ChapterProgressTests(unittest.TestCase):
 
 
 class WorldStripTests(unittest.TestCase):
-    def test_chapter_join_fades_existing_tiles_without_a_patch_sprite(self):
-        for gone in ('JoinBake', 'chapterJoinRoad', 'chapterJoinUnderground', 'installBakedJoins', 'u_fade0', 'zPosition = 130'):
+    def test_chapter_boundary_is_solid_again_with_no_alpha_holes(self):
+        nodes = (ROOT / 'Postman/Scene/WorldNodes.swift').read_text()
+        for gone in ('JoinBake', 'chapterJoinRoad', 'HorizontalFade', 'edgeFade', 'installBakedJoins', 'u_fade0'):
             self.assertNotIn(gone, SCENE)
-        self.assertIn('edgeFade', SCENE)
-        self.assertIn('overlap: true', SCENE)
-        self.assertEqual(SCENE.count('overlap: false'), 2)
-        self.assertEqual(SCENE.count('overlap: true'), 1)
-        self.assertIn('struct HorizontalFade', (ROOT / 'Postman/Scene/WorldNodes.swift').read_text())
-        stats = boundary_alpha_composite()
-        self.assertLess(stats['left_err'], 1)
-        self.assertLess(stats['right_err'], 1)
-        self.assertGreater(stats['butt'], 20)
-        self.assertGreater(stats['mid_gap'], 5)
+            self.assertNotIn(gone, nodes)
+        # The hole was destinationIn punching the tiles. The remaining use is the far-tile top fade.
+        self.assertNotIn('destinationIn', SCENE)
+        stats = boundary_coverage()
+        self.assertEqual(stats['holes'], [])
+        self.assertGreater(stats['checked'], 10)
+        self.assertEqual(stats['opaque'], stats['checked'])
 
     def test_one_scene_not_replaced_at_chapter_boundary(self):
         changed = body(MODEL, 'private func handleChapterChanged(')
