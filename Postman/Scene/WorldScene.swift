@@ -79,6 +79,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private let worldBottomY: CGFloat = -1800
     private(set) var ambient: AmbientLayer?
     private(set) var weather: WeatherLayer?
+    /// Тёплый свет ночи: дети камеры, выше умножения суток. Днём скрыты.
+    private var heroNightFill: SKSpriteNode?
+    private var roadNightFill: SKSpriteNode?
     private var lastUpdateTime: TimeInterval = 0
     private var cullClock: TimeInterval = 0
 
@@ -130,6 +133,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
         // Погода (ясно/дождь/снег/туман) — поверх неба и планов, под тоном суток.
         weather = WeatherLayer(camera: cam, designSize: CGSize(width: W, height: H))
+        installNightFill()
 
         // Одна сцена/камера/фигура героя на весь мир. Главы — соседние сегменты, а не сцены.
         let actorLayer = SKNode()
@@ -607,6 +611,60 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     /// Новые фигуры (смена козы и т.п.) — переназначить шейдер.
     private var nightFiguresDirty = true
 
+    /// Мягкий тёплый свет только на почтальоне и полосе дороги.
+    /// Рисуется после умножения тона суток, поэтому не осветляет небо и не портит день (сила 0).
+    private func installNightFill() {
+        let hero = SKSpriteNode(texture: Readability.heroNightFillTexture)
+        hero.blendMode = .add
+        hero.zPosition = Readability.nightFillZ
+        hero.isHidden = true
+        hero.name = "heroNightFill"
+        let road = SKSpriteNode(texture: Readability.roadNightFillTexture)
+        road.blendMode = .add
+        road.zPosition = Readability.nightFillZ
+        road.isHidden = true
+        road.name = "roadNightFill"
+        cam.addChild(road)
+        cam.addChild(hero)
+        heroNightFill = hero
+        roadNightFill = road
+    }
+
+    /// Сколько локальных единиц камеры приходится на один пиксель мира.
+    /// Через convert, чтобы пятно совпало с героем и при зуме, и без него.
+    private func cameraUnitsPerWorldUnit() -> CGFloat {
+        let origin = cam.convert(cam.position, from: self)
+        let step = cam.convert(CGPoint(x: cam.position.x + 100, y: cam.position.y), from: self)
+        let d = abs(step.x - origin.x)
+        return d > 0.001 ? d / 100 : 1
+    }
+
+    private func updateNightFill() {
+        guard let hero = heroNightFill, let road = roadNightFill else { return }
+        let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
+        let amount = Readability.enabled ? Readability.nightAmount(tint: tint) : 0
+        let strength = Readability.nightFillStrength(for: amount)
+        let on = strength >= 0.02
+        hero.isHidden = !on
+        road.isHidden = !on
+        guard on, let postman else { return }
+        hero.alpha = Readability.heroNightFillAlpha * strength
+        road.alpha = Readability.roadNightFillAlpha * strength
+        let units = cameraUnitsPerWorldUnit()
+        hero.size = CGSize(width: Readability.heroNightFillSize.width * units,
+                           height: Readability.heroNightFillSize.height * units)
+        let feet = postman.parent?.convert(postman.position, to: self) ?? postman.position
+        let chest = CGPoint(x: feet.x, y: feet.y + Readability.heroNightFillLift)
+        hero.position = cam.convert(chest, from: self)
+        let roadY = geo.roadY + Readability.roadNightFillLift
+        let half = visibleWidth * camScale / 2
+        let left = cam.convert(CGPoint(x: cam.position.x - half, y: roadY), from: self)
+        let right = cam.convert(CGPoint(x: cam.position.x + half, y: roadY), from: self)
+        road.size = CGSize(width: abs(right.x - left.x) * 1.2,
+                           height: Readability.roadNightFillHeight * units)
+        road.position = cam.convert(CGPoint(x: cam.position.x, y: roadY), from: self)
+    }
+
     /// Читаемость героев вкл/выкл (Readability.enabled) — применяется на лету, без пересборки сцены.
     func applyReadability() {
         let on = Readability.enabled
@@ -625,6 +683,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             n.childNode(withName: "contactShadow")?.isHidden = !on
         }
         postman?.childNode(withName: "contactShadow")?.isHidden = !on
+        updateNightFill()
     }
 
     /// Предмет не влез в сумку — остаётся стоять на дороге.
@@ -703,6 +762,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         weather?.update(dt: dt)
         updateCompanion(dt)
         updateNightFigures()
+        updateNightFill()
         updatePostmanVisibility()
 
         cullClock += dt

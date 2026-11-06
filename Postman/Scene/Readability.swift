@@ -4,7 +4,9 @@ import UIKit
 /// Читаемость героев на фоне поселений — все ручки в одном месте.
 /// Фон (дальний/средний план и постройки «places» основного плана) мягко уходит в дымку,
 /// герои (почтальон, жители, коза) получают тёплый «ключевой свет», край-подсветку и контактную тень.
-/// Дорога, передний план и небо не трогаются.
+/// Днём дорога, передний план и небо не трогаются.
+/// Ночью холодный тон суток остаётся на небе и поселениях; герой и полоса дороги
+/// получают отдельный мягкий тёплый свет уже после этого умножения.
 enum Readability {
     /// DEBUG-переключатель «до/после» (DebugPanel, UserDefaults). Применяется сразу: WorldScene.applyReadability().
     static let debugOffKey = "postman.debug.readabilityOff"
@@ -150,5 +152,81 @@ enum Readability {
                                                      ch(tint.b, lanternColor.b))
         satUniform.floatValue = Float(1 + nightSaturation * n)
         return n
+    }
+
+    // MARK: Ночной тёплый свет (герой и дорога, не всё небо)
+
+    /// Цвет фонаря. Альфа спрайта отдельно режет силу: здесь сам цвет, без затемнения.
+    static let nightFillRed: CGFloat = 1.0
+    static let nightFillGreen: CGFloat = 0.66
+    static let nightFillBlue: CGFloat = 0.36
+    static let nightFillColor = UIColor(red: nightFillRed, green: nightFillGreen, blue: nightFillBlue, alpha: 1)
+    /// Пиковая добавка в центре героя в полную ночь (до кривой силы). Мягко, без выбеливания глины.
+    static let heroNightFillAlpha: CGFloat = 0.28
+    /// Пиковая добавка на полосе дороги — слабее героя, чтобы тропа читалась, но не стала дневной.
+    static let roadNightFillAlpha: CGFloat = 0.18
+    /// Размер пятна героя в пикселях дизайна (мир), центр — на груди/лице, не на небе.
+    static let heroNightFillSize = CGSize(width: 640, height: 860)
+    /// На сколько поднять центр пятна над стопами (рост героя 430).
+    static let heroNightFillLift: CGFloat = 300
+    /// Полоса дороги: высота в пикселях дизайна и подъём центра над линией дороги.
+    /// Центр чуть выше линии стоп — там плотная глина тропы, не небо и не верх домов.
+    static let roadNightFillHeight: CGFloat = 300
+    static let roadNightFillLift: CGFloat = 50
+    /// Выше слоя-умножения суток (AmbientLayer, z 900), иначе фонарь снова остынет и упрётся в тинт.
+    static let nightFillZ: CGFloat = 920
+
+    /// 0 днём и почти 0 на рассвете; к полной ночи дорастает до 1. Квадрат бережёт закат и день.
+    static func nightFillStrength(for amount: CGFloat) -> CGFloat {
+        let x = min(1, max(0, amount))
+        return x * x
+    }
+
+    /// 0 на краю пятна, 1 в центре. `tools/check_night_readability.py` повторяет эту формулу.
+    static func nightFillFalloff(_ distance: CGFloat) -> CGFloat {
+        let x = min(1, max(0, distance))
+        let inv = 1 - x * x
+        return inv * inv
+    }
+
+    /// Маленькая текстура: на экране она растягивается в мягкое пятно, линейная фильтрация сглаживает край.
+    static let heroNightFillTexture: SKTexture = SKTexture(image: makeNightFillImage(width: 96, height: 96, round: true))
+    static let roadNightFillTexture: SKTexture = SKTexture(image: makeNightFillImage(width: 32, height: 96, round: false))
+
+    /// Мягкое пятно одним градиентом. Остановки считают nightFillFalloff, без покадровой заливки.
+    private static func makeNightFillImage(width: Int, height: Int, round: Bool) -> UIImage {
+        let size = CGSize(width: width, height: height)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        return UIGraphicsImageRenderer(size: size, format: format).image { ctx in
+            let cg = ctx.cgContext
+            let space = CGColorSpaceCreateDeviceRGB()
+            if round {
+                let stops: [CGFloat] = [0, 0.2, 0.45, 0.7, 0.85, 1]
+                let colors = stops.map { nightFillColor.withAlphaComponent(nightFillFalloff($0)).cgColor } as CFArray
+                guard let gradient = CGGradient(colorsSpace: space, colors: colors, locations: stops) else { return }
+                let center = CGPoint(x: size.width / 2, y: size.height / 2)
+                cg.drawRadialGradient(gradient, startCenter: center, startRadius: 0,
+                                      endCenter: center, endRadius: min(size.width, size.height) / 2,
+                                      options: [])
+            } else {
+                // От центра полосы вверх и вниз — к небу и к разрезу. Края по X гаснут, чтобы не было кромки.
+                let stops: [CGFloat] = [0, 0.08, 0.2, 0.35, 0.5, 0.65, 0.8, 0.92, 1]
+                let colors = stops.map { t -> CGColor in
+                    let distance = min(1, abs(t - 0.5) * 2)
+                    return nightFillColor.withAlphaComponent(nightFillFalloff(distance)).cgColor
+                } as CFArray
+                guard let gradient = CGGradient(colorsSpace: space, colors: colors, locations: stops) else { return }
+                cg.drawLinearGradient(gradient, start: CGPoint(x: 0, y: size.height), end: CGPoint(x: 0, y: 0), options: [])
+                let fade = [UIColor(white: 1, alpha: 0).cgColor, UIColor(white: 1, alpha: 1).cgColor,
+                            UIColor(white: 1, alpha: 1).cgColor, UIColor(white: 1, alpha: 0).cgColor] as CFArray
+                let fadeAt: [CGFloat] = [0, 0.06, 0.94, 1]
+                if let mask = CGGradient(colorsSpace: space, colors: fade, locations: fadeAt) {
+                    cg.setBlendMode(.destinationIn)
+                    cg.drawLinearGradient(mask, start: .zero, end: CGPoint(x: size.width, y: 0), options: [])
+                }
+            }
+        }
     }
 }
