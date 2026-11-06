@@ -25,6 +25,9 @@ final class LazySpriteNode: SKSpriteNode {
 
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) не используется") }
 
+    /// Множитель альфы по мировому X. Цвета пикселей не меняются, новый спрайт не создаётся.
+    var edgeFade: HorizontalFade?
+
     func setNeeded(_ needed: Bool) {
         if needed {
             guard state == .unloaded else { return }
@@ -32,7 +35,13 @@ final class LazySpriteNode: SKSpriteNode {
             alpha = 0
             TextureStore.shared.loadAsync(imagePath) { [weak self] tex in
                 guard let self, self.state == .loading else { return }
-                self.texture = tex
+                if let edgeFade,
+                   let image = UIImage(contentsOfFile: TextureStore.url(for: self.imagePath).path),
+                   let faded = edgeFade.texture(from: image) {
+                    self.texture = faded
+                } else {
+                    self.texture = tex
+                }
                 self.color = self.gradeFactor > 0 ? self.gradeColor : .white
                 self.colorBlendFactor = self.gradeFactor
                 self.state = .loaded
@@ -45,6 +54,42 @@ final class LazySpriteNode: SKSpriteNode {
             state = .unloaded
             TextureStore.shared.evict(imagePath)
         }
+    }
+}
+
+/// Плавный край уже лежащего спрайта: альфа PNG, не маска и не отдельная полоса.
+struct HorizontalFade {
+    var worldLeft: CGFloat
+    var displayWidth: CGFloat
+    var start: CGFloat
+    var end: CGFloat
+    /// true — слева прозрачно, справа сплошь (верхняя глава проявляется).
+    var fadeIn: Bool
+
+    func factor(at worldX: CGFloat) -> CGFloat {
+        let span = max(1, end - start)
+        let t = min(1, max(0, (worldX - start) / span))
+        let s = t * t * (3 - 2 * t)
+        return fadeIn ? s : 1 - s
+    }
+
+    func texture(from image: UIImage) -> SKTexture? {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let size = image.size
+        guard size.width >= 1, size.height >= 1, displayWidth > 0 else { return nil }
+        let columns = max(1, Int(size.width.rounded()))
+        let result = UIGraphicsImageRenderer(size: size, format: format).image { ctx in
+            image.draw(in: CGRect(origin: .zero, size: size))
+            ctx.cgContext.setBlendMode(.destinationIn)
+            for x in 0..<columns {
+                let worldX = worldLeft + (CGFloat(x) + 0.5) / CGFloat(columns) * displayWidth
+                UIColor(white: 1, alpha: factor(at: worldX)).setFill()
+                ctx.fill(CGRect(x: CGFloat(x), y: 0, width: 1, height: size.height))
+            }
+        }
+        return SKTexture(image: result)
     }
 }
 

@@ -53,13 +53,12 @@ def resolve(total, forced=None, chapters=None):
     return max(i for i, c in enumerate(chapters) if c['startStep'] <= max(0, min(total, WORLD['game']['totalSteps'])))
 
 
-def baked_boundary_sheet():
-    """Same sampling as JoinBake.crossfade: row 0 of the PNG is the top, y grows up in the scene."""
+def boundary_alpha_composite():
+    """Front road keeps its pixels and only loses alpha. No second sprite is introduced."""
     pps = WORLD['game']['pixelsPerStep']
     boundary = 20000 * pps
     blend = 640
     half = blend / 2
-    ch1, ch2 = WORLD['chapters']
 
     def road(chapter):
         best = None
@@ -70,67 +69,52 @@ def baked_boundary_sheet():
             width = height * prop['pixelSize'][0] / max(1, prop['pixelSize'][1])
             left = (chapter['startStep'] + prop['step']) * pps + prop['dx']
             if left < boundary < left + width:
-                cover = min(left + width, boundary + half) - max(left, boundary - half)
-                if best is None or cover > best[0]:
-                    best = (cover, prop['image'], left, width, height)
+                best = (prop, left, width, height, prop.get('z') or 0)
+                break
         return best
 
-    def load(chapter, image):
-        return Image.open(ASSETS / chapter['assetsFolder'] / (image + '.png')).convert('RGBA')
-
-    _, image1, left1, width1, height1 = road(ch1)
-    _, image2, left2, width2, height2 = road(ch2)
-    im1, im2 = load(ch1, image1), load(ch2, image2)
-    out_h = int(round(max(height1, height2)))
-
     def sample(im, origin, width, height, world_x, y_from_bottom):
-        if width <= 0 or height <= 0:
-            return (0, 0, 0, 0)
         src_x = (world_x - origin) / width * im.size[0]
         src_y = y_from_bottom / height * im.size[1]
-        ix, iy_top = int(src_x), im.size[1] - 1 - int(src_y)
-        if ix < 0 or iy_top < 0 or ix >= im.size[0] or iy_top >= im.size[1]:
+        ix, iy = int(src_x), im.size[1] - 1 - int(src_y)
+        if ix < 0 or iy < 0 or ix >= im.size[0] or iy >= im.size[1]:
             return (0, 0, 0, 0)
-        p = im.getpixel((ix, iy_top))
-        a = p[3] / 255
-        if a <= 0.001:
-            return (0, 0, 0, 0)
-        return (p[0] / 255 / a, p[1] / 255 / a, p[2] / 255 / a, a)
+        p = im.getpixel((ix, iy))
+        return (p[0], p[1], p[2], p[3] / 255)
 
-    # Ground band: the opaque walking surface, not the transparent sky in the road PNG.
-    y_ground = 80
-    row = []
-    for x in range(blend):
-        t = x / (blend - 1)
-        world_x = boundary - half + x + 0.5
-        a = sample(im1, left1, width1, height1, world_x, y_ground)
-        b = sample(im2, left2, width2, height2, world_x, y_ground)
-        alpha = a[3] * (1 - t) + b[3] * t
-        rgb = tuple((a[i] * (1 - t) + b[i] * t) * alpha for i in range(3))
-        row.append(tuple(int(round(c * 255)) for c in rgb))
-    # Every column is the lerp of the two source texels at that world x, not a hard switch.
-    lerp_error = 0
-    for x in range(blend):
-        t = x / (blend - 1)
-        world_x = boundary - half + x + 0.5
-        a = sample(im1, left1, width1, height1, world_x, y_ground)
-        b = sample(im2, left2, width2, height2, world_x, y_ground)
-        alpha = a[3] * (1 - t) + b[3] * t
-        expect = tuple(int(round((a[i] * (1 - t) + b[i] * t) * alpha * 255)) for i in range(3))
-        lerp_error = max(lerp_error, sum(abs(row[x][c] - expect[c]) for c in range(3)))
-    hard = sum(abs(row[blend // 2 - 1][c] - row[blend // 2][c]) for c in range(3))
-    # A butt joint would swap the full source colours in one column.
-    a = sample(im1, left1, width1, height1, boundary, y_ground)
-    b = sample(im2, left2, width2, height2, boundary, y_ground)
-    butt = sum(abs(int(round(a[i] * a[3] * 255)) - int(round(b[i] * b[3] * 255))) for i in range(3))
-    sheet = Image.new('RGB', (blend, 80))
-    for y in range(80):
-        for x, px in enumerate(row):
-            sheet.putpixel((x, y), px)
-    out = Path('/opt/cursor/artifacts/chapter-join-road.png')
-    out.parent.mkdir(parents=True, exist_ok=True)
-    sheet.save(out)
-    return {'edge_error': lerp_error, 'max_step': hard, 'raw_jump': butt}
+    def factor(world_x, fade_in):
+        t = min(1, max(0, (world_x - (boundary - half)) / blend))
+        s = t * t * (3 - 2 * t)
+        return s if fade_in else 1 - s
+
+    ch1, ch2 = WORLD['chapters']
+    p1, left1, width1, height1, z1 = road(ch1)
+    p2, left2, width2, height2, z2 = road(ch2)
+    im1 = Image.open(ASSETS / ch1['assetsFolder'] / (p1['image'] + '.png')).convert('RGBA')
+    im2 = Image.open(ASSETS / ch2['assetsFolder'] / (p2['image'] + '.png')).convert('RGBA')
+    y = 80
+    # Chapter 1 is in front (higher z) and fades out to the right.
+    assert z1 >= z2
+
+    def over(world_x):
+        a = sample(im1, left1, width1, height1, world_x, y)
+        b = sample(im2, left2, width2, height2, world_x, y)
+        fa = factor(world_x, False) * a[3]
+        top = tuple(a[i] * fa for i in range(3))
+        bottom = tuple(b[i] * b[3] for i in range(3))
+        return tuple(top[i] + bottom[i] * (1 - fa) for i in range(3))
+
+    left = over(boundary - half - 40)
+    right = over(boundary + half + 40)
+    mid = over(boundary)
+    solo_left = sample(im1, left1, width1, height1, boundary - half - 40, y)
+    solo_right = sample(im2, left2, width2, height2, boundary + half + 40, y)
+    butt = sum(abs(solo_left[i] * solo_left[3] - solo_right[i] * solo_right[3]) for i in range(3))
+    # Outside the window the picture is exactly one original tile, so no patch edge is added.
+    left_err = sum(abs(left[i] - solo_left[i] * solo_left[3]) for i in range(3))
+    right_err = sum(abs(right[i] - solo_right[i] * solo_right[3]) for i in range(3))
+    return {'left_err': left_err, 'right_err': right_err, 'butt': butt,
+            'mid_gap': sum(abs(mid[i] - left[i]) for i in range(3))}
 
 
 class ChapterProgressTests(unittest.TestCase):
@@ -198,21 +182,19 @@ class ChapterProgressTests(unittest.TestCase):
 
 
 class WorldStripTests(unittest.TestCase):
-    def test_chapter_join_is_baked_into_pixels_not_a_mask_gradient(self):
-        # fe17f04 widened the crop and faded the mask. On device the edge stayed a hard rectangle.
-        self.assertNotIn('u_fade0', SCENE)
-        self.assertNotIn('chapterMaskSprite', SCENE)
-        self.assertNotIn('fadeLeft ? rawLeft', SCENE)
-        self.assertIn('SKSpriteNode(color: .white, size: CGSize(width: right - left', SCENE)
-        self.assertIn('installBakedJoins()', SCENE)
-        self.assertIn('chapterJoinRoad', SCENE)
-        self.assertIn('chapterJoinUnderground', SCENE)
-        self.assertIn('private static let chapterBlend: CGFloat = 640', SCENE)
-        sheet = baked_boundary_sheet()
-        # Ends match the source chapters. The middle is between them, not a second hard step.
-        self.assertLess(sheet['edge_error'], 3)
-        self.assertGreater(sheet['raw_jump'], 30)
-        self.assertLess(sheet['max_step'], sheet['raw_jump'] * 0.25)
+    def test_chapter_join_fades_existing_tiles_without_a_patch_sprite(self):
+        for gone in ('JoinBake', 'chapterJoinRoad', 'chapterJoinUnderground', 'installBakedJoins', 'u_fade0', 'zPosition = 130'):
+            self.assertNotIn(gone, SCENE)
+        self.assertIn('edgeFade', SCENE)
+        self.assertIn('overlap: true', SCENE)
+        self.assertEqual(SCENE.count('overlap: false'), 2)
+        self.assertEqual(SCENE.count('overlap: true'), 1)
+        self.assertIn('struct HorizontalFade', (ROOT / 'Postman/Scene/WorldNodes.swift').read_text())
+        stats = boundary_alpha_composite()
+        self.assertLess(stats['left_err'], 1)
+        self.assertLess(stats['right_err'], 1)
+        self.assertGreater(stats['butt'], 20)
+        self.assertGreater(stats['mid_gap'], 5)
 
     def test_one_scene_not_replaced_at_chapter_boundary(self):
         changed = body(MODEL, 'private func handleChapterChanged(')
