@@ -53,6 +53,86 @@ def resolve(total, forced=None, chapters=None):
     return max(i for i, c in enumerate(chapters) if c['startStep'] <= max(0, min(total, WORLD['game']['totalSteps'])))
 
 
+def boundary_coverage():
+    """Place the real road and underground tiles at their scene X and require opaque ground.
+
+    Crops meet at the chapter boundary. Nothing is faded. This is the geometry after
+    removing the alpha that opened holes in 17746c5.
+    """
+    pps = WORLD['game']['pixelsPerStep']
+    boundary = 20000 * pps
+    design_w = WORLD['game']['designWidth']
+    ch1, ch2 = WORLD['chapters']
+
+    def roads(chapter):
+        spans = []
+        for prop in chapter['props']:
+            if prop['layer'] != 'main' or 'road/road_main' not in prop['image']:
+                continue
+            height = prop['height']
+            width = height * prop['pixelSize'][0] / max(1, prop['pixelSize'][1])
+            left = (chapter['startStep'] + prop['step']) * pps + prop['dx']
+            spans.append((left, left + width, prop['image'], chapter))
+        return spans
+
+    def ug_tiles(chapter):
+        ug = chapter['underground']
+        tile_w = ug['tilePixelSize'][0] * ug['scale']
+        spans = []
+        # Neutral strip covers the chapter plus four screens, then the crop cuts it.
+        margin = design_w * 4
+        strip_left = chapter['startStep'] * pps - margin
+        strip_right = (chapter['startStep'] + chapter['lengthSteps']) * pps + margin
+        crop_left = margin * -1 if chapter['id'] == 1 else chapter['startStep'] * pps
+        crop_right = (chapter['startStep'] + chapter['lengthSteps']) * pps if chapter['id'] == 1 else strip_right
+        if chapter['id'] == 1:
+            crop_left = -margin
+            crop_right = boundary
+        else:
+            crop_left = boundary
+            crop_right = (chapter['startStep'] + chapter['lengthSteps']) * pps + margin
+        spans.append((max(strip_left, crop_left), min(strip_right, crop_right), ug['neutralTile'], chapter))
+        for module in ug['modules']:
+            left = (chapter['startStep'] + module['step']) * pps + module['dx'] - tile_w / 2
+            spans.append((max(left, crop_left), min(left + tile_w, crop_right), module['image'], chapter))
+        return spans
+
+    def covered(spans, x):
+        return any(a <= x < b for a, b, _, _ in spans)
+
+    road = roads(ch1) + roads(ch2)
+    ug = ug_tiles(ch1) + ug_tiles(ch2)
+    holes = []
+    for x in range(int(boundary - 2 * design_w), int(boundary + 2 * design_w), 20):
+        if not covered(road, x):
+            holes.append(('road', x))
+        if not covered(ug, x):
+            holes.append(('ug', x))
+    # Sample the opaque ground row of whichever road owns this x. No alpha was removed.
+    def owner(spans, x):
+        hits = [s for s in spans if s[0] <= x < s[1]]
+        return hits[-1] if hits else None
+
+    y_from_bottom = 40
+    opaque = 0
+    checked = 0
+    for x in range(int(boundary - 400), int(boundary + 400), 40):
+        hit = owner(road, x)
+        if hit is None:
+            continue
+        left, right, image, chapter = hit
+        im = Image.open(ASSETS / chapter['assetsFolder'] / (image + '.png')).convert('RGBA')
+        width = right - left
+        src_x = int((x - left) / width * im.size[0])
+        src_y = im.size[1] - 1 - int(y_from_bottom / 700 * im.size[1])
+        src_x = min(max(src_x, 0), im.size[0] - 1)
+        src_y = min(max(src_y, 0), im.size[1] - 1)
+        if im.getpixel((src_x, src_y))[3] > 200:
+            opaque += 1
+        checked += 1
+    return {'holes': holes, 'opaque': opaque, 'checked': checked}
+
+
 class ChapterProgressTests(unittest.TestCase):
     def test_force_does_not_add_steps(self):
         fn = body(CORE, 'func debugForceChapter2()')
@@ -118,6 +198,18 @@ class ChapterProgressTests(unittest.TestCase):
 
 
 class WorldStripTests(unittest.TestCase):
+    def test_chapter_boundary_is_solid_again_with_no_alpha_holes(self):
+        nodes = (ROOT / 'Postman/Scene/WorldNodes.swift').read_text()
+        for gone in ('JoinBake', 'chapterJoinRoad', 'HorizontalFade', 'edgeFade', 'installBakedJoins', 'u_fade0'):
+            self.assertNotIn(gone, SCENE)
+            self.assertNotIn(gone, nodes)
+        # The hole was destinationIn punching the tiles. The remaining use is the far-tile top fade.
+        self.assertNotIn('destinationIn', SCENE)
+        stats = boundary_coverage()
+        self.assertEqual(stats['holes'], [])
+        self.assertGreater(stats['checked'], 10)
+        self.assertEqual(stats['opaque'], stats['checked'])
+
     def test_one_scene_not_replaced_at_chapter_boundary(self):
         changed = body(MODEL, 'private func handleChapterChanged(')
         self.assertNotIn('WorldScene(', changed)
