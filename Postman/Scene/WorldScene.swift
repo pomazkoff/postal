@@ -15,16 +15,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var layerNodes: [(node: SKNode, parallax: CGFloat)] = []
     private var tiledStrips: [(node: TiledStripNode, parallax: CGFloat, kind: LayerKind)] = []
     private var chapterCrops: [(node: SKCropNode, range: ClosedRange<CGFloat>)] = []
-    /// Переход глав. Уже запаса контента за границей (ширина экрана × 4), поэтому дыр при скролле нет.
+    /// Ширина запечённого перехода на стыке глав, в пикселях дизайна.
     private static let chapterBlend: CGFloat = 640
-    private struct RoadSpan {
-        let node: SKSpriteNode
-        let chapterIndex: Int
-        let worldLeft: CGFloat
-        let width: CGFloat
-        let z: CGFloat
-    }
-    private var roadSpans: [RoadSpan] = []
+    private var mainLayers: [SKNode] = []
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
     private var postman: PostmanRigNode!
     private var actorLayerRef: SKNode?
@@ -149,7 +142,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         for (index, chapter) in config.chapters.enumerated() {
             buildChapter(chapter, index: index, actorLayer: actorLayer)
         }
-        blendChapterRoads()
+        installBakedJoins()
 
         // Почтальон
         let pc = config.game.postman
@@ -174,23 +167,20 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
-    /// Маска закреплена в мировых координатах; параллакс двигается ВНУТРИ неё.
-    /// Соседние главы заходят друг на друга на chapterBlend: нижняя остаётся сплошной,
-    /// верхняя (добавлена позже, тот же z) проявляется. Сумма покрытия 1, без дыры и без тёмной ямы.
+    /// Маска — сплошной прямоугольник ровно по границе главы. Частичная альфа маски на устройстве
+    /// не размывает край (Release fe17f04: резкий обрез на границе расширенного кропа).
+    /// Плавный стык — отдельная текстура, в которой переход уже запечён в пиксели.
     private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
-        let half = Self.chapterBlend / 2
-        let rawLeft = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
-        let rawRight = index + 1 < config.chapters.count
+        let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
+        let right = index + 1 < config.chapters.count
             ? geo.x(forStep: Double(config.chapters[index + 1].startStep))
             : geo.x(forStep: Double(chapter.endStep)) + margin
-        let fadeLeft = index > 0
-        let fadeRight = false
-        let left = fadeLeft ? rawLeft - half : rawLeft
-        let right = index + 1 < config.chapters.count ? rawRight + half : rawRight
         let crop = SKCropNode()
         crop.zPosition = z
-        let mask = chapterMaskSprite(left: left, right: right, fadeLeft: fadeLeft, fadeRight: fadeRight)
+        let mask = SKSpriteNode(color: .white, size: CGSize(width: right - left, height: 16000))
+        mask.anchorPoint = .zero
+        mask.position = CGPoint(x: left, y: worldBottomY - 4000)
         crop.maskNode = mask
         addChild(crop)
         chapterCrops.append((crop, left...right))
@@ -200,79 +190,89 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         return layer
     }
 
-    /// Появление следующей главы слева направо. Предыдущая в этом же окне не гасится: она под низом.
-    private func chapterMaskSprite(left: CGFloat, right: CGFloat, fadeLeft: Bool, fadeRight: Bool) -> SKSpriteNode {
-        let span = max(1, right - left)
-        let pixels = 1024
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        format.opaque = false
-        let image = UIGraphicsImageRenderer(size: CGSize(width: pixels, height: 4), format: format).image { ctx in
-            let cg = ctx.cgContext
-            for i in 0..<pixels {
-                let x = left + span * (CGFloat(i) + 0.5) / CGFloat(pixels)
-                var alpha: CGFloat = 1
-                if fadeLeft {
-                    let t = min(1, max(0, (x - left) / Self.chapterBlend))
-                    let s = t * t * (3 - 2 * t)
-                    alpha = min(alpha, s)
-                }
-                if fadeRight {
-                    let t = min(1, max(0, (x - (right - Self.chapterBlend)) / Self.chapterBlend))
-                    let s = t * t * (3 - 2 * t)
-                    alpha = min(alpha, 1 - s)
-                }
-                cg.setFillColor(UIColor(white: 1, alpha: alpha).cgColor)
-                cg.fill(CGRect(x: i, y: 0, width: 1, height: 4))
-            }
-        }
-        let mask = SKSpriteNode(texture: SKTexture(image: image), size: CGSize(width: span, height: 16000))
-        mask.anchorPoint = .zero
-        mask.position = CGPoint(x: left, y: worldBottomY - 4000)
-        return mask
-    }
-
-    /// Дорога не в маске главы. Верхний тайл гаснет, нижний остаётся сплошным — поверхность не обрезается ступенькой.
-    private func blendChapterRoads() {
-        let half = Self.chapterBlend / 2
+    /// Дорога и разрез на стыке глав: одна картинка, слева пиксели левой главы, справа — правой.
+    /// Ни маски с альфой, ни шейдера. Лежит поверх обоих тайлов и закрывает вертикальный обрез.
+    private func installBakedJoins() {
         for i in 0..<(config.chapters.count - 1) {
             let boundary = geo.x(forStep: Double(config.chapters[i + 1].startStep))
-            let zone = (boundary - half)...(boundary + half)
-            let lefts = roadSpans.filter { $0.chapterIndex == i && roadOverlaps($0, zone) }
-            let rights = roadSpans.filter { $0.chapterIndex == i + 1 && roadOverlaps($0, zone) }
-            guard !lefts.isEmpty, !rights.isEmpty else { continue }
-            let leftZ = lefts.map(\.z).max() ?? 0
-            let rightZ = rights.map(\.z).max() ?? 0
-            let fadeLeftChapter = leftZ >= rightZ
-            for road in fadeLeftChapter ? lefts : rights {
-                applyRoadFade(road, boundary: boundary, half: half, fadeOutToTheRight: fadeLeftChapter)
+            installRoadJoin(left: config.chapters[i], right: config.chapters[i + 1], boundary: boundary, host: mainLayers[i + 1])
+            installUndergroundJoin(left: config.chapters[i], right: config.chapters[i + 1], boundary: boundary)
+        }
+    }
+
+    private func installRoadJoin(left: ChapterConfig, right: ChapterConfig, boundary: CGFloat, host: SKNode) {
+        guard let lProp = boundaryRoad(in: left, boundary: boundary),
+              let rProp = boundaryRoad(in: right, boundary: boundary),
+              let lImage = uiImage(lProp.image.inChapter(left)),
+              let rImage = uiImage(rProp.image.inChapter(right)) else { return }
+        let height = max(lProp.height, rProp.height)
+        guard let texture = JoinBake.crossfade(
+            left: lImage, leftOrigin: lProp.worldLeft, leftWidth: lProp.width, leftHeight: lProp.height,
+            right: rImage, rightOrigin: rProp.worldLeft, rightWidth: rProp.width, rightHeight: rProp.height,
+            boundary: boundary, blend: Self.chapterBlend, height: height) else { return }
+        let node = SKSpriteNode(texture: texture, size: CGSize(width: Self.chapterBlend, height: height))
+        node.anchorPoint = .zero
+        node.position = CGPoint(x: boundary - Self.chapterBlend / 2, y: geo.roadY - CGFloat(lProp.sink))
+        node.zPosition = -20
+        node.name = "chapterJoinRoad"
+        host.addChild(node)
+    }
+
+    private func installUndergroundJoin(left: ChapterConfig, right: ChapterConfig, boundary: CGFloat) {
+        guard let lTile = boundaryUnderground(in: left, boundary: boundary),
+              let rTile = boundaryUnderground(in: right, boundary: boundary),
+              let lImage = uiImage(lTile.image),
+              let rImage = uiImage(rTile.image) else { return }
+        let height = CGFloat(left.underground.tilePixelSize[1]) * CGFloat(left.underground.scale)
+        guard let texture = JoinBake.crossfade(
+            left: lImage, leftOrigin: lTile.worldLeft, leftWidth: lTile.width, leftHeight: height,
+            right: rImage, rightOrigin: rTile.worldLeft, rightWidth: rTile.width, rightHeight: height,
+            boundary: boundary, blend: Self.chapterBlend, height: height) else { return }
+        let node = SKSpriteNode(texture: texture, size: CGSize(width: Self.chapterBlend, height: height))
+        node.anchorPoint = .zero
+        let top = geo.sceneY(fromTop: left.underground.top)
+        node.position = CGPoint(x: boundary - Self.chapterBlend / 2, y: top - height)
+        node.zPosition = 130
+        node.name = "chapterJoinUnderground"
+        addChild(node)
+    }
+
+    private func boundaryRoad(in chapter: ChapterConfig, boundary: CGFloat) -> (image: String, worldLeft: CGFloat, width: CGFloat, height: CGFloat, sink: Double)? {
+        let pps = CGFloat(config.game.pixelsPerStep)
+        var best: (String, CGFloat, CGFloat, CGFloat, Double, CGFloat)?
+        for p in chapter.props where p.layer == .main && p.image.contains("road/road_main") {
+            let height = CGFloat(p.height)
+            let width = height * CGFloat(p.pixelSize[0]) / CGFloat(max(1, p.pixelSize[1]))
+            let worldLeft = CGFloat(chapter.startStep + p.step) * pps + CGFloat(p.dx)
+            guard worldLeft < boundary && worldLeft + width > boundary else { continue }
+            let cover = min(worldLeft + width, boundary + Self.chapterBlend) - max(worldLeft, boundary - Self.chapterBlend)
+            if best == nil || cover > best!.5 {
+                best = (p.image, worldLeft, width, height, p.sink ?? 0, cover)
             }
         }
+        guard let best else { return nil }
+        return (best.0, best.1, best.2, best.3, best.4)
     }
 
-    private func roadOverlaps(_ road: RoadSpan, _ zone: ClosedRange<CGFloat>) -> Bool {
-        road.worldLeft < zone.upperBound && road.worldLeft + road.width > zone.lowerBound
-    }
-
-    private func applyRoadFade(_ road: RoadSpan, boundary: CGFloat, half: CGFloat, fadeOutToTheRight: Bool) {
-        let fade0 = Float((boundary - half - road.worldLeft) / road.width)
-        let fade1 = Float((boundary + half - road.worldLeft) / road.width)
-        let src = """
-        void main() {
-            vec4 c = texture2D(u_texture, v_tex_coord);
-            float t = clamp((v_tex_coord.x - u_fade0) / max(0.0001, u_fade1 - u_fade0), 0.0, 1.0);
-            float a = mix(u_a0, u_a1, t);
-            gl_FragColor = c * a;
+    private func boundaryUnderground(in chapter: ChapterConfig, boundary: CGFloat) -> (image: String, worldLeft: CGFloat, width: CGFloat)? {
+        let ug = chapter.underground
+        let tileW = CGFloat(ug.tilePixelSize[0]) * CGFloat(ug.scale)
+        let pps = CGFloat(config.game.pixelsPerStep)
+        var best: (String, CGFloat, CGFloat, CGFloat)?
+        for m in ug.modules {
+            let worldLeft = CGFloat(chapter.startStep + m.step) * pps + CGFloat(m.dx) - tileW / 2
+            guard worldLeft < boundary && worldLeft + tileW > boundary else { continue }
+            let cover = min(worldLeft + tileW, boundary + Self.chapterBlend) - max(worldLeft, boundary - Self.chapterBlend)
+            if best == nil || cover > best!.3 {
+                best = (m.image.inChapter(chapter), worldLeft, tileW, cover)
+            }
         }
-        """
-        let shader = SKShader(source: src)
-        shader.uniforms = [
-            SKUniform(name: "u_fade0", float: fade0),
-            SKUniform(name: "u_fade1", float: fade1),
-            SKUniform(name: "u_a0", float: fadeOutToTheRight ? 1 : 0),
-            SKUniform(name: "u_a1", float: fadeOutToTheRight ? 0 : 1),
-        ]
-        road.node.shader = shader
+        guard let best else { return nil }
+        return (best.0, best.1, best.2)
+    }
+
+    private func uiImage(_ relativePath: String) -> UIImage? {
+        UIImage(contentsOfFile: TextureStore.url(for: relativePath).path)
     }
 
     private func buildChapter(_ chapter: ChapterConfig, index: Int, actorLayer: SKNode) {
@@ -295,6 +295,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let mainLayer = SKNode()
         mainLayer.zPosition = 0
         addLayer(mainLayer, parallax: L.mainParallax)
+        mainLayers.append(mainLayer)
         let ugLayer = croppedLayer(chapter: chapter, index: index, z: 100, parallax: L.undergroundParallax)
         buildUnderground(in: ugLayer, chapter: chapter)
         let fgLayer = SKNode()
@@ -356,10 +357,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             node.zPosition = CGFloat(p.z ?? 0)
             target.addChild(node)
             lazyNodes.append((node, target))
-            if p.layer == .main && p.image.contains("road/road_main") {
-                roadSpans.append(RoadSpan(node: node, chapterIndex: index, worldLeft: worldLeft,
-                                          width: w, z: node.zPosition))
-            }
             ambient?.decorate(prop: node, image: p.image,
                               pixelSize: CGSize(width: p.pixelSize[0], height: p.pixelSize[1]),
                               seed: p.step &* 31 &+ Int(p.dx))
@@ -1111,6 +1108,86 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         let mine: [UIGestureRecognizer?] = [panRecognizer, pinchRecognizer]
         return mine.contains { $0 === gestureRecognizer } && mine.contains { $0 === otherGestureRecognizer }
+    }
+}
+
+/// Запечённый горизонтальный переход двух PNG. Результат — обычная текстура, без маски и шейдера.
+private enum JoinBake {
+    struct Bitmap {
+        let w: Int
+        let h: Int
+        let px: [UInt8]
+    }
+
+    static func crossfade(left: UIImage, leftOrigin: CGFloat, leftWidth: CGFloat, leftHeight: CGFloat,
+                           right: UIImage, rightOrigin: CGFloat, rightWidth: CGFloat, rightHeight: CGFloat,
+                           boundary: CGFloat, blend: CGFloat, height: CGFloat) -> SKTexture? {
+        guard let leftPx = bitmap(left), let rightPx = bitmap(right) else { return nil }
+        let width = max(2, Int(blend.rounded()))
+        let rows = max(2, Int(height.rounded()))
+        var out = [UInt8](repeating: 0, count: width * rows * 4)
+        let half = blend / 2
+        for y in 0..<rows {
+            let yFromBottom = CGFloat(y) + 0.5
+            let row = (rows - 1 - y) * width
+            for x in 0..<width {
+                let t = CGFloat(x) / CGFloat(width - 1)
+                let worldX = boundary - half + CGFloat(x) + 0.5
+                let a = sample(leftPx, origin: leftOrigin, width: leftWidth, height: leftHeight,
+                               worldX: worldX, yFromBottom: yFromBottom)
+                let b = sample(rightPx, origin: rightOrigin, width: rightWidth, height: rightHeight,
+                               worldX: worldX, yFromBottom: yFromBottom)
+                let alpha = a.3 * (1 - t) + b.3 * t
+                let i = (row + x) * 4
+                out[i] = byte((a.0 * (1 - t) + b.0 * t) * alpha)
+                out[i + 1] = byte((a.1 * (1 - t) + b.1 * t) * alpha)
+                out[i + 2] = byte((a.2 * (1 - t) + b.2 * t) * alpha)
+                out[i + 3] = byte(alpha)
+            }
+        }
+        let cs = CGColorSpaceCreateDeviceRGB()
+        let info = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard let provider = CGDataProvider(data: Data(out) as CFData),
+              let cg = CGImage(width: width, height: rows, bitsPerComponent: 8, bitsPerPixel: 32,
+                               bytesPerRow: width * 4, space: cs, bitmapInfo: info, provider: provider,
+                               decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { return nil }
+        return SKTexture(image: UIImage(cgImage: cg, scale: 1, orientation: .up))
+    }
+
+    private static func byte(_ value: CGFloat) -> UInt8 {
+        UInt8(min(255, max(0, (value * 255).rounded())))
+    }
+
+    /// Строка 0 буфера — верх картинки. Канал уже домножен на альфу.
+    private static func bitmap(_ image: UIImage) -> Bitmap? {
+        guard let cg = image.cgImage else { return nil }
+        let w = cg.width, h = cg.height
+        guard w > 0, h > 0 else { return nil }
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &px, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        ctx.translateBy(x: 0, y: CGFloat(h))
+        ctx.scaleBy(x: 1, y: -1)
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        return Bitmap(w: w, h: h, px: px)
+    }
+
+    private static func sample(_ bitmap: Bitmap, origin: CGFloat, width: CGFloat, height: CGFloat,
+                               worldX: CGFloat, yFromBottom: CGFloat) -> (CGFloat, CGFloat, CGFloat, CGFloat) {
+        guard width > 0, height > 0 else { return (0, 0, 0, 0) }
+        let srcX = (worldX - origin) / width * CGFloat(bitmap.w)
+        let srcY = yFromBottom / height * CGFloat(bitmap.h)
+        let ix = Int(srcX)
+        let iy = bitmap.h - 1 - Int(srcY)
+        guard ix >= 0, iy >= 0, ix < bitmap.w, iy < bitmap.h else { return (0, 0, 0, 0) }
+        let i = (iy * bitmap.w + ix) * 4
+        let alpha = CGFloat(bitmap.px[i + 3]) / 255
+        guard alpha > 0.001 else { return (0, 0, 0, 0) }
+        return (CGFloat(bitmap.px[i]) / 255 / alpha,
+                CGFloat(bitmap.px[i + 1]) / 255 / alpha,
+                CGFloat(bitmap.px[i + 2]) / 255 / alpha,
+                alpha)
     }
 }
 
