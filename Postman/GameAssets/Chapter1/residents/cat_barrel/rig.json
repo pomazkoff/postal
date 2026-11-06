@@ -1,0 +1,69 @@
+{
+ "name": "Кошка у Лавки",
+ "place": "Кадушки / Лавка",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   206,
+   188
+  ],
+  "tail": [
+   459,
+   700
+  ],
+  "body": [
+   276,
+   320
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   359,
+   465
+  ],
+  "tail": [
+   574,
+   740
+  ],
+  "ground_y": 1115
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "head"
+ ],
+ "source": "raw/cat_barrel_final_20261106.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.1296,
+ "game_height_px": 120,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 2,
+    "freq_per_loop": 1
+   }
+  },
+  "frame_size": [
+   114,
+   128
+  ],
+  "frame_ground_y": 124,
+  "spritesheet": "spritesheet.png"
+ },
+ "source_chain": "side_seed33 → kontext character → strict profile/refinement → birefnet → layered head/tail/wing idle"
+}

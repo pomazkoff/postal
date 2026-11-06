@@ -1,0 +1,41 @@
+{
+  "info" : {
+    "arguments" : [
+      "devicectl",
+      "device",
+      "install",
+      "app",
+      "--device",
+      "1BBBD5E2-1F90-54EC-934D-EEE585AAC5A6",
+      "/Users/ilapomazkov/Projects/postman_ios/build/DeltaTapCopy20261106/Build/Products/Debug-iphoneos/Postman.app",
+      "--timeout",
+      "90",
+      "--json-output",
+      "/Users/ilapomazkov/Projects/postman_ios/install_delta_tap_copy_20261106.json",
+      "--log-output",
+      "/Users/ilapomazkov/Projects/postman_ios/install_delta_tap_copy_20261106.log"
+    ],
+    "commandType" : "devicectl.device.install.app",
+    "environment" : {
+      "TERM" : "dumb"
+    },
+    "jsonVersion" : 3,
+    "outcome" : "success",
+    "version" : "518.33"
+  },
+  "result" : {
+    "deviceIdentifier" : "1BBBD5E2-1F90-54EC-934D-EEE585AAC5A6",
+    "installedApplications" : [
+      {
+        "bundleID" : "com.example.postman",
+        "databaseSequenceNumber" : 26132,
+        "databaseUUID" : "C1B069A1-BA7E-474E-8A26-B0EA22146A2C",
+        "installationURL" : "file:///private/var/containers/Bundle/Application/AD9E7772-12E3-4FA5-9AEA-24F239EF1EE8/Postman.app/",
+        "launchServicesIdentifier" : "unknown",
+        "options" : {
+
+        }
+      }
+    ]
+  }
+}

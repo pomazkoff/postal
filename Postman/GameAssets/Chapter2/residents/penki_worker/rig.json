@@ -1,0 +1,45 @@
+{
+ "name": "Рабочий",
+ "place": "Лесосека «Пеньки»",
+ "facing": "left",
+ "offsets": {
+  "body": [
+   258,
+   82
+  ]
+ },
+ "pivots_src": {
+  "ground_y": 1142
+ },
+ "draw_order": [
+  "body"
+ ],
+ "source": "raw/penki_worker_v3_s44.jpg (kontext edit of side_seed33 → birefnet; simple breath idle)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.3592,
+ "game_height_px": 380,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.007,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "frame_size": [
+   147,
+   402
+  ],
+  "frame_ground_y": 391,
+  "spritesheet": "spritesheet.png",
+  "motions": {
+   "body": {
+    "pivot": "ground",
+    "amp_deg": 0,
+    "freq_per_loop": 1
+   }
+  }
+ }
+}

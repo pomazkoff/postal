@@ -1,0 +1,68 @@
+{
+ "name": "Митя (Дмитрий) Ус",
+ "place": "Сваи",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   335,
+   88
+  ],
+  "arm": [
+   228,
+   545
+  ],
+  "body": [
+   228,
+   88
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   469,
+   392
+  ],
+  "arm": [
+   384,
+   560
+  ],
+  "ground_y": 1139
+ },
+ "draw_order": [
+  "body",
+  "arm",
+  "head"
+ ],
+ "source": "raw/mitya_v4_s3.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.2574,
+ "game_height_px": 270,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.6,
+    "freq_per_loop": 1
+   },
+   "arm": {
+    "pivot": "arm",
+    "amp_deg": 1.0,
+    "freq_per_loop": 1
+   }
+  },
+  "frame_size": [
+   227,
+   285
+  ],
+  "frame_ground_y": 278,
+  "spritesheet": "spritesheet.png"
+ }
+}

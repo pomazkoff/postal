@@ -1,0 +1,11 @@
+13:38:17  Acquired tunnel connection to device.
+13:38:17  Enabling developer disk image services.
+13:38:17  Acquired usage assertion.
+App installed:
+• bundleID: com.example.postman
+• installationURL: file:///private/var/containers/Bundle/Application/AD9E7772-12E3-4FA5-9AEA-24F239EF1EE8/Postman.app/
+• launchServicesIdentifier: unknown
+• databaseUUID: C1B069A1-BA7E-474E-8A26-B0EA22146A2C
+• databaseSequenceNumber: 26132
+• options: 
+Saving JSON output file to /Users/ilapomazkov/Projects/postman_ios/install_delta_tap_copy_20261106.json

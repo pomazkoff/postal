@@ -1,0 +1,54 @@
+{
+ "name": "Нина Аркадьевна Колобова",
+ "place": "Кадушки",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   339,
+   132
+  ],
+  "body": [
+   279,
+   132
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   484,
+   405
+  ],
+  "ground_y": 1128
+ },
+ "draw_order": [
+  "body",
+  "head"
+ ],
+ "source": "raw/nina_v4_s9.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.332,
+ "game_height_px": 330,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.2,
+    "freq_per_loop": 2.0
+   }
+  },
+  "frame_size": [
+   292,
+   350
+  ],
+  "frame_ground_y": 340,
+  "spritesheet": "spritesheet.png"
+ }
+}

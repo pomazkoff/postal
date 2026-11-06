@@ -1,0 +1,69 @@
+{
+ "name": "Коза Матрёна",
+ "place": "НИИ «Радиотень»",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   104,
+   129
+  ],
+  "tail": [
+   669,
+   524
+  ],
+  "body": [
+   206,
+   191
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   359,
+   520
+  ],
+  "tail": [
+   729,
+   580
+  ],
+  "ground_y": 1105
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "head"
+ ],
+ "source": "raw/matrena_final_20261106.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.2156,
+ "game_height_px": 210,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 5,
+    "freq_per_loop": 2
+   }
+  },
+  "frame_size": [
+   190,
+   223
+  ],
+  "frame_ground_y": 216,
+  "spritesheet": "spritesheet.png"
+ },
+ "source_chain": "side_seed33 → kontext character → strict profile/refinement → birefnet → layered head/tail/wing idle"
+}

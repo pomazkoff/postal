@@ -1,0 +1,59 @@
+{
+ "name": "Старый монах",
+ "place": "Звонарня",
+ "facing": "left",
+ "offsets": {
+  "body": [
+   286,
+   124
+  ]
+ },
+ "pivots_src": {
+  "ground_y": 1064
+ },
+ "draw_order": [
+  "body"
+ ],
+ "source": "raw/monk_old_clay_20261106_v7.jpg (directed clay key art from side_seed33 and identity refs -> kontext max material polish, seed 120 -> birefnet -> existing cut_and_idle export)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.3838,
+ "game_height_px": 360,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.007,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "frame_size": [
+   154,
+   382
+  ],
+  "frame_ground_y": 371,
+  "spritesheet": "spritesheet.png",
+  "motions": {
+   "body": {
+    "pivot": "ground",
+    "amp_deg": 0,
+    "freq_per_loop": 1
+   }
+  },
+  "canvas_alignment": {
+   "offset_px": [
+    2,
+    -1
+   ],
+   "previous_frame_size": [
+    154,
+    382
+   ]
+  }
+ },
+ "art_revision": "neverhood_clay_empty_sockets_20261106",
+ "generation_seed": 120,
+ "empty_eye_sockets": true,
+ "generation_method": "directed_clay_key_art_then_kontext_max_material_polish_birefnet"
+}

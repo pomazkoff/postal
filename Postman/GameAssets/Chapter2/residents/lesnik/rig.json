@@ -1,0 +1,45 @@
+{
+ "name": "Лесник",
+ "place": "Кордон «Гарь»",
+ "facing": "left",
+ "offsets": {
+  "body": [
+   231,
+   60
+  ]
+ },
+ "pivots_src": {
+  "ground_y": 1148
+ },
+ "draw_order": [
+  "body"
+ ],
+ "source": "raw/lesnik_v3_s33.jpg (kontext edit of side_seed33 → birefnet; simple breath idle)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.3693,
+ "game_height_px": 400,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.007,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "frame_size": [
+   180,
+   422
+  ],
+  "frame_ground_y": 411,
+  "spritesheet": "spritesheet.png",
+  "motions": {
+   "body": {
+    "pivot": "ground",
+    "amp_deg": 0,
+    "freq_per_loop": 1
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "name": "Бригадир",
+ "place": "Лесосека «Пеньки»",
+ "facing": "left",
+ "offsets": {
+  "body": [
+   189,
+   72
+  ]
+ },
+ "pivots_src": {
+  "ground_y": 1150
+ },
+ "draw_order": [
+  "body"
+ ],
+ "source": "raw/brigadir_v3_s33.jpg (kontext edit of side_seed33 → birefnet; simple breath idle)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.3903,
+ "game_height_px": 420,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.007,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "frame_size": [
+   207,
+   443
+  ],
+  "frame_ground_y": 432,
+  "spritesheet": "spritesheet.png",
+  "motions": {
+   "body": {
+    "pivot": "ground",
+    "amp_deg": 0,
+    "freq_per_loop": 1
+   }
+  }
+ }
+}

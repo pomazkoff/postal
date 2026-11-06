@@ -1,0 +1,41 @@
+{
+  "info" : {
+    "arguments" : [
+      "devicectl",
+      "device",
+      "install",
+      "app",
+      "--device",
+      "00008150-000A6D593480401C",
+      "/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app",
+      "--timeout",
+      "180",
+      "--json-output",
+      "/Users/ilapomazkov/Projects/postman_ios/install_t201u_20261106.json",
+      "--log-output",
+      "/Users/ilapomazkov/Projects/postman_ios/install_t201u_20261106.log"
+    ],
+    "commandType" : "devicectl.device.install.app",
+    "environment" : {
+      "TERM" : "dumb"
+    },
+    "jsonVersion" : 3,
+    "outcome" : "success",
+    "version" : "518.33"
+  },
+  "result" : {
+    "deviceIdentifier" : "1BBBD5E2-1F90-54EC-934D-EEE585AAC5A6",
+    "installedApplications" : [
+      {
+        "bundleID" : "com.example.postman",
+        "databaseSequenceNumber" : 26140,
+        "databaseUUID" : "C1B069A1-BA7E-474E-8A26-B0EA22146A2C",
+        "installationURL" : "file:///private/var/containers/Bundle/Application/96938C38-773C-4D21-9947-A0892EDB719F/Postman.app/",
+        "launchServicesIdentifier" : "unknown",
+        "options" : {
+
+        }
+      }
+    ]
+  }
+}

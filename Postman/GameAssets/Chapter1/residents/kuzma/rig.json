@@ -1,0 +1,68 @@
+{
+ "name": "Кузьма Ерофеевич Ус",
+ "place": "Сваи",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   314,
+   73
+  ],
+  "arm": [
+   183,
+   470
+  ],
+  "body": [
+   173,
+   73
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   494,
+   372
+  ],
+  "arm": [
+   369,
+   520
+  ],
+  "ground_y": 1140
+ },
+ "draw_order": [
+  "body",
+  "arm",
+  "head"
+ ],
+ "source": "raw/kuzma_v4_s9.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.3752,
+ "game_height_px": 400,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.0,
+    "freq_per_loop": 1
+   },
+   "arm": {
+    "pivot": "arm",
+    "amp_deg": 1.3,
+    "freq_per_loop": 1
+   }
+  },
+  "frame_size": [
+   330,
+   423
+  ],
+  "frame_ground_y": 411,
+  "spritesheet": "spritesheet.png"
+ }
+}

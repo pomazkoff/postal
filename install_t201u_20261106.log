@@ -1,0 +1,11 @@
+13:52:29  Acquired tunnel connection to device.
+13:52:29  Enabling developer disk image services.
+13:52:30  Acquired usage assertion.
+App installed:
+• bundleID: com.example.postman
+• installationURL: file:///private/var/containers/Bundle/Application/96938C38-773C-4D21-9947-A0892EDB719F/Postman.app/
+• launchServicesIdentifier: unknown
+• databaseUUID: C1B069A1-BA7E-474E-8A26-B0EA22146A2C
+• databaseSequenceNumber: 26140
+• options: 
+Saving JSON output file to /Users/ilapomazkov/Projects/postman_ios/install_t201u_20261106.json

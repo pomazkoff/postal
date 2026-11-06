@@ -1,0 +1,68 @@
+{
+ "name": "Коза Рамка",
+ "place": "НИИ / дорога ~4500",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   129,
+   130
+  ],
+  "tail": [
+   711,
+   527
+  ],
+  "body": [
+   258,
+   413
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   409,
+   520
+  ],
+  "tail": [
+   729,
+   592
+  ],
+  "ground_y": 1105
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "head"
+ ],
+ "source": "raw/ramka_v4_s9.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.2055,
+ "game_height_px": 200,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.5,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 7,
+    "freq_per_loop": 2
+   }
+  },
+  "frame_size": [
+   181,
+   212
+  ],
+  "frame_ground_y": 206,
+  "spritesheet": "spritesheet.png"
+ }
+}

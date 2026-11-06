@@ -1,0 +1,114 @@
+{
+  "frame": [
+    1170,
+    2532
+  ],
+  "collapsed": {
+    "image": "UI/watch_collapsed",
+    "x": 507,
+    "y": 0,
+    "width": 311,
+    "height": 645,
+    "body": [
+      513,
+      262,
+      255,
+      324
+    ],
+    "halo": {
+      "cx": 640.5,
+      "cy": 462.9,
+      "r": 178.5,
+      "opacity": 0.34
+    },
+    "today": {
+      "cx": 641.5,
+      "cy": 462.9,
+      "size": 70.6,
+      "maxWidth": 138.6,
+      "font": "Oswald",
+      "weight": 650,
+      "squeezeX": 0.86,
+      "rotation": -3,
+      "lineCY": 459.5
+    }
+  },
+  "expanded": {
+    "image": "UI/watch_expanded",
+    "x": 69,
+    "y": 0,
+    "width": 806,
+    "height": 1248,
+    "body": [
+      95,
+      410,
+      694,
+      741
+    ],
+    "halo": {
+      "cx": 512.0,
+      "cy": 839.8,
+      "r": 432.1,
+      "opacity": 0.3
+    },
+    "todayLabel": {
+      "cx": 512.2,
+      "cy": 730.3,
+      "size": 38.7,
+      "font": "Kurale",
+      "text": "сегодня",
+      "lineCY": 722.5
+    },
+    "today": {
+      "cx": 512.2,
+      "cy": 807.8,
+      "size": 128.5,
+      "maxWidth": 334.4,
+      "font": "YesevaOne",
+      "lineCY": 816.1
+    },
+    "totalLabel": {
+      "cx": 512.2,
+      "cy": 920.4,
+      "size": 31.7,
+      "font": "Kurale",
+      "text": "всего",
+      "lineCY": 916.4
+    },
+    "total": {
+      "cx": 512.2,
+      "cy": 976.7,
+      "size": 47.5,
+      "maxWidth": 154.9,
+      "font": "YesevaOne",
+      "lineCY": 979.7
+    },
+    "dim": {
+      "brightness": 0.52,
+      "saturation": 0.45,
+      "hangingLayer": 0.78
+    }
+  },
+  "distanceTag": {
+    "x": 48,
+    "y": 362,
+    "width": 396,
+    "height": 243,
+    "rotation": 7
+  },
+  "telegram": {
+    "collapsed": {
+      "right": 1152,
+      "y": 548,
+      "width": 315,
+      "height": 350
+    },
+    "expanded": {
+      "right": 1152,
+      "y": 600,
+      "width": 335,
+      "height": 375
+    },
+    "rotation": -4
+  }
+}

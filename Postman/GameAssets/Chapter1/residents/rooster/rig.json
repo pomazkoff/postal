@@ -1,0 +1,83 @@
+{
+ "name": "Петух",
+ "place": "Сваи",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   149,
+   178
+  ],
+  "wing": [
+   289,
+   545
+  ],
+  "tail": [
+   548,
+   384
+  ],
+  "body": [
+   140,
+   301
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   334,
+   455
+  ],
+  "tail": [
+   564,
+   650
+  ],
+  "wing": [
+   384,
+   610
+  ],
+  "ground_y": 1091
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "wing",
+  "head"
+ ],
+ "source": "raw/rooster_final_20261106.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.1647,
+ "game_height_px": 150,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.2,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 1.5,
+    "freq_per_loop": 1
+   },
+   "wing": {
+    "pivot": "wing",
+    "amp_deg": 1.7,
+    "freq_per_loop": 2
+   }
+  },
+  "frame_size": [
+   145,
+   160
+  ],
+  "frame_ground_y": 155,
+  "spritesheet": "spritesheet.png"
+ },
+ "source_chain": "side_seed33 → kontext character → strict profile/refinement → birefnet → layered head/tail/wing idle"
+}

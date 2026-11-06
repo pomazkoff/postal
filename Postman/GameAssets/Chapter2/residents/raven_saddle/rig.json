@@ -1,0 +1,83 @@
+{
+ "name": "Ворон",
+ "place": "Ящик на Седле",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   84,
+   336
+  ],
+  "wing": [
+   289,
+   536
+  ],
+  "tail": [
+   482,
+   788
+  ],
+  "body": [
+   214,
+   374
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   269,
+   495
+  ],
+  "tail": [
+   549,
+   795
+  ],
+  "wing": [
+   399,
+   600
+  ],
+  "ground_y": 1008
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "wing",
+  "head"
+ ],
+ "source": "raw/raven_saddle_final_20261106.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.1493,
+ "game_height_px": 100,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.2,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 1.5,
+    "freq_per_loop": 1
+   },
+   "wing": {
+    "pivot": "wing",
+    "amp_deg": 2,
+    "freq_per_loop": 2
+   }
+  },
+  "frame_size": [
+   131,
+   109
+  ],
+  "frame_ground_y": 104,
+  "spritesheet": "spritesheet.png"
+ },
+ "source_chain": "side_seed33 → kontext character → strict profile/refinement → birefnet → layered head/tail/wing idle"
+}

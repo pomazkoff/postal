@@ -1,0 +1,69 @@
+{
+ "name": "Козлёнок",
+ "place": "Антенна НИИ",
+ "facing": "left",
+ "offsets": {
+  "head": [
+   126,
+   315
+  ],
+  "tail": [
+   654,
+   558
+  ],
+  "body": [
+   149,
+   420
+  ]
+ },
+ "pivots_src": {
+  "head": [
+   314,
+   550
+  ],
+  "tail": [
+   699,
+   610
+  ],
+  "ground_y": 1060
+ },
+ "draw_order": [
+  "body",
+  "tail",
+  "head"
+ ],
+ "source": "raw/goat_kid_approved_20261106.jpg (kontext edit of postman_fal/v03/side_seed33.jpg -> birefnet cut, mirrored)",
+ "src_size": [
+  880,
+  1184
+ ],
+ "game_scale": 0.1887,
+ "game_height_px": 140,
+ "idle": {
+  "fps": 12,
+  "frames": 24,
+  "loop_s": 2.0,
+  "breath_scale_y": 0.006,
+  "jitter_px_game": 1,
+  "jitter_seed": 4,
+  "motions": {
+   "head": {
+    "pivot": "head",
+    "amp_deg": 1.5,
+    "freq_per_loop": 1
+   },
+   "tail": {
+    "pivot": "tail",
+    "amp_deg": 7,
+    "freq_per_loop": 2
+   }
+  },
+  "frame_size": [
+   166,
+   151
+  ],
+  "frame_ground_y": 146,
+  "spritesheet": "spritesheet.png"
+ },
+ "source_chain": "side_seed33 → kontext character → strict profile/refinement → birefnet → layered head/tail/wing idle"
+}

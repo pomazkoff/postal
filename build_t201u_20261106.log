@@ -1,0 +1,647 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -scheme Postman -project /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj -configuration Debug -sdk iphoneos -destination generic/platform=iOS -derivedDataPath /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106 -allowProvisioningUpdates CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=8S42M36C7M build
+
+Build settings from command line:
+    CODE_SIGN_STYLE = Automatic
+    DEVELOPMENT_TEAM = 8S42M36C7M
+    SDKROOT = iphoneos26.5
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'Postman' in project 'Postman' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 11ca3bd7bab62c12c48190c896b04f4a
+Build description path: /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/XCBuildData/11ca3bd7bab62c12c48190c896b04f4a.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/SDKStatCaches.noindex/iphoneos26.5-23F81a-32daed1954a7d5dd0789fcaf2a9bb78b.sdkstatcache
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/SDKStatCaches.noindex/iphoneos26.5-23F81a-32daed1954a7d5dd0789fcaf2a9bb78b.sdkstatcache
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman-74aa5a48b02f52cfb01196fd6dc6d604-VFS-iphoneos/all-product-headers.yaml
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman-74aa5a48b02f52cfb01196fd6dc6d604-VFS-iphoneos/all-product-headers.yaml
+
+CreateBuildDirectory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphoneos
+    cd /Users/ilapomazkov/Projects/postman_ios/Postman.xcodeproj
+    builtin-create-build-directory /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphoneos
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-target-headers.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-generated-files.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-generated-files.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-project-headers.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-project-headers.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyStaticMetadataFileList (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-own-target-headers.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyMetadataFileList (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-non-framework-target-headers.hmap (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibPath-normal-arm64.txt (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibPath-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibInstallName-normal-arm64.txt (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibInstallName-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_const_extract_protocols.json (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftConstValuesFileList (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.LinkFileList (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.LinkFileList
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-OutputFileMap.json (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/Entitlements.plist (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    write-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/Entitlements.plist
+
+MkDir /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /bin/mkdir -p /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app
+
+ProcessProductPackaging /Users/ilapomazkov/Projects/postman_ios/Postman/Postman.entitlements /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "8S42M36C7M.com.example.postman";
+    "com.apple.developer.healthkit" = 1;
+    "com.apple.developer.healthkit.access" =     (
+    );
+    "com.apple.developer.healthkit.background-delivery" = 1;
+    "com.apple.developer.team-identifier" = 8S42M36C7M;
+    "get-task-allow" = 1;
+}
+    
+    builtin-productPackagingUtility /Users/ilapomazkov/Projects/postman_ios/Postman/Postman.entitlements -entitlements -format xml -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent
+
+ProcessProductPackaging /Users/ilapomazkov/Library/Developer/Xcode/UserData/Provisioning\ Profiles/37479a8d-6ca8-49e6-a36b-c59d7830b5c6.mobileprovision /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/embedded.mobileprovision (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-productPackagingUtility /Users/ilapomazkov/Library/Developer/Xcode/UserData/Provisioning\ Profiles/37479a8d-6ca8-49e6-a36b-c59d7830b5c6.mobileprovision -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/embedded.mobileprovision
+
+ProcessProductPackagingDER /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent.der (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /usr/bin/derq query -f xml -i /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent.der --raw
+
+MkDir /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /bin/mkdir -p /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned
+
+MkDir /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/unthinned (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /bin/mkdir -p /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/unthinned
+
+Ld /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/__preview.dylib normal (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0 -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -O0 -L/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -install_name @rpath/Postman.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_dependency_info.dat -Xlinker -no_adhoc_codesign -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/__preview.dylib
+
+GenerateAssetSymbols /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets --compile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_dependencies --output-partial-info-plist /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region ru --target-device iphone --minimum-deployment-target 17.0 --platform iphoneos --bundle-identifier com.example.postman --generate-swift-asset-symbols /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CpResource /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/GameAssets /Users/ilapomazkov/Projects/postman_ios/Postman/GameAssets (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/ilapomazkov/Projects/postman_ios/Postman/GameAssets /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app
+
+CompileAssetCatalogVariant thinned /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets --compile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region ru --target-device iphone --minimum-deployment-target 17.0 --platform iphoneos
+/* com.apple.actool.compilation-results */
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist_thinned
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned/Assets.car
+
+
+SwiftDriver Postman normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Postman -Onone @/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios17.0 -g -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64 -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/SDKStatCaches.noindex/iphoneos26.5-23F81a-32daed1954a7d5dd0789fcaf2a9bb78b.sdkstatcache -output-file-map /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -sdk-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-generated-files.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-own-target-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-project-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/include -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources-normal/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-Swift.h -working-directory /Users/ilapomazkov/Projects/postman_ios -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_SwiftConcurrencyShims-DCEX7KG05SP6QSBGGLQCD7M24.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/SwiftShims-QWGXCVNCXTBV8M2OIO3BHDKA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_stdbool-609O9PPX9S9JZ5IYDT7FGM0BE.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/DeveloperToolsSupport-AXC2ODKY4QOML8YAK2SN6SOOC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/ptrauth-1XMS7MR8J2ILPQUXEI2P86RLH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_float-C7E5ERJT0KK0BIX11W79U8CZX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_stddef-1X09YZ1HF072UF3JNRY8XL18B.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_stdarg-CC3MW9TBTUID2Y689AUEHYURR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/ptrcheck-8OXUDU1PGN5X7QWT72KGZMN07.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_AvailabilityInternal-8NKQ2ZB58HD30P9IDKASSJRZL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_DarwinFoundation1-88AOKKAR77X8PYVQV330U036M.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_DarwinFoundation2-6RZLRUU4UHQM2TEPMW0SORCYV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_limits-7JC3VMFRIGXCW4OOVU3NM9ZQF.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_stdint-B87UNO29G9TO7R3Z3S8HBYJNW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_tgmath-BRGA4FM3WUTCYS51OUWJ1ROXQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/sys_types-442VJQ5P87I4VKAVPCC8Q4A59.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_intrinsics-ZRD9IU7QI71TR9RXZ8CPPIMN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_DarwinFoundation3-CFKMO8JHGB3NLUQLIISQI217Y.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_stdatomic-7G04G459MV5SILRLZ0CO7XAO4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_Builtin_inttypes-5U9OL30SMETJKUZ2KKFR8MKET.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Darwin-F398PEPOU3EIZ5W0X6GDXL2BV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/simd-4JECIATLVGAJ6FON8O89ZYAZW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/MachO-2YYOXAH5C3VIB851HL5A551CY.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/ObjectiveC-2AMXVJK4TVPU9TJRE8O60S6YZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Spatial-9W6QPJDPE4CKX8GKHXK0G28LI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/os_object-6JBTM1L24CUZJQFJOPM5S4IE4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/os_workgroup-1RLNCMJO5HSM3EHFYLEJI09VK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Dispatch-CSJ3W84BXUQ17RP2VMS5ZMO24.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreFoundation-22L2GXM2WBTYCBJ2DMQ392JJ1.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/XPC-95E322TTLF0XDUTFMBM9AXEYW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/os-63VS9SK0K10OHOQXMF3JGAB51.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Security-BMDW8KF021DJDB268ZHOR3S6A.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CFNetwork-8RPY8BBD0KJL7F8S0DHU9QHQR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreGraphics-B5XCGIQO2HNTQLV0TIOQSG915.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Foundation-1LYJ0J6RGN2FJ215XSK12PM4Q.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/ImageIO-3JIY3U85J71NVY6NZMD48WN1M.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreText-5K0MF7VB4IJT7DSLLCE0V1BRM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Symbols-DJ57TFM6NL98OW9XW7F9G93SU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/BackgroundTasks-USOT11YW1C2IWINN4B229NN8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/IOSurface-4ADCZEPCZULLA66T9IWAF9GGN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/ModelIO-62XYH18IS4AV903D3W2QNDMPB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreTransferable-4Y5Q8E6HYHBZJR2AL9AANPEDH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Accessibility-72Y0UAYDHEVK7UT2EIDGS13TI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/_LocationEssentials-B3ZVNJ6D2CZTOZ35SR6QH2Y02.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreData-BO4M9ZISOKMO7ROOGBI7T1H2N.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/FileProvider-G4GS7O59OYTZJJGE4W7GKR07.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreLocation-856Z24DBOOGD0JX4QGHGX2V4X.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/UIUtilities-CXR61V2YDWWZTLILQX92RBZC4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/UniformTypeIdentifiers-3AJU6Z27AJH7QDJLUBHOMBHVC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/OSLog-D0XU3FED3X9WTOKQZHJTCAP72.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/DataDetection-5P16BUJ836YNYEOFJE00W7M6A.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/UserNotifications-A7IEF8SZK3YNYOR5QE4X4YK0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/OpenGLES-2TYUHISVXT7YWX4M04WF3UAMN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Metal-82730YSETP6T3F8J8YX1OSZE5.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/HealthKit-2MFSZSMEELM0JECB4WPSQ2AU0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreVideo-B6XLYR4UZDDNPVIEUDA0GG08T.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/CoreImage-D20Q7BT5R35JFEMISWGB90IUB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/QuartzCore-AJ1UQZNJOEBZXS5YZ49YE3DVA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/SwiftUICore-9AFDI4WCQPJEPYS2OH23EKMUP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/UIKit-4SXYR6B0TEEQFBGT7P2H37JNZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/SwiftUI-2G30DJQWJYV5GBTHR3NE7XT3Q.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/GLKit-74VS8NNFN0Q4VI8SIEY26F2MZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/SpriteKit-877M2FV1L1C64QZR03RZ7SKEU.pcm
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Postman (in target 'Postman' from project 'Postman')
+
+EmitSwiftModule normal arm64 (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ StoryReset.swift,\ TelegramView.swift,\ Theme.swift,\ UIArt.swift,\ GeneratedAssetSymbols.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/StoryReset.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/TelegramView.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/Theme.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/UIArt.swift /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/StoryReset.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/TelegramView.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/Theme.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/UIArt.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ TextureStore.swift,\ WeatherLayer.swift,\ WorldNodes.swift,\ WorldScene.swift,\ BagScreen.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/TextureStore.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WeatherLayer.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WorldNodes.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WorldScene.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/BagScreen.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/TextureStore.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WeatherLayer.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WorldNodes.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/WorldScene.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/BagScreen.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ HealthKitStepSource.swift,\ Notifier.swift,\ ProgressStore.swift,\ StepService.swift,\ WeatherService.swift,\ AmbientConfig.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Services/HealthKitStepSource.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Services/Notifier.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Services/ProgressStore.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Services/StepService.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Services/WeatherService.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/AmbientConfig.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Services/HealthKitStepSource.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Services/Notifier.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Services/ProgressStore.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Services/StepService.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Services/WeatherService.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/AmbientConfig.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ DebugPanel.swift,\ GameView.swift,\ HUDLayout.swift,\ HUDView.swift,\ JournalScreen.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/DebugPanel.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/GameView.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/HUDLayout.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/HUDView.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/JournalScreen.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/DebugPanel.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/GameView.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/HUDLayout.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/HUDView.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/JournalScreen.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ LetterScreen.swift,\ MapScreen.swift,\ OnboardingView.swift,\ PocketWatchView.swift,\ StoryCards.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/LetterScreen.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/MapScreen.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/OnboardingView.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/PocketWatchView.swift /Users/ilapomazkov/Projects/postman_ios/Postman/UI/StoryCards.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/LetterScreen.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/MapScreen.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/OnboardingView.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/PocketWatchView.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/UI/StoryCards.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ ChapterState.swift,\ ParchmentMap.swift,\ ResidentLibrary.swift,\ RigConfig.swift,\ StoryConfig.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ChapterState.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ParchmentMap.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ResidentLibrary.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/RigConfig.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/StoryConfig.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ChapterState.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ParchmentMap.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/ResidentLibrary.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/RigConfig.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/StoryConfig.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 Compiling\ AppCore.swift,\ AppDelegate.swift,\ AppInfo.swift,\ ChapterEngine.swift,\ GameModel.swift,\ PostmanApp.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppCore.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppDelegate.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppInfo.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/ChapterEngine.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/GameModel.swift /Users/ilapomazkov/Projects/postman_ios/Postman/App/PostmanApp.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppCore.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppDelegate.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/AppInfo.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/ChapterEngine.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/GameModel.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/App/PostmanApp.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for Postman (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 Compiling\ WorldConfig.swift,\ AmbientLayer.swift,\ PostmanRigNode.swift,\ Readability.swift,\ RigWalk.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Model/WorldConfig.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/AmbientLayer.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/PostmanRigNode.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/Readability.swift /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/RigWalk.swift (in target 'Postman' from project 'Postman')
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Model/WorldConfig.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/AmbientLayer.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/PostmanRigNode.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/Readability.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftCompile normal arm64 /Users/ilapomazkov/Projects/postman_ios/Postman/Scene/RigWalk.swift (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+
+SwiftDriver\ Compilation\ Requirements Postman normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Postman -Onone @/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios17.0 -g -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64 -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/SDKStatCaches.noindex/iphoneos26.5-23F81a-32daed1954a7d5dd0789fcaf2a9bb78b.sdkstatcache -output-file-map /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -sdk-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-generated-files.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-own-target-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-project-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/include -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources-normal/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-Swift.h -working-directory /Users/ilapomazkov/Projects/postman_ios -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal arm64 Compiling ChapterState.swift, ParchmentMap.swift, ResidentLibrary.swift, RigConfig.swift, StoryConfig.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling HealthKitStepSource.swift, Notifier.swift, ProgressStore.swift, StepService.swift, WeatherService.swift, AmbientConfig.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppCore.swift, AppDelegate.swift, AppInfo.swift, ChapterEngine.swift, GameModel.swift, PostmanApp.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling DebugPanel.swift, GameView.swift, HUDLayout.swift, HUDView.swift, JournalScreen.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling TextureStore.swift, WeatherLayer.swift, WorldNodes.swift, WorldScene.swift, BagScreen.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling StoryReset.swift, TelegramView.swift, Theme.swift, UIArt.swift, GeneratedAssetSymbols.swift (in target 'Postman' from project 'Postman')
+
+SwiftMergeGeneratedHeaders /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/Postman-Swift.h /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-Swift.h (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-swiftHeaderTool -arch arm64 /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-Swift.h -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/Postman-Swift.h
+
+Copy /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.swiftdoc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftdoc (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftdoc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.swiftdoc
+
+Copy /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.swiftmodule /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.swiftmodule
+
+Copy /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.abi.json /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.abi.json (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.abi.json /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/arm64-apple-ios.abi.json
+
+Copy /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftsourceinfo (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftsourceinfo /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo
+
+SwiftDriverJobDiscovery normal arm64 Compiling LetterScreen.swift, MapScreen.swift, OnboardingView.swift, PocketWatchView.swift, StoryCards.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriverJobDiscovery normal arm64 Compiling WorldConfig.swift, AmbientLayer.swift, PostmanRigNode.swift, Readability.swift, RigWalk.swift (in target 'Postman' from project 'Postman')
+
+SwiftDriver\ Compilation Postman normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Postman -Onone @/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios17.0 -g -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64 -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/SDKStatCaches.noindex/iphoneos26.5-23F81a-32daed1954a7d5dd0789fcaf2a9bb78b.sdkstatcache -output-file-map /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -sdk-module-cache-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-generated-files.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-own-target-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-project-headers.hmap -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/include -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources-normal/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources/arm64 -Xcc -I/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-Swift.h -working-directory /Users/ilapomazkov/Projects/postman_ios -experimental-emit-module-separately -disable-cmo
+
+Ld /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib normal (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0 -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -O0 -L/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphoneos -L/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphoneos -F/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -filelist /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.LinkFileList -install_name @rpath/Postman.debug.dylib -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.swiftmodule @/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman-linker-args.resp -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -Xlinker -no_adhoc_codesign -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib
+
+ConstructStubExecutorLinkFileList /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-ExecutorLinkFileList-normal-arm64.txt (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    construct-stub-executor-link-file-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-ExecutorLinkFileList-normal-arm64.txt
+note: Using stub executor library with Swift entry point. (in target 'Postman' from project 'Postman')
+
+Ld /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman normal (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -O0 -L/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -F/Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman-ExecutorLinkFileList-normal-arm64.txt /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib -Xlinker -no_adhoc_codesign -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman
+
+LinkAssetCatalog /Users/ilapomazkov/Projects/postman_ios/Postman/Assets.xcassets (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-linkAssetCatalog --thinned /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/thinned --thinned-dependencies /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist_unthinned --output /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app --plist-output /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/AppIcon76x76@2x~ipad.png (in target 'Postman' from project 'Postman')
+note: Emplaced /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Assets.car (in target 'Postman' from project 'Postman')
+note: Emplaced /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/AppIcon60x60@2x.png (in target 'Postman' from project 'Postman')
+
+ProcessInfoPlistFile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Info.plist /Users/ilapomazkov/Projects/postman_ios/Postman/Info.plist (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-infoPlistUtility /Users/ilapomazkov/Projects/postman_ios/Postman/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Info.plist
+
+CopySwiftLibs /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-swiftStdLibTool --copy --verbose --sign 88198A5BBBA0FD25350642DF3D424D7B3CA9D160 --scan-executable /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib --scan-folder /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Frameworks --scan-folder /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/PlugIns --scan-folder /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/SystemExtensions --scan-folder /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Extensions --platform iphoneos --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
+
+ExtractAppIntentsMetadata (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Postman --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 17.0 --bundle-identifier com.example.postman --output /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app --target-triple arm64-apple-ios17.0 --binary-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman --dependency-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman_dependency_info.dat --stringsdata-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftFileList --metadata-file-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyMetadataFileList --static-metadata-file-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyStaticMetadataFileList --swift-const-vals-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Objects-normal/arm64/Postman.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-11-06 13:52:12.824 appintentsmetadataprocessor[49201:4056723] Starting appintentsmetadataprocessor export
+2026-11-06 13:52:12.842 appintentsmetadataprocessor[49201:4056723] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+AppIntentsSSUTraining (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Info.plist --temp-dir-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/ssu --bundle-id com.example.postman --product-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app --extracted-metadata-path /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Metadata.appintents --metadata-file-list /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.DependencyMetadataFileList --source-file /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Info.plist --archive-ssu-assets
+2026-11-06 13:52:12.932 appintentsnltrainingprocessor[49202:4056733] Parsing options for appintentsnltrainingprocessor
+2026-11-06 13:52:12.932 appintentsnltrainingprocessor[49202:4056733] Starting AppIntents SSU YAML Generation
+2026-11-06 13:52:12.945 appintentsnltrainingprocessor[49202:4056733] No AppShortcuts found - Skipping.
+
+CodeSign /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+    Signing Identity:     "Apple Development: Ilya Pomazkov (92C5X2J2ZN)"
+    Provisioning Profile: "iOS Team Provisioning Profile: com.example.postman"
+                          (37479a8d-6ca8-49e6-a36b-c59d7830b5c6)
+    
+    /usr/bin/codesign --force --sign 88198A5BBBA0FD25350642DF3D424D7B3CA9D160 --timestamp\=none --generate-entitlement-der /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/Postman.debug.dylib
+
+CodeSign /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/__preview.dylib (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+    Signing Identity:     "Apple Development: Ilya Pomazkov (92C5X2J2ZN)"
+    Provisioning Profile: "iOS Team Provisioning Profile: com.example.postman"
+                          (37479a8d-6ca8-49e6-a36b-c59d7830b5c6)
+    
+    /usr/bin/codesign --force --sign 88198A5BBBA0FD25350642DF3D424D7B3CA9D160 --timestamp\=none --generate-entitlement-der /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app/__preview.dylib
+
+CodeSign /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    
+    Signing Identity:     "Apple Development: Ilya Pomazkov (92C5X2J2ZN)"
+    Provisioning Profile: "iOS Team Provisioning Profile: com.example.postman"
+                          (37479a8d-6ca8-49e6-a36b-c59d7830b5c6)
+    
+    /usr/bin/codesign --force --sign 88198A5BBBA0FD25350642DF3D424D7B3CA9D160 --entitlements /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Intermediates.noindex/Postman.build/Debug-iphoneos/Postman.build/Postman.app.xcent --timestamp\=none --generate-entitlement-der /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app
+
+RegisterExecutionPolicyException /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-RegisterExecutionPolicyException /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app
+
+Validate /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    builtin-validationUtility /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app -shallow-bundle -infoplist-subpath Info.plist
+
+Touch /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app (in target 'Postman' from project 'Postman')
+    cd /Users/ilapomazkov/Projects/postman_ios
+    /usr/bin/touch -c /Users/ilapomazkov/Projects/postman_ios/build/T201u20261106/Build/Products/Debug-iphoneos/Postman.app
+
+** BUILD SUCCEEDED **
+
