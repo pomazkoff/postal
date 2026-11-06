@@ -58,7 +58,7 @@ struct BagScreen: View {
                 titleTag(m)
                 bag(m)
 
-                ArrowButton(title: mode == .sort ? "В путь" : "Закрыть", m: m) {
+                ArrowButton(title: mode == .sort ? L10n.text("bag.go") : L10n.text("bag.close"), m: m) {
                     if mode == .sort { engine.confirmSort(selected: selected) }
                     onClose()
                 }
@@ -87,9 +87,9 @@ struct BagScreen: View {
         let k = m.scale
         let line2: String
         if !item.takesSlot {
-            line2 = "в кармане"
+            line2 = L10n.text("bag.pocket")
         } else if dimmed {
-            line2 = "в сумке"
+            line2 = L10n.text("bag.inBag")
         } else {
             line2 = item.place
         }
@@ -113,9 +113,12 @@ struct BagScreen: View {
         let e = UIArt.entry("tag")
         let hole = e.anchor("hole")
         let k = m.scale
-        let line1 = mode == .sort ? "Что взять?" : "Сумка"
+        let line1 = mode == .sort ? L10n.text("bag.title.sort") : L10n.text("bag.title")
         let used = bagContents.count
-        let line2 = mode == .sort ? "в сумке \(engine.story.slots) места" : "занято \(used) из \(engine.story.slots)"
+        let slots = engine.story.slots
+        let line2 = mode == .sort
+            ? L10n.format("bag.slots", slots, Format.slots(slots))
+            : L10n.format("bag.used", used, slots)
         return ZStack {
             TagArt(line1: line1, line2: line2, k: k)
                 .pinned(size: CGSize(width: e.width * k, height: e.height * k),

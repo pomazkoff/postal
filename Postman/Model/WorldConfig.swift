@@ -161,8 +161,7 @@ enum WorldConfigLoader {
     static func load() -> WorldConfig {
         let url = assetsRoot.appendingPathComponent("Data/world.json")
         do {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode(WorldConfig.self, from: data)
+            return try JSONDecoder().decode(WorldConfig.self, from: ContentLocalizer.data(at: url, kind: .world))
         } catch {
             fatalError("Не удалось загрузить \(url.lastPathComponent): \(error)")
         }

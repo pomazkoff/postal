@@ -143,7 +143,7 @@ struct StoryCardView: View {
     @ViewBuilder
     private func delivery(_ m: FrameMapper) -> some View {
         let resident = engine.story.resident(card.resident)
-        SpeechPaper(m: m, title: placeName, subtitle: card.items.isEmpty ? "вручать нечего" : "вручение",
+        SpeechPaper(m: m, title: placeName, subtitle: card.items.isEmpty ? L10n.text("card.nothing") : L10n.text("card.delivery"),
                     lines: card.lines)
         ResidentFigure(resident: resident, m: m, assetsFolder: storyChapter.assetsFolder)
         if let first = card.items.first, let item = engine.story.item(first) {
@@ -153,13 +153,13 @@ struct StoryCardView: View {
                       at: CGPoint(x: 800, y: 1690), scale: 1.25, rotation: -14)
                 .allowsHitTesting(false)
             if card.items.count > 1 {
-                Text("+ ещё \(card.items.count - 1)")
+                Text(L10n.format("card.more", card.items.count - 1))
                     .font(Ink.label(m.length(36)))
                     .foregroundStyle(Ink.chalk)
                     .position(m.point(800, 1900))
             }
         }
-        ArrowButton(title: "Дальше", m: m, bottom: 2460, action: onDone)
+        ArrowButton(title: L10n.text("card.next"), m: m, bottom: 2460, action: onDone)
     }
 
     // MARK: Подбор
@@ -168,7 +168,7 @@ struct StoryCardView: View {
     private func pickup(_ m: FrameMapper) -> some View {
         let got = card.items.first
         let left = card.missed.first
-        SpeechPaper(m: m, title: placeName, subtitle: got != nil ? "новое письмо" : (left != nil ? "сумка полна" : nil),
+        SpeechPaper(m: m, title: placeName, subtitle: got != nil ? L10n.text("card.newLetter") : (left != nil ? L10n.text("card.bagFull") : nil),
                     lines: card.lines)
         if let resident = engine.story.resident(card.resident) {
             ResidentFigure(resident: resident, m: m, assetsFolder: storyChapter.assetsFolder, cx: 280)
@@ -178,7 +178,7 @@ struct StoryCardView: View {
                       scale: 1.5, rotation: got != nil ? -6 : 4)
                 .opacity(got != nil ? 1 : 0.55)
                 .allowsHitTesting(false)
-            TagArt(line1: item.to, line2: got != nil ? item.place : "осталось здесь", k: m.scale, scale: 0.9)
+            TagArt(line1: item.to, line2: got != nil ? item.place : L10n.text("card.leftHere"), k: m.scale, scale: 0.9)
                 .pinned(size: CGSize(width: UIArt.entry("tag").width * m.scale * 0.9,
                                      height: UIArt.entry("tag").height * m.scale * 0.9),
                         anchor: CGPoint(x: UIArt.entry("tag").anchor("hole").x * m.scale * 0.9,
@@ -186,7 +186,7 @@ struct StoryCardView: View {
                         at: m.point(card.resident == nil ? 420 : 660, 1990), rotation: 5)
                 .allowsHitTesting(false)
         }
-        ArrowButton(title: got != nil ? "В сумку" : "Дальше", m: m, bottom: 2460, action: onDone)
+        ArrowButton(title: got != nil ? L10n.text("card.toBag") : L10n.text("card.next"), m: m, bottom: 2460, action: onDone)
     }
 
     // MARK: Сцена
@@ -195,7 +195,7 @@ struct StoryCardView: View {
     private func scene(_ m: FrameMapper) -> some View {
         SpeechPaper(m: m, title: card.title ?? placeName, lines: card.lines, body_: card.text)
         ResidentFigure(resident: engine.story.resident(card.resident), m: m, assetsFolder: storyChapter.assetsFolder)
-        ArrowButton(title: card.id.hasPrefix("resident:") ? "Понятно" : "Дальше",
+        ArrowButton(title: card.id.hasPrefix("resident:") ? L10n.text("card.ok") : L10n.text("card.next"),
                     m: m, bottom: 2460, action: onDone)
     }
 
@@ -207,7 +207,7 @@ struct StoryCardView: View {
                     lines: chosen.map { [StoryConfig.Line(who: "", text: $0.result, if: nil)] } ?? [],
                     body_: card.text)
         if let chosen {
-            ArrowButton(title: "Дальше", m: m, bottom: 2460) {
+            ArrowButton(title: L10n.text("card.next"), m: m, bottom: 2460) {
                 engine.resolveChoice(card.id, option: chosen.id)
                 onDone()
             }
@@ -230,7 +230,7 @@ struct StoryCardView: View {
         let rot = index == 0 ? -5.0 : 4.0
         return ZStack {
             TagArt(line1: index == 0 ? "← \(option.label)" : "\(option.label) →",
-                   line2: option.id == defaultOptionID ? "если промолчишь — так" : "", k: k, scale: 1.1)
+                   line2: option.id == defaultOptionID ? L10n.text("card.ifQuiet") : "", k: k, scale: 1.1)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation(.easeInOut(duration: 0.25)) { chosen = option }
@@ -250,12 +250,14 @@ struct StoryCardView: View {
 
     @ViewBuilder
     private func finale(_ m: FrameMapper) -> some View {
-        SpeechPaper(m: m, title: placeName, subtitle: "20 000 шагов", lines: card.lines)
+        SpeechPaper(m: m, title: placeName,
+                    subtitle: L10n.format("card.finale.steps", Format.steps(20_000), Format.stepsWord(20_000)),
+                    lines: card.lines)
         if let l7 = engine.story.item(event?.receive ?? "l7") {
             PlacedArt(name: l7.art, m: m, at: CGPoint(x: 585, y: 1800), scale: 1.5, rotation: -4)
                 .allowsHitTesting(false)
         }
-        ArrowButton(title: "Прочитать", m: m, bottom: 2460, action: onDone)
+        ArrowButton(title: L10n.text("card.read"), m: m, bottom: 2460, action: onDone)
     }
 }
 
@@ -307,7 +309,7 @@ struct EndCardView: View {
                 }
                 .allowsHitTesting(false)
 
-                ArrowButton(title: "Закрыть", m: m, bottom: 2460, action: onClose)
+                ArrowButton(title: L10n.text("card.close"), m: m, bottom: 2460, action: onClose)
             }
         }
     }
@@ -328,7 +330,7 @@ struct EndCardView: View {
                                 .frame(width: m.length(trust > 0 ? 40 : 46), height: m.length(trust > 0 ? 46 : 52))
                         }
                     }
-                    Text(trust == 0 ? "доверие ровное" : (trust > 0 ? "доверие +\(trust)" : "доверие \(trust)"))
+                    Text(trust == 0 ? L10n.text("card.trust.even") : (trust > 0 ? L10n.format("card.trust.plus", trust) : L10n.format("card.trust.signed", trust)))
                         .font(Ink.label(m.length(28)))
                         .foregroundStyle(Ink.brown.opacity(0.6))
                 }

@@ -178,7 +178,7 @@ struct StoryConfig: Decodable {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/\(name)")
         if FileManager.default.fileExists(atPath: url.path) {
             do {
-                return try JSONDecoder().decode(StoryConfig.self, from: Data(contentsOf: url))
+                return try JSONDecoder().decode(StoryConfig.self, from: ContentLocalizer.data(at: url, kind: .story))
             } catch {
                 fatalError("Не удалось загрузить \(name): \(error)")
             }
@@ -201,7 +201,7 @@ struct ResidentLore: Decodable {
     private static let entries: [String: ResidentLore] = {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/resident_lore.json")
         do {
-            return try JSONDecoder().decode([String: ResidentLore].self, from: Data(contentsOf: url))
+            return try JSONDecoder().decode([String: ResidentLore].self, from: ContentLocalizer.data(at: url, kind: .lore))
         } catch {
             #if DEBUG
             print("ResidentLore: не удалось загрузить resident_lore.json: \(error)")
@@ -211,7 +211,7 @@ struct ResidentLore: Decodable {
     }()
 
     static func entry(for id: String, fallbackTitle: String) -> ResidentLore {
-        entries[id] ?? ResidentLore(title: fallbackTitle, lines: ["Пока без подробностей."])
+        entries[id] ?? ResidentLore(title: fallbackTitle, lines: [L10n.text("lore.empty")])
     }
 }
 

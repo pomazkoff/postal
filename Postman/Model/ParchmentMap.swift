@@ -56,7 +56,8 @@ struct ParchmentMap: Decodable {
 
     static let shared: ParchmentMap? = {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map.json")
-        guard let data = try? Data(contentsOf: url) else { return nil }
+        let data = ContentLocalizer.data(at: url, kind: .map)
+        guard !data.isEmpty else { return nil }
         return try? JSONDecoder().decode(ParchmentMap.self, from: data)
     }()
 

@@ -24,7 +24,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let def = event.default ?? event.options?.first?.id
             let actions = (event.options ?? []).prefix(2).map {
                 UNNotificationAction(identifier: Self.optionPrefix + $0.id,
-                                     title: $0.id == def ? "\($0.label) (если промолчишь — так)" : $0.label,
+                                     title: $0.id == def ? L10n.format("notify.ifQuiet", $0.label) : $0.label,
                                      options: [])
             }
             categories.insert(UNNotificationCategory(identifier: Self.choicePrefix + event.id,
@@ -54,8 +54,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     /// DEBUG: проверить, что разрешение и баннер реально работают (видно и при открытой игре).
     func postTest() {
         let content = UNMutableNotificationContent()
-        content.title = "Почтальон"
-        content.body = "Тестовый пуш. Если видишь это — уведомления доходят."
+        content.title = L10n.text("notify.test.title")
+        content.body = L10n.text("notify.test.body")
         content.sound = .default
         content.threadIdentifier = Self.thread
         content.userInfo = ["test": true]

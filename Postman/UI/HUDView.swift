@@ -168,7 +168,7 @@ struct HUDView: View {
             }
             .buttonStyle(PressStyle())
             .pinned(size: artSize("hud_bag", m), anchor: bodyCenter("hud_bag", m), at: m.point(190, 2330))
-            .accessibilityLabel("Сумка, \(count) \(Format.letters(count))")
+            .accessibilityLabel(L10n.format("bag.a11y", count, Format.letters(count)))
 
             Button { panel = .map } label: {
                 ArtView(name: "hud_map", k: m.scale)
@@ -176,7 +176,7 @@ struct HUDView: View {
             }
             .buttonStyle(PressStyle())
             .pinned(size: artSize("hud_map", m), anchor: bodyCenter("hud_map", m), at: m.point(990, 2330))
-            .accessibilityLabel("Карта")
+            .accessibilityLabel(L10n.text("hud.map"))
 
             // «К почтальону»: деревянная стрелка с головой героя у края экрана, куда он ушёл.
             // Только когда почтальон за кадром и поверх мира ничего не открыто.
@@ -202,7 +202,7 @@ struct HUDView: View {
         }
         .buttonStyle(PressStyle())
         .pinned(size: size, anchor: anchor, at: m.point(left ? 200 : 970, 1960), rotation: left ? 3 : -3)
-        .accessibilityLabel(left ? "Почтальон слева — вернуться к нему" : "Почтальон справа — вернуться к нему")
+        .accessibilityLabel(left ? L10n.text("hud.postman.left") : L10n.text("hud.postman.right"))
     }
 
     private func openBag() {

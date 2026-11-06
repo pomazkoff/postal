@@ -26,9 +26,9 @@ final class ChapterEngine: ObservableObject {
 
         var title: String {
             switch self {
-            case .notifyThenAuto: return "пуш, потом сам"
-            case .auto: return "почтальон сам"
-            case .wait: return "ждать игрока"
+            case .notifyThenAuto: return L10n.text("engine.mode.notify")
+            case .auto: return L10n.text("engine.mode.auto")
+            case .wait: return L10n.text("engine.mode.wait")
             }
         }
     }
@@ -243,7 +243,8 @@ final class ChapterEngine: ObservableObject {
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "ru_RU")
+        // Штемпель почты Долины: день.месяц.год и на русском, и на английском.
+        f.locale = Locale(identifier: "en_US_POSIX")
         f.dateFormat = "dd.MM.yy"
         return f
     }()
@@ -368,7 +369,9 @@ final class ChapterEngine: ObservableObject {
                 }
             }
             let names = given.compactMap { story.item($0) }.map(describe)
-            let text = names.isEmpty ? "Вручать было нечего." : "Вручено — \(names.joined(separator: ", "))."
+            let text = names.isEmpty
+                ? L10n.text("engine.deliver.none")
+                : L10n.format("engine.deliver.some", names.joined(separator: ", "))
             log(LogEntry(step: event.step, text: text, kind: "delivery", place: place,
                          title: story.resident(event.resident)?.name))
             enqueue(card(for: event, kind: .delivery, items: given, missed: missed))
@@ -382,15 +385,15 @@ final class ChapterEngine: ObservableObject {
                     state.items[id] = .inBag
                     state.carried.insert(id)
                     got.append(id)
-                    log(LogEntry(step: event.step, text: "Взято — \(describe(item)).", kind: "pickup", place: place))
+                    log(LogEntry(step: event.step, text: L10n.format("engine.pickup.took", describe(item)), kind: "pickup", place: place))
                 } else {
                     state.items[id] = .leftBehind
                     left.append(id)
-                    log(LogEntry(step: event.step, text: "Сумка полна, \(describe(item)) осталось.", kind: "pickup", place: place))
+                    log(LogEntry(step: event.step, text: L10n.format("engine.pickup.full", describe(item)), kind: "pickup", place: place))
                 }
             }
             enqueue(card(for: event, kind: .pickup, items: got, missed: left))
-            beat(id: event.id, title: place, body: pushLine(event) ?? "\(place). Конверт на палке у дороги.")
+            beat(id: event.id, title: place, body: pushLine(event) ?? L10n.format("engine.pickup.push", place))
 
         case .scene:
             for flag in event.flags ?? [] { state.flags.insert(flag) }
@@ -420,9 +423,9 @@ final class ChapterEngine: ObservableObject {
                 state.kseniaReadDate = Date()
             }
             state.finished = true
-            log(LogEntry(step: event.step, text: "Выемка. Письмо «Почтальону».", kind: "finale", place: place))
+            log(LogEntry(step: event.step, text: L10n.text("engine.finale.log"), kind: "finale", place: place))
             enqueue(card(for: event, kind: .finale, items: sent, missed: []))
-            beat(id: event.id, title: place, body: pushLine(event) ?? "\(place). В ящике письмо «Почтальону».")
+            beat(id: event.id, title: place, body: pushLine(event) ?? L10n.format("engine.finale.push", place))
 
         case .sort, .choice:
             break
@@ -438,9 +441,9 @@ final class ChapterEngine: ObservableObject {
 
     private func describe(_ item: StoryConfig.Item) -> String {
         switch item.kind {
-        case "parcel": return "батарейки (\(item.place))"
-        case "form": return "бланк Веры"
-        default: return "письмо \(item.to)"
+        case "parcel": return L10n.format("engine.item.parcel", item.place)
+        case "form": return L10n.text("engine.item.form")
+        default: return L10n.format("engine.item.letter", item.to)
         }
     }
 
@@ -489,11 +492,13 @@ final class ChapterEngine: ObservableObject {
         state.sortingDone = true
         setChooser("sort", chooser)
         let taken = bagItems.map(describe)
-        let text = taken.isEmpty ? "Сумка ушла пустой." : "В сумке — \(taken.joined(separator: ", "))."
+        let text = taken.isEmpty
+            ? L10n.text("engine.sort.empty")
+            : L10n.format("engine.sort.some", taken.joined(separator: ", "))
         let place = settlementName("pochta")
-        log(LogEntry(step: 0, text: text, kind: "sort", place: place, title: "Утренний разбор", by: chooser.rawValue))
+        log(LogEntry(step: 0, text: text, kind: "sort", place: place, title: L10n.text("engine.sort.title"), by: chooser.rawValue))
         if chooser == .postman {
-            beat(id: "sort", title: place, body: story.sortAuto ?? "Почтальон сам собрал сумку и вышел.")
+            beat(id: "sort", title: place, body: story.sortAuto ?? L10n.text("engine.sort.auto"))
         }
     }
 
@@ -572,7 +577,7 @@ final class ChapterEngine: ObservableObject {
                      title: event.title, by: chooser.rawValue))
         if chooser == .postman {
             // Игрок не ответил: показываем, как решил почтальон (карточка-сцена) и сообщаем пушем.
-            let line = option.auto ?? "Почтальон решил сам: \(option.label.lowercased())."
+            let line = option.auto ?? L10n.format("engine.choice.auto", option.label.lowercased())
             enqueue(StoryCard(id: event.id, kind: .scene, step: event.step, settlement: event.settlement,
                               resident: event.resident, title: event.title,
                               text: line + " " + option.result, lines: [], items: [], missed: []))
@@ -594,7 +599,7 @@ final class ChapterEngine: ObservableObject {
               status(id) == .inBag else { return }
         state.opened.insert(id)
         addTrust(item.settlement, -1)
-        log(LogEntry(step: currentStep, text: "Вскрыто: \(describe(item)). На печати — второй отпечаток.",
+        log(LogEntry(step: currentStep, text: L10n.format("engine.opened", describe(item)),
                      kind: "opened", by: Chooser.player.rawValue))
         commit()
     }

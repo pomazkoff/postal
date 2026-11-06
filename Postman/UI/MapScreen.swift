@@ -39,7 +39,7 @@ struct MapScreen: View {
                             .onTapGesture(count: 2) { toggleZoom(map: map, road: road, m: m, size: geo.size) }
                         chrome(map, m: m)
                     } else {
-                        Text("Карта не найдена").foregroundStyle(Ink.chalk)
+                        Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
@@ -98,10 +98,10 @@ struct MapScreen: View {
                 .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
                 .position(m.point(feet.x + 4, feet.y + 14 - map.postman.h / 2))
 
-            tag("Вы здесь", Format.steps(step) + " ш.", at: layout.postmanTag, dim: false, rotation: 5, m: m)
+            tag(L10n.text("map.you"), Format.steps(step) + " " + L10n.text("abbr.steps"), at: layout.postmanTag, dim: false, rotation: 5, m: m)
             ForEach(map.settlements, id: \.id) { place in
                 if let c = layout.tags[place.id] {
-                    tag(place.name, place.step == 0 ? "старт" : Format.steps(place.step) + " ш.", at: c,
+                    tag(place.name, place.step == 0 ? L10n.text("map.start") : Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
                         dim: place.step > step && place.id != next?.id,
                         rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
                 }
@@ -166,11 +166,11 @@ struct MapScreen: View {
     private func chrome(_ map: ParchmentMap, m: FrameMapper) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
-            Text("Долина")
+            Text(L10n.text("map.region"))
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
                 .position(x: 310 * f, y: 150 * f)
-            Text("глава \(game.chapter.id) · день \(dayNumber)")
+            Text(L10n.format("map.chapterDay", game.chapter.id, dayNumber))
                 .font(Ink.label(40 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.6)
@@ -191,7 +191,7 @@ struct MapScreen: View {
             Image(uiImage: HUDImages.image(map.compass.image)).resizable()
                 .frame(width: map.compass.w * k, height: map.compass.h * k)
                 .shadow(color: .black.opacity(0.3), radius: 6 * k, x: 8 * k, y: 10 * k)
-            Text("С")
+            Text(L10n.text("map.north"))
                 .font(Ink.title(46 * k))
                 .foregroundStyle(Ink.brown)
                 .offset(y: -(map.compass.h / 2 + 26) * k)
@@ -201,13 +201,13 @@ struct MapScreen: View {
 
         let total = game.chapter.lengthSteps
         PlacedArt(name: "tag", m: m, at: CGPoint(x: 300, y: 2380), scale: 420 / 437, rotation: 3) { e, f in
-            Text("\(Format.steps(min(step, total))) из \(Format.steps(total))")
+            Text(L10n.format("map.stepsOf", Format.steps(min(step, total)), Format.steps(total)))
                 .font(Ink.title(46 * f))
                 .foregroundStyle(Ink.brown)
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .frame(width: 270 * f)
                 .position(x: 225 * f, y: 80 * f)
-            Text("шагов · день \(dayNumber)")
+            Text(L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber))
                 .font(Ink.label(36 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.5)
@@ -217,9 +217,9 @@ struct MapScreen: View {
         .allowsHitTesting(false)
 
         if engine.isFinished {
-            ArrowButton(title: "Итоги", m: m, right: 600, bottom: 2250, flip: true, action: onShowEndCard)
+            ArrowButton(title: L10n.text("map.totals"), m: m, right: 600, bottom: 2250, flip: true, action: onShowEndCard)
         }
-        ArrowButton(title: "Закрыть", m: m, bottom: 2470, action: onClose)
+        ArrowButton(title: L10n.text("map.close"), m: m, bottom: 2470, action: onClose)
     }
 
     /// День пути: с полуночи дня старта игры.

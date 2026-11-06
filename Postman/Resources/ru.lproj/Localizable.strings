@@ -1,0 +1,169 @@
+/* Те же строки, что были в интерфейсе. Русский текст не переписан. */
+
+"app.name" = "Почтальон";
+
+"onboarding.subtitle" = "письмо в Долину";
+"onboarding.page" = "Страница %lld из %lld";
+"onboarding.swipe" = "листай дальше →";
+"onboarding.permissionsLater" = "доступ можно изменить позже в настройках";
+"onboarding.card0.title" = "Долина опустела";
+"onboarding.card0.body" = "Ты — последний почтальон. Письма — единственная нитка между оставшимися жителями пластилиновой Долины. Впереди дорога: от Почты через Сваи, Звонарню и Кадушки до Седла.";
+"onboarding.card1.title" = "Шаги — это путь";
+"onboarding.card1.body" = "Клади телефон в карман и иди. Каждый реальный шаг двигает почтальона по дороге. Глава первая — около 20 тысяч шагов; вся игра — около 150 тысяч.";
+"onboarding.card2.title" = "Пока ты гуляешь";
+"onboarding.card2.body" = "История не ждёт у экрана. Почтальон доходит до остановок сам. Тебе приходят тихие уведомления: кто встретился, что случилось, какое письмо вручили.";
+"onboarding.card3.title" = "Вернёшься — прочитаешь";
+"onboarding.card3.body" = "В журнале — карточки мест и жителей: что случилось без тебя. Иногда на развилке выбираешь ты — и сюжет повернёт.";
+"onboarding.card4.title" = "Чтобы он шёл с тобой";
+"onboarding.card4.body" = "Нужен доступ к шагам из «Здоровья» и уведомлениям об остановках. Шаги только читаем, ничего не записываем. Погоду подстроим под твою: система может спросить геолокацию; без неё будет сезонная.";
+"onboarding.card4.body.fake" = "На симуляторе HealthKit недоступен — шаги добавляются кнопкой «+500». На устройстве игра попросит чтение шагов и уведомления; геолокацию для погоды — мягко, от неё можно отказаться.";
+"onboarding.perm.steps.fake" = "Шаги: тестовый режим";
+"onboarding.perm.steps" = "Шаги из «Здоровья»";
+"onboarding.perm.notes" = "Уведомления об остановках";
+"onboarding.perm.location" = "Геолокация для погоды — по желанию";
+"onboarding.start" = "Начать";
+"onboarding.start.permissions" = "Разрешить и начать";
+"onboarding.start.hint" = "Запросит доступ к шагам, уведомлениям и при необходимости геолокации";
+
+"bag.go" = "В путь";
+"bag.close" = "Закрыть";
+"bag.pocket" = "в кармане";
+"bag.inBag" = "в сумке";
+"bag.title.sort" = "Что взять?";
+"bag.title" = "Сумка";
+"bag.slots" = "в сумке %lld %@";
+"bag.used" = "занято %lld из %lld";
+"bag.a11y" = "Сумка, %lld %@";
+
+"hud.map" = "Карта";
+"hud.postman.left" = "Почтальон слева — вернуться к нему";
+"hud.postman.right" = "Почтальон справа — вернуться к нему";
+
+"journal.empty" = "Пока ничего не случилось";
+"journal.go" = "В путь";
+"journal.title" = "Вот как развивалась история";
+"journal.by.postman" = "выбрал почтальон";
+"journal.by.player" = "выбрали вы";
+
+"letter.outside" = "снаружи, под бечёвкой";
+"letter.inside" = "внутри";
+"letter.note" = "записка в ящике";
+"letter.open.title" = "Вскрыть письмо «лично»?";
+"letter.open" = "Вскрыть";
+"letter.leave" = "Не трогать";
+"letter.open.message" = "Печать — оттиск пальца в воске. Если вскрыть и заклеить, отпечатков станет два.";
+"letter.next" = "дальше →";
+"letter.start" = "← в начало";
+"letter.seal.line1" = "вскрыть";
+"letter.seal.line2" = "печать";
+"letter.seal.a11y" = "Вскрыть печать";
+"letter.bag" = "в сумку";
+"letter.bag.a11y" = "Убрать в сумку";
+
+"map.missing" = "Карта не найдена";
+"map.you" = "Вы здесь";
+"map.start" = "старт";
+"map.region" = "Долина";
+"map.chapterDay" = "глава %lld · день %lld";
+"map.north" = "С";
+"map.stepsOf" = "%@ из %@";
+"map.totals" = "Итоги";
+"map.close" = "Закрыть";
+"map.day" = "день %lld";
+
+"card.nothing" = "вручать нечего";
+"card.delivery" = "вручение";
+"card.more" = "+ ещё %lld";
+"card.next" = "Дальше";
+"card.newLetter" = "новое письмо";
+"card.bagFull" = "сумка полна";
+"card.leftHere" = "осталось здесь";
+"card.toBag" = "В сумку";
+"card.ok" = "Понятно";
+"card.ifQuiet" = "если промолчишь — так";
+"card.read" = "Прочитать";
+"card.close" = "Закрыть";
+"card.trust.even" = "доверие ровное";
+"card.trust.plus" = "доверие +%lld";
+"card.trust.signed" = "доверие %lld";
+"card.finale.steps" = "%@ %@";
+
+"watch.today" = "сегодня";
+"watch.total" = "всего";
+"watch.a11y.today" = "Шагов сегодня %@";
+"watch.a11y.expanded" = "Шагов сегодня %@, всего %@";
+"watch.hint.collapse" = "Нажмите, чтобы свернуть часы";
+"watch.hint.expand" = "Нажмите, чтобы раскрыть часы";
+
+"reset.title" = "Сбросить историю?";
+"reset.confirm" = "Сбросить";
+"reset.cancel" = "Отмена";
+"reset.message" = "Письма, выборы, события и журнал начнутся заново. Шаги будут считаться с этой минуты, уведомления удалятся. Снова откроется обучение.";
+
+"telegram.title" = "ТЕЛЕГРАММА";
+"telegram.a11y" = "Телеграмма: %@";
+"distance.to" = "до %@";
+"distance.done.place" = "Седло";
+"distance.done.tail" = "пройдена";
+
+"notify.ifQuiet" = "%@ (если промолчишь — так)";
+"notify.test.title" = "Почтальон";
+"notify.test.body" = "Тестовый пуш. Если видишь это — уведомления доходят.";
+
+"engine.mode.notify" = "пуш, потом сам";
+"engine.mode.auto" = "почтальон сам";
+"engine.mode.wait" = "ждать игрока";
+"engine.deliver.none" = "Вручать было нечего.";
+"engine.deliver.some" = "Вручено — %@.";
+"engine.pickup.took" = "Взято — %@.";
+"engine.pickup.full" = "Сумка полна, %@ осталось.";
+"engine.pickup.push" = "%@. Конверт на палке у дороги.";
+"engine.finale.log" = "Выемка. Письмо «Почтальону».";
+"engine.finale.push" = "%@. В ящике письмо «Почтальону».";
+"engine.item.parcel" = "батарейки (%@)";
+"engine.item.form" = "бланк Веры";
+"engine.item.letter" = "письмо %@";
+"engine.sort.empty" = "Сумка ушла пустой.";
+"engine.sort.some" = "В сумке — %@.";
+"engine.sort.title" = "Утренний разбор";
+"engine.sort.auto" = "Почтальон сам собрал сумку и вышел.";
+"engine.choice.auto" = "Почтальон решил сам: %@.";
+"engine.opened" = "Вскрыто: %@. На печати — второй отпечаток.";
+
+"lore.empty" = "Пока без подробностей.";
+
+"steps.mode.fake" = "Тестовые шаги";
+"steps.mode.health" = "HealthKit";
+
+"weather.clear" = "ясно";
+"weather.rain" = "дождь";
+"weather.snow" = "снег";
+"weather.fog" = "туман";
+"weather.source.season" = "по сезону";
+
+"debug.status" = "Гл.%lld %@\nСегодня %lld, всего %lld";
+"debug.error" = "Ошибка: %@";
+"debug.hour.clock" = "по часам";
+"debug.hour.shift" = "+%lld ч";
+"debug.weather.auto" = "авто (%@, %@)";
+"debug.plus500" = "+500 шагов";
+"debug.menu" = "Отладка";
+"debug.plus5000" = "+5 000 шагов";
+"debug.time" = "Время суток +3 ч (сейчас %@)";
+"debug.weather" = "Погода: %@ → дальше";
+"debug.read.on" = "вкл";
+"debug.read.off" = "выкл";
+"debug.read" = "Читаемость героев: %@ → переключить";
+"debug.choice" = "Выборы без игрока: %@ → дальше";
+"debug.source" = "Источник: %@";
+"debug.push" = "Тестовый пуш";
+"debug.force.on" = "Глава: Горы (сброс форса)";
+"debug.force.off" = "Форс глава 2 «Горы»";
+"debug.reset" = "Сбросить историю…";
+"debug.cancel" = "Отмена";
+
+"abbr.steps" = "ш.";
+
+"baked.att_label" = "На картинке: «Килька в томате», Ольховский консервный завод.";
+"baked.att_drawing" = "На чертеже помета: 14 м.";
+"baked.sheet_telegram" = "На бланке уже написано: телеграмма.";
