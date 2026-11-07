@@ -231,29 +231,37 @@ if "allowsPosting" not in post_beat:
 
 game = (ROOT / "Postman/App/GameModel.swift").read_text(encoding="utf-8")
 onboarding_fn = game.split("func completeOnboarding", 1)[1].split("func appBecameActive", 1)[0]
-if "notifier.requestAuthorization" in onboarding_fn:
-    fail("onboarding must not request notification permission")
+if onboarding_fn.count("notifier.requestAuthorization") != 1:
+    fail("the final onboarding button must ask for notifications once")
 if "steps.requestAuthorization()" not in onboarding_fn or "askPermission: true" not in onboarding_fn:
     fail("onboarding must still ask for steps, then location")
-if "refreshAuthorizationStatus" not in onboarding_fn:
-    fail("onboarding must read notification status without asking")
 active_fn = game.split("func appBecameActive", 1)[1].split("func appWentToBackground", 1)[0]
 if "requestAuthorization" in active_fn:
-    fail("returning to the app must not request notification permission")
+    fail("returning to the app must not request notification permission again")
+if "refreshAuthorizationStatus" not in active_fn:
+    fail("returning to the app must refresh the real notification status")
 if "askPermission: true" not in active_fn:
     fail("location on resume must stay")
 delegate = (ROOT / "Postman/App/AppDelegate.swift").read_text(encoding="utf-8")
 if "requestAuthorization" in delegate:
     fail("startup must not request notification permission")
+if "refreshAuthorizationStatus" not in delegate:
+    fail("startup must read notification status without asking")
+onboard_view = (ROOT / "Postman/UI/OnboardingView.swift").read_text(encoding="utf-8")
+if onboard_view.count("completeOnboarding") != 1:
+    fail("onboarding must reach the notification prompt only from the final button")
+start_game = onboard_view.split("func startGame", 1)[1].split("private struct OnboardCard", 1)[0]
+if "completeOnboarding" not in start_game:
+    fail("the notification prompt must stay on the explicit start button")
 prompt_calls = []
 for path in (ROOT / "Postman").rglob("*.swift"):
     for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        if "notifier.requestAuthorization" in line:
-            prompt_calls.append(f"{path.relative_to(ROOT)}:{lineno}")
+        if "notifier.requestAuthorization" in line and "func requestAuthorization" not in line:
+            prompt_calls.append(str(path.relative_to(ROOT)))
         if "requestAuthorization(options:" in line and path.name != "Notifier.swift":
             fail(f"notification prompt outside Notifier.swift: {path.name}:{lineno}")
-if len(prompt_calls) != 1 or not prompt_calls[0].startswith("Postman/UI/GameMenuView.swift:"):
-    fail(f"notification prompt must be only the menu switch, got {prompt_calls}")
+if sorted(prompt_calls) != ["Postman/App/GameModel.swift", "Postman/UI/GameMenuView.swift"]:
+    fail(f"notification prompt must be onboarding plus the menu switch, got {prompt_calls}")
 request_case = menu.split("case .request:", 1)[1].split("case .openSettings:", 1)[0]
 if "notifier.requestAuthorization" not in request_case:
     fail("the menu's explicit on is no longer the prompt")
@@ -289,11 +297,11 @@ for blob, label in ((en, "en"), (ru, "ru")):
     if re.search(r"chapter 3|chapter three|глав[аы] 3|APNs|remote push|пуш-сервер", blob, re.I):
         fail(f"{label} menu copy promises something the game does not have")
     hint = catalog_value(blob, "onboarding.start.hint").lower()
-    if "notification" in hint or "уведомлен" in hint:
-        fail(f"{label} start button still promises a notification prompt")
-    notes = catalog_value(blob, "onboarding.perm.notes").lower()
-    if "menu" not in notes and "меню" not in notes:
-        fail(f"{label} onboarding still lists notifications as a start permission")
+    if "notification" not in hint and "уведомлен" not in hint:
+        fail(f"{label} start button must say it asks for notifications")
+    notes = catalog_value(blob, "onboarding.perm.notes")
+    if notes not in ("Notifications at the stops", "Уведомления об остановках"):
+        fail(f"{label} onboarding permission line changed: {notes!r}")
 if "Ты — последний почтальон." not in ru:
     fail("Russian onboarding copy was rewritten")
 

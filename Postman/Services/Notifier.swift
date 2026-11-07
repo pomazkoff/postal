@@ -16,7 +16,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     /// nil, пока настройки iOS ни разу не читали. Чтение не показывает запрос.
     private(set) var knownAuth: ReminderSwitch.Auth?
 
-    /// Единственный показ системного запроса. Вызывать только из явного включения в меню.
+    /// Системный запрос. Его вызывают финальная кнопка онбординга и включение напоминаний
+    /// в меню, пока iOS ещё не спрашивали. После ответа системы повторный вызов диалог не
+    /// показывает. Старт и возврат в игру этот метод не вызывают.
     func requestAuthorization() async -> Bool {
         let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
         await refreshAuthorizationStatus()

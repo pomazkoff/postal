@@ -197,9 +197,9 @@ final class GameModel: ObservableObject {
 
     func completeOnboarding() async {
         await steps.requestAuthorization()
-        // Разрешение на уведомления здесь не спрашиваем: только меню, когда игрок сам включит
-        // напоминания. Статус читаем заранее, чтобы первые остановки не встали в очередь.
-        await AppCore.shared.notifier.refreshAuthorizationStatus()
+        // Явная финальная кнопка онбординга. Повторно со старта и при возврате в игру не спрашиваем:
+        // там только чтение статуса. Если iOS ещё не спрашивали, включение в меню спросит само.
+        _ = await AppCore.shared.notifier.requestAuthorization()
         if progress.gameStartDate == nil { progress.gameStartDate = Date() }
         progress.onboardingDone = true
         onboardingDone = true
