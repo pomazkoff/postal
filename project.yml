@@ -51,6 +51,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: Postman/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: "$(APP_DISPLAY_NAME)"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.games
         INFOPLIST_KEY_NSHealthShareUsageDescription: "The postman walks when you do. The game reads your step count from Health so it can move him along the road. The data stays on this device."
         INFOPLIST_KEY_NSHealthUpdateUsageDescription: "The game does not write anything to Health."

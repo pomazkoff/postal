@@ -176,6 +176,7 @@ target_common = {
     "GENERATE_INFOPLIST_FILE": "YES",
     "INFOPLIST_FILE": "Postman/Info.plist",
     "INFOPLIST_KEY_CFBundleDisplayName": "$(APP_DISPLAY_NAME)",
+    "INFOPLIST_KEY_ITSAppUsesNonExemptEncryption": "NO",
     "INFOPLIST_KEY_LSApplicationCategoryType": "public.app-category.games",
     "INFOPLIST_KEY_NSHealthShareUsageDescription": HEALTH_SHARE,
     "INFOPLIST_KEY_NSHealthUpdateUsageDescription": HEALTH_UPDATE,
