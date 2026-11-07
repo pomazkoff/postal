@@ -237,9 +237,13 @@ final class AppCore {
         guard progress.onboardingDone, !backgroundObservationStarted else { return }
         backgroundObservationStarted = true
         steps.startBackgroundDelivery { @Sendable completion in
+            // completion() обязателен: иначе iOS перестаёт будить приложение новыми шагами.
+            // beginBackgroundTask — до прыжка на main, чтобы свёрнутый процесс успел дочитать шаги и поставить баннер.
+            let wake = BackgroundWake(completion: completion)
+            wake.begin(name: "postman.hk-wake")
             Task { @MainActor in
                 await AppCore.shared.backgroundRefresh()
-                completion()
+                wake.finish()
             }
         }
     }
@@ -254,8 +258,14 @@ final class AppCore {
     func appDidEnterBackground() {
         scheduleRefresh()
         flushDeferredChoicePushes()
-        // На случай, если шаги уже накопились, а HealthKit ещё не разбудил: догоняем сюжет.
-        Task { await backgroundRefresh() }
+        // Шаги, которые уже есть в Здоровье на момент сворачивания. Без background task
+        // iOS обрывает этот запрос, и остановка не ставится.
+        let wake = BackgroundWake(completion: nil)
+        wake.begin(name: "postman.step-catchup")
+        Task {
+            await backgroundRefresh()
+            wake.finish()
+        }
     }
 
     /// Неотвеченные выборы, которые игрок видел в приложении и ушёл — пуш с кнопками на локскрин.
@@ -273,5 +283,45 @@ final class AppCore {
             let body = card.text ?? title
             postBeat(ChapterEngine.Beat(id: card.id, title: title, body: body, choiceEventID: card.id))
         }
+    }
+}
+
+/// Дожить до конца фонового чтения шагов и ровно один раз закрыть задачу iOS.
+private final class BackgroundWake: @unchecked Sendable {
+    private let lock = NSLock()
+    private var finished = false
+    private var task = UIBackgroundTaskIdentifier.invalid
+    private let completion: (() -> Void)?
+
+    init(completion: (() -> Void)?) {
+        self.completion = completion
+    }
+
+    func begin(name: String) {
+        let app = UIApplication.shared
+        let id = app.beginBackgroundTask(withName: name) { [weak self] in
+            self?.finish()
+        }
+        lock.lock()
+        if finished {
+            lock.unlock()
+            if id != .invalid { app.endBackgroundTask(id) }
+            return
+        }
+        task = id
+        lock.unlock()
+    }
+
+    func finish() {
+        let app = UIApplication.shared
+        lock.lock()
+        guard !finished else { lock.unlock(); return }
+        finished = true
+        let id = task
+        task = .invalid
+        let completion = self.completion
+        lock.unlock()
+        completion?()
+        if id != .invalid { app.endBackgroundTask(id) }
     }
 }

@@ -223,6 +223,7 @@ final class GameModel: ObservableObject {
         progress.displayedSteps = scene.displayedStep
         engine.liveViewing = false
         if steps.hasLoaded && journal == nil { engine.markSeen(chapterSteps) }
+        // Таймер экрана гаснет. Фоновый наблюдатель HealthKit этим не снимается.
         steps.stop()
         AppCore.shared.appDidEnterBackground()
     }
