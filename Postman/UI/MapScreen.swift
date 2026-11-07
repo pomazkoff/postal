@@ -411,7 +411,7 @@ struct HeroNote: View {
     var body: some View {
         FrameScreen(dim: 0.45) { m in
             ZStack {
-                Color.clear.contentShape(Rectangle()).onTapGesture(onClose)
+                Color.clear.contentShape(Rectangle()).onTapGesture(perform: onClose)
                 VStack(alignment: .leading, spacing: m.length(16)) {
                     Image(uiImage: HUDImages.image("UI/map/postman"))
                         .resizable()

@@ -107,35 +107,35 @@
       "title": "Kuzma Yerofeyevich Us",
       "lines": [
         "Elder of the Stilts. A fisherman. Mitya's grandfather.",
-        "Writes on fish wrapping. Short: bream, water, send the jar back."
+        "Kuzma writes short letters on fish wrapping, about bream and water, asking for the jar back."
       ]
     },
     "mitya": {
       "title": "Mitya Us",
       "lines": [
         "Eleven. Lives with his grandfather Kuzma at the Stilts.",
-        "He's building a receiver. He wants to catch even one voice. Diagrams in the margins of letters. Over."
+        "He's building a receiver and wants to pick up at least one voice. His letters have diagrams in the margins. Over."
       ]
     },
     "pimen": {
       "title": "Father Pimen",
       "lines": [
         "Bell-ringer of the Belfry. He used to be a telegraph operator.",
-        "He writes on scraps of telegraph tape. Where a period would be — STOP. The habit stayed."
+        "He writes on scraps of telegraph tape and uses STOP instead of a full stop. The habit has stayed with him."
       ]
     },
     "nina": {
       "title": "Nina Arkadyevna Kolobova",
       "lines": [
         "Lives at the Tubs. Waiting for her son Timofey.",
-        "She dictates letters to Mitya: cucumbers, socks, are you eating something hot. Off the road, she feeds you first."
+        "Nina dictates letters to Mitya about cucumbers and socks, and she asks, “Are you eating something hot?” Off the road, she feeds you first."
       ]
     },
     "vera": {
       "title": "Vera Ignatyevna Pasechnik",
       "lines": [
         "Lives at the Radioshadow Institute. People bring her things to fix.",
-        "She writes in numbered points, in TM pencil. At the end — about the goats."
+        "She writes point by point with a TM pencil and mentions the goats at the end."
       ]
     },
     "agnia": {
@@ -226,7 +226,7 @@
       "title": "Sawyer",
       "lines": [
         "A sawyer on the mountain road.",
-        "Further on is the Stumps logging site, stacks, and stump houses."
+        "Further on is the Stumps logging site, with stacks and stump houses."
       ]
     },
     "brigadir": {
@@ -1027,7 +1027,7 @@
             },
             {
               "who": "",
-              "text": "The box at the Saddle: the envelope is there, and there's no room in the bag."
+              "text": "There's an envelope in the box at the Saddle, but there's no room for it in the bag."
             }
           ],
           "push": [
@@ -1039,7 +1039,7 @@
         },
         "p_l2": {
           "title": "Institute box · scroll",
-          "text": "In the box at the Institute (scroll back) — a small parcel from Vera to Mitya. A 0.25 A fuse.",
+          "text": "If you scroll back, there's a small parcel from Vera to Mitya in the box at the Institute — a 0.25 A fuse.",
           "lines": [
             {
               "who": "",
@@ -1053,11 +1053,11 @@
         },
         "e_animal_raven": {
           "title": "The raven at the collection",
-          "text": "A raven is pecking the iron box. He stops — he's looking at the shiny button on the postman.",
+          "text": "A raven has stopped pecking at the iron box and is now looking at the postman's shiny button.",
           "options": {
             "trade": {
               "label": "Leave the shiny button",
-              "result": "The raven carried the button past the barrier. He came back with a scrap of orange cloth, put it on the box, and sat beside it. He knows the postman now.",
+              "result": "The raven carried the button past the barrier and came back with a scrap of orange cloth. He put it on the box and sat down beside it. Now he recognizes the postman.",
               "auto": "The postman left the raven a spare shiny button."
             },
             "leave": {
@@ -1068,7 +1068,7 @@
         },
         "s_nii_drop": {
           "title": "The box “for down below”",
-          "text": "Mail only goes down with Vera. Timofey's letter goes in the Institute box; she'll take it on Thursday.",
+          "text": "Mail only goes down with Vera. Timofey's letter has to be left in the Institute box, and she'll collect it on Thursday.",
           "lines": [
             {
               "who": "",
@@ -1076,13 +1076,13 @@
             },
             {
               "who": "",
-              "text": "Timofey's letter is still in the bag. It won't reach Nina if it misses the Institute box."
+              "text": "Timofey's letter is still in the bag. Unless it's left in the Institute box, it won't reach Nina."
             }
           ]
         },
         "e_windfall": {
           "title": "Windfall",
-          "text": "The Paws fir wood. A trunk lies across the road. Fir boughs like sleeves.",
+          "text": "In the Paws fir wood, the fir boughs look like sleeves. A trunk lies across the road.",
           "options": {
             "climb": {
               "label": "Climb over",
@@ -1091,7 +1091,7 @@
             },
             "around": {
               "label": "Go around",
-              "result": "He went around by a gap. It came out about four hundred steps longer."
+              "result": "He went around the trunk through a gap. The route was about four hundred steps longer."
             }
           },
           "push": [
@@ -1103,7 +1103,7 @@
         },
         "arrive_gar": {
           "title": "Burn Cordon",
-          "text": "A hut, a well. Two mugs on the table, the second one wobbles. The ranger is mending the gate.",
+          "text": "There's a hut and a well here. Two mugs stand on the table; the second one is wobbling. The ranger is mending the gate.",
           "lines": [
             {
               "who": "Ranger",
@@ -1139,7 +1139,7 @@
         },
         "arrive_penki": {
           "title": "Stumps logging site",
-          "text": "Stump houses, stacks, a tractor with no wheels. Smoke from a fire. You sleep “wherever the day caught you.”",
+          "text": "There are stump houses, stacks and a tractor with no wheels here. Smoke rises from a fire. The night's lodging is “wherever the day caught you.”",
           "lines": [
             {
               "who": "Foreman",
@@ -1167,7 +1167,7 @@
           "options": {
             "throw": {
               "label": "Throw the stick",
-              "result": "The dog bolted, but he didn't bring the stick back. He looked around and called toward the sawdust: something is buried there.",
+              "result": "The dog bolted, but he didn't bring the stick back. He looked back and called toward the sawdust: something is buried there.",
               "auto": "The postman threw the stick and went to see where the dog was calling."
             },
             "bark": {
@@ -1201,7 +1201,7 @@
         },
         "p_l3": {
           "title": "A chance going up",
-          "text": "After Thursday: in the passing mail / the box — Mitya's answer to Vera. The fuse burnt.",
+          "text": "After Thursday, Mitya's reply to Vera will turn up in the passing mail or in the box: the fuse burnt out.",
           "lines": [
             {
               "who": "",
@@ -1248,22 +1248,22 @@
             },
             "push": {
               "label": "Walk",
-              "result": "He went on. On the Collar, without pace, it drifts you under at once."
+              "result": "He kept going. On the Collar, if you don't keep up the pace, the snow will close in at once."
             }
           }
         },
         "e_khomut": {
           "title": "Collar Pass",
-          "text": "The saddle is narrow. A little flag. The roadman's hut is empty. It needs a fast walk — or it drifts shut.",
+          "text": "The saddle is narrow. There's a little flag, and the roadman's hut is empty. It needs a brisk walk, or it will drift shut.",
           "options": {
             "burst": {
               "label": "Pick up the pace",
-              "result": "He got across the pass. The flag says “open.” A note in the hut: “On Thu the wind is weaker.”",
+              "result": "He got across the pass. The flag says “open,” and in the hut there's a note: “On Thu the wind is weaker.”",
               "auto": "The postman picked up the pace and crossed the Collar before it drifted shut."
             },
             "wait": {
               "label": "Go around below, on the scree",
-              "result": "It drifted shut. He had to go below, on the scree: about eighteen hundred steps longer. And not one letter on the way."
+              "result": "It drifted shut, and he had to go below, along the scree — about eighteen hundred steps longer. And not a single letter on the way."
             }
           },
           "push": [
@@ -1299,7 +1299,7 @@
         },
         "arrive_repka": {
           "title": "Turnip Relay",
-          "text": "A mast, a hut on a hook. Clay spills out of the loudspeaker. It hums like a fridge. Only louder than in the Valley.",
+          "text": "A mast stands here, and a hut hangs on a hook. Clay spills out of the loudspeaker. It hums like a fridge, only louder than in the Valley.",
           "lines": [
             {
               "who": "",
@@ -1307,7 +1307,7 @@
             },
             {
               "who": "",
-              "text": "At night a yellow duty light in the empty window."
+              "text": "At night, a yellow duty light shines in the empty window."
             }
           ],
           "push": [
@@ -1331,7 +1331,7 @@
         },
         "e_krivulya_tempo": {
           "title": "The pinch",
-          "text": "The Crook. The path is half a body wide. A short drift on the pinch.",
+          "text": "On the Crook, the path is only half a body wide, and there's a short snowdrift at the pinch.",
           "options": {
             "burst": {
               "label": "Pick up the pace",
@@ -1340,13 +1340,13 @@
             },
             "wait": {
               "label": "Go the long way",
-              "result": "A detour of about twelve hundred steps. Fog crawls up from below."
+              "result": "The detour came to about twelve hundred steps. Fog is creeping up from below."
             }
           }
         },
         "p_l9": {
           "title": "Evening bell",
-          "text": "On the lee side — the Belfry bell. The rhythm is even, long. In the box / the passing mail — a telegram for the postman.",
+          "text": "From the lee side, you can hear the Belfry bell beating out a steady, drawn-out rhythm. There's a telegram for the postman in the box or the passing mail.",
           "lines": [
             {
               "who": "",
@@ -1388,7 +1388,7 @@
             },
             {
               "who": "",
-              "text": "The tape is behind you. Whether the “down below” letters left with Thursday — you can see that if you scroll back."
+              "text": "The tape is behind you. If you scroll back, you can see whether the “down below” letters left with Thursday."
             }
           ],
           "push": [
