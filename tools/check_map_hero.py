@@ -61,13 +61,14 @@ for key in ("map.place.ahead", "map.place.been"):
 if "onboarding.card0.body" not in map_src:
     fail("the postman card must reuse the existing introduction, not a new biography")
 
-# Rig pixels stay the clay from db8526f. A mask recolor left holes and coat specks.
+# Кроме шарфа на голове и торсе части рига не трогаем. Сам шарф проверяет check_scarf_assets.py.
 import subprocess
 diff = subprocess.check_output(
     ["git", "diff", "--name-only", "db8526f7bdd94d8244147f1ca29ea4e60251f8c1", "--", "Postman/GameAssets/Rig"],
     cwd=ROOT, text=True)
-if diff.strip():
-    fail(f"rig assets changed: {diff.strip()}")
+extra = [line for line in diff.splitlines() if line and not line.endswith(("torso.png", "head.png"))]
+if extra:
+    fail(f"rig assets besides the scarf changed: {extra}")
 
 if FAILS:
     print(f"{len(FAILS)} map/hero check(s) failed:")

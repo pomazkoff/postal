@@ -9,8 +9,8 @@ struct MenuPerson: Identifiable {
     let image: UIImage?
 }
 
-/// Меню дороги: поручение, уже встреченные, об игре, язык и местные напоминания.
-/// Сумка и карта — те же экраны, что кнопки на HUD.
+/// Меню как почтовый стол: табличка, бумажные бирки разделов и один лист.
+/// Мир остаётся под затемнением. Сумка и карта — те же экраны, что на HUD.
 struct GameMenuView: View {
     @EnvironmentObject private var game: GameModel
     @EnvironmentObject private var engine: ChapterEngine
@@ -22,6 +22,19 @@ struct GameMenuView: View {
 
     @State private var people: [MenuPerson] = []
     @State private var auth: UNAuthorizationStatus = .notDetermined
+    @State private var page: Page = .quest
+
+    private enum Page: CaseIterable {
+        case quest, people, about, settings
+        var titleKey: String {
+            switch self {
+            case .quest: return "menu.quest.title"
+            case .people: return "menu.people.title"
+            case .about: return "menu.about.title"
+            case .settings: return "menu.settings"
+            }
+        }
+    }
 
     private var castToken: String {
         "\(AppLanguage.code)|\(game.chapterIndex)|\(game.chapterSteps)|\(engine.state.doneEvents.count)|\(engine.isFinished)"
@@ -32,45 +45,75 @@ struct GameMenuView: View {
     }
 
     var body: some View {
-        FrameScreen(dim: 0.72) { m in
+        FrameScreen(dim: 0.42) { m in
             ZStack {
-                RoundedRectangle(cornerRadius: m.length(28), style: .continuous)
-                    .fill(Theme.paper)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: m.length(28), style: .continuous)
-                            .stroke(Theme.paperEdge, lineWidth: max(1, m.length(4)))
-                    )
-                    .frame(width: m.length(1020), height: m.length(1860))
-                    .position(m.point(585, 1240))
-
-                ScrollView {
-                    VStack(alignment: .leading, spacing: m.length(36)) {
-                        Text(L10n.text("menu.title"))
-                            .font(Ink.title(m.length(64)))
-                            .foregroundStyle(Ink.brown)
-                            .accessibilityAddTraits(.isHeader)
-
-                        quest(m)
-                        peopleSection(m)
-                        about(m)
-                        settings(m)
-                        links(m)
-                    }
-                    .padding(.horizontal, m.length(36))
-                    .padding(.vertical, m.length(28))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                PlacedArt(name: "plaque", m: m, at: CGPoint(x: 585, y: 340), scale: 0.52) { e, f in
+                    Text(L10n.text("menu.title"))
+                        .font(Ink.title(92 * f))
+                        .foregroundStyle(Ink.brown)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .frame(width: 420 * f)
+                        .position(x: e.anchor("text").x * f, y: e.anchor("text").y * f)
+                        .accessibilityAddTraits(.isHeader)
                 }
-                .frame(width: m.length(980), height: m.length(1740))
-                .clipped()
-                .position(m.point(585, 1240))
 
-                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2380, action: onClose)
+                sectionTabs(m)
+
+                paperSheet(m)
+                    .position(m.point(585, 1360))
+
+                tagButton(L10n.text("menu.map"), at: CGPoint(x: 250, y: 2140), rotation: -6, m: m, action: onMap)
+                tagButton(L10n.text("menu.bag"), at: CGPoint(x: 920, y: 2140), rotation: 5, m: m, action: onBag)
+                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2440, action: onClose)
             }
         }
         .task(id: castToken) { people = game.menuPeople() }
         .task { await refreshAuth() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await refreshAuth() } }
+        }
+    }
+
+    private func sectionTabs(_ m: FrameMapper) -> some View {
+        let pages = Page.allCases
+        let xs = [175.0, 455.0, 735.0, 1005.0]
+        return ZStack {
+            ForEach(Array(pages.enumerated()), id: \.offset) { i, item in
+                let on = page == item
+                Button { page = item } label: {
+                    TagArt(line1: L10n.text(item.titleKey), line2: on ? "·" : " ", k: m.scale, small: true, scale: 0.58)
+                        .saturation(on ? 1 : 0.35)
+                        .opacity(on ? 1 : 0.78)
+                }
+                .buttonStyle(PressStyle())
+                .position(m.point(xs[i], 640))
+                .accessibilityLabel(L10n.text(item.titleKey))
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+    }
+
+    private func paperSheet(_ m: FrameMapper) -> some View {
+        let scale: CGFloat = 0.8
+        return PaperArt(name: "sheet", k: m.scale, scale: scale) { size in
+            ScrollView {
+                pageBody(m)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 8)
+            }
+            .frame(width: size.width, height: size.height)
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    @ViewBuilder
+    private func pageBody(_ m: FrameMapper) -> some View {
+        switch page {
+        case .quest: quest(m)
+        case .people: peopleSection(m)
+        case .about: about(m)
+        case .settings: settings(m)
         }
     }
 
@@ -83,9 +126,9 @@ struct GameMenuView: View {
             case .finished: return L10n.text("menu.quest.done")
             }
         }()
-        return VStack(alignment: .leading, spacing: m.length(12)) {
+        return VStack(alignment: .leading, spacing: m.length(18)) {
             Text(L10n.text("menu.quest.title"))
-                .font(Ink.title(m.length(46)))
+                .font(Ink.title(m.length(44)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             Text(body)
@@ -97,9 +140,9 @@ struct GameMenuView: View {
     }
 
     private func peopleSection(_ m: FrameMapper) -> some View {
-        VStack(alignment: .leading, spacing: m.length(22)) {
+        VStack(alignment: .leading, spacing: m.length(28)) {
             Text(L10n.text("menu.people.title"))
-                .font(Ink.title(m.length(46)))
+                .font(Ink.title(m.length(44)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             if people.isEmpty {
@@ -116,21 +159,21 @@ struct GameMenuView: View {
     }
 
     private func personRow(_ person: MenuPerson, _ m: FrameMapper) -> some View {
-        HStack(alignment: .top, spacing: m.length(20)) {
+        HStack(alignment: .top, spacing: m.length(18)) {
             if let image = person.image {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: m.length(180), height: m.length(240))
+                    .frame(width: m.length(160), height: m.length(220))
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: m.length(8)) {
                 Text(person.name)
-                    .font(Ink.title(m.length(40)))
+                    .font(Ink.title(m.length(36)))
                     .foregroundStyle(Ink.brown)
                 if !person.text.isEmpty {
                     Text(person.text)
-                        .font(Ink.font("hand", size: m.length(34)))
+                        .font(Ink.font("hand", size: m.length(32)))
                         .foregroundStyle(Ink.pencil)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -144,9 +187,9 @@ struct GameMenuView: View {
     }
 
     private func about(_ m: FrameMapper) -> some View {
-        VStack(alignment: .leading, spacing: m.length(12)) {
+        VStack(alignment: .leading, spacing: m.length(16)) {
             Text(L10n.text("menu.about.title"))
-                .font(Ink.title(m.length(46)))
+                .font(Ink.title(m.length(44)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             Text(L10n.text("menu.about.body"))
@@ -158,9 +201,9 @@ struct GameMenuView: View {
     }
 
     private func settings(_ m: FrameMapper) -> some View {
-        VStack(alignment: .leading, spacing: m.length(22)) {
+        VStack(alignment: .leading, spacing: m.length(28)) {
             Text(L10n.text("menu.settings"))
-                .font(Ink.title(m.length(46)))
+                .font(Ink.title(m.length(44)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             language(m)
@@ -169,21 +212,21 @@ struct GameMenuView: View {
     }
 
     private func language(_ m: FrameMapper) -> some View {
-        VStack(alignment: .leading, spacing: m.length(12)) {
+        VStack(alignment: .leading, spacing: m.length(14)) {
             Text(L10n.text("menu.language"))
-                .font(Ink.label(m.length(36)))
+                .font(Ink.label(m.length(34)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
-            languageButton(.system, title: L10n.text("menu.language.system"), m)
-            languageButton(.ru, title: L10n.text("menu.language.ru"), m)
-            languageButton(.en, title: L10n.text("menu.language.en"), m)
+            languageTag(.system, title: L10n.text("menu.language.system"), m)
+            languageTag(.ru, title: L10n.text("menu.language.ru"), m)
+            languageTag(.en, title: L10n.text("menu.language.en"), m)
             Text(L10n.text("menu.language.note"))
-                .font(Ink.font("hand", size: m.length(32)))
+                .font(Ink.font("hand", size: m.length(30)))
                 .foregroundStyle(Ink.graphite)
                 .fixedSize(horizontal: false, vertical: true)
             if AppLanguage.choice == .system {
                 Text(L10n.text("menu.language.system.note"))
-                    .font(Ink.font("hand", size: m.length(32)))
+                    .font(Ink.font("hand", size: m.length(30)))
                     .foregroundStyle(Ink.graphite)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -191,24 +234,11 @@ struct GameMenuView: View {
         .accessibilityElement(children: .contain)
     }
 
-    private func languageButton(_ choice: LanguageChoice, title: String, _ m: FrameMapper) -> some View {
+    private func languageTag(_ choice: LanguageChoice, title: String, _ m: FrameMapper) -> some View {
         let selected = AppLanguage.choice == choice
         return Button { game.setLanguage(choice) } label: {
-            HStack {
-                Text(selected ? "●" : "○")
-                    .font(Ink.label(m.length(32)))
-                    .accessibilityHidden(true)
-                Text(title)
-                    .font(Ink.label(m.length(38)))
-                Spacer(minLength: 0)
-            }
-            .foregroundStyle(Ink.brown)
-            .frame(minHeight: m.length(120))
-            .padding(.horizontal, m.length(18))
-            .background(
-                RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
-                    .fill(selected ? Theme.brassLight.opacity(0.55) : Color.white.opacity(0.28))
-            )
+            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.72)
+                .saturation(selected ? 1 : 0.25)
         }
         .buttonStyle(PressStyle())
         .accessibilityLabel(title)
@@ -216,39 +246,29 @@ struct GameMenuView: View {
     }
 
     private func reminders(_ m: FrameMapper) -> some View {
-        VStack(alignment: .leading, spacing: m.length(12)) {
+        VStack(alignment: .leading, spacing: m.length(14)) {
             Text(L10n.text("menu.reminders"))
-                .font(Ink.label(m.length(36)))
+                .font(Ink.label(m.length(34)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             Text(L10n.text("menu.reminders.note"))
-                .font(Ink.font("hand", size: m.length(32)))
+                .font(Ink.font("hand", size: m.length(30)))
                 .foregroundStyle(Ink.graphite)
                 .fixedSize(horizontal: false, vertical: true)
             Text(L10n.text(phoneStatusKey))
-                .font(Ink.label(m.length(34)))
+                .font(Ink.font("hand", size: m.length(32)))
                 .foregroundStyle(Ink.pencil)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityLabel(L10n.text(phoneStatusKey))
-            Toggle(isOn: Binding(
-                get: { remindersOn },
-                set: { want in Task { await setReminders(want) } }
-            )) {
-                Text(remindersOn ? L10n.text("menu.reminders.game.on") : L10n.text("menu.reminders.game.off"))
-                    .font(Ink.label(m.length(34)))
-                    .foregroundStyle(Ink.brown)
-            }
-            .tint(Theme.teal)
-            .frame(minHeight: m.length(120))
+            reminderTag(on: true, title: L10n.text("menu.reminders.game.on"), m: m)
+            reminderTag(on: false, title: L10n.text("menu.reminders.game.off"), m: m)
             if auth == .denied {
                 Button { openSettings() } label: {
                     Text(L10n.text("menu.reminders.openSettings"))
-                        .font(Ink.label(m.length(36)))
-                        .foregroundStyle(Ink.chalk)
-                        .frame(maxWidth: .infinity, minHeight: m.length(120))
-                        .background(
-                            RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
-                                .fill(Theme.teal)
-                        )
+                        .font(Ink.title(m.length(32)))
+                        .foregroundStyle(Ink.stampRed)
+                        .underline()
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .buttonStyle(PressStyle())
                 .accessibilityLabel(L10n.text("menu.reminders.openSettings"))
@@ -256,25 +276,24 @@ struct GameMenuView: View {
         }
     }
 
-    private func links(_ m: FrameMapper) -> some View {
-        HStack(spacing: m.length(16)) {
-            linkButton(L10n.text("menu.map"), m, action: onMap)
-            linkButton(L10n.text("menu.bag"), m, action: onBag)
-        }
-    }
-
-    private func linkButton(_ title: String, _ m: FrameMapper, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(Ink.title(m.length(40)))
-                .foregroundStyle(Ink.brown)
-                .frame(maxWidth: .infinity, minHeight: m.length(120))
-                .background(
-                    RoundedRectangle(cornerRadius: m.length(14), style: .continuous)
-                        .stroke(Theme.paperEdge, lineWidth: max(1, m.length(3)))
-                )
+    private func reminderTag(on wantOn: Bool, title: String, m: FrameMapper) -> some View {
+        let selected = remindersOn == wantOn
+        return Button { Task { await setReminders(wantOn) } } label: {
+            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.78)
+                .saturation(selected ? 1 : 0.3)
         }
         .buttonStyle(PressStyle())
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private func tagButton(_ title: String, at: CGPoint, rotation: Double, m: FrameMapper, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            TagArt(line1: title, line2: " ", k: m.scale, small: true, scale: 0.7)
+                .rotationEffect(.degrees(rotation))
+        }
+        .buttonStyle(PressStyle())
+        .position(m.point(at.x, at.y))
         .accessibilityLabel(title)
     }
 

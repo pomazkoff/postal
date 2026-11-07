@@ -397,16 +397,16 @@
         },
         "e_cart": {
           "title": "A barrow across the road",
-          "text": "A barrow of cabbage has slipped a wheel into the ditch and stands across the road. An old woman from the Tubs is beside it, holding the shaft.",
+          "text": "A barrow of cabbage has slid one wheel into the ditch and ended up across the road. An old woman from the Tubs stands beside it, holding the shaft.",
           "options": {
             "help": {
               "label": "Help",
-              "result": "The two of them hauled it out. The old woman stuck a cabbage stump in the bag: “Regards to Nina.”",
+              "result": "The postman and the old woman hauled the barrow out of the ditch. She tucked a cabbage stump into the bag and said, “Regards to Nina.”",
               "auto": "The postman didn't wait — he put his shoulder to the barrow."
             },
             "around": {
               "label": "Go around",
-              "result": "He went around by the boundary. Behind him they scold the wheel for a long time."
+              "result": "The postman went around the barrow along the boundary. Behind him, they kept scolding the wheel for a long while."
             }
           },
           "push": [
@@ -418,7 +418,7 @@
         },
         "e_animal_rooster": {
           "title": "Before the rooster",
-          "text": "The rooster by the walkway has stretched his neck. He's looking at the bag — he's about to crow.",
+          "text": "The rooster by the walkway has stretched out his neck and is looking at the bag. He's about to crow.",
           "options": {
             "listen": {
               "label": "Listen",
@@ -480,16 +480,16 @@
         },
         "e_ramka": {
           "title": "A goat on the road",
-          "text": "On the climb past the apiary a goat is standing, chewing fireweed. There's a nick in the left ear.",
+          "text": "On the climb past the apiary, a goat stands chewing fireweed. There's a nick in her left ear.",
           "options": {
             "lead": {
               "label": "Take her along",
-              "result": "He went up — the goat followed. She doesn't fall behind.",
+              "result": "The postman headed uphill, and the goat followed. She keeps up with him.",
               "auto": "The postman shrugged and went uphill. The goat followed."
             },
             "chase": {
               "label": "Shoo her",
-              "result": "He swung the bag. The goat moved off toward the hives and watches him go."
+              "result": "The postman swung the bag. The goat moved off toward the hives and is watching him go."
             }
           },
           "push": [
@@ -589,7 +589,7 @@
             },
             {
               "who": "",
-              "text": "An envelope in box no. 2. No room in the bag — let it lie."
+              "text": "There's an envelope in box no. 2, but there's no room left in the bag. It will have to stay here for now."
             },
             {
               "who": "",
@@ -661,18 +661,18 @@
           "options": {
             "twine": {
               "label": "Pull the twine",
-              "result": "The cat took the twine, sat on it, and turned away. The barrel is hers too.",
+              "result": "The cat took the twine away, sat down on it and turned her back. The barrel is hers now too.",
               "auto": "The postman tugged the twine. The cat decided it was hers."
             },
             "look": {
               "label": "Look under the barrel",
-              "result": "The cat jumped down. Under the barrel lies a brass stamp with no handle. It fit in the pocket."
+              "result": "The cat jumped off the barrel. Under the barrel lies a brass stamp with no handle, and it fit in the pocket."
             }
           }
         },
         "e_storm": {
           "title": "Storm",
-          "text": "It thunders over the stream. The postman waits it out in the turbine shed. Inside it hums louder than outside. Steady, as if it isn't from the water.",
+          "text": "Thunder rolls over the stream, and the postman waits out the storm in the turbine shed. Inside, the hum is louder than outside — steady, as if it doesn't come from the water.",
           "push": [
             {
               "who": "",
@@ -692,7 +692,7 @@
           "options": {
             "feed": {
               "label": "Give the crust",
-              "result": "He crunched it and waits by the gate. He walks the postman past the Institute — and back to the antenna.",
+              "result": "The kid crunched up the crust and is now waiting by the gate. He walks the postman past the Institute and back to the antenna.",
               "auto": "The postman broke the kid off a crust."
             },
             "leave": {
@@ -741,11 +741,11 @@
         },
         "e_animal_matrena": {
           "title": "Matryona and the bag",
-          "text": "A goat with a notch in her ear came up to the bag. The notch is like Ramka's, only this goat is older and wider.",
+          "text": "A goat came up to the bag with a notch in her ear, like Ramka's. Only this goat is older and wider.",
           "options": {
             "hand": {
               "label": "Hold out a palm",
-              "result": "Matryona sniffed his fingers and butted the bag. Paper only, nothing to eat. She left.",
+              "result": "Matryona sniffed his fingers and butted the bag. There was nothing in it but paper and nothing to eat, so she left.",
               "auto": "The postman held out a palm. Matryona checked the bag with a horn."
             },
             "pass": {
@@ -756,22 +756,22 @@
         },
         "e_animal_matrena_jealous": {
           "title": "Two goats, one path",
-          "text": "Ramka is already by the pen. Matryona saw her watching the postman go, butted the bag, and stood across the path. She's jealous.",
+          "text": "Ramka is already standing by the pen. Matryona noticed her watching the postman go, butted the bag and stood across the path. She's jealous.",
           "options": {
             "greens": {
               "label": "Give her the greens",
-              "result": "Matryona is busy with the greens, the path is clear. Ramka pretends she isn't looking.",
+              "result": "Matryona got busy with the greens, and the path cleared. Ramka is pretending she isn't looking.",
               "auto": "The postman held a bunch of greens out to Matryona, and the path cleared."
             },
             "chase": {
               "label": "Shoo her",
-              "result": "He waved a hand. Matryona stepped back, butted the bag one last time — and let him through."
+              "result": "The postman waved his hand. Matryona stepped back, butted the bag one last time and let him through."
             }
           }
         },
         "e_wind": {
           "title": "Wind",
-          "text": "On the switchbacks the wind tears at the bag's flap. A fat envelope flies down, toward the barrier. Go after it?",
+          "text": "On the switchbacks the wind tears at the bag's flap, and a fat envelope flies down toward the barrier. Go after it?",
           "fallback": "The wind flaps the empty flap of the bag. Nothing to lose.",
           "options": {
             "chase": {
@@ -815,7 +815,7 @@
             },
             {
               "who": "",
-              "text": "Inside, an envelope “to the Postman” and a note on a form."
+              "text": "Inside there's an envelope marked “to the Postman” and a note on a form."
             }
           ],
           "note": "Dear postman! I made the collection. Kolobova N.A.'s item was accepted. Next collection — Thursday. Watch your feet. A.L.",
