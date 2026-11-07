@@ -13,8 +13,28 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     private var center: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
+    /// nil, пока настройки iOS ни разу не читали. Чтение не показывает запрос.
+    private(set) var knownAuth: ReminderSwitch.Auth?
+
+    /// Единственный показ системного запроса. Вызывать только из явного включения в меню.
     func requestAuthorization() async -> Bool {
-        (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        await refreshAuthorizationStatus()
+        return granted
+    }
+
+    /// Прочитать разрешение, не спрашивая его.
+    func refreshAuthorizationStatus() async {
+        knownAuth = Self.auth(await center.notificationSettings().authorizationStatus)
+    }
+
+    static func auth(_ status: UNAuthorizationStatus) -> ReminderSwitch.Auth {
+        switch status {
+        case .notDetermined: return .notDetermined
+        case .denied: return .denied
+        case .authorized, .provisional, .ephemeral: return .allowed
+        @unknown default: return .denied
+        }
     }
 
     /// Категории с кнопками для каждого выбора главы (регистрировать при запуске).
@@ -34,7 +54,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func authorizationStatus() async -> UNAuthorizationStatus {
-        await center.notificationSettings().authorizationStatus
+        let status = await center.notificationSettings().authorizationStatus
+        knownAuth = Self.auth(status)
+        return status
     }
 
     /// Только ожидающие местные уведомления этой игры. Показанные и бейдж не трогаем,
@@ -45,7 +67,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func post(title: String, body: String, id: String, choiceEventID: String?) {
-        guard ReminderPreference.isOn else { return }
+        guard ReminderPreference.allowsPosting(known: knownAuth) else { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -65,7 +87,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     /// DEBUG: проверить, что разрешение и баннер реально работают (видно и при открытой игре).
     func postTest() {
-        guard ReminderPreference.isOn else { return }
+        guard ReminderPreference.allowsPosting(known: knownAuth) else { return }
         let content = UNMutableNotificationContent()
         content.title = L10n.text("notify.test.title")
         content.body = L10n.text("notify.test.body")

@@ -11,19 +11,19 @@
 "onboarding.card1.title" = "Steps are the road";
 "onboarding.card1.body" = "Put the phone in your pocket and walk. Every real step moves the postman along the road. Chapter one is about 20 thousand steps; the whole game is about 150 thousand.";
 "onboarding.card2.title" = "While you walk";
-"onboarding.card2.body" = "The story does not wait on the screen. The postman reaches the stops on his own. You get quiet notifications: who he met, what happened, which letter he handed over.";
+"onboarding.card2.body" = "The story does not wait on the screen. The postman reaches the stops on his own. Turn stop reminders on in the menu, and quiet notices arrive: who he met, what happened, which letter he handed over.";
 "onboarding.card3.title" = "Come back and read";
 "onboarding.card3.body" = "The journal keeps cards of places and people: what happened without you. Sometimes you choose at a fork, and the story turns.";
 "onboarding.card4.title" = "So he walks with you";
-"onboarding.card4.body" = "The game needs your step count from Health, and notifications when he stops. Steps are only read, never written. The weather follows yours: the system may ask for location; without it, the weather is seasonal.";
-"onboarding.card4.body.fake" = "HealthKit is unavailable in the simulator — steps are added with the “+500” button. On a device the game asks to read steps and to send notifications; location for the weather is optional, and you can refuse.";
+"onboarding.card4.body" = "The game needs your step count from Health. Steps are only read, never written. Stop reminders are switched on in the menu; the phone asks then. The weather follows yours: the system may ask for location; without it, the weather is seasonal.";
+"onboarding.card4.body.fake" = "HealthKit is unavailable in the simulator — steps are added with the “+500” button. On a device the game asks to read steps. Stop reminders are switched on in the menu. Location for the weather is optional, and you can refuse.";
 "onboarding.perm.steps.fake" = "Steps: test mode";
 "onboarding.perm.steps" = "Steps from Health";
-"onboarding.perm.notes" = "Notifications at the stops";
+"onboarding.perm.notes" = "Stop reminders — in the menu";
 "onboarding.perm.location" = "Location for the weather — optional";
 "onboarding.start" = "Start";
 "onboarding.start.permissions" = "Allow and start";
-"onboarding.start.hint" = "Asks for steps, notifications, and location if it is needed";
+"onboarding.start.hint" = "Asks for steps, and location if it is needed";
 
 "bag.go" = "Onward";
 "bag.close" = "Close";

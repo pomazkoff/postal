@@ -147,6 +147,30 @@ if appears_on(True, "denied") or appears_on(True, "notDetermined"):
 if not appears_on(True, "allowed") or appears_on(False, "allowed"):
     fail("the switch follows the saved preference only while iOS allows reminders")
 
+
+def allows_posting(stored, known):
+    """stored is None until the player chooses. known is None until iOS status is read."""
+    if stored is not None:
+        if not stored:
+            return False
+        return known == "allowed"
+    if known is not None:
+        return known == "allowed"
+    return True
+
+
+if not allows_posting(None, "allowed") or not allows_posting(True, "allowed"):
+    fail("people who already allowed, or who turned reminders on, must still be scheduled")
+if not allows_posting(None, None):
+    fail("an unread status must not drop reminders for someone who already allowed them")
+for known in ("notDetermined", "denied", None):
+    if allows_posting(False, known):
+        fail("an explicit off must not schedule")
+if allows_posting(None, "notDetermined") or allows_posting(None, "denied"):
+    fail("startup must not schedule, or ask, before the player turns reminders on")
+if allows_posting(True, "notDetermined") or allows_posting(True, "denied"):
+    fail("an on-switch without iOS permission must not queue a backlog")
+
 # Real chapter: nobody at step 0, rooster only at his event, A.L. never by walking the chapter.
 story = json.loads((ROOT / "Postman/GameAssets/Data/chapter1_story.json").read_text(encoding="utf-8"))
 events = [{"id": e["id"], "resident": e.get("resident"), "companion": e.get("companion")} for e in story["events"]]
@@ -182,7 +206,7 @@ reset = progress.split("func resetAll()", 1)[1].split("func resetStory", 1)[0]
 if "postman.language" in reset or "postman.remindersEnabled" in reset:
     fail("story reset must not wipe language or reminder settings")
 post = notifier.split("func post(", 1)[1].split("func postTest", 1)[0]
-if "ReminderPreference.isOn" not in post.split("UNMutableNotificationContent", 1)[0]:
+if "allowsPosting" not in post.split("UNMutableNotificationContent", 1)[0]:
     fail("posting must check the game switch before building a notification")
 if "removeAllPendingNotificationRequests" not in notifier:
     fail("turning reminders off must remove pending requests")
@@ -202,8 +226,37 @@ if "process()" in adopt:
 if "postedBeatIDs.removeAll" in core.split("func reloadLocalization", 1)[1].split("func switchToChapter", 1)[0]:
     fail("language reload must keep the set of stops already sent")
 post_beat = core.split("private func postBeat", 1)[1].split("postedBeatIDs.insert", 1)[0]
-if "ReminderPreference.isOn" not in post_beat:
+if "allowsPosting" not in post_beat:
     fail("a stop must be refused before it is marked sent")
+
+game = (ROOT / "Postman/App/GameModel.swift").read_text(encoding="utf-8")
+onboarding_fn = game.split("func completeOnboarding", 1)[1].split("func appBecameActive", 1)[0]
+if "notifier.requestAuthorization" in onboarding_fn:
+    fail("onboarding must not request notification permission")
+if "steps.requestAuthorization()" not in onboarding_fn or "askPermission: true" not in onboarding_fn:
+    fail("onboarding must still ask for steps, then location")
+if "refreshAuthorizationStatus" not in onboarding_fn:
+    fail("onboarding must read notification status without asking")
+active_fn = game.split("func appBecameActive", 1)[1].split("func appWentToBackground", 1)[0]
+if "requestAuthorization" in active_fn:
+    fail("returning to the app must not request notification permission")
+if "askPermission: true" not in active_fn:
+    fail("location on resume must stay")
+delegate = (ROOT / "Postman/App/AppDelegate.swift").read_text(encoding="utf-8")
+if "requestAuthorization" in delegate:
+    fail("startup must not request notification permission")
+prompt_calls = []
+for path in (ROOT / "Postman").rglob("*.swift"):
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if "notifier.requestAuthorization" in line:
+            prompt_calls.append(f"{path.relative_to(ROOT)}:{lineno}")
+        if "requestAuthorization(options:" in line and path.name != "Notifier.swift":
+            fail(f"notification prompt outside Notifier.swift: {path.name}:{lineno}")
+if len(prompt_calls) != 1 or not prompt_calls[0].startswith("Postman/UI/GameMenuView.swift:"):
+    fail(f"notification prompt must be only the menu switch, got {prompt_calls}")
+request_case = menu.split("case .request:", 1)[1].split("case .openSettings:", 1)[0]
+if "notifier.requestAuthorization" not in request_case:
+    fail("the menu's explicit on is no longer the prompt")
 if "m.point(190, 2330)" not in hud or "m.point(990, 2330)" not in hud:
     fail("bag and map anchors moved")
 if "m.point(168, 1480)" not in hud:
@@ -228,9 +281,19 @@ keys = [
 for key in keys:
     if f'"{key}"' not in en or f'"{key}"' not in ru:
         fail(f"missing string {key}")
+def catalog_value(text, key):
+    match = re.search(rf'"{re.escape(key)}"\s*=\s*"((?:\\.|[^"\\])*)"', text)
+    return match.group(1) if match else ""
+
 for blob, label in ((en, "en"), (ru, "ru")):
     if re.search(r"chapter 3|chapter three|глав[аы] 3|APNs|remote push|пуш-сервер", blob, re.I):
         fail(f"{label} menu copy promises something the game does not have")
+    hint = catalog_value(blob, "onboarding.start.hint").lower()
+    if "notification" in hint or "уведомлен" in hint:
+        fail(f"{label} start button still promises a notification prompt")
+    notes = catalog_value(blob, "onboarding.perm.notes").lower()
+    if "menu" not in notes and "меню" not in notes:
+        fail(f"{label} onboarding still lists notifications as a start permission")
 if "Ты — последний почтальон." not in ru:
     fail("Russian onboarding copy was rewritten")
 

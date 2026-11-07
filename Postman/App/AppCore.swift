@@ -176,9 +176,9 @@ final class AppCore {
     }
 
     private func postBeat(_ beat: ChapterEngine.Beat) {
-        // Выключенные напоминания не помечают остановку отправленной: включение
-        // не ставит её второй раз, а ещё не отправленный выбор уйдёт один раз.
-        guard ReminderPreference.isOn else { return }
+        // Выключенные и ещё не разрешённые напоминания не помечают остановку отправленной:
+        // включение не ставит её второй раз, а ещё не отправленный выбор уйдёт один раз.
+        guard ReminderPreference.allowsPosting(known: notifier.knownAuth) else { return }
         guard !postedBeatIDs.contains(beat.id) else { return }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)

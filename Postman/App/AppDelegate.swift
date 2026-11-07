@@ -10,6 +10,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = core.notifier
         core.registerBackgroundTasks()
         core.startBackgroundObservation()
+        Task { @MainActor in
+            await core.notifier.refreshAuthorizationStatus()
+        }
         return true
     }
 }

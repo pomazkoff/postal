@@ -105,8 +105,8 @@ enum ReminderSwitch {
     }
 }
 
-/// Хочет ли игра сама ставить остановки. Отсутствие ключа — прежнее поведение: ставить,
-/// если телефон разрешил. Выключение не трогает системное разрешение.
+/// Хочет ли игра сама ставить остановки. Выключение не трогает системное разрешение.
+/// Системный запрос отсюда не уходит: его вызывает только явное включение в меню.
 enum ReminderPreference {
     static let key = "postman.remindersEnabled"
 
@@ -117,5 +117,19 @@ enum ReminderPreference {
 
     static func setOn(_ on: Bool) {
         UserDefaults.standard.set(on, forKey: key)
+    }
+
+    /// Ставить локальное уведомление.
+    /// Явный «выкл» — никогда. Явный «вкл» — только когда iOS уже разрешила.
+    /// Ключа ещё нет: ставим, если телефон уже разрешил или статус ещё не прочитан
+    /// (так уже разрешившие не теряют остановку до чтения настроек).
+    /// Прочитанный «не спрашивали» и «запрещено» без явного включения — не ставим и не спрашиваем.
+    static func allowsPosting(known: ReminderSwitch.Auth?) -> Bool {
+        if UserDefaults.standard.object(forKey: key) != nil {
+            guard UserDefaults.standard.bool(forKey: key) else { return false }
+            return known == .allowed
+        }
+        if let known { return known == .allowed }
+        return true
     }
 }

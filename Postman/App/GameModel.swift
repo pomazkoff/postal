@@ -197,8 +197,9 @@ final class GameModel: ObservableObject {
 
     func completeOnboarding() async {
         await steps.requestAuthorization()
-        // История идёт и без игрока — о каждой остановке сообщаем локальным пушем.
-        _ = await AppCore.shared.notifier.requestAuthorization()
+        // Разрешение на уведомления здесь не спрашиваем: только меню, когда игрок сам включит
+        // напоминания. Статус читаем заранее, чтобы первые остановки не встали в очередь.
+        await AppCore.shared.notifier.refreshAuthorizationStatus()
         if progress.gameStartDate == nil { progress.gameStartDate = Date() }
         progress.onboardingDone = true
         onboardingDone = true
@@ -214,6 +215,7 @@ final class GameModel: ObservableObject {
         engine.liveViewing = false
         steps.start()
         WeatherService.shared.start(askPermission: true)
+        Task { await AppCore.shared.notifier.refreshAuthorizationStatus() }
     }
 
     func appWentToBackground() {
