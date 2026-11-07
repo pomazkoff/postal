@@ -26,6 +26,8 @@ final class GameModel: ObservableObject {
     @Published var roadMenuOpen = false
     /// Поверх мира лист, меню или карточка: шаги и окружение замолкают.
     @Published var worldCovered = false
+    /// Карточка «Первый почтовый рейс». Не сейв и не сдвиг сюжета.
+    @Published var firstMailPending = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
@@ -74,6 +76,7 @@ final class GameModel: ObservableObject {
         }
 
         if onboardingDone { steps.start() }
+        pullFirstMailInbox()
     }
 
     private var engineCancellables = Set<AnyCancellable>()
@@ -234,6 +237,36 @@ final class GameModel: ObservableObject {
         // Таймер экрана гаснет. Фоновый наблюдатель HealthKit этим не снимается.
         steps.stop()
         AppCore.shared.appDidEnterBackground()
+    }
+
+    /// Верный адрес только поднимает карточку. Шаги, сумка, камера и диалоги не трогаются.
+    func receiveFirstMail(_ url: URL) {
+        guard FirstMailLink.route(from: url) else { return }
+        firstMailPending = true
+    }
+
+    func pullFirstMailInbox() {
+        guard FirstMailInbox.pending else { return }
+        FirstMailInbox.pending = false
+        firstMailPending = true
+    }
+
+    func dismissFirstMail() {
+        firstMailPending = false
+    }
+
+    /// Чтение l1. Активная глава 1 — её движок. Иначе файл главы 1, без записи.
+    func firstMailReading() -> FirstMailReading {
+        if chapter.id == 1 {
+            return FirstMailReading.classify(status: engine.status("l1"),
+                                             deliveryDone: engine.state.doneEvents.contains("d_l1"))
+        }
+        guard let saved = ChapterStateStore(fileName: "chapter1_state.json").load() else {
+            return .unreachable
+        }
+        let status = saved.items["l1"] ?? .atPost
+        return FirstMailReading.classify(status: status,
+                                         deliveryDone: saved.doneEvents.contains("d_l1"))
     }
 
     /// Кнопка «к почтальону»: камера плавно возвращается и снова следит за героем.

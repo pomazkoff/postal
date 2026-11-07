@@ -29,6 +29,7 @@
 		56699AFAE3EC2D091C302B99 /* AmbientLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362616B0875394A0C8F63A07 /* AmbientLayer.swift */; };
 		5ACB753E7D7C31256B365022 /* AppCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336BA7D2076FF02953FF4A6 /* AppCore.swift */; };
 		6B3F5B2EDB72D16CA5C63631 /* BrandSplash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B95A0250BFD73151ACB71BE /* BrandSplash.swift */; };
+		6EB46D76DD6CB49D76D371F4 /* FirstMailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5D1667197C441C632DFCB2 /* FirstMailCard.swift */; };
 		70CDD8EC9B20876F085261AC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 64A56EB63D82794EC9359ED0 /* Localizable.strings */; };
 		75C4F2E7F9271B156EC1D679 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBDCEC2B8919802C364ECCC /* AppInfo.swift */; };
 		7AB6FABB3DA8E96BCB1ED72E /* ChapterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8205B5B2EC62756D7BDCCB /* ChapterEngine.swift */; };
@@ -37,6 +38,7 @@
 		840922915F70AA1E412D64F8 /* BagScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE7A09ECC77DCE1EE9A0EF9 /* BagScreen.swift */; };
 		8414EB66F4DAB45383E33027 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF6A245991BBE1575D9CB4B /* Localization.swift */; };
 		871BF4E7D783B403546D7F93 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D2D82CB4093D73FA3FDC0F /* Theme.swift */; };
+		8E782380F20C2257B562C1FB /* FirstMailLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975833DAAE9867DF3F0D965C /* FirstMailLink.swift */; };
 		95A13701FED3628B9A1556EA /* StoryCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F2D7ADC62827D6B3D25970 /* StoryCards.swift */; };
 		97EBE3BA66BFECCE7752830D /* ChapterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175F562A54F33ABB4D0EC66D /* ChapterState.swift */; };
 		9C789F0F5424B7465711DDD9 /* RigWalk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A961B52C84A15B34C7D35 /* RigWalk.swift */; };
@@ -75,6 +77,7 @@
 		3B95A0250BFD73151ACB71BE /* BrandSplash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandSplash.swift; sourceTree = "<group>"; };
 		4451A0006278AF211E1B0969 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		474A7E9176ACA4C0987F975E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		4F5D1667197C441C632DFCB2 /* FirstMailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMailCard.swift; sourceTree = "<group>"; };
 		50123FB0218AE853B0BD21FB /* StoryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryConfig.swift; sourceTree = "<group>"; };
 		5336BA7D2076FF02953FF4A6 /* AppCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCore.swift; sourceTree = "<group>"; };
 		62C0D773131DA627EA8747FD /* ProgressStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStore.swift; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		8F130059427912E2BD061561 /* Postman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Postman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90562D04BDAFB7914C514EE4 /* TelegramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelegramView.swift; sourceTree = "<group>"; };
 		95428D5B01EFAD4900F80DD0 /* UIArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIArt.swift; sourceTree = "<group>"; };
+		975833DAAE9867DF3F0D965C /* FirstMailLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMailLink.swift; sourceTree = "<group>"; };
 		9AE5CF4ECE6C4E462BFB5462 /* GameMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuView.swift; sourceTree = "<group>"; };
 		9C96202E6822FA5A54435A26 /* GameAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GameAssets; sourceTree = "<group>"; };
 		9D60A100D307D6FAA9ADA4D3 /* Postman.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Postman.entitlements; sourceTree = "<group>"; };
@@ -219,6 +223,7 @@
 				1EE7A09ECC77DCE1EE9A0EF9 /* BagScreen.swift */,
 				3B95A0250BFD73151ACB71BE /* BrandSplash.swift */,
 				EFD13CBC6B2CA443312862CE /* DebugPanel.swift */,
+				4F5D1667197C441C632DFCB2 /* FirstMailCard.swift */,
 				9AE5CF4ECE6C4E462BFB5462 /* GameMenuView.swift */,
 				08B6CD4DECFC21DA8004567B /* GameView.swift */,
 				63C893839AA8275E5759B3CF /* HUDLayout.swift */,
@@ -245,6 +250,7 @@
 				AFBDCEC2B8919802C364ECCC /* AppInfo.swift */,
 				8D74947F0E37B01A06C42C05 /* AudioMix.swift */,
 				FB8205B5B2EC62756D7BDCCB /* ChapterEngine.swift */,
+				975833DAAE9867DF3F0D965C /* FirstMailLink.swift */,
 				DECE3872648CBF01904C991B /* GameModel.swift */,
 				CBF6A245991BBE1575D9CB4B /* Localization.swift */,
 				1D090709F7174B7445422DEE /* MenuLogic.swift */,
@@ -352,6 +358,7 @@
 				75C4F2E7F9271B156EC1D679 /* AppInfo.swift in Sources */,
 				D6984BA4CC1C410598B48EA2 /* AudioMix.swift in Sources */,
 				7AB6FABB3DA8E96BCB1ED72E /* ChapterEngine.swift in Sources */,
+				8E782380F20C2257B562C1FB /* FirstMailLink.swift in Sources */,
 				4C1CAA7FE23BDF07179DAA5D /* GameModel.swift in Sources */,
 				8414EB66F4DAB45383E33027 /* Localization.swift in Sources */,
 				E17FFAD1B1975DB0132E0E0F /* MenuLogic.swift in Sources */,
@@ -380,6 +387,7 @@
 				840922915F70AA1E412D64F8 /* BagScreen.swift in Sources */,
 				6B3F5B2EDB72D16CA5C63631 /* BrandSplash.swift in Sources */,
 				22D95AE93E1F2C0CB1C3EAD9 /* DebugPanel.swift in Sources */,
+				6EB46D76DD6CB49D76D371F4 /* FirstMailCard.swift in Sources */,
 				FA903D6ACCF8819ACA34DB24 /* GameMenuView.swift in Sources */,
 				E301D465E810A70209184699 /* GameView.swift in Sources */,
 				A02D2BED22D0C0384BCA22CF /* HUDLayout.swift in Sources */,

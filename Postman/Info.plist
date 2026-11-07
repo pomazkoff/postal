@@ -14,5 +14,16 @@
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).refresh</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>games.mazkof.postman.first-mail</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mazkofpostman</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

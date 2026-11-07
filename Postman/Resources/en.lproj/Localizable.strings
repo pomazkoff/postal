@@ -211,5 +211,13 @@
 "journey.continue" = "The postman's journey will continue";
 "journey.soon" = "Chapter 3 is coming soon";
 
+"firstmail.title" = "The first mail run";
+"firstmail.body" = "Nina's letter to Kuzma. The handoff is written at the Stilts, at step 2900 of chapter 1.";
+"firstmail.inBag" = "The letter is in the bag now. This screen does not move the postman and does not mark the handoff done.";
+"firstmail.atPost" = "The letter is still on the shelf at the Post Office. This screen does not put it in the bag.";
+"firstmail.delivered" = "Kuzma already has Nina's letter. The road goes on from where you are.";
+"firstmail.unreachable" = "This save can no longer hand Nina's letter to Kuzma. It is not sent a second time.";
+"firstmail.continue" = "On, as you were";
+
 "map.place.ahead" = "The postman has not reached this place yet, and %@ are still left to walk.";
 "map.place.been" = "The postman has already walked through here, so the place is familiar to him.";
