@@ -199,5 +199,5 @@
 "menu.reminders.game.on" = "The game reports stops";
 "menu.reminders.game.off" = "The game stays quiet";
 
-"map.place.ahead" = "Still ahead, %@.";
-"map.place.been" = "The postman has already walked through.";
+"map.place.ahead" = "The postman has not reached this place yet, and %@ are still left to walk.";
+"map.place.been" = "The postman has already walked through here, so the place is familiar to him.";
