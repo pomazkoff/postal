@@ -267,8 +267,15 @@ if "notifier.requestAuthorization" not in request_case:
     fail("the menu's explicit on is no longer the prompt")
 if "m.point(190, 2330)" not in hud or "m.point(990, 2330)" not in hud:
     fail("bag and map anchors moved")
-if "m.point(168, 1480)" not in hud:
-    fail("menu entry is missing from the free spot")
+if "m.point(168, 1480)" in hud:
+    fail("menu button is still mid-screen on the left")
+if "RoadMenuButton.center" not in hud or "enum RoadMenuButton" not in logic:
+    fail("menu button must sit between the bag and the map")
+if ".blur(radius:" not in hud or ".blur(radius:" not in (ROOT / "Postman/UI/GameView.swift").read_text(encoding="utf-8"):
+    fail("the open menu must blur both the road and the HUD")
+menu_view = (ROOT / "Postman/UI/GameMenuView.swift").read_text(encoding="utf-8")
+if "MenuTabLayout.columns" not in menu_view:
+    fail("section tabs must use the 2×2 layout when a row is tight")
 if "showMenu" not in hud.split("if engine.isFinished", 1)[1].split("return .none", 1)[0]:
     fail("menu must not cover a card, the journal, the bag or the map")
 
@@ -294,7 +301,8 @@ def catalog_value(text, key):
     return match.group(1) if match else ""
 
 for blob, label in ((en, "en"), (ru, "ru")):
-    if re.search(r"chapter 3|chapter three|глав[аы] 3|APNs|remote push|пуш-сервер", blob, re.I):
+    menu_copy = "\n".join(catalog_value(blob, key) for key in keys)
+    if re.search(r"chapter 3|chapter three|глав[аы] 3|APNs|remote push|пуш-сервер", menu_copy, re.I):
         fail(f"{label} menu copy promises something the game does not have")
     hint = catalog_value(blob, "onboarding.start.hint").lower()
     if "notification" not in hint and "уведомлен" not in hint:
@@ -304,6 +312,44 @@ for blob, label in ((en, "en"), (ru, "ru")):
         fail(f"{label} onboarding permission line changed: {notes!r}")
 if "Ты — последний почтальон." not in ru:
     fail("Russian onboarding copy was rewritten")
+
+
+def columns(view_width, item_width, gap, margin):
+    row = 4 * item_width + 3 * gap
+    return 4 if row + margin * 2 <= view_width else 2
+
+
+def button_center(bag, map_rect, button, canvas_h, safe_bottom):
+    x = bag[0] + bag[2] + (map_rect[0] - (bag[0] + bag[2])) / 2
+    limit = canvas_h - max(0, safe_bottom) - 12
+    y = (bag[1] + bag[3] / 2 + map_rect[1] + map_rect[3] / 2) / 2
+    half = button[1] / 2
+    if y + half > limit:
+        y = limit - half
+    return x, max(half, y)
+
+
+# tag 437×280 at 1.08 does not fit four across a 1170 frame.
+if columns(1170, 437 * 1.08, 22, 18) != 2:
+    fail("phone-width frame must stack the section tags 2×2")
+if columns(2200, 437 * 1.08, 22, 18) != 4:
+    fail("a wide frame can keep four section tags in a row")
+
+ui = json.loads((ROOT / "Postman/GameAssets/UI/ui_ch1.json").read_text(encoding="utf-8"))["art"]
+bag_e, map_e = ui["hud_bag"], ui["hud_map"]
+bag_body, map_body = bag_e["anchors"]["body"], map_e["anchors"]["body"]
+bag_c = (bag_body[0] + bag_body[2] / 2, bag_body[1] + bag_body[3] / 2)
+map_c = (map_body[0] + map_body[2] / 2, map_body[1] + map_body[3] / 2)
+bag_rect = (190 - bag_c[0], 2330 - bag_c[1], bag_e["width"], bag_e["height"])
+map_rect = (990 - map_c[0], 2330 - map_c[1], map_e["width"], map_e["height"])
+button = (287 * 1.22, 201 * 1.22)
+cx, cy = button_center(bag_rect, map_rect, button, 2532, 110)
+if not (bag_rect[0] + bag_rect[2] < cx - button[0] / 2 and cx + button[0] / 2 < map_rect[0]):
+    fail(f"menu button overlaps the bag or the map: {cx}")
+if cy + button[1] / 2 > 2532 - 110:
+    fail("menu button ignores the home indicator")
+if "accessibilityReduceMotion" not in (ROOT / "Postman/UI/GameView.swift").read_text(encoding="utf-8"):
+    fail("menu blur should not animate when motion is reduced")
 
 if FAILS:
     print(f"{len(FAILS)} menu check(s) failed:")

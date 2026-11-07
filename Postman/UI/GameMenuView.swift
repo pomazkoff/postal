@@ -45,9 +45,10 @@ struct GameMenuView: View {
     }
 
     var body: some View {
-        FrameScreen(dim: 0.42) { m in
+        FrameScreen(dim: 0.16) { m in
+            let desk = deskLayout(m)
             ZStack {
-                PlacedArt(name: "plaque", m: m, at: CGPoint(x: 585, y: 340), scale: 0.52) { e, f in
+                PlacedArt(name: "plaque", m: m, at: CGPoint(x: 585, y: 292), scale: 0.5) { e, f in
                     Text(L10n.text("menu.title"))
                         .font(Ink.title(92 * f))
                         .foregroundStyle(Ink.brown)
@@ -58,14 +59,14 @@ struct GameMenuView: View {
                         .accessibilityAddTraits(.isHeader)
                 }
 
-                sectionTabs(m)
+                sectionTabs(m, centers: desk.centers, scale: desk.tagScale)
 
-                paperSheet(m)
-                    .position(m.point(585, 1360))
+                paperSheet(m, scale: desk.sheetScale)
+                    .position(m.point(585, Double(desk.sheetCenterY)))
 
-                tagButton(L10n.text("menu.map"), at: CGPoint(x: 250, y: 2140), rotation: -6, m: m, action: onMap)
-                tagButton(L10n.text("menu.bag"), at: CGPoint(x: 920, y: 2140), rotation: 5, m: m, action: onBag)
-                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2440, action: onClose)
+                tagButton(L10n.text("menu.map"), at: CGPoint(x: 250, y: 2036), rotation: -6, m: m, action: onMap)
+                tagButton(L10n.text("menu.bag"), at: CGPoint(x: 920, y: 2036), rotation: 5, m: m, action: onBag)
+                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2460, action: onClose)
             }
         }
         .task(id: castToken) { people = game.menuPeople() }
@@ -75,27 +76,67 @@ struct GameMenuView: View {
         }
     }
 
-    private func sectionTabs(_ m: FrameMapper) -> some View {
+    /// Бирки ниже таблички. Лист начинается под ними и не залезает на карту с сумкой.
+    private func deskLayout(_ m: FrameMapper) -> (centers: [CGPoint], sheetCenterY: CGFloat, sheetScale: CGFloat, tagScale: CGFloat) {
+        let tag = UIArt.entry("tag")
+        let visible = min(MenuTabLayout.canvasWidth, m.size.width / max(m.scale, 0.01))
+        var scale = MenuTabLayout.tagScale
+        var tagSize = CGSize(width: tag.width * scale, height: tag.height * scale)
+        let pair = 2 * tagSize.width + MenuTabLayout.gap + 2 * MenuTabLayout.margin
+        if pair > visible, tagSize.width > 0 {
+            scale *= (visible - MenuTabLayout.gap - 2 * MenuTabLayout.margin) / (2 * tagSize.width)
+            tagSize = CGSize(width: tag.width * scale, height: tag.height * scale)
+        }
+        let columns = MenuTabLayout.columns(viewWidth: visible, itemWidth: tagSize.width,
+                                            gap: MenuTabLayout.gap, margin: MenuTabLayout.margin)
+        let plaqueBottom: CGFloat = 420
+        let firstY = plaqueBottom + 16 + tagSize.height / 2
+        let centers = MenuTabLayout.centers(columns: columns, tagSize: tagSize,
+                                            visibleWidth: visible, firstCenterY: firstY)
+        let tabsBottom = (centers.map(\.y).max() ?? firstY) + tagSize.height / 2
+        let sheetScale: CGFloat = 0.58
+        let sheetH = UIArt.entry("sheet").height * sheetScale
+        let sheetY = min(tabsBottom + 28 + sheetH / 2, 1888)
+        return (centers, sheetY, sheetScale, scale)
+    }
+
+    private func sectionTabs(_ m: FrameMapper, centers: [CGPoint], scale: CGFloat) -> some View {
         let pages = Page.allCases
-        let xs = [175.0, 455.0, 735.0, 1005.0]
         return ZStack {
             ForEach(Array(pages.enumerated()), id: \.offset) { i, item in
                 let on = page == item
                 Button { page = item } label: {
-                    TagArt(line1: L10n.text(item.titleKey), line2: on ? "·" : " ", k: m.scale, small: true, scale: 0.58)
+                    tabTag(L10n.text(item.titleKey), m: m, scale: scale)
                         .saturation(on ? 1 : 0.35)
-                        .opacity(on ? 1 : 0.78)
+                        .opacity(on ? 1 : 0.82)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(PressStyle())
-                .position(m.point(xs[i], 640))
+                .position(m.point(Double(centers[i].x), Double(centers[i].y)))
                 .accessibilityLabel(L10n.text(item.titleKey))
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
     }
 
-    private func paperSheet(_ m: FrameMapper) -> some View {
-        let scale: CGFloat = 0.8
+    /// Крупная бирка: подпись может занять две строки, зона нажатия — вся бумага.
+    private func tabTag(_ title: String, m: FrameMapper, scale: CGFloat) -> some View {
+        ArtView(name: "tag", k: m.scale, scale: scale) { e, f in
+            let w = e.value("textWidth") * f
+            let top = e.anchor("line1")
+            let bottom = e.anchor("line2")
+            Text(title)
+                .font(Ink.title(54 * f))
+                .foregroundStyle(Ink.brown)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .frame(width: w, height: max(bottom.y - top.y + 80, 90) * f)
+                .position(x: top.x * f, y: (top.y + bottom.y) / 2 * f)
+        }
+    }
+
+    private func paperSheet(_ m: FrameMapper, scale: CGFloat) -> some View {
         return PaperArt(name: "sheet", k: m.scale, scale: scale) { size in
             ScrollView {
                 pageBody(m)
@@ -237,7 +278,7 @@ struct GameMenuView: View {
     private func languageTag(_ choice: LanguageChoice, title: String, _ m: FrameMapper) -> some View {
         let selected = AppLanguage.choice == choice
         return Button { game.setLanguage(choice) } label: {
-            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.72)
+            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.92, size1: 64, size2: 34)
                 .saturation(selected ? 1 : 0.25)
         }
         .buttonStyle(PressStyle())
@@ -279,7 +320,7 @@ struct GameMenuView: View {
     private func reminderTag(on wantOn: Bool, title: String, m: FrameMapper) -> some View {
         let selected = remindersOn == wantOn
         return Button { Task { await setReminders(wantOn) } } label: {
-            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.78)
+            TagArt(line1: title, line2: selected ? "·" : " ", k: m.scale, small: true, scale: 0.96, size1: 62, size2: 32)
                 .saturation(selected ? 1 : 0.3)
         }
         .buttonStyle(PressStyle())
@@ -289,7 +330,7 @@ struct GameMenuView: View {
 
     private func tagButton(_ title: String, at: CGPoint, rotation: Double, m: FrameMapper, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            TagArt(line1: title, line2: " ", k: m.scale, small: true, scale: 0.7)
+            TagArt(line1: title, line2: " ", k: m.scale, small: true, scale: 0.92, size1: 68, size2: 30)
                 .rotationEffect(.degrees(rotation))
         }
         .buttonStyle(PressStyle())

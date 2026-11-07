@@ -133,3 +133,56 @@ enum ReminderPreference {
         return true
     }
 }
+
+/// Бирки разделов меню. Четыре крупные бирки в один ряд, если влезают с полями.
+/// Иначе две и две: на телефоне длинные подписи иначе не читаются.
+enum MenuTabLayout {
+    static let canvasWidth: CGFloat = 1170
+    static let tagScale: CGFloat = 1.08
+    static let gap: CGFloat = 22
+    static let margin: CGFloat = 18
+
+    static func columns(viewWidth: CGFloat, itemWidth: CGFloat, gap: CGFloat, margin: CGFloat) -> Int {
+        guard itemWidth > 0, viewWidth > 0 else { return 2 }
+        let row = 4 * itemWidth + 3 * gap
+        return row + margin * 2 <= viewWidth ? 4 : 2
+    }
+
+    /// Центры четырёх бирок в пикселях кадра 1170×2532.
+    /// visibleWidth — ширина кадра, которая реально видна (меньше 1170, если края обрезаны).
+    static func centers(columns: Int, tagSize: CGSize, visibleWidth: CGFloat, firstCenterY: CGFloat) -> [CGPoint] {
+        let cols = columns == 4 ? 4 : 2
+        let gridW = CGFloat(cols) * tagSize.width + CGFloat(max(0, cols - 1)) * gap
+        let windowX = (canvasWidth - visibleWidth) / 2
+        let left = windowX + (visibleWidth - gridW) / 2 + tagSize.width / 2
+        return (0..<4).map { i in
+            let col = i % cols
+            let row = i / cols
+            return CGPoint(
+                x: left + CGFloat(col) * (tagSize.width + gap),
+                y: firstCenterY + CGFloat(row) * (tagSize.height + gap)
+            )
+        }
+    }
+}
+
+/// Кнопка «Меню» внизу, в зазоре между сумкой и картой, выше домашнего индикатора.
+enum RoadMenuButton {
+    static let bagAnchor = CGPoint(x: 190, y: 2330)
+    static let mapAnchor = CGPoint(x: 990, y: 2330)
+    static let canvasHeight: CGFloat = 2532
+    static let tagScale: CGFloat = 1.22
+
+    static func imageRect(width: CGFloat, height: CGFloat, bodyCenter: CGPoint, anchor: CGPoint) -> CGRect {
+        CGRect(x: anchor.x - bodyCenter.x, y: anchor.y - bodyCenter.y, width: width, height: height)
+    }
+
+    static func center(bag: CGRect, map: CGRect, buttonSize: CGSize, canvasHeight: CGFloat, safeBottom: CGFloat) -> CGPoint {
+        let x = bag.maxX + (map.minX - bag.maxX) / 2
+        let limit = canvasHeight - max(0, safeBottom) - 12
+        var y = (bag.midY + map.midY) / 2
+        let half = buttonSize.height / 2
+        if y + half > limit { y = limit - half }
+        return CGPoint(x: x, y: max(half, y))
+    }
+}

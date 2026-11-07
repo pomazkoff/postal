@@ -344,3 +344,54 @@ struct EndCardView: View {
         }
     }
 }
+
+/// Полноэкранный конец главы 2: тот же почтальон с карты, бумага и стрелка назад в мир.
+/// Картинка не отдельный герой — файл UI/map/postman.png, уже с красным шарфом.
+struct JourneyCardView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let onClose: () -> Void
+
+    var body: some View {
+        FrameScreen(dim: 0.58) { m in
+            let safeDesign = ScreenInsets.bottom / max(m.scale, 0.01)
+            let arrowBottom = min(2460, 2532 - safeDesign - 16)
+            ZStack {
+                Image(uiImage: HUDImages.image("UI/map/postman"))
+                    .resizable()
+                    .interpolation(.high)
+                    .scaledToFit()
+                    .frame(height: m.length(1240))
+                    .position(m.point(585, 860))
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+
+                PaperArt(name: "sheet", k: m.scale, scale: 0.6) { size in
+                    VStack(spacing: m.length(22)) {
+                        Text(L10n.text("journey.continue"))
+                            .font(Ink.title(m.length(56)))
+                            .foregroundStyle(Ink.brown)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(3)
+                            .minimumScaleFactor(0.65)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityAddTraits(.isHeader)
+                        Text(L10n.text("journey.soon"))
+                            .font(Ink.label(m.length(40)))
+                            .foregroundStyle(Ink.pencil)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.7)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(width: size.width, height: size.height, alignment: .center)
+                }
+                .position(m.point(585, 1880))
+                .allowsHitTesting(false)
+
+                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: Double(arrowBottom), action: onClose)
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .transaction { if reduceMotion { $0.animation = nil } }
+    }
+}

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// HUD по макету ui/v3: бирка расстояния, карманные часы, телеграмма-задание, сумка и карта —
 /// всё пластилиновое, в координатах кадра 1170×2532 (как сцена, .aspectFill) — см. HUDLayout.
@@ -12,6 +13,7 @@ struct HUDView: View {
     @State private var showMenu = false
     @State private var letterID: String?
     @State private var confirmReset = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private enum Panel: Equatable {
         case bag
@@ -28,6 +30,7 @@ struct HUDView: View {
         case card(StoryCard)
         case resident(StoryCard)
         case sorting
+        case journey
         case menu
         case none
     }
@@ -39,6 +42,10 @@ struct HUDView: View {
         if let panel { return .panel(panel) }
         if engine.needsSorting { return .sorting }
         if let card = engine.nextCard { return .card(card) }
+        if JourneyCard.shouldShow(chapterID: game.chapter.id, finished: engine.isFinished,
+                                  hasPendingCard: false, seen: engine.hasSeenJourneyCard) {
+            return .journey
+        }
         if engine.isFinished && !engine.state.endCardSeen && engine.nextCard == nil { return .panel(.endCard) }
         if showMenu { return .menu }
         return .none
@@ -50,7 +57,7 @@ struct HUDView: View {
                 let m = FrameMapper(size: geo.size)
                 ZStack {
                     // Нижние кнопки (часть «мира»: при раскрытых часах приглушаются вместе со сценой).
-                    bottomButtons(m)
+                    bottomButtons(m, safeBottom: max(geo.safeAreaInsets.bottom, ScreenInsets.bottom))
 
                     // Приглушение мира при раскрытых часах (яркость ×0.52 по ui-v3-notes); тап — свернуть.
                     if watchExpanded {
@@ -85,6 +92,9 @@ struct HUDView: View {
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
+                .blur(radius: screen == .menu ? 14 : 0)
+                .allowsHitTesting(screen != .menu)
+                .accessibilityHidden(screen == .menu)
             }
             .ignoresSafeArea()
 
@@ -109,9 +119,10 @@ struct HUDView: View {
                     .zIndex(10)
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: screen)
+        .animation(reduceMotion ? .none : .easeInOut(duration: 0.25), value: screen)
         .animation(.easeInOut(duration: 0.25), value: letterID)
         .onChange(of: screen) { _, new in
+            game.roadMenuOpen = new == .menu
             if new != .none { game.showHeroCard = false }
         }
         .storyResetAlert(isPresented: $confirmReset)
@@ -137,11 +148,15 @@ struct HUDView: View {
                 engine.markEndCardSeen()
                 panel = nil
             }
+        case .journey:
+            JourneyCardView {
+                engine.markJourneyCardSeen()
+            }
         case .menu:
             GameMenuView(
-                onClose: { showMenu = false },
-                onMap: { showMenu = false; panel = .map },
-                onBag: { showMenu = false; panel = .bag }
+                onClose: { showMenu = false; game.roadMenuOpen = false },
+                onMap: { showMenu = false; game.roadMenuOpen = false; panel = .map },
+                onBag: { showMenu = false; game.roadMenuOpen = false; panel = .bag }
             )
         case .card(let card):
             StoryCardView(card: card) { finishCard(card) }
@@ -173,7 +188,7 @@ struct HUDView: View {
 
     // MARK: Кнопки сумки и карты
 
-    private func bottomButtons(_ m: FrameMapper) -> some View {
+    private func bottomButtons(_ m: FrameMapper, safeBottom: CGFloat) -> some View {
         let count = engine.bagItems.count + engine.pocketItems.count
         return ZStack {
             Button { openBag() } label: {
@@ -197,28 +212,8 @@ struct HUDView: View {
             .pinned(size: artSize("hud_map", m), anchor: bodyCenter("hud_map", m), at: m.point(990, 2330))
             .accessibilityLabel(L10n.text("hud.map"))
 
-            // Слева посредине: не на бирке, не на телеграмме, не на сумке и не на карте.
             if screen == .none {
-                Button { showMenu = true } label: {
-                    Text(L10n.text("menu.open"))
-                        .font(Ink.title(m.length(48)))
-                        .foregroundStyle(Ink.brown)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                        .padding(.horizontal, m.length(36))
-                        .padding(.vertical, m.length(40))
-                        .background(
-                            RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
-                                .fill(Theme.paper)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
-                                        .stroke(Theme.paperEdge, lineWidth: max(1, m.length(3)))
-                                )
-                        )
-                }
-                .buttonStyle(PressStyle())
-                .position(m.point(168, 1480))
-                .accessibilityLabel(L10n.text("menu.open.a11y"))
+                menuButton(m, safeBottom: safeBottom)
             }
 
             // «К почтальону»: деревянная стрелка с головой героя у края экрана, куда он ушёл.
@@ -230,6 +225,42 @@ struct HUDView: View {
         }
         .frame(width: m.size.width, height: m.size.height)
         .animation(.spring(response: 0.35, dampingFraction: 0.7), value: game.postmanOffscreen)
+    }
+
+    /// Бумажная бирка по центру между сумкой и картой. Корпуса не пересекает.
+    private func menuButton(_ m: FrameMapper, safeBottom: CGFloat) -> some View {
+        let scale = RoadMenuButton.tagScale
+        let tag = UIArt.entry("tag_small")
+        let bagArt = UIArt.entry("hud_bag")
+        let mapArt = UIArt.entry("hud_map")
+        let bag = RoadMenuButton.imageRect(width: bagArt.width, height: bagArt.height,
+                                           bodyCenter: bagArt.bodyCenter, anchor: RoadMenuButton.bagAnchor)
+        let map = RoadMenuButton.imageRect(width: mapArt.width, height: mapArt.height,
+                                           bodyCenter: mapArt.bodyCenter, anchor: RoadMenuButton.mapAnchor)
+        let button = CGSize(width: tag.width * scale, height: tag.height * scale)
+        let safeDesign = safeBottom / max(m.scale, 0.01)
+        let center = RoadMenuButton.center(bag: bag, map: map, buttonSize: button,
+                                            canvasHeight: RoadMenuButton.canvasHeight, safeBottom: safeDesign)
+        return Button {
+            showMenu = true
+            game.roadMenuOpen = true
+        } label: {
+            ArtView(name: "tag_small", k: m.scale, scale: scale) { e, f in
+                let top = e.anchor("line1")
+                let bottom = e.anchor("line2")
+                Text(L10n.text("menu.open"))
+                    .font(Ink.title(62 * f))
+                    .foregroundStyle(Ink.brown)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(width: e.value("textWidth") * f)
+                    .position(x: top.x * f, y: (top.y + bottom.y) / 2 * f)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressStyle())
+        .position(m.point(Double(center.x), Double(center.y)))
+        .accessibilityLabel(L10n.text("menu.open.a11y"))
     }
 
     private func postmanButton(_ off: WorldScene.Offscreen, _ m: FrameMapper) -> some View {
@@ -286,5 +317,14 @@ struct HUDView: View {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
             watchExpanded.toggle()
         }
+    }
+}
+
+/// Нижний отступ окна. GeometryReader под ignoresSafeArea иногда отдаёт ноль.
+enum ScreenInsets {
+    static var bottom: CGFloat {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let windows = scenes.flatMap(\.windows)
+        return (windows.first { $0.isKeyWindow } ?? windows.first)?.safeAreaInsets.bottom ?? 0
     }
 }

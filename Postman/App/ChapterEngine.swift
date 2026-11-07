@@ -614,6 +614,15 @@ final class ChapterEngine: ObservableObject {
         commit()
     }
 
+    var hasSeenJourneyCard: Bool { state.journeyCardSeen == true }
+
+    /// Закрытие полноэкранной карточки главы 2. Прогресс, письма и шаги не трогает.
+    func markJourneyCardSeen() {
+        guard state.journeyCardSeen != true else { return }
+        state.journeyCardSeen = true
+        commit()
+    }
+
     // MARK: - «Вот как развивалась история»
 
     struct Journal: Identifiable {
@@ -664,5 +673,12 @@ final class ChapterEngine: ObservableObject {
         currentStep = 0
         liveViewing = false
         commit()
+    }
+}
+
+/// Полноэкранная карточка конца главы 2. Не раньше финала и не на каждом запуске.
+enum JourneyCard {
+    static func shouldShow(chapterID: Int, finished: Bool, hasPendingCard: Bool, seen: Bool) -> Bool {
+        chapterID == 2 && finished && !hasPendingCard && !seen
     }
 }

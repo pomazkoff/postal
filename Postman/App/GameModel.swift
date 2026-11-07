@@ -21,6 +21,8 @@ final class GameModel: ObservableObject {
     @Published private(set) var postmanOffscreen: WorldScene.Offscreen?
     /// Карточка почтальона по тапу в мире. Не сейв.
     @Published var showHeroCard = false
+    /// Меню открыто: мир и HUD под ним размыты, бумага меню остаётся резкой.
+    @Published var roadMenuOpen = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
