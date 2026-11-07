@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Политика конфиденциальности — Тишина. Последний почтальон</title>
-<meta name="description" content="Политика конфиденциальности игры «Тишина. Последний почтальон»: шаги из Apple Health (только чтение), приблизительное место для погоды. Данные не уходят с устройства.">
+<meta name="description" content="Политика конфиденциальности игры «Тишина. Последний почтальон»: шаги из Apple Health читаются локально; приблизительные координаты по желанию уходят в Open-Meteo для кода погоды.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://pomazkoff.github.io/POSTAL/privacy.html">
+<link rel="canonical" href="https://pomazkoff.github.io/postal/privacy.html">
 <meta name="theme-color" content="#111111">
 <style>
   :root { color-scheme: dark; }
@@ -27,31 +27,32 @@
 
 <section lang="ru" id="ru">
 <h1>Политика конфиденциальности игры «Тишина. Последний почтальон»</h1>
-<p class="muted">Действует с: 6 ноября 2026 г. Разработчик — Илья Помазков (Mazkof Games). Связь: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a>, Telegram <a href="https://t.me/oloid_vn">t.me/oloid_vn</a>.</p>
+<p class="muted">Действует с: 6 ноября 2026 г. Обновлено: 7 ноября 2026 г. Разработчик — Илья Помазков (Mazkof Games). Связь: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a>, Telegram <a href="https://t.me/oloid_vn">t.me/oloid_vn</a>.</p>
 
 <h2>1. Коротко</h2>
-<p>Игра работает на вашем iPhone. <strong>Мы не собираем аккаунты, аналитику и рекламу.</strong> На устройство локально читаются шаги (Apple «Здоровье») и, по желанию, приблизительное место — только чтобы показать погоду в игре. Эти данные <strong>не отправляются</strong> нам и не сохраняются на наших серверах (серверов у игры нет).</p>
+<p>Игра работает на вашем iPhone. Мы не создаём аккаунты, не встраиваем рекламу и собственную аналитику. На устройстве локально читаются шаги (Apple «Здоровье»). По желанию игра может взять приблизительное место, округлить координаты до двух знаков после запятой (шаг около километра) и отправить их сервису погоды Open-Meteo (<code>api.open-meteo.com</code>), чтобы показать в Долине дождь, снег или туман как у вас. Своего сервера у игры нет: координаты не хранятся у нас и не записываются в сохранения приложения — на устройстве остаётся только код погоды и время его получения. Шаги с устройства не отправляются. От геолокации можно отказаться: тогда будет сезонная погода, без запроса к Open-Meteo.</p>
 
 <h2>2. Какие данные использует игра</h2>
 <ul>
-<li><strong>Шаги (HealthKit / «Здоровье»)</strong> — только чтение. Нужны, чтобы почтальон шёл по дороге, когда идёте вы. В «Здоровье» игра ничего не записывает.</li>
-<li><strong>Приблизительное место (Coarse Location)</strong> — опционально, с пониженной точностью. Нужно только для погоды в Долине (дождь/снег как у вас). Точные координаты не используются; место никуда не сохраняется и не передаётся.</li>
+<li><strong>Шаги (HealthKit / «Здоровье»)</strong> — только чтение на устройстве. Нужны, чтобы почтальон шёл по дороге, когда идёте вы. В «Здоровье» игра ничего не записывает. В текущей версии шаги не отправляются: ни нам (своего сервера нет), ни в Open-Meteo.</li>
+<li><strong>Приблизительное место</strong> — по желанию, с пониженной точностью и только пока игра используется. Если доступ разрешён и сохранённый код погоды устарел, игра запрашивает координаты, округляет широту и долготу до двух знаков после запятой (около километра) и передаёт их запросом системы (<code>URLSession</code>) на <code>api.open-meteo.com</code> за текущим кодом погоды (<code>current=weather_code</code>). В сохранения приложения координаты не пишутся — только полученный код и время. IP-адрес отдельным полем игра не отправляет; его видит Open-Meteo, как и при любом обращении к их серверу.</li>
 <li><strong>Локальный прогресс</strong> — сохранения, уведомления о письмах и настройки хранятся на устройстве.</li>
 </ul>
+<p>По тексту Open-Meteo для бесплатного API (<a href="https://open-meteo.com/en/terms">open-meteo.com/en/terms</a>, раздел Privacy, сверено 7 ноября 2026 г.) в журналах веб-сервера, которые они ведут для устранения неполадок, могут оставаться IP-адреса и географические координаты. Там же сказано, что эти журналы не передаются третьим лицам и удаляются через 90 дней. Это их формулировка о своём сервисе; Open-Meteo может её изменить. Погодные данные Open-Meteo распространяет на условиях <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; в их условиях указана атрибуция «Weather data by Open-Meteo.com».</p>
 
 <h2>3. Что мы не делаем</h2>
 <ul>
 <li>нет регистрации и аккаунтов;</li>
-<li>нет рекламы и трекеров;</li>
-<li>нет продажи или передачи данных третьим лицам;</li>
-<li>нет собственной аналитики в приложении.</li>
+<li>нет рекламы и собственной аналитики;</li>
+<li>нет продажи данных; в текущей версии наружу уходит только запрос погоды в Open-Meteo с округлёнными координатами (см. выше);</li>
+<li>нет отдельной передачи шагов.</li>
 </ul>
 
 <h2>4. Разрешения</h2>
-<p>Система сама спрашивает доступ к «Здоровью» и (по желанию) к геолокации. От геолокации можно отказаться — игра продолжит работать без погоды по месту. Отзыв доступа — в Настройках iOS.</p>
+<p>Система сама спрашивает доступ к «Здоровью» и, по желанию, к геолокации на время использования игры. От геолокации можно отказаться — тогда игра показывает сезонную погоду и не обращается к Open-Meteo. Отзыв доступа — в Настройках iOS.</p>
 
 <h2>5. Дети</h2>
-<p>Игра рассчитана на возраст 9+. Мы не собираем персональные данные детей.</p>
+<p>Игра рассчитана на возраст 9+. Имя, аккаунт и контакты она не спрашивает. Если геолокацию разрешить, к Open-Meteo уходит тот же запрос погоды, что описан выше.</p>
 
 <h2>6. Контакты</h2>
 <p>Вопросы по данным: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a>. Поддержка: <a href="support.html">страница поддержки</a>.</p>
@@ -61,31 +62,32 @@
 
 <section lang="en" id="en">
 <h1>Privacy Policy — Silence. The Last Postman</h1>
-<p class="muted">Effective: 6 November 2026. Developer: Ilya Pomazkov (Mazkof Games). Contact: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a>, Telegram <a href="https://t.me/oloid_vn">t.me/oloid_vn</a>.</p>
+<p class="muted">Effective: 6 November 2026. Updated: 7 November 2026. Developer: Ilya Pomazkov (Mazkof Games). Contact: <a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a>, Telegram <a href="https://t.me/oloid_vn">t.me/oloid_vn</a>.</p>
 
 <h2>1. In short</h2>
-<p>The game runs on your iPhone. <strong>We do not collect accounts, analytics, or ads.</strong> On-device only, the app may read step counts (Apple Health) and, optionally, coarse location for in-game weather. This data is <strong>not sent</strong> to us; the game has no backend servers.</p>
+<p>The game runs on your iPhone. We do not create accounts, and the app does not include ads or its own analytics. Step counts (Apple Health) are read on the device. Optionally, the app may take a coarse location, round the coordinates to two decimal places (a step of about one kilometer), and send them to the weather service Open-Meteo (<code>api.open-meteo.com</code>) so Valley weather — rain, snow, or fog — matches yours. The game has no server of its own: coordinates are not stored by us and are not written into the app’s saved data. On the device, only the weather code and the time it was received are kept. Step counts are not sent. You can deny location; the game then uses seasonal weather and does not call Open-Meteo.</p>
 
 <h2>2. Data the game uses</h2>
 <ul>
-<li><strong>Steps (HealthKit)</strong> — read-only, so the postman walks as you walk. The app never writes to Health.</li>
-<li><strong>Coarse location</strong> — optional, reduced accuracy, only for Valley weather. Precise coordinates are not used; location is not stored or transmitted.</li>
-<li><strong>Local progress</strong> — saves, letter notifications, and settings stay on device.</li>
+<li><strong>Steps (HealthKit)</strong> — read on the device only, so the postman walks as you walk. The app does not write to Health. In the current version, step counts are not sent to us (there is no server of ours) or to Open-Meteo.</li>
+<li><strong>Coarse location</strong> — optional, reduced accuracy, and only while the app is in use. If you allow it and the saved weather code is out of date, the app requests coordinates, rounds latitude and longitude to two decimal places (about one kilometer), and sends them with the system <code>URLSession</code> to <code>api.open-meteo.com</code> for the current weather code (<code>current=weather_code</code>). Coordinates are not written into the app’s saved data — only the code that comes back, and the time. The app does not send the IP address as its own field; Open-Meteo sees it as part of the connection, as with any request to their server.</li>
+<li><strong>Local progress</strong> — saves, letter notifications, and settings stay on the device.</li>
 </ul>
+<p>Open-Meteo’s published text for the free API (<a href="https://open-meteo.com/en/terms">open-meteo.com/en/terms</a>, Privacy section, checked on 7 November 2026) says that web server logs kept for troubleshooting may contain IP addresses and geographical coordinates. That text also says those logs are not shared with third parties and are deleted after 90 days. That is Open-Meteo’s statement about its own service, and Open-Meteo may change it. Open-Meteo provides weather data under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; their terms name the credit “Weather data by Open-Meteo.com”.</p>
 
 <h2>3. What we do not do</h2>
 <ul>
-<li>no accounts;</li>
-<li>no ads or trackers;</li>
-<li>no sale or sharing of data with third parties;</li>
-<li>no first-party analytics in the app.</li>
+<li>no accounts or sign-up;</li>
+<li>no ads and no analytics of our own;</li>
+<li>no sale of data; in the current version the only data the app sends out is the weather request to Open-Meteo with rounded coordinates (see above);</li>
+<li>no separate transmission of step counts.</li>
 </ul>
 
 <h2>4. Permissions</h2>
-<p>iOS asks for Health and (optionally) Location. You can deny location; the game still works without place-based weather. Revoke access anytime in iOS Settings.</p>
+<p>iOS asks for Health and, optionally, for location while the app is in use. You can deny location; the game then shows seasonal weather and does not contact Open-Meteo. You can revoke access in iOS Settings.</p>
 
 <h2>5. Children</h2>
-<p>Age rating 9+. We do not collect children’s personal data.</p>
+<p>The age rating is 9+. The game does not ask for a name, an account, or contact details. If location is allowed, the same weather request described above goes to Open-Meteo.</p>
 
 <h2>6. Contact</h2>
 <p><a href="mailto:ilpomazkov@yandex.ru">ilpomazkov@yandex.ru</a> · <a href="support.html">Support page</a>.</p>
