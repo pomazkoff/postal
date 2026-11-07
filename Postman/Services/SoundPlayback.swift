@@ -13,6 +13,7 @@ final class SoundPlayback: NSObject {
     private var bedLoop = false
     private var stepCursor: [String: Int] = [:]
     private var lastFoot: TimeInterval = 0
+    private var lastAnimal: TimeInterval = 0
     private var lastEffect: (String, TimeInterval) = ("", 0)
     private var toldStories: Set<String> = []
     private var valleyBirdsAt: TimeInterval = 0
@@ -60,6 +61,21 @@ final class SoundPlayback: NSObject {
         player.numberOfLoops = 0
         player.currentTime = 0
         player.play()
+    }
+
+    /// Тап по фигуре зверя, пока она на экране. Варианты чередуются. Повтор того же зверя
+    /// раньше 0.75 с не наслаивается. Карточка прогресса этот метод не вызывает.
+    func animalTap(residentID: String, appActive: Bool, worldVisible: Bool) {
+        guard AudioMix.allowsAnimalTap(appActive: appActive, worldVisible: worldVisible,
+                                       effectsGain: SoundPrefs.effects.gain) else { return }
+        guard let cue = AudioMix.animalCue(residentID) else { return }
+        let now = CACurrentMediaTime()
+        guard now - lastAnimal >= 0.75 else { return }
+        let cursor = stepCursor[cue] ?? 0
+        guard let pick = AudioMix.nextAnimalClip(cue: cue, cursor: cursor) else { return }
+        stepCursor[cue] = pick.next
+        lastAnimal = now
+        effect(pick.id)
     }
 
     func story(eventID: String, kind: String, residentID: String?, live: Bool) {

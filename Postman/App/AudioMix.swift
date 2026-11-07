@@ -117,11 +117,34 @@ enum AudioMix {
         }
     }
 
+    /// Два варианта на каждый cue. Курсор снаружи чередует их, как шаги.
+    static let animalClips: [String: [String]] = [
+        "animal_rooster": ["animal_rooster_1", "animal_rooster_2"],
+        "animal_cat": ["animal_cat_1", "animal_cat_2"],
+        "animal_goat_kid": ["animal_goat_kid_1", "animal_goat_kid_2"],
+        "animal_goat": ["animal_goat_1", "animal_goat_2"],
+        "animal_raven": ["animal_raven_1", "animal_raven_2"],
+        "animal_dog": ["animal_dog_1", "animal_dog_2"],
+    ]
+
+    static func nextAnimalClip(cue: String, cursor: Int) -> (id: String, next: Int)? {
+        guard let clips = animalClips[cue], !clips.isEmpty else { return nil }
+        let index = cursor % clips.count
+        return (clips[index], cursor + 1)
+    }
+
+    /// Только видимый тап. Прогресс, журнал и фон сюда не входят.
+    static func allowsAnimalTap(appActive: Bool, worldVisible: Bool, effectsGain: Float) -> Bool {
+        appActive && worldVisible && effectsGain > 0
+    }
+
     /// Звук карточки, только когда игрок смотрит сейчас. Журнал догона сюда не попадает.
+    /// Звери сюда не входят: их голос только от тапа по фигуре.
     static func storyCues(eventID: String, kind: String, residentID: String?, live: Bool) -> [String] {
         guard live else { return [] }
+        // residentID не выбирает клип: человек молчит, зверь звучит только от тапа по фигуре.
+        _ = residentID
         if eventID == "s_bell" || eventID == "d_l2" { return ["bell"] }
-        if let residentID, let animal = animalCue(residentID) { return [animal] }
         switch kind {
         case "delivery", "finale": return ["mail_handover"]
         case "pickup": return ["mail_bag"]

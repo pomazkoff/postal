@@ -1,5 +1,5 @@
 {
-  "purpose": "Next Seed Audio pack. Only creatures that exist on the road in chapters 1 and 2. No new species, no voices, no music.",
+  "purpose": "Canonical animals on the road in chapters 1 and 2. The six cues are in this folder as animal_<cue>_1.wav and animal_<cue>_2.wav. No new species, no voices, no music.",
   "format": "PCM WAV mono 44100 Hz 16 bit. One-shot, a single gesture, silence at both ends. Two variants each. Do not loop.",
   "play_rule": "Once, when the player taps that figure, or when its story card is on screen and the player is watching. Never during the catch-up journal, never in the background, never as an idle loop.",
   "animals": [

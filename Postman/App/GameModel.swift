@@ -243,6 +243,11 @@ final class GameModel: ObservableObject {
 
     private func visitResident(chapterID: Int, residentID: String) {
         guard onboardingDone, let chapter = world.chapters.first(where: { $0.id == chapterID }) else { return }
+        SoundPlayback.shared.animalTap(
+            residentID: residentID,
+            appActive: UIApplication.shared.applicationState == .active,
+            worldVisible: !worldCovered && !roadMenuOpen && journal == nil && residentVisit == nil
+        )
         endResidentVisit()
         let requestID = UUID()
         residentVisitRequestID = requestID

@@ -48,17 +48,6 @@ def story_cues(event_id, kind, resident, live):
         return []
     if event_id in ("s_bell", "d_l2"):
         return ["bell"]
-    animals = {
-        "rooster": "animal_rooster",
-        "cat_barrel": "animal_cat",
-        "goat_kid": "animal_goat_kid",
-        "ramka": "animal_goat",
-        "matrena": "animal_goat",
-        "raven_saddle": "animal_raven",
-        "dog_penki": "animal_dog",
-    }
-    if resident in animals:
-        return [animals[resident]]
     if kind in ("delivery", "finale"):
         return ["mail_handover"]
     if kind == "pickup":
@@ -95,14 +84,28 @@ if story_cues("d_l2", "delivery", "pimen", True) != ["bell"]:
     fail("the belfry delivery is the bell, once")
 if story_cues("s_bell", "scene", None, True) != ["bell"]:
     fail("the distant bell is the same bell")
-if story_cues("e_animal_rooster", "choice", "rooster", True) != ["animal_rooster"]:
-    fail("the rooster card should ask for the rooster cue")
+if story_cues("e_animal_rooster", "choice", "rooster", True):
+    fail("walking up to the rooster must not play him; only a tap does")
+if story_cues("p_animal_dog_find", "pickup", "dog_penki", True) != ["mail_bag"]:
+    fail("finding the horn is a pickup, not a bark from progress")
 if story_cues("arrive_gar", "scene", "lesnik", True):
     fail("a person has no voice cue")
-if story_cues("e_ramka", "choice", "ramka", True) != ["animal_goat"]:
-    fail("Ramka shares the adult goat cue")
-if story_cues("e_animal_matrena", "choice", "matrena", True) != ["animal_goat"]:
-    fail("Matrena is the same goat cue, not a new species")
+
+def next_clip(cue, cursor):
+    clips = {
+        "animal_rooster": ["animal_rooster_1", "animal_rooster_2"],
+        "animal_cat": ["animal_cat_1", "animal_cat_2"],
+        "animal_goat_kid": ["animal_goat_kid_1", "animal_goat_kid_2"],
+        "animal_goat": ["animal_goat_1", "animal_goat_2"],
+        "animal_raven": ["animal_raven_1", "animal_raven_2"],
+        "animal_dog": ["animal_dog_1", "animal_dog_2"],
+    }[cue]
+    return clips[cursor % len(clips)], cursor + 1
+
+if next_clip("animal_goat", 0) != ("animal_goat_1", 1) or next_clip("animal_goat", 1) != ("animal_goat_2", 2):
+    fail("adult goat variants must alternate, Ramka and Matrena share them")
+if next_clip("animal_rooster", 2)[0] != "animal_rooster_1":
+    fail("variant cursor must wrap")
 
 needed = json.loads((AUDIO / "sounds_needed.json").read_text(encoding="utf-8"))
 cues = [a["cue"] for a in needed["animals"]]
@@ -122,6 +125,9 @@ for name in (
     "mail_bag", "mail_handover", "mail_unfold",
     "ui_wood_tap", "ui_paper_open", "ui_paper_close",
     "valley_birds", "valley_wind", "mountain_wind", "rain", "snow_wind", "bell",
+    "animal_rooster_1", "animal_rooster_2", "animal_cat_1", "animal_cat_2",
+    "animal_goat_kid_1", "animal_goat_kid_2", "animal_goat_1", "animal_goat_2",
+    "animal_raven_1", "animal_raven_2", "animal_dog_1", "animal_dog_2",
 ):
     expect.append(name)
     path = AUDIO / f"{name}.wav"
@@ -182,4 +188,8 @@ if FAILS:
     for item in FAILS:
         print(" -", item)
     raise SystemExit(1)
-print(f"audio checks ok ({len(expect)} clips, 6 animal cues still to come)")
+if "func animalTap" not in play or "allowsAnimalTap" not in mix:
+    fail("animal clips must be reached from the tap, not from story progress")
+if "animalCue(residentID)" in mix.split("func storyCues", 1)[1]:
+    fail("story cards must not call the animal cue")
+print(f"audio checks ok ({len(expect)} clips, animal taps use two variants each)")
