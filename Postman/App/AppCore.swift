@@ -13,13 +13,15 @@ final class AppCore {
     static let shared = AppCore()
 
     let progress: ProgressStore
-    let world: WorldConfig
+    private(set) var world: WorldConfig
     let steps: StepService
     private(set) var engine: ChapterEngine
     /// Активная глава (0-based). Меняется по шагам или DEBUG forceChapterIndex.
     private(set) var chapterIndex: Int = 0
     /// Колбэк после смены сюжета главы (единая WorldScene остаётся прежней).
     var onChapterChanged: ((Int) -> Void)?
+    /// Смена языка: тот же прогресс и та же сцена, другие строки.
+    var onLocalizationChanged: (() -> Void)?
     let notifier = Notifier()
 
     /// Совпадает с BGTaskSchedulerPermittedIdentifiers в Postman/Info.plist: $(PRODUCT_BUNDLE_IDENTIFIER).refresh
@@ -98,6 +100,20 @@ final class AppCore {
             gameStartDate: { progress.gameStartDate })
     }
 
+    /// Перечитать мир и сюжет на выбранном языке. Файл сейва тот же: сделанные события
+    /// не проигрываются заново, уже записанный журнал не переписывается.
+    func reloadLocalization() {
+        let step = engine.currentStep
+        let live = engine.liveViewing
+        world = WorldConfigLoader.load()
+        engine = Self.makeEngine(world: world, chapterIndex: chapterIndex, progress: progress)
+        engine.adoptStep(step)
+        engine.liveViewing = live
+        bindEngineNotifications()
+        notifier.registerCategories(for: engine.story)
+        onLocalizationChanged?()
+    }
+
     /// Сменить главу (сюжет + state-файл). GameModel перебиндит сюжет, не заменяя сцену.
     func switchToChapter(_ index: Int) {
         let idx = max(0, min(world.chapters.count - 1, index))
@@ -160,6 +176,9 @@ final class AppCore {
     }
 
     private func postBeat(_ beat: ChapterEngine.Beat) {
+        // Выключенные и ещё не разрешённые напоминания не помечают остановку отправленной:
+        // включение не ставит её второй раз, а ещё не отправленный выбор уйдёт один раз.
+        guard ReminderPreference.allowsPosting(known: notifier.knownAuth) else { return }
         guard !postedBeatIDs.contains(beat.id) else { return }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)
@@ -218,9 +237,13 @@ final class AppCore {
         guard progress.onboardingDone, !backgroundObservationStarted else { return }
         backgroundObservationStarted = true
         steps.startBackgroundDelivery { @Sendable completion in
+            // completion() обязателен: иначе iOS перестаёт будить приложение новыми шагами.
+            // beginBackgroundTask — до прыжка на main, чтобы свёрнутый процесс успел дочитать шаги и поставить баннер.
+            let wake = BackgroundWake(completion: completion)
+            wake.begin(name: "postman.hk-wake")
             Task { @MainActor in
                 await AppCore.shared.backgroundRefresh()
-                completion()
+                wake.finish()
             }
         }
     }
@@ -235,8 +258,14 @@ final class AppCore {
     func appDidEnterBackground() {
         scheduleRefresh()
         flushDeferredChoicePushes()
-        // На случай, если шаги уже накопились, а HealthKit ещё не разбудил: догоняем сюжет.
-        Task { await backgroundRefresh() }
+        // Шаги, которые уже есть в Здоровье на момент сворачивания. Без background task
+        // iOS обрывает этот запрос, и остановка не ставится.
+        let wake = BackgroundWake(completion: nil)
+        wake.begin(name: "postman.step-catchup")
+        Task {
+            await backgroundRefresh()
+            wake.finish()
+        }
     }
 
     /// Неотвеченные выборы, которые игрок видел в приложении и ушёл — пуш с кнопками на локскрин.
@@ -254,5 +283,45 @@ final class AppCore {
             let body = card.text ?? title
             postBeat(ChapterEngine.Beat(id: card.id, title: title, body: body, choiceEventID: card.id))
         }
+    }
+}
+
+/// Дожить до конца фонового чтения шагов и ровно один раз закрыть задачу iOS.
+private final class BackgroundWake: @unchecked Sendable {
+    private let lock = NSLock()
+    private var finished = false
+    private var task = UIBackgroundTaskIdentifier.invalid
+    private let completion: (() -> Void)?
+
+    init(completion: (() -> Void)?) {
+        self.completion = completion
+    }
+
+    func begin(name: String) {
+        let app = UIApplication.shared
+        let id = app.beginBackgroundTask(withName: name) { [weak self] in
+            self?.finish()
+        }
+        lock.lock()
+        if finished {
+            lock.unlock()
+            if id != .invalid { app.endBackgroundTask(id) }
+            return
+        }
+        task = id
+        lock.unlock()
+    }
+
+    func finish() {
+        let app = UIApplication.shared
+        lock.lock()
+        guard !finished else { lock.unlock(); return }
+        finished = true
+        let id = task
+        task = .invalid
+        let completion = self.completion
+        lock.unlock()
+        completion?()
+        if id != .invalid { app.endBackgroundTask(id) }
     }
 }

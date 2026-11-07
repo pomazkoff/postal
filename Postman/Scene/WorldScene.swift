@@ -32,6 +32,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var residentNodes: [String: SKSpriteNode] = [:]
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
+    var onPostmanTap: (() -> Void)?
 
     // Спутник (коза Рамка): идёт рядом с почтальоном, пока companionProvider(шаг) возвращает его id.
     /// Какой спутник должен идти рядом на этом шаге главы (nil — никто). Задаёт GameModel.
@@ -139,7 +140,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         for (index, chapter) in config.chapters.enumerated() {
             buildChapter(chapter, index: index, actorLayer: actorLayer)
         }
-
         // Почтальон
         let pc = config.game.postman
         let node = PostmanRigNode(rig: rig,
@@ -163,8 +163,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
-    /// Маска закреплена в мировых координатах; параллакс двигается ВНУТРИ неё.
-    /// Поэтому граница главы не уплывает за камерой, а предыдущие главы остаются позади.
+    /// Маска сплошная и ровно по границе главы. Альфа тайлов здесь не трогается:
+    /// на Release 17746c5 она открывала пустую заливку вместо соседней земли.
     private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
         let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
@@ -173,7 +173,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             : geo.x(forStep: Double(chapter.endStep)) + margin
         let crop = SKCropNode()
         crop.zPosition = z
-        let mask = SKSpriteNode(color: .white, size: CGSize(width: right - left, height: 16000))
+        let mask = SKSpriteNode(color: .white, size: CGSize(width: max(1, right - left), height: 16000))
         mask.anchorPoint = .zero
         mask.position = CGPoint(x: left, y: worldBottomY - 4000)
         crop.maskNode = mask
@@ -279,6 +279,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             }
             guard !duplicate else { continue }
             let marker = SettlementMarkerNode(title: settlement.name)
+            marker.name = "settle.\(chapter.id).\(settlement.id)"
             marker.position = CGPoint(x: geo.x(forStep: Double(globalStep)), y: geo.roadY)
             marker.zPosition = 10
             actorLayer.addChild(marker)
@@ -291,6 +292,17 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             clay.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + after)) + 600, y: 0)
             clay.zPosition = 50
             actorLayer.addChild(clay)
+        }
+    }
+
+    /// Подписи поселений после смены языка. Геометрия дороги и стык глав не трогаются.
+    func retitleSettlements(_ config: WorldConfig) {
+        for chapter in config.chapters {
+            for settlement in chapter.settlements {
+                let name = "settle.\(chapter.id).\(settlement.id)"
+                guard let node = childNode(withName: "//\(name)") as? SettlementMarkerNode else { continue }
+                node.setTitle(settlement.name)
+            }
         }
     }
 
@@ -582,8 +594,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var nightShaderOn = false
 
-    /// Вечер/ночь: герои получают лишь часть тёмного тона + яркость/насыщенность/тёплый фонарь.
-    /// Днём (тон белый) шейдер снят — картинка как раньше. Учитывает DEBUG-переключатель читаемости.
+    /// Вечер/ночь: отдельный шейдер только если nightFigureGain > 1.
+    /// Сейчас герой темнеет общим тоном, как дома и земля. Днём шейдер снят.
     private func updateNightFigures() {
         let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
         let n = Readability.enabled ? Readability.updateNight(tint: tint) : 0
@@ -942,15 +954,34 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer === residentTapRecognizer else { return true }
         guard isUserInteractionEnabled, let view else { return false }
-        return residentKey(at: convertPoint(fromView: touch.location(in: view))) != nil
+        let point = convertPoint(fromView: touch.location(in: view))
+        return residentKey(at: point) != nil || hitsPostman(at: point)
+    }
+
+    private func hitsPostman(at point: CGPoint) -> Bool {
+        guard let postman, !postman.isHidden, postman.alpha > 0.01 else { return false }
+        for hit in nodes(at: point) {
+            var node: SKNode? = hit
+            while let current = node {
+                if current === postman { return true }
+                node = current.parent
+            }
+        }
+        return false
     }
 
     @objc private func handleResidentTap(_ g: UITapGestureRecognizer) {
-        guard g.state == .ended, !isPanning, let view = g.view,
-              let key = residentKey(at: convertPoint(fromView: g.location(in: view))) else { return }
-        let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
-        guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
-        onResidentTap?(chapterID, parts[1])
+        guard g.state == .ended, !isPanning, let view = g.view else { return }
+        let point = convertPoint(fromView: g.location(in: view))
+        if let key = residentKey(at: point) {
+            let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
+            guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
+            onResidentTap?(chapterID, parts[1])
+            return
+        }
+        guard hitsPostman(at: point) else { return }
+        postman.playNod(reduceMotion: UIAccessibility.isReduceMotionEnabled)
+        onPostmanTap?()
     }
 
     @objc private func handlePan(_ g: UIPanGestureRecognizer) {

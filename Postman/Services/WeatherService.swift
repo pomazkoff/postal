@@ -7,10 +7,10 @@ enum Weather: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .clear: return "ясно"
-        case .rain: return "дождь"
-        case .snow: return "снег"
-        case .fog: return "туман"
+        case .clear: return L10n.text("weather.clear")
+        case .rain: return L10n.text("weather.rain")
+        case .snow: return L10n.text("weather.snow")
+        case .fog: return L10n.text("weather.fog")
         }
     }
 
@@ -51,7 +51,7 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
     }
 
     /// Источник для отладки: «сеть», «сезон».
-    var sourceTitle: String { cachedReal != nil ? "Open-Meteo" : "по сезону" }
+    var sourceTitle: String { cachedReal != nil ? "Open-Meteo" : L10n.text("weather.source.season") }
 
     private var cachedReal: Weather? {
         guard let d = defaults.object(forKey: Key.date) as? Date,

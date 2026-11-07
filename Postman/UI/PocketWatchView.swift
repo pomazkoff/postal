@@ -20,12 +20,12 @@ struct PocketWatchView: View {
 
     private var accessibilityText: String {
         expanded
-            ? "Шагов сегодня \(Format.steps(today)), всего \(Format.steps(total))"
-            : "Шагов сегодня \(Format.steps(today))"
+            ? Format.watchExpanded(today: today, total: total)
+            : Format.watchToday(today)
     }
 
     private var hintText: String {
-        expanded ? "Нажмите, чтобы свернуть часы" : "Нажмите, чтобы раскрыть часы"
+        expanded ? L10n.text("watch.hint.collapse") : L10n.text("watch.hint.expand")
     }
 
     var body: some View {
@@ -41,11 +41,11 @@ struct PocketWatchView: View {
                 .allowsHitTesting(false)
 
             if let todayLabelSpec = state.todayLabel {
-                caption(spec: todayLabelSpec, string: todayLabelSpec.text ?? "сегодня")
+                caption(spec: todayLabelSpec, string: L10n.text("watch.today"))
             }
             number(spec: state.today, string: Format.steps(today))
             if let totalLabelSpec = state.totalLabel {
-                caption(spec: totalLabelSpec, string: totalLabelSpec.text ?? "всего")
+                caption(spec: totalLabelSpec, string: L10n.text("watch.total"))
             }
             if let totalSpec = state.total {
                 number(spec: totalSpec, string: Format.steps(total))

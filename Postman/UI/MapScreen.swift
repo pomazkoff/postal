@@ -18,6 +18,7 @@ struct MapScreen: View {
     @State private var pinchStart: (zoom: CGFloat, pan: CGPoint)?
     @State private var dragStart: (pan: CGPoint, translation: CGSize)?
     @State private var confirmReset = false
+    @State private var note: MapNote?
 
     static let maxZoom: CGFloat = 3
 
@@ -35,11 +36,15 @@ struct MapScreen: View {
                             .scaleEffect(zoom, anchor: .topLeading)
                             .offset(x: pan.x, y: pan.y)
                             .contentShape(Rectangle())
-                            .gesture(panGesture(m: m, size: geo.size).simultaneously(with: pinchGesture(m: m, size: geo.size)))
+                            .simultaneousGesture(panGesture(m: m, size: geo.size))
+                            .simultaneousGesture(pinchGesture(m: m, size: geo.size))
                             .onTapGesture(count: 2) { toggleZoom(map: map, road: road, m: m, size: geo.size) }
+                        if let note {
+                            mapNote(note, m: m)
+                        }
                         chrome(map, m: m)
                     } else {
-                        Text("Карта не найдена").foregroundStyle(Ink.chalk)
+                        Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
@@ -88,22 +93,34 @@ struct MapScreen: View {
 
             ForEach(map.settlements, id: \.id) { place in
                 let state = PlaceState(place.step <= step ? .visited : place.id == next?.id ? .next : .ghost)
-                stake(place.roadPoint, state: state, m: m)
+                stake(place.roadPoint, name: place.name, state: state, m: m)
+                    .onTapGesture { openPlace(place) }
                 placeIcon(place, state: state, m: m)
+                    .onTapGesture { openPlace(place) }
+                    .accessibilityLabel(place.name)
+                    .accessibilityAddTraits(.isButton)
             }
 
             // Фигурка почтальона: ноги на дороге.
             Image(uiImage: HUDImages.image(map.postman.image)).resizable()
                 .frame(width: map.postman.w * s, height: map.postman.h * s)
                 .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
+                .contentShape(Rectangle())
                 .position(m.point(feet.x + 4, feet.y + 14 - map.postman.h / 2))
+                .onTapGesture { openPostman() }
+                .accessibilityLabel(L10n.text("app.name"))
+                .accessibilityAddTraits(.isButton)
 
-            tag("Вы здесь", Format.steps(step) + " ш.", at: layout.postmanTag, dim: false, rotation: 5, m: m)
+            tag(L10n.text("map.you"), Format.steps(step) + " " + L10n.text("abbr.steps"), at: layout.postmanTag, dim: false, rotation: 5, m: m)
+                .onTapGesture { openPostman() }
             ForEach(map.settlements, id: \.id) { place in
                 if let c = layout.tags[place.id] {
-                    tag(place.name, place.step == 0 ? "старт" : Format.steps(place.step) + " ш.", at: c,
+                    tag(place.name, place.step == 0 ? L10n.text("map.start") : Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
                         dim: place.step > step && place.id != next?.id,
                         rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
+                        .onTapGesture { openPlace(place) }
+                        .accessibilityLabel(place.name)
+                        .accessibilityAddTraits(.isButton)
                 }
             }
         }
@@ -115,7 +132,7 @@ struct MapScreen: View {
         init(_ kind: Kind) { self.kind = kind }
     }
 
-    private func stake(_ p: CGPoint, state: PlaceState, m: FrameMapper) -> some View {
+    private func stake(_ p: CGPoint, name: String, state: PlaceState, m: FrameMapper) -> some View {
         let lit = state.kind == .visited
         return ZStack {
             Circle().fill(lit ? Color(red: 0.35, green: 0.23, blue: 0.13) : Color(red: 0.67, green: 0.59, blue: 0.49))
@@ -124,7 +141,11 @@ struct MapScreen: View {
                 .frame(width: m.length(13), height: m.length(13))
                 .offset(x: m.length(-2), y: m.length(-3))
         }
+        .frame(width: m.length(120), height: m.length(120))
+        .contentShape(Rectangle())
         .position(m.point(p.x, p.y))
+        .accessibilityLabel(name)
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder
@@ -137,14 +158,79 @@ struct MapScreen: View {
         case .visited:
             image
                 .shadow(color: Color(red: 0.12, green: 0.07, blue: 0.03).opacity(0.4), radius: 8 * s, x: 12 * s, y: 12 * s)
+                .contentShape(Rectangle())
                 .position(at)
         case .next:
             image.saturation(0.45).brightness(0.06).opacity(0.78)
+                .contentShape(Rectangle())
                 .position(at)
         case .ghost:
             image.saturation(0).contrast(0.75).brightness(0.1).opacity(0.42)
                 .blendMode(.multiply)
+                .contentShape(Rectangle())
                 .position(at)
+        }
+    }
+
+    /// Пройденное место — уже слышанная строка прибытия, если она есть. Дальше тумана — только «ещё впереди».
+    private func openPlace(_ place: ParchmentMap.Place) {
+        let reached = place.step <= step
+        let body: String
+        if reached, let line = engine.story.arrivals?.first(where: { $0.settlement == place.id })?.text, !line.isEmpty {
+            body = line
+        } else if reached {
+            body = L10n.text("map.place.been")
+        } else {
+            let left = max(0, place.step - step)
+            body = L10n.format("map.place.ahead", Format.steps(left) + " " + L10n.text("abbr.steps"))
+        }
+        note = MapNote(title: place.name, body: body, image: reached ? place.icon : nil)
+    }
+
+    private func openPostman() {
+        note = MapNote(title: L10n.text("app.name"), body: L10n.text("onboarding.card0.body"),
+                       image: map?.postman.image)
+    }
+
+    private func mapNote(_ note: MapNote, m: FrameMapper) -> some View {
+        ZStack {
+            Color.black.opacity(0.28)
+                .contentShape(Rectangle())
+                .onTapGesture { self.note = nil }
+            VStack(alignment: .leading, spacing: m.length(16)) {
+                if let image = note.image {
+                    Image(uiImage: HUDImages.image(image))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: m.length(280), maxHeight: m.length(320))
+                        .accessibilityHidden(true)
+                }
+                Text(note.title)
+                    .font(Ink.title(m.length(48)))
+                    .foregroundStyle(Ink.brown)
+                    .accessibilityAddTraits(.isHeader)
+                Text(note.body)
+                    .font(Ink.font("hand", size: m.length(36)))
+                    .foregroundStyle(Ink.pencil)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button { self.note = nil } label: {
+                    Text(L10n.text("map.close"))
+                        .font(Ink.title(m.length(36)))
+                        .foregroundStyle(Ink.chalk)
+                        .frame(maxWidth: .infinity, minHeight: m.length(100))
+                        .background(RoundedRectangle(cornerRadius: m.length(12), style: .continuous).fill(Theme.teal))
+                }
+                .buttonStyle(PressStyle())
+                .accessibilityLabel(L10n.text("map.close"))
+            }
+            .padding(m.length(28))
+            .frame(width: m.length(820))
+            .background(
+                RoundedRectangle(cornerRadius: m.length(22), style: .continuous)
+                    .fill(Theme.paper)
+                    .overlay(RoundedRectangle(cornerRadius: m.length(22), style: .continuous).stroke(Theme.paperEdge, lineWidth: max(1, m.length(3))))
+            )
+            .accessibilityElement(children: .contain)
         }
     }
 
@@ -166,11 +252,11 @@ struct MapScreen: View {
     private func chrome(_ map: ParchmentMap, m: FrameMapper) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
-            Text("Долина")
+            Text(L10n.text("map.region"))
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
                 .position(x: 310 * f, y: 150 * f)
-            Text("глава \(game.chapter.id) · день \(dayNumber)")
+            Text(L10n.format("map.chapterDay", game.chapter.id, dayNumber))
                 .font(Ink.label(40 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.6)
@@ -191,7 +277,7 @@ struct MapScreen: View {
             Image(uiImage: HUDImages.image(map.compass.image)).resizable()
                 .frame(width: map.compass.w * k, height: map.compass.h * k)
                 .shadow(color: .black.opacity(0.3), radius: 6 * k, x: 8 * k, y: 10 * k)
-            Text("С")
+            Text(L10n.text("map.north"))
                 .font(Ink.title(46 * k))
                 .foregroundStyle(Ink.brown)
                 .offset(y: -(map.compass.h / 2 + 26) * k)
@@ -201,13 +287,13 @@ struct MapScreen: View {
 
         let total = game.chapter.lengthSteps
         PlacedArt(name: "tag", m: m, at: CGPoint(x: 300, y: 2380), scale: 420 / 437, rotation: 3) { e, f in
-            Text("\(Format.steps(min(step, total))) из \(Format.steps(total))")
+            Text(L10n.format("map.stepsOf", Format.steps(min(step, total)), Format.steps(total)))
                 .font(Ink.title(46 * f))
                 .foregroundStyle(Ink.brown)
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .frame(width: 270 * f)
                 .position(x: 225 * f, y: 80 * f)
-            Text("шагов · день \(dayNumber)")
+            Text(L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber))
                 .font(Ink.label(36 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.5)
@@ -217,9 +303,9 @@ struct MapScreen: View {
         .allowsHitTesting(false)
 
         if engine.isFinished {
-            ArrowButton(title: "Итоги", m: m, right: 600, bottom: 2250, flip: true, action: onShowEndCard)
+            ArrowButton(title: L10n.text("map.totals"), m: m, right: 600, bottom: 2250, flip: true, action: onShowEndCard)
         }
-        ArrowButton(title: "Закрыть", m: m, bottom: 2470, action: onClose)
+        ArrowButton(title: L10n.text("map.close"), m: m, bottom: 2470, action: onClose)
     }
 
     /// День пути: с полуночи дня старта игры.
@@ -257,7 +343,7 @@ struct MapScreen: View {
     }
 
     private func panGesture(m: FrameMapper, size: CGSize) -> some Gesture {
-        DragGesture(minimumDistance: 4)
+        DragGesture(minimumDistance: 14)
             .onChanged { v in
                 guard pinchStart == nil else { dragStart = nil; return }
                 if dragStart == nil { dragStart = (pan, v.translation) }
@@ -305,6 +391,59 @@ struct MapScreen: View {
                 zoom = z
                 pan = clamped(CGPoint(x: size.width / 2 - z * feet.x, y: size.height / 2 - z * feet.y),
                               zoom: z, m: m, size: size)
+            }
+        }
+    }
+}
+
+struct MapNote: Identifiable, Equatable {
+    let title: String
+    let body: String
+    /// Путь картинки в GameAssets. Для места за туманом — nil, чтобы не показывать ясный вид.
+    let image: String?
+    var id: String { title + body }
+}
+
+/// Карточка почтальона в мире: то же описание, что на первой странице знакомства.
+struct HeroNote: View {
+    let onClose: () -> Void
+
+    var body: some View {
+        FrameScreen(dim: 0.45) { m in
+            ZStack {
+                Color.clear.contentShape(Rectangle()).onTapGesture(perform: onClose)
+                VStack(alignment: .leading, spacing: m.length(16)) {
+                    Image(uiImage: HUDImages.image("UI/map/postman"))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: m.length(280), maxHeight: m.length(420))
+                        .accessibilityHidden(true)
+                    Text(L10n.text("app.name"))
+                        .font(Ink.title(m.length(52)))
+                        .foregroundStyle(Ink.brown)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(L10n.text("onboarding.card0.body"))
+                        .font(Ink.font("hand", size: m.length(36)))
+                        .foregroundStyle(Ink.pencil)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button(action: onClose) {
+                        Text(L10n.text("map.close"))
+                            .font(Ink.title(m.length(36)))
+                            .foregroundStyle(Ink.chalk)
+                            .frame(maxWidth: .infinity, minHeight: m.length(100))
+                            .background(RoundedRectangle(cornerRadius: m.length(12), style: .continuous).fill(Theme.teal))
+                    }
+                    .buttonStyle(PressStyle())
+                    .accessibilityLabel(L10n.text("map.close"))
+                }
+                .padding(m.length(28))
+                .frame(width: m.length(860))
+                .background(
+                    RoundedRectangle(cornerRadius: m.length(22), style: .continuous)
+                        .fill(Theme.paper)
+                        .overlay(RoundedRectangle(cornerRadius: m.length(22), style: .continuous).stroke(Theme.paperEdge, lineWidth: max(1, m.length(3))))
+                )
+                .accessibilityElement(children: .contain)
             }
         }
     }

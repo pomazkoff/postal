@@ -13,7 +13,7 @@ struct TelegramView: View {
         let center = CGPoint(x: rect.right - rect.width / 2, y: rect.y + rect.height / 2)
         PaperArt(name: "card_telegram", k: k, scale: scale) { size in
             VStack(spacing: m.length(8)) {
-                Text("ТЕЛЕГРАММА")
+                Text(L10n.text("telegram.title"))
                     .font(HUDFonts.font("Oswald", size: m.length(26), weight: 600))
                     .kerning(m.length(3))
                     .foregroundStyle(Ink.stampRed)
@@ -31,7 +31,7 @@ struct TelegramView: View {
                 anchor: CGPoint(x: e.bodyCenter.x * k * scale, y: e.bodyCenter.y * k * scale),
                 at: m.point(center.x, center.y), rotation: -4)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Телеграмма: \(text)")
+        .accessibilityLabel(L10n.format("telegram.a11y", text))
     }
 }
 
@@ -51,10 +51,10 @@ struct DistanceTagView: View {
         let line2: String
         if let settlement, let stepsLeft {
             line1 = Format.steps(stepsLeft)
-            line2 = "до \(settlement.nameGenitive)"
+            line2 = L10n.format("distance.to", settlement.nameGenitive)
         } else {
-            line1 = "Седло"
-            line2 = "глава пройдена"
+            line1 = L10n.text("distance.done.place")
+            line2 = "\(Format.chapters(1)) \(L10n.text("distance.done.tail"))"
         }
         return TagArt(line1: line1, line2: line2, k: k, scale: scale, size1: 60, size2: 40)
             .pinned(size: CGSize(width: e.width * k * scale, height: e.height * k * scale),

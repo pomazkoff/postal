@@ -13,11 +13,13 @@ SRC = "Postman"
 TARGET = "Postman"
 PROJ = os.path.join(ROOT, "Postman.xcodeproj")
 
-HEALTH_SHARE = ("Почтальон идёт, когда идёте вы: игра читает количество шагов из приложения «Здоровье», "
-                "чтобы двигать героя по дороге. Данные не покидают устройство.")
-LOCATION_WHEN_IN_USE = ("Примерное место нужно только для погоды в Долине: если у вас дождь или снег, "
-                        "он пойдёт и у почтальона. Точные координаты не используются и никуда не сохраняются.")
-HEALTH_UPDATE = "Игра ничего не записывает в «Здоровье»."
+# База Info.plist = английский (development region). Русский текст — в ru.lproj/InfoPlist.strings.
+HEALTH_SHARE = ("The postman walks when you do. The game reads your step count from Health "
+                "so it can move him along the road. The data stays on this device.")
+LOCATION_WHEN_IN_USE = ("A rough location is only for the weather in the Valley: if it is raining or snowing "
+                        "where you are, it rains or snows on the postman too. Precise coordinates are not used "
+                        "and are not stored.")
+HEALTH_UPDATE = "The game does not write anything to Health."
 
 def oid(key):
     return hashlib.md5(key.encode("utf-8")).hexdigest()[:24].upper()
@@ -78,6 +80,29 @@ product_ref = add("fileref:product", "PBXFileReference",
 assets_bf = add("buildfile:Assets.xcassets", "PBXBuildFile", [("fileRef", (assets_ref, "Assets.xcassets"))], "Assets.xcassets in Resources")
 game_bf = add("buildfile:GameAssets", "PBXBuildFile", [("fileRef", (game_ref, "GameAssets"))], "GameAssets in Resources")
 
+def variant_group(name, file_type):
+    """en.lproj + ru.lproj одного файла → PBXVariantGroup."""
+    children = []
+    for lang in ("en", "ru"):
+        rel = f"Resources/{lang}.lproj/{name}"
+        fr = add(f"fileref:{rel}", "PBXFileReference",
+                 [("lastKnownFileType", file_type), ("name", lang), ("path", f"{lang}.lproj/{name}"), ("sourceTree", "<group>")],
+                 lang)
+        children.append((fr, lang))
+    return add(f"variant:{name}", "PBXVariantGroup",
+               [("children", children), ("name", name), ("sourceTree", "<group>")], name)
+
+loc_strings = variant_group("Localizable.strings", "text.plist.strings")
+loc_dict = variant_group("Localizable.stringsdict", "text.plist.stringsdict")
+info_strings = variant_group("InfoPlist.strings", "text.plist.strings")
+resources_group = add("group:Resources", "PBXGroup",
+                      [("children", [(loc_strings, "Localizable.strings"), (loc_dict, "Localizable.stringsdict"),
+                                     (info_strings, "InfoPlist.strings")]),
+                       ("path", "Resources"), ("sourceTree", "<group>")], "Resources")
+loc_strings_bf = add("buildfile:Localizable.strings", "PBXBuildFile", [("fileRef", (loc_strings, "Localizable.strings"))], "Localizable.strings in Resources")
+loc_dict_bf = add("buildfile:Localizable.stringsdict", "PBXBuildFile", [("fileRef", (loc_dict, "Localizable.stringsdict"))], "Localizable.stringsdict in Resources")
+info_strings_bf = add("buildfile:InfoPlist.strings", "PBXBuildFile", [("fileRef", (info_strings, "InfoPlist.strings"))], "InfoPlist.strings in Resources")
+
 # groups
 sub_groups = []
 for g in GROUP_ORDER:
@@ -87,7 +112,7 @@ for g in GROUP_ORDER:
     sub_groups.append((gid, g))
 products_group = add("group:Products", "PBXGroup", [("children", [(product_ref, "Postman.app")]), ("name", "Products"), ("sourceTree", "<group>")], "Products")
 src_group = add("group:Postman", "PBXGroup",
-                [("children", sub_groups + [(assets_ref, "Assets.xcassets"), (game_ref, "GameAssets"), (ent_ref, "Postman.entitlements"), (plist_ref, "Info.plist")]),
+                [("children", sub_groups + [(resources_group, "Resources"), (assets_ref, "Assets.xcassets"), (game_ref, "GameAssets"), (ent_ref, "Postman.entitlements"), (plist_ref, "Info.plist")]),
                  ("path", SRC), ("sourceTree", "<group>")], SRC)
 main_group = add("group:main", "PBXGroup", [("children", [(src_group, SRC), (products_group, "Products")]), ("sourceTree", "<group>")], None)
 
@@ -98,7 +123,10 @@ frameworks_phase = add("phase:frameworks", "PBXFrameworksBuildPhase",
                        [("buildActionMask", "2147483647"), ("files", []), ("runOnlyForDeploymentPostprocessing", "0")], "Frameworks")
 resources_phase = add("phase:resources", "PBXResourcesBuildPhase",
                       [("buildActionMask", "2147483647"),
-                       ("files", [(assets_bf, "Assets.xcassets in Resources"), (game_bf, "GameAssets in Resources")]),
+                       ("files", [(assets_bf, "Assets.xcassets in Resources"), (game_bf, "GameAssets in Resources"),
+                                  (loc_strings_bf, "Localizable.strings in Resources"),
+                                  (loc_dict_bf, "Localizable.stringsdict in Resources"),
+                                  (info_strings_bf, "InfoPlist.strings in Resources")]),
                        ("runOnlyForDeploymentPostprocessing", "0")], "Resources")
 
 # build settings
@@ -148,6 +176,7 @@ target_common = {
     "GENERATE_INFOPLIST_FILE": "YES",
     "INFOPLIST_FILE": "Postman/Info.plist",
     "INFOPLIST_KEY_CFBundleDisplayName": "$(APP_DISPLAY_NAME)",
+    "INFOPLIST_KEY_ITSAppUsesNonExemptEncryption": "NO",
     "INFOPLIST_KEY_LSApplicationCategoryType": "public.app-category.games",
     "INFOPLIST_KEY_NSHealthShareUsageDescription": HEALTH_SHARE,
     "INFOPLIST_KEY_NSHealthUpdateUsageDescription": HEALTH_UPDATE,
@@ -200,7 +229,7 @@ project = add("project", "PBXProject",
               [("attributes", "RAW:{\n\t\t\t\tBuildIndependentTargetsInParallel = 1;\n\t\t\t\tLastSwiftUpdateCheck = 1500;\n\t\t\t\tLastUpgradeCheck = 1500;\n\t\t\t\tTargetAttributes = {\n\t\t\t\t\t"
                 + target + " = {\n\t\t\t\t\t\tCreatedOnToolsVersion = 15.0;\n\t\t\t\t\t\tSystemCapabilities = {\n\t\t\t\t\t\t\tcom.apple.HealthKit = {\n\t\t\t\t\t\t\t\tenabled = 1;\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t};\n\t\t\t\t\t};\n\t\t\t\t};\n\t\t\t}"),
                ("buildConfigurationList", (proj_cl, f'Build configuration list for PBXProject "{TARGET}"')),
-               ("compatibilityVersion", "Xcode 14.0"), ("developmentRegion", "ru"), ("hasScannedForEncodings", "0"),
+               ("compatibilityVersion", "Xcode 14.0"), ("developmentRegion", "en"), ("hasScannedForEncodings", "0"),
                ("knownRegions", "RAW:(\n\t\t\t\tru,\n\t\t\t\ten,\n\t\t\t\tBase,\n\t\t\t)"),
                ("mainGroup", main_group), ("productRefGroup", (products_group, "Products")),
                ("projectDirPath", ""), ("projectRoot", ""), ("targets", [(target, TARGET)])],
@@ -238,7 +267,8 @@ def val(v, indent):
     return q(v)
 
 SECTIONS = ["PBXBuildFile", "PBXFileReference", "PBXFrameworksBuildPhase", "PBXGroup", "PBXNativeTarget",
-            "PBXProject", "PBXResourcesBuildPhase", "PBXSourcesBuildPhase", "XCBuildConfiguration", "XCConfigurationList"]
+            "PBXProject", "PBXResourcesBuildPhase", "PBXSourcesBuildPhase", "PBXVariantGroup",
+            "XCBuildConfiguration", "XCConfigurationList"]
 out = ["// !$*UTF8*$!", "{", "\tarchiveVersion = 1;", "\tclasses = {", "\t};", "\tobjectVersion = 56;", "\tobjects = {"]
 for sec in SECTIONS:
     items = sorted((i, o) for i, o in objs.items() if o[0] == sec)

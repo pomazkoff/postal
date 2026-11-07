@@ -28,10 +28,14 @@ struct PostmanApp: App {
 
 struct RootView: View {
     @EnvironmentObject private var game: GameModel
+    /// Один показ на жизнь процесса. В UserDefaults не пишется.
+    @State private var brandSplashDone = false
 
     var body: some View {
         Group {
-            if game.onboardingDone {
+            if !brandSplashDone {
+                BrandSplash { brandSplashDone = true }
+            } else if game.onboardingDone {
                 GameView()
             } else {
                 OnboardingView()

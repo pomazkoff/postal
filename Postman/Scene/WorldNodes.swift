@@ -117,7 +117,12 @@ final class SettlementMarkerNode: SKNode {
         post.lineWidth = 3
         post.position = CGPoint(x: 0, y: 95)
         addChild(post)
+        setTitle(title)
+    }
 
+    /// Только текст таблички. Столбик и место на дороге не двигаются.
+    func setTitle(_ title: String) {
+        childNode(withName: "board")?.removeFromParent()
         let label = SKLabelNode(text: title)
         label.fontName = "Georgia-Bold"
         label.fontSize = 40
@@ -127,6 +132,7 @@ final class SettlementMarkerNode: SKNode {
 
         let w = max(160, label.frame.width + 48)
         let board = SKShapeNode(rectOf: CGSize(width: w, height: 70), cornerRadius: 10)
+        board.name = "board"
         board.fillColor = UIColor(red: 0.78, green: 0.65, blue: 0.41, alpha: 1)
         board.strokeColor = UIColor(red: 0.37, green: 0.24, blue: 0.14, alpha: 1)
         board.lineWidth = 4

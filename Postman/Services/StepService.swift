@@ -13,8 +13,8 @@ final class StepService: ObservableObject {
 
         var title: String {
             switch self {
-            case .healthKit: return "HealthKit"
-            case .fake: return "Тестовые шаги"
+            case .healthKit: return L10n.text("steps.mode.health")
+            case .fake: return L10n.text("steps.mode.fake")
             }
         }
     }

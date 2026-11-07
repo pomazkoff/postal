@@ -23,7 +23,7 @@ struct JournalScreen: View {
                 header(m).position(m.point(585, 300))
                 let entries = journal.entries
                 if entries.isEmpty {
-                    Text("Пока ничего не случилось")
+                    Text(L10n.text("journal.empty"))
                         .font(Ink.label(m.length(40))).foregroundStyle(Ink.chalk)
                         .position(m.point(585, 1200))
                 } else {
@@ -32,7 +32,7 @@ struct JournalScreen: View {
                         .position(m.point(585, 1300))
                     pager(count: entries.count, m: m).position(m.point(585, 2245))
                 }
-                ArrowButton(title: "В путь", m: m, bottom: 2460, action: onClose)
+                ArrowButton(title: L10n.text("journal.go"), m: m, bottom: 2460, action: onClose)
             }
         }
         .transition(.opacity)
@@ -104,7 +104,7 @@ struct JournalScreen: View {
 
     private func header(_ m: FrameMapper) -> some View {
         VStack(spacing: m.length(4)) {
-            Text("Вот как развивалась история")
+            Text(L10n.text("journal.title"))
                 .font(Ink.title(m.length(50)))
                 .foregroundStyle(Ink.chalk)
                 .lineLimit(1).minimumScaleFactor(0.6)
@@ -112,7 +112,7 @@ struct JournalScreen: View {
                 Text("+" + Format.steps(journal.walked))
                     .font(Ink.title(m.length(56)))
                     .foregroundStyle(Ink.stampRed)
-                Text("шагов с прошлого раза")
+                Text(L10n.plural("journal.stepsSince", journal.walked))
                     .font(Ink.label(m.length(32)))
                     .foregroundStyle(Ink.chalk.opacity(0.85))
             }
@@ -151,38 +151,19 @@ enum JournalAssets {
     static func settlement(for entry: LogEntry, in settlements: [Settlement]) -> Settlement? {
         let names = [entry.place, entry.title].compactMap { $0?.lowercased() }
         for n in names {
-            if let s = settlements.first(where: {
-                $0.name.lowercased() == n || $0.fullName.lowercased() == n || $0.id == n
-            }) { return s }
+            if let s = SaveNames.settlementID(matching: n, among: settlements) { return s }
         }
         return nil
     }
 
     static func resident(for entry: LogEntry, in story: StoryConfig) -> StoryConfig.Resident? {
-        func match(_ s: String) -> StoryConfig.Resident? {
-            let t = s.lowercased()
-            return story.residents.first { r in
-                r.name.lowercased() == t || r.id == t || r.aliases.contains(t)
-            }
+        if let title = entry.title, let r = SaveNames.resident(matching: title, in: story.residents) {
+            return r
         }
-        if let title = entry.title {
-            if let r = match(title) { return r }
-            for part in title.components(separatedBy: "·") {
-                if let r = match(part.trimmingCharacters(in: .whitespaces)) { return r }
-            }
-        }
-        // «письмо Вере», «письмо Кузьме»: ищем основу имени в тексте.
+        // «письмо Вере», «письмо Кузьме» и старый русский сейв при английской локали.
         let words = entry.text.lowercased()
             .components(separatedBy: CharacterSet.letters.inverted).filter { !$0.isEmpty }
-        for r in story.residents {
-            let name = r.name.lowercased()
-            guard name.count >= 3, name.allSatisfy({ $0.isLetter }) else { continue }
-            let stem = String(name.dropLast())
-            if words.contains(where: { $0 == name || ($0.hasPrefix(stem) && $0.count <= name.count + 2) }) {
-                return r
-            }
-        }
-        return nil
+        return SaveNames.residentByStem(in: words, residents: story.residents)
     }
 
     /// places/place_<id>_main.png из папки главы; уменьшено для карточки. nil, если нет файла.
@@ -211,10 +192,10 @@ private struct JournalCard: View {
     var parallax: CGFloat = 0
 
     private static let time: DateFormatter = {
-        let f = DateFormatter(); f.locale = Locale(identifier: "ru_RU"); f.dateFormat = "HH:mm"; return f
+        let f = DateFormatter(); f.locale = AppLanguage.locale; f.dateFormat = "HH:mm"; return f
     }()
     private static let dayTime: DateFormatter = {
-        let f = DateFormatter(); f.locale = Locale(identifier: "ru_RU"); f.dateFormat = "d MMM, HH:mm"; return f
+        let f = DateFormatter(); f.locale = AppLanguage.locale; f.dateFormat = "d MMM, HH:mm"; return f
     }()
 
     private var icon: String? {
@@ -230,14 +211,14 @@ private struct JournalCard: View {
 
     private var stamp: String? {
         switch entry.by {
-        case "postman": return "выбрал почтальон"
-        case "player": return entry.kind == "choice" || entry.kind == "sort" ? "выбрали вы" : nil
+        case "postman": return L10n.text("journal.by.postman")
+        case "player": return entry.kind == "choice" || entry.kind == "sort" ? L10n.text("journal.by.player") : nil
         default: return nil
         }
     }
 
     private var when: String {
-        var parts = [Format.steps(entry.step) + " ш."]
+        var parts = [Format.steps(entry.step) + " " + L10n.text("abbr.steps")]
         if let date = entry.date {
             let f = Calendar.current.isDateInToday(date) ? Self.time : Self.dayTime
             parts.append(f.string(from: date))

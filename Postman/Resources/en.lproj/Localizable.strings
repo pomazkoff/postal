@@ -1,0 +1,206 @@
+/* UI. English is the development language and the fallback for every non-Russian locale. */
+
+"app.name" = "Postman";
+
+"onboarding.subtitle" = "a letter to the Valley";
+"onboarding.page" = "Page %lld of %lld";
+"onboarding.swipe" = "swipe on →";
+"onboarding.permissionsLater" = "you can change access later in Settings";
+"onboarding.card0.title" = "The Valley went quiet";
+"onboarding.card0.body" = "You are the last postman. Letters are the only thread left between the people of the clay Valley. The road ahead runs from the Post Office through the Stilts, the Belfry and the Tubs to the Saddle.";
+"onboarding.card1.title" = "Steps are the road";
+"onboarding.card1.body" = "Put the phone in your pocket and walk. Every real step moves the postman along the road. Chapter one is about 20 thousand steps; the whole game is about 150 thousand.";
+"onboarding.card2.title" = "While you walk";
+"onboarding.card2.body" = "The postman reaches the stops on his own—the story doesn't wait for you to watch the screen. You get quiet notifications about who he met, what happened and which letter he handed over.";
+"onboarding.card3.title" = "Come back and read";
+"onboarding.card3.body" = "The journal holds cards about places and people, showing what happened while you were away. Sometimes, at a fork, you choose which way the story will go.";
+"onboarding.card4.title" = "So he walks with you";
+"onboarding.card4.body" = "The game needs your step count from Health, and notifications when he stops. Steps are only read, never written. The weather follows yours: the system may ask for location; without it, the weather is seasonal.";
+"onboarding.card4.body.fake" = "HealthKit is unavailable in the simulator — steps are added with the “+500” button. On a device the game asks to read steps and to send notifications; location for the weather is optional, and you can refuse.";
+"onboarding.perm.steps.fake" = "Steps: test mode";
+"onboarding.perm.steps" = "Steps from Health";
+"onboarding.perm.notes" = "Notifications at the stops";
+"onboarding.perm.location" = "Location for the weather — optional";
+"onboarding.start" = "Start";
+"onboarding.start.permissions" = "Allow and start";
+"onboarding.start.hint" = "Asks for steps, notifications, and location if it is needed";
+
+"bag.go" = "Onward";
+"bag.close" = "Close";
+"bag.pocket" = "in the pocket";
+"bag.inBag" = "in the bag";
+"bag.title.sort" = "What to take?";
+"bag.title" = "Bag";
+"bag.slots" = "%lld %@ in the bag";
+"bag.used" = "%lld of %lld taken";
+"bag.a11y" = "Bag, %lld %@";
+
+"hud.map" = "Map";
+"hud.postman.left" = "The postman is off to the left — go back to him";
+"hud.postman.right" = "The postman is off to the right — go back to him";
+
+"journal.empty" = "Nothing has happened yet";
+"journal.go" = "Onward";
+"journal.title" = "Here's how the story went";
+"journal.by.postman" = "the postman chose";
+"journal.by.player" = "you chose";
+
+"letter.outside" = "outside, under the twine";
+"letter.inside" = "inside";
+"letter.note" = "note in the box";
+"letter.open.title" = "Open the “personal” letter?";
+"letter.open" = "Open it";
+"letter.leave" = "Leave it";
+"letter.open.message" = "The seal is a thumb pressed into the wax. Open it and close it again, and there will be two prints.";
+"letter.next" = "on →";
+"letter.start" = "← back to the start";
+"letter.seal.line1" = "open";
+"letter.seal.line2" = "the seal";
+"letter.seal.a11y" = "Open the seal";
+"letter.bag" = "into the bag";
+"letter.bag.a11y" = "Put it in the bag";
+
+"map.missing" = "Map not found";
+"map.you" = "You are here";
+"map.start" = "start";
+"map.region" = "Valley";
+"map.chapterDay" = "chapter %lld · day %lld";
+"map.north" = "N";
+"map.stepsOf" = "%@ of %@";
+"map.totals" = "The tally";
+"map.close" = "Close";
+"map.day" = "day %lld";
+
+"card.nothing" = "nothing to hand over";
+"card.delivery" = "delivery";
+"card.more" = "+ %lld more";
+"card.next" = "Next";
+"card.newLetter" = "a new letter";
+"card.bagFull" = "bag is full";
+"card.leftHere" = "left here";
+"card.toBag" = "Into the bag";
+"card.ok" = "All right";
+"card.ifQuiet" = "if you stay quiet — this";
+"card.read" = "Read";
+"card.close" = "Close";
+"card.trust.even" = "trust is even";
+"card.trust.plus" = "trust +%lld";
+"card.trust.signed" = "trust %lld";
+"card.finale.steps" = "%@ %@";
+
+"watch.today" = "today";
+"watch.total" = "total";
+"watch.a11y.today" = "%@ %@ today";
+"watch.a11y.expanded" = "%@ %@ today, %@ %@ in all";
+"watch.hint.collapse" = "Tap to close the watch";
+"watch.hint.expand" = "Tap to open the watch";
+
+"reset.title" = "Reset the story?";
+"reset.confirm" = "Reset";
+"reset.cancel" = "Cancel";
+"reset.message" = "Letters, choices, events and the journal start over. Steps will count from this minute, and notifications will be removed. The introduction opens again.";
+
+"telegram.title" = "TELEGRAM";
+"telegram.a11y" = "Telegram: %@";
+"distance.to" = "to %@";
+"distance.done.place" = "Saddle";
+"distance.done.tail" = "done";
+
+"notify.ifQuiet" = "%@ (if you stay quiet — this)";
+"notify.test.title" = "Postman";
+"notify.test.body" = "Test notification. If you see this, they get through.";
+
+"engine.mode.notify" = "a push, then he decides";
+"engine.mode.auto" = "the postman decides";
+"engine.mode.wait" = "wait for you";
+"engine.deliver.none" = "Nothing to hand over.";
+"engine.deliver.some" = "Delivered — %@.";
+"engine.pickup.took" = "Picked up — %@.";
+"engine.pickup.full" = "Bag is full, %@ stayed.";
+"engine.pickup.push" = "%@. An envelope on a stick by the road.";
+"engine.finale.log" = "The collection. A letter “to the Postman”.";
+"engine.finale.push" = "%@. A letter “to the Postman” in the box.";
+"engine.item.parcel" = "batteries (%@)";
+"engine.item.form" = "Vera's form";
+"engine.item.letter" = "letter for %@";
+"engine.sort.empty" = "The bag left empty.";
+"engine.sort.some" = "In the bag — %@.";
+"engine.sort.title" = "Morning sort";
+"engine.sort.auto" = "The postman packed the bag himself and left.";
+"engine.choice.auto" = "The postman decided: %@.";
+"engine.opened" = "Opened: %@. There's a second print on the seal.";
+
+"lore.empty" = "Nothing more for now.";
+
+"steps.mode.fake" = "Test steps";
+"steps.mode.health" = "HealthKit";
+
+"weather.clear" = "clear";
+"weather.rain" = "rain";
+"weather.snow" = "snow";
+"weather.fog" = "fog";
+"weather.source.season" = "by the season";
+
+"debug.status" = "Ch.%lld %@\nToday %lld, total %lld";
+"debug.error" = "Error: %@";
+"debug.hour.clock" = "by the clock";
+"debug.hour.shift" = "+%lld h";
+"debug.weather.auto" = "auto (%@, %@)";
+"debug.plus500" = "+500 steps";
+"debug.menu" = "Debug";
+"debug.plus5000" = "+5,000 steps";
+"debug.time" = "Time of day +3 h (now %@)";
+"debug.weather" = "Weather: %@ → next";
+"debug.read.on" = "on";
+"debug.read.off" = "off";
+"debug.read" = "How well you can see people: %@ → toggle";
+"debug.choice" = "Choices without you: %@ → next";
+"debug.source" = "Source: %@";
+"debug.push" = "Test notification";
+"debug.force.on" = "Chapter: Mountains (clear the force)";
+"debug.force.off" = "Force chapter 2 “Mountains”";
+"debug.reset" = "Reset the story…";
+"debug.cancel" = "Cancel";
+
+"abbr.steps" = "st.";
+
+"baked.att_label" = "The tin in the picture is still lettered in Russian: sprats in tomato, Olkhovka Cannery.";
+"baked.att_drawing" = "The sketch in the picture is still marked 14 m.";
+"baked.sheet_telegram" = "The band on this sheet is still the Russian word for telegram.";
+
+"menu.open" = "Menu";
+"menu.open.a11y" = "Menu";
+"menu.title" = "Menu";
+"menu.close" = "Onward";
+"menu.quest.title" = "On the road";
+"menu.quest.empty" = "No errand yet.";
+"menu.quest.done" = "This chapter is written out. No new errands.";
+"menu.people.title" = "People met";
+"menu.people.empty" = "No one yet. The road is still ahead.";
+"menu.people.a11y" = "%@, %@";
+"menu.about.title" = "About";
+"menu.about.body" = "You walk. The postman walks the clay road with you, from the Post Office to the Saddle and on into the mountains. Letters, choices, and the people he has actually met are the whole of it. Steps are read from Health and never written. If you allow location, the weather follows yours.";
+"menu.map" = "Map";
+"menu.bag" = "Bag";
+"menu.settings" = "Settings";
+"menu.language" = "Language";
+"menu.language.system" = "System";
+"menu.language.ru" = "Русский";
+"menu.language.en" = "English";
+"menu.language.note" = "Lines already in the journal stay as they were written. New letters, lines and errands use the language you pick.";
+"menu.language.system.note" = "Russian stays Russian. Any other phone language is English.";
+"menu.reminders" = "Stop reminders";
+"menu.reminders.note" = "Only this game's own notices: who he met and what happened at a stop. There is no other mailing.";
+"menu.reminders.phone.allowed" = "Allowed on the phone";
+"menu.reminders.phone.denied" = "Turned off on the phone";
+"menu.reminders.phone.unknown" = "The phone has not been asked";
+"menu.reminders.phone.quiet" = "Quiet delivery on the phone";
+"menu.reminders.openSettings" = "Open iOS Settings";
+"menu.reminders.game.on" = "The game reports stops";
+"menu.reminders.game.off" = "The game stays quiet";
+
+"journey.continue" = "The postman's journey will continue";
+"journey.soon" = "Chapter 3 is coming soon";
+
+"map.place.ahead" = "The postman has not reached this place yet, and %@ are still left to walk.";
+"map.place.been" = "The postman has already walked through here, so the place is familiar to him.";
