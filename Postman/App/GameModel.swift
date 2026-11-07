@@ -5,7 +5,7 @@ import SpriteKit
 /// Связывает шаги, сохранённый прогресс, данные мира и сцену.
 @MainActor
 final class GameModel: ObservableObject {
-    let world: WorldConfig
+    private(set) var world: WorldConfig
     let rig: RigConfig
     let progress: ProgressStore
     let steps: StepService
@@ -62,6 +62,9 @@ final class GameModel: ObservableObject {
         core.onChapterChanged = { [weak self] idx in
             self?.handleChapterChanged(idx)
         }
+        core.onLocalizationChanged = { [weak self] in
+            self?.handleLocalizationChanged()
+        }
 
         if onboardingDone { steps.start() }
     }
@@ -79,6 +82,59 @@ final class GameModel: ObservableObject {
             .removeDuplicates()
             .sink { [weak self] left in self?.scene.setRoadItemLeftBehind(left, chapterID: chapterID) }
             .store(in: &engineCancellables)
+    }
+
+    /// Строки мира и сюжета заново. Сейв, шаги и сцена на месте; таблички только переписываются.
+    private func handleLocalizationChanged() {
+        world = AppCore.shared.world
+        engine = AppCore.shared.engine
+        bindEngine(engine)
+        ResidentLore.invalidate()
+        ParchmentMap.invalidate()
+        PluralCatalog.invalidate()
+        if _sceneStorage != nil {
+            scene.retitleSettlements(world)
+        }
+        objectWillChange.send()
+    }
+
+    func setLanguage(_ choice: LanguageChoice) {
+        guard choice != AppLanguage.choice else { return }
+        AppLanguage.choice = choice
+        AppCore.shared.reloadLocalization()
+    }
+
+    /// Кого показать в меню. Чужие главы читаются с диска и не создают сейв.
+    func menuPeople() -> [MenuPerson] {
+        var people: [MenuPerson] = []
+        var seen = Set<String>()
+        for (index, chapter) in world.chapters.enumerated() {
+            let story = index == chapterIndex ? engine.story : StoryConfig.load(chapter: chapter.id)
+            let done: Set<String>
+            if index == chapterIndex {
+                done = engine.state.doneEvents
+            } else {
+                done = ChapterStateStore(fileName: "chapter\(chapter.id)_state.json").load()?.doneEvents ?? []
+            }
+            let reached = MetPeople.reached(index: index, active: chapterIndex,
+                                            activeSteps: chapterSteps, length: chapter.lengthSteps)
+            let events = story.events.map {
+                MetPeople.EventRef(id: $0.id, resident: $0.resident, companion: $0.companion?.id)
+            }
+            let residents = story.residents.map { (id: $0.id, step: $0.step) }
+            for id in MetPeople.ids(events: events, done: done, residents: residents, reached: reached) {
+                guard seen.insert(id).inserted else { continue }
+                let resident = story.residents.first { $0.id == id }
+                let lore = ResidentLore.entry(for: id, fallbackTitle: resident?.name ?? "")
+                let name = resident?.name ?? lore.title
+                guard !name.isEmpty else { continue }
+                let figureResident = resident ?? StoryConfig.Resident(
+                    id: id, name: name, aliases: [], step: 0, dx: 0, height: 200)
+                let image = ResidentLibrary.figure(for: figureResident, assetsFolder: chapter.assetsFolder)?.image
+                people.append(MenuPerson(id: id, name: name, text: lore.text, image: image))
+            }
+        }
+        return people
     }
 
     /// Сюжет меняется, но единая сцена, камера и жители предыдущих глав остаются на месте.

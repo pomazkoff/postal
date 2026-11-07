@@ -256,6 +256,11 @@ final class ChapterEngine: ObservableObject {
         process()
     }
 
+    /// После смены языка: помнить, докуда дошли, но не разбирать остановки ещё раз.
+    func adoptStep(_ step: Int) {
+        currentStep = max(currentStep, step)
+    }
+
     private func isDone(_ stop: Stop) -> Bool { state.doneEvents.contains(stop.key) }
 
     /// Пора ли почтальону решить самому: следующая остановка уже наступила или прошло timeoutSteps.

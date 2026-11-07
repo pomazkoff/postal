@@ -278,6 +278,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             }
             guard !duplicate else { continue }
             let marker = SettlementMarkerNode(title: settlement.name)
+            marker.name = "settle.\(chapter.id).\(settlement.id)"
             marker.position = CGPoint(x: geo.x(forStep: Double(globalStep)), y: geo.roadY)
             marker.zPosition = 10
             actorLayer.addChild(marker)
@@ -290,6 +291,17 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             clay.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + after)) + 600, y: 0)
             clay.zPosition = 50
             actorLayer.addChild(clay)
+        }
+    }
+
+    /// Подписи поселений после смены языка. Геометрия дороги и стык глав не трогаются.
+    func retitleSettlements(_ config: WorldConfig) {
+        for chapter in config.chapters {
+            for settlement in chapter.settlements {
+                let name = "settle.\(chapter.id).\(settlement.id)"
+                guard let node = childNode(withName: "//\(name)") as? SettlementMarkerNode else { continue }
+                node.setTitle(settlement.name)
+            }
         }
     }
 

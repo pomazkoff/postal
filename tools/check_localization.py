@@ -243,7 +243,13 @@ en_keys, en_vals = strings(RES / "en.lproj/Localizable.strings")
 ru_keys, ru_vals = strings(RES / "ru.lproj/Localizable.strings")
 if en_keys != ru_keys:
     fail(f"Localizable key mismatch extra en {set(en_keys)-set(ru_keys)} extra ru {set(ru_keys)-set(en_keys)}")
+# The Russian option is named in Russian on both screens. Nothing else in en may be Cyrillic.
+ALLOW_CYR_EN = {"menu.language.ru"}
 for key, val in zip(en_keys, en_vals):
+    if key in ALLOW_CYR_EN:
+        if val != "Русский":
+            fail(f"{key} must stay the language's own name")
+        continue
     if CYR.search(val):
         fail(f"Cyrillic in en Localizable {key}: {val[:60]!r}")
 # Russian file must still hold the original onboarding sentence.

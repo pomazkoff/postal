@@ -2,19 +2,45 @@ import Foundation
 
 /// Язык интерфейса и сюжета.
 ///
-/// Штатный выбор iOS: `Bundle.preferredLocalizations` учитывает язык приложения
-/// (Настройки → приложение) и язык системы. Регион разработки — `en`, поэтому
-/// русский даёт ru.lproj, английский — en, любой другой язык падает в английский.
-/// Своего переключателя в игре нет.
+/// «Системный» — прежний выбор: `Bundle.preferredLocalizations` (язык приложения
+/// в Настройках и язык телефона). Регион разработки — `en`, поэтому русский даёт
+/// ru.lproj, любой другой язык падает в английский. «Русский» и English
+/// подменяют только строки игры и читаются сразу. Имя на домашнем экране
+/// по-прежнему берёт iOS.
 enum AppLanguage {
-    static var code: String {
-        if Bundle.main.preferredLocalizations.first?.hasPrefix("ru") == true {
-            return "ru"
+    static let preferenceKey = "postman.language"
+
+    static var choice: LanguageChoice {
+        get {
+            let raw = UserDefaults.standard.string(forKey: preferenceKey) ?? LanguageChoice.system.rawValue
+            return LanguageChoice(rawValue: raw) ?? .system
         }
-        return "en"
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: preferenceKey) }
+    }
+
+    static var systemPrefersRussian: Bool {
+        Bundle.main.preferredLocalizations.first?.hasPrefix("ru") == true
+    }
+
+    static var code: String {
+        LanguageResolution.code(choice: choice, systemPrefersRussian: systemPrefersRussian)
     }
 
     static var isRussian: Bool { code == "ru" }
+
+    /// Пачка строк выбранного языка. Для «системного» — основной бандл, как раньше.
+    static var bundle: Bundle {
+        switch choice {
+        case .system:
+            return .main
+        case .ru, .en:
+            if let path = Bundle.main.path(forResource: choice.rawValue, ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                return bundle
+            }
+            return .main
+        }
+    }
 
     /// ru_RU сохраняет прежнюю группировку шагов и русские названия месяцев.
     /// Остальные языки читают числа и даты по-английски.
@@ -25,7 +51,7 @@ enum AppLanguage {
 
 enum L10n {
     static func text(_ key: String) -> String {
-        NSLocalizedString(key, tableName: "Localizable", comment: "")
+        AppLanguage.bundle.localizedString(forKey: key, value: key, table: "Localizable")
     }
 
     static func format(_ key: String, _ args: Any...) -> String {
@@ -42,8 +68,42 @@ enum L10n {
     }
 
     /// Ключ из Localizable.stringsdict: формат — только слово (число нужно правилу, в строку не входит).
+    /// Категория выбирается по языку игры, а не по языку телефона, чтобы переключатель действовал сразу.
     static func plural(_ key: String, _ n: Int) -> String {
-        String(format: text(key), locale: AppLanguage.locale, n)
+        if let phrase = PluralCatalog.phrase(key, n) { return phrase }
+        return String(format: text(key), locale: AppLanguage.locale, n)
+    }
+}
+
+/// Слова из stringsdict выбранного lproj. Кэш сбрасывается при смене языка.
+enum PluralCatalog {
+    private static var tables: [String: [String: [String: String]]] = [:]
+
+    static func invalidate() { tables.removeAll() }
+
+    static func phrase(_ key: String, _ n: Int) -> String? {
+        let code = AppLanguage.code
+        let table = tables[code] ?? load(code)
+        tables[code] = table
+        let cat = PluralRules.category(n, russian: code == "ru")
+        return table[key]?[cat] ?? table[key]?["other"]
+    }
+
+    private static func load(_ code: String) -> [String: [String: String]] {
+        guard let url = Bundle.main.url(forResource: "Localizable", withExtension: "stringsdict",
+                                        subdirectory: nil, localization: code),
+              let root = NSDictionary(contentsOf: url) as? [String: Any] else { return [:] }
+        var out: [String: [String: String]] = [:]
+        for (key, value) in root {
+            guard let dict = value as? [String: Any] else { continue }
+            let word = (dict["word"] as? [String: Any]) ?? [:]
+            var cats: [String: String] = [:]
+            for cat in ["zero", "one", "two", "few", "many", "other"] {
+                if let line = word[cat] as? String { cats[cat] = line }
+            }
+            if !cats.isEmpty { out[key] = cats }
+        }
+        return out
     }
 }
 

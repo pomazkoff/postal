@@ -48,12 +48,14 @@
 		D60604C44E785C663244CDDD /* TextureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC248DFFE5064237C5478BD /* TextureStore.swift */; };
 		DACCF7B755A885D8DF312D32 /* WorldConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2BFC384837C8FB85EEFFFC8 /* WorldConfig.swift */; };
 		DE674A1425312D046E07136A /* UIArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95428D5B01EFAD4900F80DD0 /* UIArt.swift */; };
+		E17FFAD1B1975DB0132E0E0F /* MenuLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D090709F7174B7445422DEE /* MenuLogic.swift */; };
 		E301D465E810A70209184699 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B6CD4DECFC21DA8004567B /* GameView.swift */; };
 		E6F8A21685A552C539AC569E /* JournalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC204AA15FD0DAA4720E3B83 /* JournalScreen.swift */; };
 		EAC3A3DC2B68513403C909B8 /* WeatherLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C58DBCB01BB185CD80892F2 /* WeatherLayer.swift */; };
 		EC1298470299A2981D4FEFCC /* PocketWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE71E55EFBE69C98E3C1E2A /* PocketWatchView.swift */; };
 		F68824A1A10F57F5E91F4166 /* StepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F819EFF33E79FABAD23DE2E5 /* StepService.swift */; };
 		F94D28BD24BEA86C10523766 /* WorldNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE2D03B961627604C8473FA /* WorldNodes.swift */; };
+		FA903D6ACCF8819ACA34DB24 /* GameMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE5CF4ECE6C4E462BFB5462 /* GameMenuView.swift */; };
 		FB33448B2E2F326E77EEEC1C /* WorldScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A7DE160A66A3AB37637E81 /* WorldScene.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +64,7 @@
 		0F79D00664DFA17466B58C52 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		12F1C9823B7D241C34392D7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		175F562A54F33ABB4D0EC66D /* ChapterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterState.swift; sourceTree = "<group>"; };
+		1D090709F7174B7445422DEE /* MenuLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuLogic.swift; sourceTree = "<group>"; };
 		1EE7A09ECC77DCE1EE9A0EF9 /* BagScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BagScreen.swift; sourceTree = "<group>"; };
 		2589F2F4227DEBE07E4EC531 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2C422505AA81ECA023A6A11D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -89,6 +92,7 @@
 		8F130059427912E2BD061561 /* Postman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Postman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90562D04BDAFB7914C514EE4 /* TelegramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelegramView.swift; sourceTree = "<group>"; };
 		95428D5B01EFAD4900F80DD0 /* UIArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIArt.swift; sourceTree = "<group>"; };
+		9AE5CF4ECE6C4E462BFB5462 /* GameMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuView.swift; sourceTree = "<group>"; };
 		9C96202E6822FA5A54435A26 /* GameAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GameAssets; sourceTree = "<group>"; };
 		9D60A100D307D6FAA9ADA4D3 /* Postman.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Postman.entitlements; sourceTree = "<group>"; };
 		9FF2DC5B072EF65B3CD01CED /* Notifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
@@ -210,6 +214,7 @@
 				1EE7A09ECC77DCE1EE9A0EF9 /* BagScreen.swift */,
 				3B95A0250BFD73151ACB71BE /* BrandSplash.swift */,
 				EFD13CBC6B2CA443312862CE /* DebugPanel.swift */,
+				9AE5CF4ECE6C4E462BFB5462 /* GameMenuView.swift */,
 				08B6CD4DECFC21DA8004567B /* GameView.swift */,
 				63C893839AA8275E5759B3CF /* HUDLayout.swift */,
 				AF985277ECFA14DD61C09E66 /* HUDView.swift */,
@@ -236,6 +241,7 @@
 				FB8205B5B2EC62756D7BDCCB /* ChapterEngine.swift */,
 				DECE3872648CBF01904C991B /* GameModel.swift */,
 				CBF6A245991BBE1575D9CB4B /* Localization.swift */,
+				1D090709F7174B7445422DEE /* MenuLogic.swift */,
 				DE18FADC135C4D594AD01790 /* PostmanApp.swift */,
 			);
 			path = App;
@@ -341,6 +347,7 @@
 				7AB6FABB3DA8E96BCB1ED72E /* ChapterEngine.swift in Sources */,
 				4C1CAA7FE23BDF07179DAA5D /* GameModel.swift in Sources */,
 				8414EB66F4DAB45383E33027 /* Localization.swift in Sources */,
+				E17FFAD1B1975DB0132E0E0F /* MenuLogic.swift in Sources */,
 				1DFEBF97155388623B6513FE /* PostmanApp.swift in Sources */,
 				423C4117C274B5656E156F1D /* HealthKitStepSource.swift in Sources */,
 				3884C56B8AC92F51B8B5796B /* Notifier.swift in Sources */,
@@ -365,6 +372,7 @@
 				840922915F70AA1E412D64F8 /* BagScreen.swift in Sources */,
 				6B3F5B2EDB72D16CA5C63631 /* BrandSplash.swift in Sources */,
 				22D95AE93E1F2C0CB1C3EAD9 /* DebugPanel.swift in Sources */,
+				FA903D6ACCF8819ACA34DB24 /* GameMenuView.swift in Sources */,
 				E301D465E810A70209184699 /* GameView.swift in Sources */,
 				A02D2BED22D0C0384BCA22CF /* HUDLayout.swift in Sources */,
 				9FF8C86EC24328675A8B3EBA /* HUDView.swift in Sources */,

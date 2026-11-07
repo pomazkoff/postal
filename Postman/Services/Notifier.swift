@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import UserNotifications
 
-/// Локальные пуши остановок сюжета (одна строка, по-русски). Выбор — пуш с двумя кнопками
+/// Локальные уведомления остановок сюжета (одна строка на языке игры). Выбор — пуш с двумя кнопками
 /// (категория "choice.<id события>", действия "opt.<id варианта>"); ответ уходит в AppCore.
 /// Пуши ставятся сразу (trigger nil): время остановки заранее неизвестно — события считаются
 /// при фоновом пробуждении (HealthKit / BGAppRefresh).
@@ -33,7 +33,19 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         center.setNotificationCategories(categories)
     }
 
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        await center.notificationSettings().authorizationStatus
+    }
+
+    /// Только ожидающие местные уведомления этой игры. Показанные и бейдж не трогаем,
+    /// системное разрешение не меняем. Уже отправленные остановки остаются в postedBeatIDs,
+    /// поэтому повторное включение их не дублирует.
+    func cancelPending() {
+        center.removeAllPendingNotificationRequests()
+    }
+
     func post(title: String, body: String, id: String, choiceEventID: String?) {
+        guard ReminderPreference.isOn else { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -53,6 +65,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     /// DEBUG: проверить, что разрешение и баннер реально работают (видно и при открытой игре).
     func postTest() {
+        guard ReminderPreference.isOn else { return }
         let content = UNMutableNotificationContent()
         content.title = L10n.text("notify.test.title")
         content.body = L10n.text("notify.test.body")

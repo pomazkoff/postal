@@ -9,6 +9,7 @@ struct HUDView: View {
     @EnvironmentObject private var engine: ChapterEngine
     @State private var watchExpanded = false
     @State private var panel: Panel?
+    @State private var showMenu = false
     @State private var letterID: String?
     @State private var confirmReset = false
 
@@ -27,6 +28,7 @@ struct HUDView: View {
         case card(StoryCard)
         case resident(StoryCard)
         case sorting
+        case menu
         case none
     }
 
@@ -38,6 +40,7 @@ struct HUDView: View {
         if engine.needsSorting { return .sorting }
         if let card = engine.nextCard { return .card(card) }
         if engine.isFinished && !engine.state.endCardSeen && engine.nextCard == nil { return .panel(.endCard) }
+        if showMenu { return .menu }
         return .none
     }
 
@@ -124,6 +127,12 @@ struct HUDView: View {
                 engine.markEndCardSeen()
                 panel = nil
             }
+        case .menu:
+            GameMenuView(
+                onClose: { showMenu = false },
+                onMap: { showMenu = false; panel = .map },
+                onBag: { showMenu = false; panel = .bag }
+            )
         case .card(let card):
             StoryCardView(card: card) { finishCard(card) }
                 .id(card.id)
@@ -177,6 +186,30 @@ struct HUDView: View {
             .buttonStyle(PressStyle())
             .pinned(size: artSize("hud_map", m), anchor: bodyCenter("hud_map", m), at: m.point(990, 2330))
             .accessibilityLabel(L10n.text("hud.map"))
+
+            // Слева посредине: не на бирке, не на телеграмме, не на сумке и не на карте.
+            if screen == .none {
+                Button { showMenu = true } label: {
+                    Text(L10n.text("menu.open"))
+                        .font(Ink.title(m.length(48)))
+                        .foregroundStyle(Ink.brown)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, m.length(36))
+                        .padding(.vertical, m.length(40))
+                        .background(
+                            RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
+                                .fill(Theme.paper)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: m.length(12), style: .continuous)
+                                        .stroke(Theme.paperEdge, lineWidth: max(1, m.length(3)))
+                                )
+                        )
+                }
+                .buttonStyle(PressStyle())
+                .position(m.point(168, 1480))
+                .accessibilityLabel(L10n.text("menu.open.a11y"))
+            }
 
             // «К почтальону»: деревянная стрелка с головой героя у края экрана, куда он ушёл.
             // Только когда почтальон за кадром и поверх мира ничего не открыто.

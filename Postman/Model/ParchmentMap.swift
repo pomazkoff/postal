@@ -54,12 +54,28 @@ struct ParchmentMap: Decodable {
     let compass: Sprite
     let chrome: [[Double]]
 
-    static let shared: ParchmentMap? = {
+    private static var cached: ParchmentMap?
+    private static var loaded = false
+
+    static var shared: ParchmentMap? {
+        if !loaded {
+            loaded = true
+            cached = load()
+        }
+        return cached
+    }
+
+    static func invalidate() {
+        loaded = false
+        cached = nil
+    }
+
+    private static func load() -> ParchmentMap? {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map.json")
         let data = ContentLocalizer.data(at: url, kind: .map)
         guard !data.isEmpty else { return nil }
         return try? JSONDecoder().decode(ParchmentMap.self, from: data)
-    }()
+    }
 
     var points: [CGPoint] { road.map { CGPoint(x: $0[0], y: $0[1]) } }
     var chromeRects: [CGRect] { chrome.map { CGRect(x: $0[0], y: $0[1], width: $0[2] - $0[0], height: $0[3] - $0[1]) } }

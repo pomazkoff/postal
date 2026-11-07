@@ -198,7 +198,9 @@ struct ResidentLore: Decodable {
 
     var text: String { lines.joined(separator: "\n") }
 
-    private static let entries: [String: ResidentLore] = {
+    private static var cached: [String: ResidentLore]?
+
+    private static func loadEntries() -> [String: ResidentLore] {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/resident_lore.json")
         do {
             return try JSONDecoder().decode([String: ResidentLore].self, from: ContentLocalizer.data(at: url, kind: .lore))
@@ -208,10 +210,13 @@ struct ResidentLore: Decodable {
             #endif
             return [:]
         }
-    }()
+    }
+
+    static func invalidate() { cached = nil }
 
     static func entry(for id: String, fallbackTitle: String) -> ResidentLore {
-        entries[id] ?? ResidentLore(title: fallbackTitle, lines: [L10n.text("lore.empty")])
+        if cached == nil { cached = loadEntries() }
+        return cached?[id] ?? ResidentLore(title: fallbackTitle, lines: [L10n.text("lore.empty")])
     }
 }
 

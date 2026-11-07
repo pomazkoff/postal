@@ -13,13 +13,15 @@ final class AppCore {
     static let shared = AppCore()
 
     let progress: ProgressStore
-    let world: WorldConfig
+    private(set) var world: WorldConfig
     let steps: StepService
     private(set) var engine: ChapterEngine
     /// Активная глава (0-based). Меняется по шагам или DEBUG forceChapterIndex.
     private(set) var chapterIndex: Int = 0
     /// Колбэк после смены сюжета главы (единая WorldScene остаётся прежней).
     var onChapterChanged: ((Int) -> Void)?
+    /// Смена языка: тот же прогресс и та же сцена, другие строки.
+    var onLocalizationChanged: (() -> Void)?
     let notifier = Notifier()
 
     /// Совпадает с BGTaskSchedulerPermittedIdentifiers в Postman/Info.plist: $(PRODUCT_BUNDLE_IDENTIFIER).refresh
@@ -98,6 +100,20 @@ final class AppCore {
             gameStartDate: { progress.gameStartDate })
     }
 
+    /// Перечитать мир и сюжет на выбранном языке. Файл сейва тот же: сделанные события
+    /// не проигрываются заново, уже записанный журнал не переписывается.
+    func reloadLocalization() {
+        let step = engine.currentStep
+        let live = engine.liveViewing
+        world = WorldConfigLoader.load()
+        engine = Self.makeEngine(world: world, chapterIndex: chapterIndex, progress: progress)
+        engine.adoptStep(step)
+        engine.liveViewing = live
+        bindEngineNotifications()
+        notifier.registerCategories(for: engine.story)
+        onLocalizationChanged?()
+    }
+
     /// Сменить главу (сюжет + state-файл). GameModel перебиндит сюжет, не заменяя сцену.
     func switchToChapter(_ index: Int) {
         let idx = max(0, min(world.chapters.count - 1, index))
@@ -160,6 +176,9 @@ final class AppCore {
     }
 
     private func postBeat(_ beat: ChapterEngine.Beat) {
+        // Выключенные напоминания не помечают остановку отправленной: включение
+        // не ставит её второй раз, а ещё не отправленный выбор уйдёт один раз.
+        guard ReminderPreference.isOn else { return }
         guard !postedBeatIDs.contains(beat.id) else { return }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)
