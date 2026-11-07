@@ -73,7 +73,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = .default
+        // Пачка остановок при догоне не звенит на каждую. Баннер остаётся, системный звук — нет.
+        content.sound = nil
         content.threadIdentifier = Self.thread
         if let choiceEventID {
             content.categoryIdentifier = Self.choicePrefix + choiceEventID

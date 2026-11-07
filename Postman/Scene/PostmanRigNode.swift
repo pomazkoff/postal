@@ -13,6 +13,8 @@ final class PostmanRigNode: SKNode {
     private let randomJitter: Bool
 
     private(set) var isWalking = false
+    /// Кадры 0 и 4 цикла: стопа на земле. Не каждый шаг HealthKit.
+    var onFootfall: (() -> Void)?
     private var frameIndex = 0
     private var frameClock: TimeInterval = 0
     /// Короткий кивок головой вокруг шеи. −1 — покоя.
@@ -147,6 +149,7 @@ final class PostmanRigNode: SKNode {
                 frameIndex = 0
                 if randomJitter { rebuildFrames(jitterSeed: 1) }
             }
+            if AudioMix.footfallFrames.contains(frameIndex) { onFootfall?() }
             advanced = true
         }
         if advanced || dirty { apply(walkFrames[frameIndex]) }

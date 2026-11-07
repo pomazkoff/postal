@@ -54,6 +54,7 @@ struct MapScreen: View {
         .transition(.opacity)
         .storyResetAlert(isPresented: $confirmReset)
         .task(id: map?.revealThreshold(step: step) ?? 0) { await refreshReveal() }
+        .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
     // MARK: Слой карты (в координатах кадра; масштабируется жестами)

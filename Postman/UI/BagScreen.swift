@@ -65,6 +65,7 @@ struct BagScreen: View {
             }
         }
         .transition(.opacity)
+        .onAppear { SoundPlayback.shared.effect("mail_bag") }
     }
 
     // MARK: Полка

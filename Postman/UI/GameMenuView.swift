@@ -69,6 +69,8 @@ struct GameMenuView: View {
                 ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2460, action: onClose)
             }
         }
+        .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
+        .onDisappear { SoundPlayback.shared.effect("ui_paper_close") }
         .task(id: castToken) { people = game.menuPeople() }
         .task { await refreshAuth() }
         .onChange(of: scenePhase) { _, phase in
@@ -249,6 +251,66 @@ struct GameMenuView: View {
                 .accessibilityAddTraits(.isHeader)
             language(m)
             reminders(m)
+            sound(m)
+        }
+    }
+
+    @State private var effectsLevel = SoundPrefs.effects
+    @State private var ambienceLevel = SoundPrefs.ambience
+
+    private func sound(_ m: FrameMapper) -> some View {
+        VStack(alignment: .leading, spacing: m.length(14)) {
+            Text(L10n.text("menu.sound"))
+                .font(Ink.label(m.length(34)))
+                .foregroundStyle(Ink.brown)
+                .accessibilityAddTraits(.isHeader)
+            Text(L10n.text("menu.sound.effects"))
+                .font(Ink.label(m.length(30)))
+                .foregroundStyle(Ink.brown)
+            soundRow(level: effectsLevel, m: m) { pick in
+                effectsLevel = pick
+                SoundPrefs.effects = pick
+                SoundPlayback.shared.applyLevels()
+            }
+            Text(L10n.text("menu.sound.ambience"))
+                .font(Ink.label(m.length(30)))
+                .foregroundStyle(Ink.brown)
+            soundRow(level: ambienceLevel, m: m) { pick in
+                ambienceLevel = pick
+                SoundPrefs.ambience = pick
+                SoundPlayback.shared.applyLevels()
+            }
+            Text(L10n.text("menu.sound.note"))
+                .font(Ink.font("hand", size: m.length(30)))
+                .foregroundStyle(Ink.graphite)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    private func soundTitle(_ level: SoundLevel) -> String {
+        switch level {
+        case .silent: return L10n.text("menu.sound.silent")
+        case .quiet: return L10n.text("menu.sound.quiet")
+        case .mid: return L10n.text("menu.sound.mid")
+        case .full: return L10n.text("menu.sound.full")
+        }
+    }
+
+    private func soundRow(level: SoundLevel, m: FrameMapper, set: @escaping (SoundLevel) -> Void) -> some View {
+        VStack(alignment: .leading, spacing: m.length(8)) {
+            ForEach(SoundLevel.allCases, id: \.self) { item in
+                let selected = level == item
+                Button { set(item) } label: {
+                    TagArt(line1: soundTitle(item),
+                           line2: selected ? "·" : " ",
+                           k: m.scale, small: true, scale: 0.92, size1: 60, size2: 32)
+                        .saturation(selected ? 1 : 0.3)
+                }
+                .buttonStyle(PressStyle())
+                .accessibilityLabel(soundTitle(item))
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
         }
     }
 

@@ -33,6 +33,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
     var onPostmanTap: (() -> Void)?
+    /// Видимый шаг героя: мировой шаг, только когда стопа ставится и он в кадре.
+    var onFootfall: ((Double) -> Void)?
+    /// Стая пролетела. Звук решает вызывающий, здесь только факт.
+    var onFlock: (() -> Void)?
+    var onAmbienceTick: ((Double) -> Void)?
 
     // Спутник (коза Рамка): идёт рядом с почтальоном, пока companionProvider(шаг) возвращает его id.
     /// Какой спутник должен идти рядом на этом шаге главы (nil — никто). Задаёт GameModel.
@@ -81,6 +86,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private(set) var ambient: AmbientLayer?
     private(set) var weather: WeatherLayer?
     private var lastUpdateTime: TimeInterval = 0
+    private var ambienceClock: TimeInterval = 0
     private var cullClock: TimeInterval = 0
 
     init(config: WorldConfig, rig: RigConfig, initialStep: Double) {
@@ -127,6 +133,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                                    baseTop: UIColor(hex: L.sky.topColor), baseBottom: UIColor(hex: L.sky.bottomColor),
                                    roadFraction: roadFraction, maxCameraScale: maxCamScale,
                                    addLayer: { [unowned self] node, k in self.addLayer(node, parallax: k) })
+            ambient?.onFlock = { [weak self] in self?.onFlock?() }
         }
 
         // Погода (ясно/дождь/снег/туман) — поверх неба и планов, под тоном суток.
@@ -154,6 +161,10 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         shadow.position = CGPoint(x: 0, y: CGFloat(pc.feetBelowRoad) * 0.5)
         node.addChild(shadow)
         actorLayer.addChild(node)
+        node.onFootfall = { [weak self] in
+            guard let self, self.postmanOffscreen == nil else { return }
+            self.onFootfall?(self.displayedStep)
+        }
         postman = node
 
         updateCameraAndLayers()
@@ -706,6 +717,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         postman.position.x = geo.x(forStep: displayedStep)
         postman.update(deltaTime: dt)
+        ambienceClock += dt
+        if ambienceClock >= 1 {
+            ambienceClock = 0
+            onAmbienceTick?(displayedStep)
+        }
         updateRoadItems()
 
         stepCamera(dt)

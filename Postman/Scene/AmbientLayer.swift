@@ -111,6 +111,8 @@ final class AmbientLayer {
     private let cloudSpan: CGFloat
 
     private var birdsLayer: SKNode?
+    /// Стая появилась на экране. Звук сюда не входит.
+    var onFlock: (() -> Void)?
     private var birdTimer: Double = 6
     private var tick: Double = 0
     private var skyClock: Double = 0
@@ -365,6 +367,7 @@ final class AmbientLayer {
             bird.run(.sequence([.wait(forDuration: Double.random(in: 0...0.4)), flap]))
             bird.run(.sequence([fly, .removeFromParent()]))
         }
+        onFlock?()
     }
 
     // MARK: Декор пропсов (дым, качание, колокол)

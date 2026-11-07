@@ -199,6 +199,15 @@
 "menu.reminders.game.on" = "The game reports stops";
 "menu.reminders.game.off" = "The game stays quiet";
 
+"menu.sound" = "Sound";
+"menu.sound.effects" = "Effects";
+"menu.sound.ambience" = "Surroundings";
+"menu.sound.silent" = "Silence";
+"menu.sound.quiet" = "Quiet";
+"menu.sound.mid" = "Medium";
+"menu.sound.full" = "Loud";
+"menu.sound.note" = "Silence is part of the road. Steps are heard only while the postman is walking on screen.";
+
 "journey.continue" = "The postman's journey will continue";
 "journey.soon" = "Chapter 3 is coming soon";
 

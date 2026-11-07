@@ -20,6 +20,7 @@ struct JournalScreen: View {
         FrameScreen(dim: 0.6) { m in
             ZStack {
                 Color.clear.contentShape(Rectangle()).onTapGesture { onClose() }
+                    .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
                 header(m).position(m.point(585, 300))
                 let entries = journal.entries
                 if entries.isEmpty {

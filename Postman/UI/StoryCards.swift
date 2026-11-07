@@ -136,6 +136,10 @@ struct StoryCardView: View {
             }
         }
         .transition(.opacity)
+        .onAppear {
+            SoundPlayback.shared.story(eventID: card.id, kind: card.kind.rawValue,
+                                       residentID: card.resident, live: engine.liveViewing)
+        }
     }
 
     // MARK: Вручение

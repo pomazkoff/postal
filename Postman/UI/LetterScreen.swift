@@ -75,6 +75,8 @@ struct LetterScreen: View {
         } message: {
             Text(L10n.text("letter.open.message"))
         }
+        .onAppear { SoundPlayback.shared.effect("mail_unfold") }
+        .onChange(of: page) { _, _ in SoundPlayback.shared.effect("mail_unfold") }
     }
 
     // MARK: Лист

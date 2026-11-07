@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SpriteKit
+import UIKit
 
 /// Связывает шаги, сохранённый прогресс, данные мира и сцену.
 @MainActor
@@ -23,6 +24,8 @@ final class GameModel: ObservableObject {
     @Published var showHeroCard = false
     /// Меню открыто: мир и HUD под ним размыты, бумага меню остаётся резкой.
     @Published var roadMenuOpen = false
+    /// Поверх мира лист, меню или карточка: шаги и окружение замолкают.
+    @Published var worldCovered = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
@@ -226,6 +229,7 @@ final class GameModel: ObservableObject {
         residentVisitRequestID = nil
         progress.displayedSteps = scene.displayedStep
         engine.liveViewing = false
+        SoundPlayback.shared.stopAll()
         if steps.hasLoaded && journal == nil { engine.markSeen(chapterSteps) }
         // Таймер экрана гаснет. Фоновый наблюдатель HealthKit этим не снимается.
         steps.stop()
@@ -299,11 +303,17 @@ final class GameModel: ObservableObject {
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false
+        SoundPlayback.shared.forgetStories()
         installWorldStory(in: scene)
         scene.resetForNewStory()
     }
 
     // MARK: Private
+
+    /// Шаги и погода звучат, когда виден мир, а не журнал, меню или карточка.
+    private var worldIsAudible: Bool {
+        onboardingDone && !worldCovered && !roadMenuOpen && journal == nil && residentVisit == nil
+    }
 
     private func makeScene() -> WorldScene {
         let initial = progress.forceChapterIndex != nil
@@ -317,6 +327,21 @@ final class GameModel: ObservableObject {
         }
         scene.onPostmanTap = { [weak self] in
             DispatchQueue.main.async { self?.showHeroCard = true }
+        }
+        scene.onFootfall = { [weak self] step in
+            guard let self else { return }
+            SoundPlayback.shared.footfall(worldStep: step,
+                                          appActive: UIApplication.shared.applicationState == .active,
+                                          heroVisible: true,
+                                          worldAudible: self.worldIsAudible)
+        }
+        scene.onFlock = { [weak self] in
+            guard let self else { return }
+            SoundPlayback.shared.flock(worldStep: self.scene.displayedStep, audible: self.worldIsAudible)
+        }
+        scene.onAmbienceTick = { [weak self] step in
+            guard let self else { return }
+            SoundPlayback.shared.tick(worldStep: step, audible: self.worldIsAudible)
         }
         installWorldStory(in: scene)
         installCompanions(in: scene)

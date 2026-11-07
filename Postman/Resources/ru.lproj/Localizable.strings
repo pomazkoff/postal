@@ -199,6 +199,15 @@
 "menu.reminders.game.on" = "Игра сообщает об остановках";
 "menu.reminders.game.off" = "Игра молчит";
 
+"menu.sound" = "Звук";
+"menu.sound.effects" = "Эффекты";
+"menu.sound.ambience" = "Окружение";
+"menu.sound.silent" = "Тишина";
+"menu.sound.quiet" = "Тихо";
+"menu.sound.mid" = "Средне";
+"menu.sound.full" = "Громко";
+"menu.sound.note" = "Тишина — часть дороги. Шаги слышны, только когда почтальон идёт на экране.";
+
 "journey.continue" = "Путешествие почтальона продолжится";
 "journey.soon" = "Глава 3 скоро";
 

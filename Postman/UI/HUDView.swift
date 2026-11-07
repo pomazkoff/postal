@@ -123,8 +123,11 @@ struct HUDView: View {
         .animation(.easeInOut(duration: 0.25), value: letterID)
         .onChange(of: screen) { _, new in
             game.roadMenuOpen = new == .menu
+            publishWorldCover(screen: new)
             if new != .none { game.showHeroCard = false }
         }
+        .onChange(of: letterID) { _, _ in publishWorldCover(screen: screen) }
+        .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
         .storyResetAlert(isPresented: $confirmReset)
     }
 
@@ -311,6 +314,14 @@ struct HUDView: View {
     private func anchor(_ state: HUDLayout.WatchState, _ m: FrameMapper) -> UnitPoint {
         let p = m.point(state.body[0] + state.body[2] / 2, state.y)
         return UnitPoint(x: p.x / max(m.size.width, 1), y: p.y / max(m.size.height, 1))
+    }
+
+    private func publishWorldCover(screen: Screen) {
+        let covered = screen != .none || letterID != nil || game.showHeroCard
+        if game.worldCovered != covered {
+            game.worldCovered = covered
+            if covered { SoundPlayback.shared.stopAll() }
+        }
     }
 
     private func toggleWatch() {
