@@ -198,3 +198,6 @@
 "menu.reminders.openSettings" = "Открыть настройки iOS";
 "menu.reminders.game.on" = "Игра сообщает об остановках";
 "menu.reminders.game.off" = "Игра молчит";
+
+"map.place.ahead" = "Ещё впереди, %@.";
+"map.place.been" = "Почтальон здесь уже проходил.";

@@ -198,3 +198,6 @@
 "menu.reminders.openSettings" = "Open iOS Settings";
 "menu.reminders.game.on" = "The game reports stops";
 "menu.reminders.game.off" = "The game stays quiet";
+
+"map.place.ahead" = "Still ahead, %@.";
+"map.place.been" = "The postman has already walked through.";

@@ -19,6 +19,8 @@ final class GameModel: ObservableObject {
     @Published var onboardingDone: Bool
     /// Почтальон за краем экрана (камеру увели панорамой) — показать кнопку «к почтальону».
     @Published private(set) var postmanOffscreen: WorldScene.Offscreen?
+    /// Карточка почтальона по тапу в мире. Не сейв.
+    @Published var showHeroCard = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
@@ -291,6 +293,7 @@ final class GameModel: ObservableObject {
         core.switchToChapter(0) // syncEngine до hasLoaded не переключает главу — делаем явно.
         engine.resetStory()
         journal = nil
+        showHeroCard = false
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false
@@ -309,6 +312,9 @@ final class GameModel: ObservableObject {
         }
         scene.onResidentTap = { [weak self] chapterID, residentID in
             DispatchQueue.main.async { self?.visitResident(chapterID: chapterID, residentID: residentID) }
+        }
+        scene.onPostmanTap = { [weak self] in
+            DispatchQueue.main.async { self?.showHeroCard = true }
         }
         installWorldStory(in: scene)
         installCompanions(in: scene)

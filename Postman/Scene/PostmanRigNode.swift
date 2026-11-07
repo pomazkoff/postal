@@ -15,6 +15,9 @@ final class PostmanRigNode: SKNode {
     private(set) var isWalking = false
     private var frameIndex = 0
     private var frameClock: TimeInterval = 0
+    /// Короткий кивок головой вокруг шеи. −1 — покоя.
+    private var nodClock: TimeInterval = -1
+    private let nodDuration: TimeInterval = 0.42
 
     /// - Parameters:
     ///   - height: высота героя в px дизайна (430).
@@ -80,10 +83,23 @@ final class PostmanRigNode: SKNode {
     private func apply(_ pose: [RigPart: Affine2D]) {
         for (part, m) in pose {
             guard let s = sprites[part] else { continue }
-            let topLeft = m.apply(rig.offset(part.imageName))
+            var pose = m
+            if part == .head, nodClock >= 0 {
+                let t = min(1, nodClock / nodDuration)
+                let deg = sin(t * .pi) * 8
+                pose = pose * Affine2D.rotate(deg, around: rig.pivot("neck"))
+            }
+            let topLeft = pose.apply(rig.offset(part.imageName))
             s.position = CGPoint(x: topLeft.x, y: -topLeft.y)
-            s.zRotation = CGFloat(-m.angle)
+            s.zRotation = CGFloat(-pose.angle)
         }
+    }
+
+    /// Один кивок. Reduce Motion — без движения, карточка всё равно открывается снаружи.
+    func playNod(reduceMotion: Bool) {
+        guard !reduceMotion else { return }
+        nodClock = 0
+        apply(isWalking ? walkFrames[frameIndex] : idlePose)
     }
 
     /// Читаемость (DEBUG-переключатель): тёплый свет и кромка на частях.
@@ -111,7 +127,16 @@ final class PostmanRigNode: SKNode {
 
     /// Вызывать каждый кадр сцены.
     func update(deltaTime dt: TimeInterval) {
-        guard isWalking else { return }
+        var dirty = false
+        if nodClock >= 0 {
+            nodClock += dt
+            if nodClock >= nodDuration { nodClock = -1 }
+            dirty = true
+        }
+        guard isWalking else {
+            if dirty { apply(idlePose) }
+            return
+        }
         frameClock += dt
         let frameDuration = 1.0 / RigWalk.fps
         var advanced = false
@@ -124,6 +149,6 @@ final class PostmanRigNode: SKNode {
             }
             advanced = true
         }
-        if advanced { apply(walkFrames[frameIndex]) }
+        if advanced || dirty { apply(walkFrames[frameIndex]) }
     }
 }

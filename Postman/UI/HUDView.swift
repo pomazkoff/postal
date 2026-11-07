@@ -96,6 +96,13 @@ struct HUDView: View {
             #endif
 
             chapterOverlay
+            if game.showHeroCard, screen == .none {
+                HeroNote {
+                    game.showHeroCard = false
+                }
+                .transition(.opacity)
+                .zIndex(8)
+            }
             if let id = letterID {
                 LetterScreen(itemID: id) { closeLetter(id) }
                     .transition(.opacity)
@@ -104,6 +111,9 @@ struct HUDView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: screen)
         .animation(.easeInOut(duration: 0.25), value: letterID)
+        .onChange(of: screen) { _, new in
+            if new != .none { game.showHeroCard = false }
+        }
         .storyResetAlert(isPresented: $confirmReset)
     }
 

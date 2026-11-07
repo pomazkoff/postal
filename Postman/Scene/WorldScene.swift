@@ -32,6 +32,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var residentNodes: [String: SKSpriteNode] = [:]
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
+    var onPostmanTap: (() -> Void)?
 
     // Спутник (коза Рамка): идёт рядом с почтальоном, пока companionProvider(шаг) возвращает его id.
     /// Какой спутник должен идти рядом на этом шаге главы (nil — никто). Задаёт GameModel.
@@ -953,15 +954,34 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer === residentTapRecognizer else { return true }
         guard isUserInteractionEnabled, let view else { return false }
-        return residentKey(at: convertPoint(fromView: touch.location(in: view))) != nil
+        let point = convertPoint(fromView: touch.location(in: view))
+        return residentKey(at: point) != nil || hitsPostman(at: point)
+    }
+
+    private func hitsPostman(at point: CGPoint) -> Bool {
+        guard let postman, !postman.isHidden, postman.alpha > 0.01 else { return false }
+        for hit in nodes(at: point) {
+            var node: SKNode? = hit
+            while let current = node {
+                if current === postman { return true }
+                node = current.parent
+            }
+        }
+        return false
     }
 
     @objc private func handleResidentTap(_ g: UITapGestureRecognizer) {
-        guard g.state == .ended, !isPanning, let view = g.view,
-              let key = residentKey(at: convertPoint(fromView: g.location(in: view))) else { return }
-        let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
-        guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
-        onResidentTap?(chapterID, parts[1])
+        guard g.state == .ended, !isPanning, let view = g.view else { return }
+        let point = convertPoint(fromView: g.location(in: view))
+        if let key = residentKey(at: point) {
+            let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
+            guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
+            onResidentTap?(chapterID, parts[1])
+            return
+        }
+        guard hitsPostman(at: point) else { return }
+        postman.playNod(reduceMotion: UIAccessibility.isReduceMotionEnabled)
+        onPostmanTap?()
     }
 
     @objc private func handlePan(_ g: UIPanGestureRecognizer) {
