@@ -24,6 +24,11 @@ struct MapScreen: View {
 
     private var map: ParchmentMap? { ParchmentMap.shared }
     private var step: Int { game.chapterSteps }
+    /// Точка на нарисованном листе. Для главы 2 это конец Долины, не шаг 2419 у Свай.
+    private var sheetStep: Int {
+        map?.sheetStep(chapterID: game.chapter.id, chapterSteps: step) ?? 0
+    }
+    private var valleySheet: Bool { game.chapter.id == 1 }
 
     var body: some View {
         FrameScreen(dim: 0.9) { m in
@@ -53,7 +58,7 @@ struct MapScreen: View {
         }
         .transition(.opacity)
         .storyResetAlert(isPresented: $confirmReset)
-        .task(id: map?.revealThreshold(step: step) ?? 0) { await refreshReveal() }
+        .task(id: map?.revealThreshold(step: sheetStep) ?? 0) { await refreshReveal() }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
@@ -62,13 +67,13 @@ struct MapScreen: View {
     @ViewBuilder
     private func mapLayer(_ map: ParchmentMap, road: RoadGeometry, m: FrameMapper) -> some View {
         let s = m.scale
-        let f = map.fraction(step: step)
+        let f = map.fraction(step: sheetStep)
         let feet = road.point(at: f)
-        let t0 = map.revealThreshold(step: step)
-        let next = map.settlements.first { $0.step > step }
+        let t0 = map.revealThreshold(step: sheetStep)
+        let next = map.settlements.first { $0.step > sheetStep }
         let layout = ParchmentLayout.layout(map: map, postmanFeet: feet,
                                             frame: CGSize(width: map.size[0], height: map.size[1]),
-                                            nextID: next?.id, reachedStep: step)
+                                            nextID: next?.id, reachedStep: sheetStep)
         ZStack(alignment: .topLeading) {
             Group {
                 if let revealed {
@@ -93,7 +98,7 @@ struct MapScreen: View {
             WalkedDashes(points: road.prefix(to: f), m: m)
 
             ForEach(map.settlements, id: \.id) { place in
-                let state = PlaceState(place.step <= step ? .visited : place.id == next?.id ? .next : .ghost)
+                let state = PlaceState(place.step <= sheetStep ? .visited : place.id == next?.id ? .next : .ghost)
                 stake(place.roadPoint, name: place.name, state: state, m: m)
                     .onTapGesture { openPlace(place) }
                 placeIcon(place, state: state, m: m)
@@ -112,12 +117,14 @@ struct MapScreen: View {
                 .accessibilityLabel(L10n.text("app.name"))
                 .accessibilityAddTraits(.isButton)
 
-            tag(L10n.text("map.you"), Format.steps(step) + " " + L10n.text("abbr.steps"), at: layout.postmanTag, dim: false, rotation: 5, m: m)
+            tag(valleySheet ? L10n.text("map.you") : L10n.text("map.sheetEnd"),
+                valleySheet ? Format.steps(step) + " " + L10n.text("abbr.steps") : L10n.text("map.notDrawn"),
+                at: layout.postmanTag, dim: false, rotation: 5, m: m)
                 .onTapGesture { openPostman() }
             ForEach(map.settlements, id: \.id) { place in
                 if let c = layout.tags[place.id] {
                     tag(place.name, place.step == 0 ? L10n.text("map.start") : Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
-                        dim: place.step > step && place.id != next?.id,
+                        dim: place.step > sheetStep && place.id != next?.id,
                         rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
                         .onTapGesture { openPlace(place) }
                         .accessibilityLabel(place.name)
@@ -175,14 +182,14 @@ struct MapScreen: View {
 
     /// Пройденное место — уже слышанная строка прибытия, если она есть. Дальше тумана — только «ещё впереди».
     private func openPlace(_ place: ParchmentMap.Place) {
-        let reached = place.step <= step
+        let reached = place.step <= sheetStep
         let body: String
-        if reached, let line = engine.story.arrivals?.first(where: { $0.settlement == place.id })?.text, !line.isEmpty {
+        if reached, let line = arrivalText(place.id), !line.isEmpty {
             body = line
         } else if reached {
             body = L10n.text("map.place.been")
         } else {
-            let left = max(0, place.step - step)
+            let left = max(0, place.step - sheetStep)
             body = L10n.format("map.place.ahead", Format.steps(left) + " " + L10n.text("abbr.steps"))
         }
         note = MapNote(title: place.name, body: body, image: reached ? place.icon : nil)
@@ -191,6 +198,15 @@ struct MapScreen: View {
     private func openPostman() {
         note = MapNote(title: L10n.text("app.name"), body: L10n.text("onboarding.card0.body"),
                        image: map?.postman.image)
+    }
+
+    /// Строка прибытия с листа долины, если активная глава уже другая.
+    private func arrivalText(_ placeID: String) -> String? {
+        if let line = engine.story.arrivals?.first(where: { $0.settlement == placeID })?.text, !line.isEmpty {
+            return line
+        }
+        guard game.chapter.id != 1 else { return nil }
+        return StoryConfig.load(chapter: 1).arrivals?.first { $0.settlement == placeID }?.text
     }
 
     private func mapNote(_ note: MapNote, m: FrameMapper) -> some View {
@@ -257,7 +273,9 @@ struct MapScreen: View {
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
                 .position(x: 310 * f, y: 150 * f)
-            Text(L10n.format("map.chapterDay", game.chapter.id, dayNumber))
+            Text(valleySheet
+                 ? L10n.format("map.chapterDay", game.chapter.id, dayNumber)
+                 : L10n.text("map.valleyOnly"))
                 .font(Ink.label(40 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.6)
@@ -286,15 +304,18 @@ struct MapScreen: View {
         .position(m.point(1010, 300))
         .allowsHitTesting(false)
 
-        let total = game.chapter.lengthSteps
+        let total = valleySheet ? game.chapter.lengthSteps : map.lengthSteps
+        let counted = valleySheet ? step : sheetStep
         PlacedArt(name: "tag", m: m, at: CGPoint(x: 300, y: 2380), scale: 420 / 437, rotation: 3) { e, f in
-            Text(L10n.format("map.stepsOf", Format.steps(min(step, total)), Format.steps(total)))
+            Text(L10n.format("map.stepsOf", Format.steps(min(counted, total)), Format.steps(total)))
                 .font(Ink.title(46 * f))
                 .foregroundStyle(Ink.brown)
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .frame(width: 270 * f)
                 .position(x: 225 * f, y: 80 * f)
-            Text(L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber))
+            Text(valleySheet
+                 ? L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber)
+                 : L10n.format("map.elsewhere", game.chapter.title, Format.steps(step)))
                 .font(Ink.label(36 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.5)
@@ -322,7 +343,7 @@ struct MapScreen: View {
     @MainActor
     private func refreshReveal() async {
         guard let map else { return }
-        let t0 = map.revealThreshold(step: step)
+        let t0 = map.revealThreshold(step: sheetStep)
         guard abs(t0 - revealedFor) > 1e-4 else { return }
         let image = await Task.detached(priority: .userInitiated) {
             ParchmentReveal.render(map: map, threshold: t0)
@@ -388,7 +409,8 @@ struct MapScreen: View {
                 pan = clamped(.zero, zoom: 1, m: m, size: size)
             } else {
                 let z: CGFloat = 2.2
-                let feet = m.point(road.point(at: map.fraction(step: step)).x, road.point(at: map.fraction(step: step)).y)
+                let feet = m.point(road.point(at: map.fraction(step: sheetStep)).x,
+                                   road.point(at: map.fraction(step: sheetStep)).y)
                 zoom = z
                 pan = clamped(CGPoint(x: size.width / 2 - z * feet.x, y: size.height / 2 - z * feet.y),
                               zoom: z, m: m, size: size)

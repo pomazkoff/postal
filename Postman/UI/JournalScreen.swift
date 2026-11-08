@@ -282,13 +282,12 @@ private struct JournalCard: View {
         ZStack(alignment: .bottomTrailing) {
             RoundedRectangle(cornerRadius: r).fill(Ink.brown.opacity(0.12))
             if let placeImg {
+                // Вырезка целиком. scaledToFill и 1.5 обрезали узкий ящик Седла до серой полосы.
                 Image(uiImage: placeImg)
-                    .resizable().interpolation(.high).scaledToFill()
+                    .resizable().interpolation(.high).scaledToFit()
+                    .frame(maxWidth: width * 0.92, maxHeight: height * 0.92)
                     .frame(width: width, height: height)
-                    .scaleEffect(1.5)
-                    .offset(x: shift)
-                    .frame(width: width, height: height)
-                    .clipShape(RoundedRectangle(cornerRadius: r))
+                    .offset(x: shift * 0.08)
             }
             if let fig {
                 let h = height * 0.92

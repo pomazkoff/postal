@@ -358,6 +358,10 @@ struct GameMenuView: View {
                 .font(Ink.font("hand", size: m.length(30)))
                 .foregroundStyle(Ink.graphite)
                 .fixedSize(horizontal: false, vertical: true)
+            Text(wakeLine)
+                .font(Ink.font("hand", size: m.length(28)))
+                .foregroundStyle(Ink.graphite)
+                .fixedSize(horizontal: false, vertical: true)
             Text(L10n.text(phoneStatusKey))
                 .font(Ink.font("hand", size: m.length(32)))
                 .foregroundStyle(Ink.pencil)
@@ -398,6 +402,12 @@ struct GameMenuView: View {
         .buttonStyle(PressStyle())
         .position(m.point(at.x, at.y))
         .accessibilityLabel(title)
+    }
+
+    private var wakeLine: String {
+        guard let note = BackgroundWakeNote.summary else { return L10n.text("menu.reminders.wake.none") }
+        let time = DateFormatter.localizedString(from: note.date, dateStyle: .none, timeStyle: .short)
+        return L10n.format("menu.reminders.wake.last", time, note.posted)
     }
 
     private var phoneStatusKey: String {

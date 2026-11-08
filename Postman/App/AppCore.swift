@@ -34,6 +34,8 @@ final class AppCore {
     /// При уходе в фон досылаем только неотвеченные выборы (кнопки на локскрине).
     private var deferredBeats: [String: ChapterEngine.Beat] = [:]
     private var postedBeatIDs = Set<String>()
+    private var inBackgroundWake = false
+    private var wakePosts = 0
 
     private init() {
         let progress = ProgressStore()
@@ -182,6 +184,7 @@ final class AppCore {
         guard !postedBeatIDs.contains(beat.id) else { return }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)
+        if inBackgroundWake { wakePosts += 1 }
         notifier.post(title: beat.title, body: beat.body, id: beat.id, choiceEventID: beat.choiceEventID)
     }
 
@@ -249,10 +252,17 @@ final class AppCore {
     }
 
     /// Прочитать шаги и обработать все наступившие остановки (пуши ставятся из engine.onBeat).
+    /// Разрешение читается до сюжета: иначе явный «вкл» при ещё не прочитанном статусе
+    /// молча теряет остановку, и повторно она уже не ставится.
     func backgroundRefresh() async {
         guard progress.onboardingDone else { return }
+        await notifier.refreshAuthorizationStatus()
+        wakePosts = 0
+        inBackgroundWake = true
         await steps.refresh()
         syncEngine(total: steps.totalSteps)
+        inBackgroundWake = false
+        BackgroundWakeNote.record(steps: steps.totalSteps, posted: wakePosts, at: Date())
     }
 
     func appDidEnterBackground() {
@@ -283,6 +293,26 @@ final class AppCore {
             let body = card.text ?? title
             postBeat(ChapterEngine.Beat(id: card.id, title: title, body: body, choiceEventID: card.id))
         }
+    }
+}
+
+/// Что фоновое чтение реально сделало. Не обещает, когда iOS разбудит приложение.
+enum BackgroundWakeNote {
+    static let stepsKey = "postman.backgroundWake.steps"
+    static let postedKey = "postman.backgroundWake.posted"
+    static let dateKey = "postman.backgroundWake.date"
+
+    static func record(steps: Int, posted: Int, at date: Date) {
+        let defaults = UserDefaults.standard
+        defaults.set(steps, forKey: stepsKey)
+        defaults.set(posted, forKey: postedKey)
+        defaults.set(date, forKey: dateKey)
+    }
+
+    static var summary: (steps: Int, posted: Int, date: Date)? {
+        let defaults = UserDefaults.standard
+        guard let date = defaults.object(forKey: dateKey) as? Date else { return nil }
+        return (defaults.integer(forKey: stepsKey), defaults.integer(forKey: postedKey), date)
     }
 }
 

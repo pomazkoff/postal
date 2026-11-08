@@ -80,6 +80,13 @@ struct ParchmentMap: Decodable {
     var points: [CGPoint] { road.map { CGPoint(x: $0[0], y: $0[1]) } }
     var chromeRects: [CGRect] { chrome.map { CGRect(x: $0[0], y: $0[1], width: $0[2] - $0[0], height: $0[3] - $0[1]) } }
 
+    /// Единственный пергамент — Долина, Почта→Седло, `lengthSteps` этой карты.
+    /// Шаги второй главы на эту дорогу не кладутся: гор на листе нет.
+    func sheetStep(chapterID: Int, chapterSteps: Int) -> Int {
+        if chapterID == 1 { return min(max(0, chapterSteps), lengthSteps) }
+        return lengthSteps
+    }
+
     func fraction(step: Int) -> Double {
         guard lengthSteps > 0 else { return 0 }
         return min(1, max(0, Double(step) / Double(lengthSteps)))

@@ -65,6 +65,10 @@
 "map.start" = "start";
 "map.region" = "Valley";
 "map.chapterDay" = "chapter %lld · day %lld";
+"map.valleyOnly" = "the valley sheet, up to the Saddle";
+"map.notDrawn" = "The mountains are not drawn on this sheet.";
+"map.sheetEnd" = "End of the sheet";
+"map.elsewhere" = "%@ · step %@";
 "map.north" = "N";
 "map.stepsOf" = "%@ of %@";
 "map.totals" = "The tally";
@@ -191,6 +195,8 @@
 "menu.language.system.note" = "Russian stays Russian. Any other phone language is English.";
 "menu.reminders" = "Stop reminders";
 "menu.reminders.note" = "Only this game's own notices: who he met and what happened at a stop. There is no other mailing.";
+"menu.reminders.wake.none" = "No background step reading has been recorded yet. If iOS wakes the game, the time and how many notices were queued will show here.";
+"menu.reminders.wake.last" = "Last background reading at %@, notices queued: %lld.";
 "menu.reminders.phone.allowed" = "Allowed on the phone";
 "menu.reminders.phone.denied" = "Turned off on the phone";
 "menu.reminders.phone.unknown" = "The phone has not been asked";

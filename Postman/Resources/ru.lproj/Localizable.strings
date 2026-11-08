@@ -65,6 +65,10 @@
 "map.start" = "старт";
 "map.region" = "Долина";
 "map.chapterDay" = "глава %lld · день %lld";
+"map.valleyOnly" = "лист долины, до Седла";
+"map.notDrawn" = "Горы на этом листе не нарисованы.";
+"map.sheetEnd" = "Конец листа";
+"map.elsewhere" = "%@ · шаг %@";
 "map.north" = "С";
 "map.stepsOf" = "%@ из %@";
 "map.totals" = "Итоги";
@@ -191,6 +195,8 @@
 "menu.language.system.note" = "Русский остаётся русским. Любой другой язык телефона — английский.";
 "menu.reminders" = "Напоминания об остановках";
 "menu.reminders.note" = "Только свои уведомления игры: кого встретил и что случилось на остановке. Другой рассылки нет.";
+"menu.reminders.wake.none" = "Фоновое чтение шагов ещё не отмечалось. Когда iOS разбудит игру, здесь будет время и число поставленных уведомлений.";
+"menu.reminders.wake.last" = "Последнее фоновое чтение в %@, уведомлений поставлено: %lld.";
 "menu.reminders.phone.allowed" = "На телефоне разрешены";
 "menu.reminders.phone.denied" = "На телефоне выключены";
 "menu.reminders.phone.unknown" = "Телефон ещё не спрашивали";

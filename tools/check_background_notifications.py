@@ -63,6 +63,9 @@ if "wake.begin" not in fold or "backgroundRefresh" not in fold:
     fail("folding the app must keep the process up for the step catch-up")
 if "scheduleRefresh()" not in fold:
     fail("folding the app must submit the discretionary refresh")
+refresh = core.split("func backgroundRefresh", 1)[1].split("func appDidEnterBackground", 1)[0]
+if refresh.find("refreshAuthorizationStatus") > refresh.find("syncEngine") or "refreshAuthorizationStatus" not in refresh:
+    fail("a background wake must read notification permission before it spends the stop")
 
 if "<string>fetch</string>" not in info:
     fail("BGAppRefresh needs the fetch background mode")
