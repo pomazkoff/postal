@@ -40,17 +40,11 @@ struct HistoryScrollView: View {
     private func paper(_ m: FrameMapper, frame: (centerY: CGFloat, width: CGFloat, height: CGFloat, arrowBottom: CGFloat)) -> some View {
         let width = m.length(Double(frame.width))
         let height = m.length(Double(frame.height))
-        let sheet = UIArt.entry("sheet")
         return ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: m.length(18), style: .continuous)
                 .fill(Theme.paper)
                 .overlay(RoundedRectangle(cornerRadius: m.length(18), style: .continuous)
                     .stroke(Theme.paperEdge, lineWidth: max(1, m.length(3))))
-            Image(uiImage: HUDImages.image(sheet.image))
-                .resizable()
-                .scaledToFit()
-                .frame(width: width)
-                .accessibilityHidden(true)
             ScrollView {
                 VStack(alignment: .leading, spacing: m.length(28)) {
                     Text(L10n.text("history.title"))

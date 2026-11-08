@@ -50,6 +50,8 @@ if "history.empty" not in view:
     fail("a new game needs an empty state")
 if "history.where" in view:
     fail("the history sheet must not print place and step headers")
+if "sheet" in view.split("struct HistoryScrollView", 1)[-1].split("struct ", 1)[0]:
+    fail("the history page must be plain paper, without the gridded sheet")
 
 ru = (ROOT / "Postman/Resources/ru.lproj/Localizable.strings").read_text(encoding="utf-8")
 en = (ROOT / "Postman/Resources/en.lproj/Localizable.strings").read_text(encoding="utf-8")
@@ -67,6 +69,10 @@ for banned in ("Агния", "Савелий", "хвостохранилищ", "
         fail(f"author secret in the history strings: {banned}")
 if not (ROOT / "docs/canon/story-bible.md").exists():
     fail("the canon file was not kept with the repo")
+if "она получить не могла" in ru:
+    fail("box 2 still says Nina could not receive her own letter")
+if "письмо Нины сыну всё ещё лежало" not in ru:
+    fail("box 2 must say Nina's letter to her son was still in the bag")
 
 # Зеркало фильтра: ноль, кусок главы 1, вход в главу 2 без её событий.
 def visible(done, step, reached, chapter_index, active):

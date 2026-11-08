@@ -761,9 +761,6 @@ def paint_history(scene, column, marks, focus, copy, note):
     base.alpha_composite(dim)
     paper = Image.new("RGBA", (1040, height), PAPER)
     ImageDraw.Draw(paper).rounded_rectangle((1, 1, 1038, height - 2), radius=18, outline=EDGE, width=4)
-    sheet = open_art("sheet")
-    fitted = fit_image(sheet, 1040, 10_000)
-    paper.alpha_composite(fitted, (0, 0))
     view_h = height - 112
     focus_y = marks.get(focus, 0)
     offset = 0 if focus is None else max(0, min(focus_y - 80, max(0, column.height - view_h)))
@@ -955,7 +952,7 @@ def main():
     line_ru = narrative(ru, partial_items, partial_done, set(), "Долина")
     line_en = narrative(en, partial_items, partial_done, set(), "Valley")
     joined = "\n".join(page["text"] for page in line_ru)
-    if "Кто опустил этот ответ" not in joined:
+    if "Ответ на это письмо уже пришёл" not in joined:
         fail("the noticed contradiction is missing")
     if "Кузьма Ерофеич здраствуй" in joined or "Взято" in joined:
         fail("the history reprinted a letter or a log line")
