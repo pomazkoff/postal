@@ -86,13 +86,20 @@ screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
 if "centersHero" not in screen or "startStep + step" not in screen:
     fail("the map must scroll to the global step once the mountain sheet exists")
 if "map.notDrawn" not in screen:
-    fail("until the files exist, the valley sheet must still say the mountains are not drawn")
-if (ROOT / "Postman/GameAssets/UI/map/mountains_color.jpg").exists():
-    fail("a mountain picture is already in the app; this stage was not supposed to invent one")
+    fail("a missing mountain sheet must still say the mountains are not drawn")
+real = ROOT / "Postman/GameAssets/UI/map/mountains.json"
+if real.exists():
+    doc = json.loads(real.read_text(encoding="utf-8"))
+    hero = atlas_point(22419, road, [tuple(p) for p in doc["road"]])
+    gar = next(p for p in doc["settlements"] if p["id"] == "gar")
+    if math.hypot(hero[0] - gar["road"][0], hero[1] - gar["road"][1]) > 80:
+        fail(f"step 2419 is not near Gar: {hero} vs {gar['road']}")
+    if hero[1] > 2300:
+        fail("step 2419 stayed down at the saddle")
 
 if FAILS:
     print(f"{len(FAILS)} map atlas check(s) failed:")
     for item in FAILS:
         print(" -", item)
     raise SystemExit(1)
-print("map atlas checks ok (no mountain art in the app; saddle join is the valley road end)")
+print("map atlas checks ok (saddle join holds; chapter 2 step 2419 is near Gar when the sheet is present)")

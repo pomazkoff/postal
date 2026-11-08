@@ -77,6 +77,12 @@ struct MountainSheet {
     let lengthSteps: Int
     let globalStart: Int
     let road: [CGPoint]
+    let roadLength: Double
+    let aheadPx: Double
+    let softPx: Double
+    let field: ParchmentMap.Field
+    let fieldPath: String
+    let puffs: ParchmentMap.Puffs
     let colorPath: String
     let pencilPath: String
     let settlements: [ParchmentMap.Place]
@@ -84,6 +90,19 @@ struct MountainSheet {
     func fraction(localStep: Int) -> Double {
         guard lengthSteps > 0 else { return 0 }
         return min(1, max(0, Double(localStep) / Double(lengthSteps)))
+    }
+
+    func revealThreshold(localStep: Int) -> Double {
+        let f = fraction(localStep: localStep)
+        return f >= 1 ? 2 : f + aheadPx / max(1, roadLength)
+    }
+
+    var softFraction: Double { softPx / max(1, roadLength) }
+
+    func puffPoints(threshold t0: Double) -> [[Double]] {
+        guard t0 < puffs.maxT, puffs.levels > 0, !puffs.points.isEmpty else { return [] }
+        let i = Int((t0 / puffs.maxT * Double(puffs.levels)).rounded())
+        return puffs.points[min(max(0, i), puffs.points.count - 1)]
     }
 
     /// nil, если файлов нет или они не сходятся со швом и списком мест.
@@ -94,13 +113,15 @@ struct MountainSheet {
         let pencilURL = mapRoot.appendingPathComponent("mountains_pencil.jpg")
         guard FileManager.default.fileExists(atPath: jsonURL.path),
               FileManager.default.fileExists(atPath: colorURL.path),
-              FileManager.default.fileExists(atPath: pencilURL.path),
-              let data = try? Data(contentsOf: jsonURL),
-              let raw = try? JSONDecoder().decode(File.self, from: data) else { return nil }
-        return make(raw, colorPath: colorURL.path, pencilPath: pencilURL.path)
+              FileManager.default.fileExists(atPath: pencilURL.path) else { return nil }
+        let data = ContentLocalizer.data(at: jsonURL, kind: .map)
+        guard let raw = try? JSONDecoder().decode(File.self, from: data) else { return nil }
+        let fieldURL = root.appendingPathComponent(raw.field.image)
+        guard FileManager.default.fileExists(atPath: fieldURL.path) else { return nil }
+        return make(raw, colorPath: colorURL.path, pencilPath: pencilURL.path, fieldPath: fieldURL.path)
     }
 
-    static func make(_ raw: File, colorPath: String, pencilPath: String) -> MountainSheet? {
+    static func make(_ raw: File, colorPath: String, pencilPath: String, fieldPath: String) -> MountainSheet? {
         guard raw.lengthSteps == MountainPlaces.lengthSteps,
               raw.globalStart == MountainPlaces.globalStart,
               raw.size.count == 2,
@@ -120,6 +141,12 @@ struct MountainSheet {
                              lengthSteps: raw.lengthSteps,
                              globalStart: raw.globalStart,
                              road: road,
+                             roadLength: raw.roadLength,
+                             aheadPx: raw.aheadPx,
+                             softPx: raw.softPx,
+                             field: raw.field,
+                             fieldPath: fieldPath,
+                             puffs: raw.puffs,
                              colorPath: colorPath,
                              pencilPath: pencilPath,
                              settlements: raw.settlements)
@@ -131,6 +158,11 @@ struct MountainSheet {
         let globalStart: Int
         let join: [Double]
         let road: [[Double]]
+        let roadLength: Double
+        let aheadPx: Double
+        let softPx: Double
+        let field: ParchmentMap.Field
+        let puffs: ParchmentMap.Puffs
         let settlements: [ParchmentMap.Place]
     }
 }

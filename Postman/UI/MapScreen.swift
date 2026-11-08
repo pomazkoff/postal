@@ -13,6 +13,8 @@ struct MapScreen: View {
 
     @State private var revealed: UIImage?
     @State private var revealedFor: Double = -1
+    @State private var mountainPicture: UIImage?
+    @State private var mountainPictureFor: Double = -1
     @State private var zoom: CGFloat = 1
     @State private var pan: CGPoint = .zero
     @State private var pinchStart: (zoom: CGFloat, pan: CGPoint)?
@@ -30,6 +32,13 @@ struct MapScreen: View {
         map?.sheetStep(chapterID: game.chapter.id, chapterSteps: step) ?? 0
     }
     private var valleySheet: Bool { game.chapter.id == 1 }
+    /// Порог цвета на листе гор. −1, пока файла нет.
+    private var mountainRevealKey: Double {
+        guard let map, let sheet = MapAtlas.make(valley: map).mountains else { return -1 }
+        let global = game.chapter.startStep + step
+        let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
+        return sheet.revealThreshold(localStep: global >= sheet.globalStart ? local : 0)
+    }
 
     var body: some View {
         FrameScreen(dim: 0.9) { m in
@@ -44,7 +53,8 @@ struct MapScreen: View {
                             mapLayer(map, road: road, m: m, drawHero: !heroOnMountain)
                                 .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y))
                             if let mountains = atlas.mountains {
-                                mountainLayer(mountains, global: global, m: m, drawHero: heroOnMountain)
+                                mountainLayer(mountains, global: global, m: m, drawHero: heroOnMountain,
+                                              picture: mountainPicture, postman: map.postman)
                             }
                         }
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
@@ -78,6 +88,7 @@ struct MapScreen: View {
         .transition(.opacity)
         .storyResetAlert(isPresented: $confirmReset)
         .task(id: map?.revealThreshold(step: sheetStep) ?? 0) { await refreshReveal() }
+        .task(id: mountainRevealKey) { await refreshMountain() }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
@@ -285,44 +296,67 @@ struct MapScreen: View {
     // MARK: Рамка (не масштабируется)
 
     @ViewBuilder
-    private func mountainLayer(_ sheet: MountainSheet, global: Int, m: FrameMapper, drawHero: Bool) -> some View {
+    private func mountainLayer(_ sheet: MountainSheet, global: Int, m: FrameMapper, drawHero: Bool,
+                               picture: UIImage?, postman: ParchmentMap.Sprite) -> some View {
         let s = m.scale
-        if let image = UIImage(contentsOfFile: sheet.colorPath) {
+        let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
+        let onSheet = global >= sheet.globalStart
+        let fraction = sheet.fraction(localStep: onSheet ? local : 0)
+        let road = RoadGeometry(sheet.road)
+        let feet = road.point(at: fraction)
+        let t0 = sheet.revealThreshold(localStep: onSheet ? local : 0)
+        let next = sheet.settlements.first { $0.step > (onSheet ? local : -1) }
+        let reached = onSheet ? local : -1
+        let tags = ParchmentLayout.layout(places: sheet.settlements,
+                                          postman: CGSize(width: postman.w, height: postman.h),
+                                          postmanFeet: feet, frame: sheet.size,
+                                          nextID: next?.id, reachedStep: reached,
+                                          includePostman: drawHero)
+        let image = picture ?? UIImage(contentsOfFile: sheet.colorPath)
+        if let image {
             Image(uiImage: image).resizable()
                 .frame(width: sheet.size.width * s, height: sheet.size.height * s)
                 .position(m.point(sheet.size.width / 2, sheet.size.height / 2))
                 .allowsHitTesting(false)
         }
-        let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
-        let fraction = sheet.fraction(localStep: global >= sheet.globalStart ? local : 0)
-        let road = RoadGeometry(sheet.road)
-        if global >= sheet.globalStart {
+        let fog = HUDImages.image(sheet.puffs.image)
+        ForEach(Array(sheet.puffPoints(threshold: t0).enumerated()), id: \.offset) { _, p in
+            Image(uiImage: fog).resizable()
+                .frame(width: p[2] * s, height: p[2] * sheet.puffs.aspect * s)
+                .scaleEffect(x: p[3] > 0.5 ? -1 : 1, y: 1)
+                .shadow(color: Color(red: 0.12, green: 0.07, blue: 0.03).opacity(0.25), radius: 6 * s, x: 4 * s, y: 7 * s)
+                .position(m.point(p[0], p[1]))
+                .allowsHitTesting(false)
+        }
+        if onSheet {
             WalkedDashes(points: road.prefix(to: fraction), m: m)
         }
-        let next = sheet.settlements.first { $0.step > local && $0.id != "sedlo" }
-        ForEach(sheet.settlements.filter { $0.id != "sedlo" }, id: \.id) { place in
-            let reached = global >= sheet.globalStart + place.step
-            let state = PlaceState(reached ? .visited : place.id == next?.id ? .next : .ghost)
+        ForEach(sheet.settlements, id: \.id) { place in
+            let been = onSheet && global >= sheet.globalStart + place.step
+            let state = PlaceState(been ? .visited : place.id == next?.id ? .next : .ghost)
             stake(place.roadPoint, name: place.name, state: state, m: m)
                 .onTapGesture { openMountain(place, sheet: sheet, global: global) }
             placeIcon(place, state: state, m: m)
                 .onTapGesture { openMountain(place, sheet: sheet, global: global) }
                 .accessibilityLabel(place.name)
                 .accessibilityAddTraits(.isButton)
+            if let c = tags.tags[place.id] {
+                tag(place.name, Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
+                    dim: !been && place.id != next?.id, rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
+                    .onTapGesture { openMountain(place, sheet: sheet, global: global) }
+            }
         }
         if drawHero {
-            let feet = road.point(at: fraction)
-            Image(uiImage: HUDImages.image("UI/map/postman")).resizable()
-                .frame(width: 87 * s, height: 230 * s)
+            Image(uiImage: HUDImages.image(postman.image)).resizable()
+                .frame(width: postman.w * s, height: postman.h * s)
                 .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
                 .contentShape(Rectangle())
-                .position(m.point(feet.x + 4, feet.y + 14 - 115))
+                .position(m.point(feet.x + 4, feet.y + 14 - postman.h / 2))
                 .onTapGesture { openPostman() }
                 .accessibilityLabel(L10n.text("app.name"))
                 .accessibilityAddTraits(.isButton)
-            tag(L10n.text("map.you"),
-                Format.steps(local) + " " + L10n.text("abbr.steps"),
-                at: CGPoint(x: feet.x - 180, y: feet.y + 30), dim: false, rotation: 5, m: m)
+            tag(L10n.text("map.you"), Format.steps(local) + " " + L10n.text("abbr.steps"),
+                at: tags.postmanTag, dim: false, rotation: 5, m: m)
                 .onTapGesture { openPostman() }
         }
     }
@@ -425,6 +459,26 @@ struct MapScreen: View {
         }.value
         revealed = image
         revealedFor = t0
+    }
+
+    @MainActor
+    private func refreshMountain() async {
+        guard let map, let sheet = MapAtlas.make(valley: map).mountains else { return }
+        let t0 = mountainRevealKey
+        guard t0 >= 0, abs(t0 - mountainPictureFor) > 1e-4 else { return }
+        let color = URL(fileURLWithPath: sheet.colorPath)
+        let pencil = URL(fileURLWithPath: sheet.pencilPath)
+        let field = URL(fileURLWithPath: sheet.fieldPath)
+        let scale = sheet.field.decodeScale
+        let bias = sheet.field.decodeBias
+        let soft = sheet.softFraction
+        let image = await Task.detached(priority: .userInitiated) {
+            ParchmentReveal.render(color: color, pencil: pencil, field: field,
+                                   decodeScale: scale, decodeBias: bias,
+                                   softFraction: soft, threshold: t0)
+        }.value
+        mountainPicture = image
+        mountainPictureFor = t0
     }
 
     // MARK: Жесты

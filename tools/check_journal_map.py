@@ -37,11 +37,7 @@ if ids != ["pochta", "svai", "zvonarnya", "kadushki", "nii", "sedlo"]:
     fail(f"the only parchment is the valley, got {ids}")
 if map_json["lengthSteps"] != 20000:
     fail("the parchment length is the valley, 20000 steps")
-mountains = list((ROOT / "Postman/GameAssets").glob("UI/map/*gar*")) + list(
-    (ROOT / "Postman/GameAssets").glob("UI/map/*chapter2*")
-)
-if mountains:
-    fail(f"unexpected mountain map files: {mountains}")
+# Лист гор лежит рядом, но не подменяет поселения Долины в map.json.
 
 if sheet_step(2, 2419, 20000) != 20000:
     fail("chapter 2 steps must not land on the Stilts")
