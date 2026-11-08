@@ -72,6 +72,7 @@
 "map.elsewhere" = "%@ · step %@";
 "map.north" = "N";
 "map.stepsOf" = "%@ of %@";
+"map.chapterProgress" = "chapter %lld steps · day %lld";
 "map.totals" = "The tally";
 "map.close" = "Close";
 "map.day" = "day %lld";

@@ -50,6 +50,7 @@ struct MapScreen: View {
                         let global = game.chapter.startStep + step
                         let heroOnMountain = atlas.mountains != nil && global >= MountainPlaces.globalStart
                         ZStack(alignment: .topLeading) {
+                            // Долина снизу. Горы непрозрачным кадром сверху: в перекрытии нет смешения, иначе шов двоится.
                             mapLayer(map, road: road, m: m, drawHero: !heroOnMountain)
                                 .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y))
                             if let mountains = atlas.mountains {
@@ -153,6 +154,7 @@ struct MapScreen: View {
             }
             ForEach(map.settlements, id: \.id) { place in
                 if let c = layout.tags[place.id] {
+                    // step Долины уже мировой: Седло 20 000. Второй раз globalStart не прибавляется.
                     tag(place.name, place.step == 0 ? L10n.text("map.start") : Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
                         dim: place.step > sheetStep && place.id != next?.id,
                         rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
@@ -341,7 +343,7 @@ struct MapScreen: View {
                 .accessibilityLabel(place.name)
                 .accessibilityAddTraits(.isButton)
             if let c = tags.tags[place.id] {
-                tag(place.name, Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
+                tag(place.name, Format.steps(WorldSteps.shown(local: place.step, origin: sheet.globalStart)) + " " + L10n.text("abbr.steps"), at: c,
                     dim: !been && place.id != next?.id, rotation: place.step / 100 % 2 == 0 ? -3 : 3, m: m)
                     .onTapGesture { openMountain(place, sheet: sheet, global: global) }
             }
@@ -355,7 +357,7 @@ struct MapScreen: View {
                 .onTapGesture { openPostman() }
                 .accessibilityLabel(L10n.text("app.name"))
                 .accessibilityAddTraits(.isButton)
-            tag(L10n.text("map.you"), Format.steps(local) + " " + L10n.text("abbr.steps"),
+            tag(L10n.text("map.you"), Format.steps(WorldSteps.shown(local: local, origin: sheet.globalStart)) + " " + L10n.text("abbr.steps"),
                 at: tags.postmanTag, dim: false, rotation: 5, m: m)
                 .onTapGesture { openPostman() }
         }
@@ -422,9 +424,11 @@ struct MapScreen: View {
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .frame(width: 270 * f)
                 .position(x: 225 * f, y: 80 * f)
-            Text(valleySheet || mountains
-                 ? L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber)
-                 : L10n.format("map.elsewhere", game.chapter.title, Format.steps(step)))
+            Text(mountains && !valleySheet
+                 ? L10n.format("map.chapterProgress", game.chapter.id, dayNumber)
+                 : valleySheet
+                    ? L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber)
+                    : L10n.format("map.elsewhere", game.chapter.title, Format.steps(step)))
                 .font(Ink.label(36 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.5)

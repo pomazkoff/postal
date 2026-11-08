@@ -19,6 +19,12 @@ enum MapJoin {
     }
 }
 
+/// Подпись на общем свитке. Долина в JSON уже от Почты (0). Горы в JSON — от Седла,
+/// поэтому на бирке к ним один раз прибавляется globalStart. Седло остаётся 20 000, не 40 000.
+enum WorldSteps {
+    static func shown(local: Int, origin: Int) -> Int { origin + local }
+}
+
 /// Шаги мест главы 2. Других поселений на этом листе нет.
 enum MountainPlaces {
     static let steps: [String: Int] = [

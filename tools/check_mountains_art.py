@@ -96,9 +96,45 @@ if abs(c - p).mean() < 40 or p.mean() < c.mean():
 valley = np.array(Image.open(MAP / "map_color.jpg").crop((0, 0, 1170, 560)))
 band = np.array(color.crop((0, 1972, 1170, 2532)))
 drift = float(np.abs(valley.astype(np.int16) - band.astype(np.int16)).mean())
-print(f"seam mean channel drift {drift:.1f} (v2 color, not repainted here)")
+print(f"full overlap mean channel drift {drift:.1f} (upper parchment is replaced by the mountains; not repainted here)")
+
+ids_m = [s["id"] for s in doc["settlements"]]
+if "sedlo" in ids_m:
+    fail("the saddle is on the valley sheet; a second tag would double step 20000")
+valley_doc = json.loads((MAP / "map.json").read_text(encoding="utf-8"))
+sedlo = next(s for s in valley_doc["settlements"] if s["id"] == "sedlo")
+if sedlo["step"] != 20000:
+    fail("valley saddle step must stay 20000")
+shown = {s["id"]: doc["globalStart"] + s["step"] for s in doc["settlements"]}
+expect_world = {
+    "gar": 22800, "penki": 26500, "khomut": 31000,
+    "repka": 35500, "krivulya": 36500, "gorlovina": 44000,
+}
+if shown != expect_world:
+    fail(f"world labels {shown}")
+if doc["globalStart"] + 2419 != 22419:
+    fail("hero world step")
+if doc["globalStart"] + doc["lengthSteps"] != 45000:
+    fail("chapter end is not 45000")
+# Локальные шаги в JSON не переписываются в мировые.
+if anchors["gar"]["step"] != 2800:
+    fail("local gar step was rewritten")
 
 screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
+if "WorldSteps.shown(local: place.step, origin: sheet.globalStart)" not in screen:
+    fail("mountain tags must add globalStart once")
+if "WorldSteps.shown(local: local, origin: sheet.globalStart)" not in screen:
+    fail("the hero tag must show the world step")
+if screen.find("mapLayer(") > screen.find("mountainLayer("):
+    fail("the mountain sheet must be drawn after the valley sheet, covering the overlap")
+atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
+if "origin + local" not in atlas:
+    fail("world step display is origin plus the sheet-local step")
+ru = (ROOT / "Postman/Resources/ru.lproj/Localizable.strings").read_text(encoding="utf-8")
+en = (ROOT / "Postman/Resources/en.lproj/Localizable.strings").read_text(encoding="utf-8")
+if "map.chapterProgress" not in ru or "map.chapterProgress" not in en or "map.chapterProgress" not in screen:
+    fail("the footer must name the chapter, not a bare step count")
+
 if "map.notDrawn" not in screen.split("drawHero")[0]:
     pass
 if "mountainPicture" not in screen or "revealThreshold" not in screen:

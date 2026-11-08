@@ -417,11 +417,17 @@ def main():
     t0 = local / 25000 + 230 / length
     soft = 150 / length
     revealed = blend_progress(color, pencil, field_img, t0, soft)
-    stack = Image.new("RGBA", (W, int(VALLEY_ORIGIN_Y + H)), (0, 0, 0, 255))
-    stack.paste(Image.open(MAP / "map_color.jpg").convert("RGB"), (0, int(VALLEY_ORIGIN_Y)))
+    height = int(VALLEY_ORIGIN_Y + H)
+    valley_rgb = Image.open(MAP / "map_color.jpg").convert("RGB")
+    # Горы кладутся сверху непрозрачным кадром. Смешивать с верхом Долины нельзя: шов двоится.
+    plain = Image.new("RGBA", (W, height), (0, 0, 0, 255))
+    plain.paste(valley_rgb, (0, int(VALLEY_ORIGIN_Y)))
+    plain.paste(color.convert("RGB"), (0, 0))
+    stack = Image.new("RGBA", (W, height), (0, 0, 0, 255))
+    stack.paste(valley_rgb, (0, int(VALLEY_ORIGIN_Y)))
     stack.paste(revealed, (0, 0))
 
-    # Облака только на текущем пороге.
+    # Облака только на текущем пороге телефонного кадра.
     level = int(round(t0 / 1.1 * 120))
     level = min(max(level, 0), len(puffs) - 1)
     fog = Image.open(MAP / "fog.png").convert("RGBA")
@@ -434,46 +440,57 @@ def main():
         paste_rgba(stack, sprite, (item[0] - fw / 2, item[1] - fh / 2))
 
     draw = ImageDraw.Draw(stack)
+    ImageDraw.Draw(plain)
     valley_map = json.loads((MAP / "map.json").read_text(encoding="utf-8"))
     valley_road = valley_map["road"]
     valley_cum = cumulative(valley_road)
     valley_pts = [point_at(valley_road, valley_cum, i / 80) for i in range(81)]
     valley_pts = [(p[0], p[1] + VALLEY_ORIGIN_Y) for p in valley_pts]
     draw_dashes(draw, valley_pts)
+    draw_dashes(ImageDraw.Draw(plain), valley_pts)
     walked = []
     steps_n = 40
     for i in range(steps_n + 1):
         walked.append(point_at(road, cum, (2419 / 25000) * i / steps_n))
     draw_dashes(draw, walked)
+    draw_dashes(ImageDraw.Draw(plain), road)
 
     valley_places = []
     for raw in valley_map["settlements"]:
         valley_places.append({**raw, "y": raw["y"] + VALLEY_ORIGIN_Y,
                               "road": [raw["road"][0], raw["road"][1] + VALLEY_ORIGIN_Y]})
     for place in valley_places:
-        paste_icon(stack, MAP / f"icon_{place['id']}.png", place, "visited")
-        stake(stack, place["road"], True)
+        for canvas in (stack, plain):
+            paste_icon(canvas, MAP / f"icon_{place['id']}.png", place, "visited")
+            stake(canvas, place["road"], True)
     vtags, _ = layout_tags(
         [{**p, "y": p["y"] - VALLEY_ORIGIN_Y} for p in valley_places],
         (0, -1000), False, 20000, None, frame=(W, H))
     for place in valley_places:
         center = vtags[place["id"]]
-        draw_tag(stack, (center[0], center[1] + VALLEY_ORIGIN_Y), place["name"],
-                 (grouped(place["step"]) if place["step"] else "старт") + (" ш." if place["step"] else ""),
-                 dim=False, rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
+        label = (grouped(place["step"]) if place["step"] else "старт") + (" ш." if place["step"] else "")
+        for canvas in (stack, plain):
+            draw_tag(canvas, (center[0], center[1] + VALLEY_ORIGIN_Y), place["name"], label,
+                     dim=False, rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
 
     for place in places:
         kind = "next" if place["id"] == "gar" else "ghost"
+        world = grouped(20000 + place["step"]) + " ш."
         paste_icon(stack, MAP / f"icon_{place['id']}.png", place, kind)
         stake(stack, place["road"], False)
-        draw_tag(stack, tags[place["id"]], place["name"], grouped(place["step"]) + " ш.",
+        draw_tag(stack, tags[place["id"]], place["name"], world,
                  dim=place["id"] != "gar", rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
+        paste_icon(plain, MAP / f"icon_{place['id']}.png", place, "visited")
+        stake(plain, place["road"], True)
+        draw_tag(plain, tags[place["id"]], place["name"], world,
+                 dim=False, rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
     post = Image.open(MAP / "postman.png").convert("RGBA").resize((87, 230), Image.Resampling.LANCZOS)
-    paste_rgba(stack, post, (hero[0] + 4 - 43, hero[1] + 14 - 230))
-    draw_tag(stack, you, "Вы здесь", grouped(2419) + " ш.", dim=False, rotation=5)
+    for canvas in (stack, plain):
+        paste_rgba(canvas, post, (hero[0] + 4 - 43, hero[1] + 14 - 230))
+        draw_tag(canvas, you, "Вы здесь", grouped(22419) + " ш.", dim=False, rotation=5)
 
     OUT.mkdir(parents=True, exist_ok=True)
-    stack.convert("RGB").save(OUT / "mountains_valley_full.jpg", quality=86)
+    plain.convert("RGB").save(OUT / "mountains_valley_full.jpg", quality=86)
     # Телефон: вертикально к герою, по горизонтали лист не сдвигается (ширина кадра = ширина листа).
     top = int(round(-(H / 2 - hero[1])))
     phone = stack.crop((0, top, W, top + H)).convert("RGBA")
@@ -510,9 +527,9 @@ def draw_phone_chrome(phone):
     tag = tag.resize((int(tag.width * tscale), int(tag.height * tscale)), Image.Resampling.LANCZOS)
     tag = tag.rotate(3, expand=True, resample=Image.Resampling.BICUBIC)
     tdraw = ImageDraw.Draw(tag)
-    tdraw.text((tag.width / 2, tag.height * 0.38), f"{grouped(2419)} из {grouped(25000)}",
-               font=font(FONTS / "YesevaOne.ttf", 28), fill=BROWN, anchor="mm")
-    tdraw.text((tag.width / 2, tag.height * 0.58), "шаг 2 419",
+    tdraw.text((tag.width / 2, tag.height * 0.36), f"{grouped(2419)} из {grouped(25000)}",
+               font=font(FONTS / "YesevaOne.ttf", 26), fill=BROWN, anchor="mm")
+    tdraw.text((tag.width / 2, tag.height * 0.58), "шаги главы 2",
                font=font(FONTS / "Kurale.ttf", 22), fill=BROWN, anchor="mm")
     paste_rgba(phone, tag, (300 - tag.width / 2, 2380 - tag.height / 2))
 
@@ -523,5 +540,116 @@ def draw_phone_chrome(phone):
     paste_rgba(phone, arrow, (1136 - 350 - 24, 2470 - 197 - 24))
 
 
+def render_installed(color_src=None):
+    """Пересчитать карандаш и поле от уже стоящего JSON и нового цвета. JSON мест не трогать."""
+    if color_src:
+        shutil.copy2(color_src, MAP / "mountains_color.jpg")
+    doc = json.loads((MAP / "mountains.json").read_text(encoding="utf-8"))
+    road = doc["road"]
+    cum = cumulative(road)
+    length = cum[-1]
+    color = Image.open(MAP / "mountains_color.jpg")
+    pencil = pencil_from_color(color)
+    pencil.save(MAP / "mountains_pencil.jpg", quality=90)
+    field_img, _field, _length = encode_field(road)
+    field_img.save(MAP / "mountains_field.png")
+    places = doc["settlements"]
+    hero = point_at(road, cum, 2419 / 25000)
+    tags, you = layout_tags(places, hero, True, 2419, "gar")
+    puffs = doc["puffs"]["points"]
+    # Локальный хвост main() завязан на свои переменные. Здесь только проверка чисел.
+    shown = {p["id"]: 20000 + p["step"] for p in places}
+    expect = {"gar": 22800, "penki": 26500, "khomut": 31000, "repka": 35500,
+              "krivulya": 36500, "gorlovina": 44000}
+    if shown != expect:
+        raise SystemExit(f"world labels drifted: {shown}")
+    if "sedlo" in shown:
+        raise SystemExit("saddle would be labeled twice")
+    print("hero world", 22419, "point", [round(v, 1) for v in hero], "pencil", pencil.size)
+    # Полный проход через main не нужен: рисуем тем же compose, вызвав main-хук ниже.
+    globals_for_paint = dict(road=road, cum=cum, length=length, color=color, pencil=pencil,
+                             field_img=field_img, puffs=puffs, places=places, hero=hero, tags=tags, you=you)
+    paint_installed(globals_for_paint)
+
+
+def paint_installed(g):
+    road, cum, length = g["road"], g["cum"], g["length"]
+    color, pencil, field_img, puffs = g["color"], g["pencil"], g["field_img"], g["puffs"]
+    places, hero, tags, you = g["places"], g["hero"], g["tags"], g["you"]
+    local = 2419
+    t0 = local / 25000 + 230 / length
+    soft = 150 / length
+    revealed = blend_progress(color, pencil, field_img, t0, soft)
+    height = int(VALLEY_ORIGIN_Y + H)
+    valley_rgb = Image.open(MAP / "map_color.jpg").convert("RGB")
+    plain = Image.new("RGBA", (W, height), (0, 0, 0, 255))
+    plain.paste(valley_rgb, (0, int(VALLEY_ORIGIN_Y)))
+    plain.paste(color.convert("RGB"), (0, 0))
+    stack = Image.new("RGBA", (W, height), (0, 0, 0, 255))
+    stack.paste(valley_rgb, (0, int(VALLEY_ORIGIN_Y)))
+    stack.paste(revealed, (0, 0))
+    level = int(round(t0 / 1.1 * 120))
+    level = min(max(level, 0), len(puffs) - 1)
+    fog = Image.open(MAP / "fog.png").convert("RGBA")
+    for item in puffs[level]:
+        fw = int(item[2])
+        fh = int(item[2] * 247 / 360)
+        sprite = fog.resize((max(1, fw), max(1, fh)), Image.Resampling.LANCZOS)
+        if item[3] > 0.5:
+            sprite = sprite.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        paste_rgba(stack, sprite, (item[0] - fw / 2, item[1] - fh / 2))
+    valley_map = json.loads((MAP / "map.json").read_text(encoding="utf-8"))
+    valley_road = valley_map["road"]
+    valley_cum = cumulative(valley_road)
+    valley_pts = [(p[0], p[1] + VALLEY_ORIGIN_Y) for p in (point_at(valley_road, valley_cum, i / 80) for i in range(81))]
+    for canvas, pts in ((stack, valley_pts), (plain, valley_pts)):
+        draw_dashes(ImageDraw.Draw(canvas), pts)
+    walked = [point_at(road, cum, (2419 / 25000) * i / 40) for i in range(41)]
+    draw_dashes(ImageDraw.Draw(stack), walked)
+    draw_dashes(ImageDraw.Draw(plain), road)
+    valley_places = []
+    for raw in valley_map["settlements"]:
+        valley_places.append({**raw, "y": raw["y"] + VALLEY_ORIGIN_Y,
+                              "road": [raw["road"][0], raw["road"][1] + VALLEY_ORIGIN_Y]})
+    vtags, _ = layout_tags(
+        [{**p, "y": p["y"] - VALLEY_ORIGIN_Y} for p in valley_places],
+        (0, -1000), False, 20000, None, frame=(W, H))
+    for place in valley_places:
+        label = (grouped(place["step"]) if place["step"] else "старт") + (" ш." if place["step"] else "")
+        for canvas in (stack, plain):
+            paste_icon(canvas, MAP / f"icon_{place['id']}.png", place, "visited")
+            stake(canvas, place["road"], True)
+            center = vtags[place["id"]]
+            draw_tag(canvas, (center[0], center[1] + VALLEY_ORIGIN_Y), place["name"], label,
+                     dim=False, rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
+    for place in places:
+        world = grouped(20000 + place["step"]) + " ш."
+        kind = "next" if place["id"] == "gar" else "ghost"
+        paste_icon(stack, MAP / f"icon_{place['id']}.png", place, kind)
+        stake(stack, place["road"], False)
+        draw_tag(stack, tags[place["id"]], place["name"], world, dim=place["id"] != "gar",
+                 rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
+        paste_icon(plain, MAP / f"icon_{place['id']}.png", place, "visited")
+        stake(plain, place["road"], True)
+        draw_tag(plain, tags[place["id"]], place["name"], world, dim=False,
+                 rotation=-3 if place["step"] // 100 % 2 == 0 else 3)
+    post = Image.open(MAP / "postman.png").convert("RGBA").resize((87, 230), Image.Resampling.LANCZOS)
+    for canvas in (stack, plain):
+        paste_rgba(canvas, post, (hero[0] + 4 - 43, hero[1] + 14 - 230))
+        draw_tag(canvas, you, "Вы здесь", grouped(22419) + " ш.", dim=False, rotation=5)
+    OUT.mkdir(parents=True, exist_ok=True)
+    plain.convert("RGB").save(OUT / "mountains_valley_full.jpg", quality=86)
+    top = int(round(-(H / 2 - hero[1])))
+    phone = stack.crop((0, top, W, top + H)).convert("RGBA")
+    draw_phone_chrome(phone)
+    phone.convert("RGB").save(OUT / "mountains_phone_hero.jpg", quality=88)
+    stack.crop((0, 1900, W, 2400)).convert("RGB").save(OUT / "mountains_detail_gar.jpg", quality=90)
+    print("wrote", OUT)
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--installed":
+        render_installed(sys.argv[2] if len(sys.argv) > 2 else None)
+    else:
+        main()
