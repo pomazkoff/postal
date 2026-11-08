@@ -139,7 +139,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         for (index, chapter) in config.chapters.enumerated() {
             buildChapter(chapter, index: index, actorLayer: actorLayer)
         }
-
         // Почтальон
         let pc = config.game.postman
         let node = PostmanRigNode(rig: rig,
@@ -163,8 +162,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
-    /// Маска закреплена в мировых координатах; параллакс двигается ВНУТРИ неё.
-    /// Поэтому граница главы не уплывает за камерой, а предыдущие главы остаются позади.
+    /// Маска сплошная и ровно по границе главы. Альфа тайлов здесь не трогается:
+    /// на Release 17746c5 она открывала пустую заливку вместо соседней земли.
     private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
         let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
@@ -173,7 +172,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             : geo.x(forStep: Double(chapter.endStep)) + margin
         let crop = SKCropNode()
         crop.zPosition = z
-        let mask = SKSpriteNode(color: .white, size: CGSize(width: right - left, height: 16000))
+        let mask = SKSpriteNode(color: .white, size: CGSize(width: max(1, right - left), height: 16000))
         mask.anchorPoint = .zero
         mask.position = CGPoint(x: left, y: worldBottomY - 4000)
         crop.maskNode = mask
@@ -582,8 +581,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var nightShaderOn = false
 
-    /// Вечер/ночь: герои получают лишь часть тёмного тона + яркость/насыщенность/тёплый фонарь.
-    /// Днём (тон белый) шейдер снят — картинка как раньше. Учитывает DEBUG-переключатель читаемости.
+    /// Вечер/ночь: отдельный шейдер только если nightFigureGain > 1.
+    /// Сейчас герой темнеет общим тоном, как дома и земля. Днём шейдер снят.
     private func updateNightFigures() {
         let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
         let n = Readability.enabled ? Readability.updateNight(tint: tint) : 0
