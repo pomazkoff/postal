@@ -292,13 +292,15 @@ struct HUDView: View {
             ArtView(name: "tag_small", k: m.scale, scale: scale, flipX: true) { e, f in
                 let top = e.anchor("line1")
                 let bottom = e.anchor("line2")
+                // Отражается только бумага. Буквы остаются прямыми и садятся в тот же якорь на зеркале.
+                let textX = e.width - top.x
                 Text(L10n.text("history.open"))
                     .font(Ink.title(52 * f))
                     .foregroundStyle(Ink.brown)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .frame(width: e.value("textWidth") * f)
-                    .position(x: top.x * f, y: (top.y + bottom.y) / 2 * f)
+                    .position(x: textX * f, y: (top.y + bottom.y) / 2 * f)
             }
             .contentShape(Rectangle())
         }

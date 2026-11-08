@@ -10,9 +10,10 @@ struct HistoryScrollView: View {
 
     var body: some View {
         FrameScreen(dim: 0.62) { m in
+            let frame = paperFrame(m)
             ZStack {
-                paper(m)
-                ArrowButton(title: L10n.text("map.close"), m: m, bottom: 2470, action: onClose)
+                paper(m, frame: frame)
+                ArrowButton(title: L10n.text("map.close"), m: m, bottom: Double(frame.arrowBottom), action: onClose)
             }
         }
         .onAppear {
@@ -22,9 +23,23 @@ struct HistoryScrollView: View {
         .onDisappear { SoundPlayback.shared.effect("ui_paper_close") }
     }
 
-    private func paper(_ m: FrameMapper) -> some View {
-        let width = m.length(1040)
-        let height = m.length(2200)
+    /// На полном кадре лист остаётся 1040×2200 с верхом на 80. Короткий телефон сжимает его в видимую полосу.
+    private func paperFrame(_ m: FrameMapper) -> (centerY: CGFloat, width: CGFloat, height: CGFloat, arrowBottom: CGFloat) {
+        let band = FrameEdges.visibleY(viewHeight: m.size.height, originY: m.origin.y, scale: m.scale)
+        let safeDesign = ScreenInsets.bottom / max(m.scale, 0.01)
+        let arrowBottom = FrameEdges.arrowBottom(visibleBottom: band.bottom, safeDesign: safeDesign, preferred: 2470)
+        var top: CGFloat = 80
+        var height: CGFloat = 2200
+        if top < band.top + 12 || top + height > arrowBottom - 24 {
+            top = band.top + 16
+            height = max(1200, min(2200, arrowBottom - 36 - top))
+        }
+        return (top + height / 2, 1040, height, arrowBottom)
+    }
+
+    private func paper(_ m: FrameMapper, frame: (centerY: CGFloat, width: CGFloat, height: CGFloat, arrowBottom: CGFloat)) -> some View {
+        let width = m.length(Double(frame.width))
+        let height = m.length(Double(frame.height))
         let sheet = UIArt.entry("sheet")
         return ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: m.length(18), style: .continuous)
@@ -71,7 +86,7 @@ struct HistoryScrollView: View {
             .padding(.vertical, m.length(56))
         }
         .frame(width: width, height: height)
-        .position(m.point(585, 1180))
+        .position(m.point(585, Double(frame.centerY)))
         .accessibilityElement(children: .contain)
     }
 
@@ -99,19 +114,20 @@ struct HistoryScrollView: View {
         let figure = residentImage(fact)
         let place = widePlace(fact)
         if figure != nil || place != nil {
+            let both = figure != nil && place != nil
             HStack(alignment: .bottom, spacing: m.length(16)) {
                 if let figure {
                     Image(uiImage: figure)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: m.length(280), maxHeight: m.length(420))
+                        .frame(maxWidth: m.length(both ? 340 : 640), maxHeight: m.length(both ? 520 : 780))
                         .accessibilityHidden(true)
                 }
                 if let place {
                     Image(uiImage: place)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: m.length(460), maxHeight: m.length(320))
+                        .frame(maxWidth: m.length(both ? 560 : 900), maxHeight: m.length(both ? 400 : 520))
                         .accessibilityHidden(true)
                 }
             }

@@ -166,6 +166,23 @@ enum MenuTabLayout {
     }
 }
 
+/// Нижний край кадра, который реально виден, и кнопка «закрыть» над ним.
+enum FrameEdges {
+    static let canvasHeight: CGFloat = 2532
+
+    static func visibleY(viewHeight: CGFloat, originY: CGFloat, scale: CGFloat) -> (top: CGFloat, bottom: CGFloat) {
+        let s = max(scale, 0.01)
+        let top = max(0, -originY / s)
+        let bottom = min(canvasHeight, (viewHeight - originY) / s)
+        return (top, bottom)
+    }
+
+    /// preferred — желаемый низ корпуса на кадре. Короткий телефон и домашний индикатор поднимают кнопку.
+    static func arrowBottom(visibleBottom: CGFloat, safeDesign: CGFloat, preferred: CGFloat) -> CGFloat {
+        min(preferred, visibleBottom - max(0, safeDesign) - 16)
+    }
+}
+
 /// Кнопка «Меню» внизу, в зазоре между сумкой и картой, выше домашнего индикатора.
 enum RoadMenuButton {
     static let bagAnchor = CGPoint(x: 190, y: 2330)

@@ -66,7 +66,7 @@ struct GameMenuView: View {
 
                 tagButton(L10n.text("menu.map"), at: CGPoint(x: 250, y: 2036), rotation: -6, m: m, action: onMap)
                 tagButton(L10n.text("menu.bag"), at: CGPoint(x: 920, y: 2036), rotation: 5, m: m, action: onBag)
-                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: 2460, action: onClose)
+                ArrowButton(title: L10n.text("menu.close"), m: m, bottom: closeBottom(m), action: onClose)
             }
         }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
@@ -76,6 +76,13 @@ struct GameMenuView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await refreshAuth() } }
         }
+    }
+
+    /// На кадре 1170×2532 низ остаётся 2460. Короткий экран и домашний индикатор поднимают стрелку.
+    private func closeBottom(_ m: FrameMapper) -> Double {
+        let band = FrameEdges.visibleY(viewHeight: m.size.height, originY: m.origin.y, scale: m.scale)
+        let safeDesign = ScreenInsets.bottom / max(m.scale, 0.01)
+        return Double(FrameEdges.arrowBottom(visibleBottom: band.bottom, safeDesign: safeDesign, preferred: 2460))
     }
 
     /// Бирки ниже таблички. Лист начинается под ними и не залезает на карту с сумкой.
