@@ -285,6 +285,13 @@ struct EndCardView: View {
                                     settlementBlock(sid, fates: fates, m: m)
                                 }
                             }
+                            if engine.story.chapter == 1 {
+                                Text(L10n.text("bag.chapter.kept"))
+                                    .font(Ink.label(m.length(34)))
+                                    .foregroundStyle(Ink.pencil)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .padding(.top, m.length(8))
+                            }
                             Text(engine.story.nextChapter)
                                 .font(Ink.label(m.length(34)))
                                 .foregroundStyle(Ink.brown.opacity(0.6))

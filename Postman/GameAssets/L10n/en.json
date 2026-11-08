@@ -283,7 +283,7 @@
       "finaleTitle": "Chapter 1 · Valley",
       "finaleSubtitle": "done",
       "nextChapter": "Chapter 2, “Mountains”",
-      "sortAuto": "The postman raked off the shelf whatever fit in the bag.",
+      "sortAuto": "The postman takes every letter. Each tag says where that one goes.",
       "items": {
         "l1": {
           "to": "Kuzma",
@@ -326,7 +326,7 @@
           "place": "from Vera · Institute",
           "from": "Vera",
           "address": [],
-          "attachmentCaption": "in the pocket; it doesn't take a slot in the bag",
+          "attachmentCaption": "hand it to Vera herself; do not drop it in the Institute box",
           "text": "RADIOSHADOW INSTITUTE. REQUISITION No. 23\nItem: K-2\nName: 1.5 V cell, “keg”\nQuantity (in words): 12 (twelve) pcs.\nReason: keeping the set running\nRequested by: Pasechnik V.I.\nTo the postman.\n1. Collect the cells at the Shop, Tubs. Paid: cheese, 2 wheels, 1.6 kg.\n2. Count them when you take them. There must be 12. If fewer, don't take them, bring the requisition back.\n3. Carry them apart from the letters. They leak.\n4. Hand them to me. Do not drop them in the Institute box.\nV.I. Pasechnik\nP.S. If on the climb past the apiary you meet a goat with a nick in the left ear, that is Ramka. She follows anyone going up."
         },
         "batteries": {
@@ -834,7 +834,7 @@
         }
       },
       "quests": {
-        "sort|": "Sort the mail: what goes in the bag",
+        "sort|": "All the mail is already in the bag",
         "d_l1|inBag:l1": "Take Nina's letter to Kuzma at the Stilts",
         "d_l2|inBag:l2": "Take Mitya's letter to Father Pimen at the Belfry",
         "p_l5|": "Stop at the Belfry, at Father Pimen's",
@@ -1378,7 +1378,7 @@
             },
             {
               "who": "",
-              "text": "Pimen's telegram about the lamp is in the pocket."
+              "text": "Pimen's telegram about the lamp is with you."
             }
           ]
         },
@@ -1407,7 +1407,7 @@
       },
       "quests": {
         "p_l1|": "Take the letter from the collection at the Saddle",
-        "s_nii_drop|inBag:l1": "Leave the “down below” mail in the Institute box (scroll the road back)",
+        "s_nii_drop|inBag:l1": "The letters for the lower valley will stay in the Institute box",
         "arrive_gar|": "Reach Burn Cordon",
         "arrive_penki|": "To the Stumps · a night's sleep",
         "e_khomut|": "Collar Pass — keep the pace",
@@ -1428,7 +1428,8 @@
       "fates": {
         "sedlo|inBag:l1": "Timofey's letter from the sack is still in the bag — it did not go to Nina by way of Vera.",
         "sedlo|delivered:l1": "Timofey's letter was left “for down below” / went with Vera.",
-        "gar|inPocket:note_gar": "The ranger's note is in the pocket — for the Institute box.",
+        "gar|inPocket:note_gar": "The ranger's note is with you — for the Institute box.",
+        "krivulya|read:l9": "Pimen's telegram has been read.",
         "khomut|flag:khomut_ok": "The Collar was crossed at pace.",
         "khomut|flag:khomut_detour": "The Collar was gone around below — no letters on the detour.",
         "krivulya|inPocket:l9": "Pimen's telegram: the lamp went out at 02:40.",

@@ -253,7 +253,7 @@
       "settlement": "krivulya",
       "from": "Пимен",
       "senderSettlement": "zvonarnya",
-      "art": "form",
+      "art": "card_telegram",
       "stick": "stick_plain",
       "initial": "onRoad",
       "road": "road_envstake",
@@ -278,7 +278,7 @@
       "settlement": "gar",
       "from": "Лесник",
       "senderSettlement": "gar",
-      "art": "form",
+      "art": "env_plain",
       "stick": "stick_plain",
       "initial": "onRoad",
       "reader": {
@@ -300,7 +300,7 @@
       "settlement": "sedlo",
       "from": "Ворон",
       "senderSettlement": "sedlo",
-      "art": "form",
+      "art": "att_wrapper_yellow",
       "stick": "stick_plain",
       "initial": "onRoad",
       "text": "Маленький обрывок выцветшей оранжевой ткани. Ворон принёс его в обмен на блестящую пуговицу. Ни надписей, ни меток."
@@ -314,7 +314,7 @@
       "settlement": "penki",
       "from": "Пёс Пеньки",
       "senderSettlement": "penki",
-      "art": "form",
+      "art": "pin_red",
       "stick": "stick_plain",
       "initial": "leftBehind",
       "text": "Маленький ржавый рупор, набитый опилками. Пёс выскреб его у края лесосеки. Приложишь к уху — тишина."
@@ -872,7 +872,7 @@
         },
         {
           "who": "",
-          "text": "В кармане телеграмма Пимена про лампу.",
+          "text": "С собой телеграмма Пимена про лампу.",
           "if": "inPocket:l9"
         }
       ]
@@ -910,7 +910,7 @@
       "event": "p_l1"
     },
     {
-      "telegram": "Оставить «нижних» в ящике НИИ (пролистай ленту назад)",
+      "telegram": "Письма для нижней долины останутся в ящике НИИ",
       "event": "s_nii_drop",
       "if": "inBag:l1"
     },
@@ -1044,7 +1044,7 @@
     {
       "settlement": "gar",
       "if": "inPocket:note_gar",
-      "text": "Записка лесника в кармане — к ящику НИИ."
+      "text": "Записка лесника с собой — к ящику НИИ."
     },
     {
       "settlement": "khomut",
@@ -1060,6 +1060,11 @@
       "settlement": "krivulya",
       "if": "inPocket:l9",
       "text": "Телеграмма Пимена: лампа погасла в 02:40."
+    },
+    {
+      "settlement": "krivulya",
+      "if": "read:l9",
+      "text": "Телеграмма Пимена прочитана."
     },
     {
       "settlement": "gorlovina",

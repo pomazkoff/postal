@@ -99,6 +99,28 @@ final class ChapterEngine: ObservableObject {
         for item in story.items where loaded.items[item.id] == nil {
             loaded.items[item.id] = item.initial
         }
+        let wasSorted = loaded.sortingDone
+        let beforeItems = loaded.items
+        let beforeSettled = Set(loaded.settledHandoffs ?? [])
+        let migrated = BagPolicy.migrate(
+            chapter: story.chapter,
+            candidates: story.events.first { $0.type == .sort }?.candidates ?? [],
+            snap: BagPolicy.Snapshot(
+                items: loaded.items.mapValues(\.rawValue),
+                done: loaded.doneEvents,
+                sortingDone: loaded.sortingDone,
+                settled: Set(loaded.settledHandoffs ?? []),
+                opened: loaded.opened,
+                choices: loaded.choices))
+        for (id, raw) in migrated.items {
+            if let status = ItemStatus(rawValue: raw) { loaded.items[id] = status }
+        }
+        loaded.sortingDone = migrated.sortingDone
+        loaded.settledHandoffs = Array(migrated.settled).sorted()
+        for key in migrated.logs {
+            let title = key.hasPrefix("bag.handoff.") ? L10n.text("bag.handoff.title") : L10n.text("bag.title")
+            loaded.log.append(LogEntry(step: 0, text: L10n.text(key), kind: "handoff", title: title))
+        }
         if loaded.version < 2 {
             // Сохранение до «истории без игрока»: прошлые прибытия не пушим, старый лог журналом не показываем.
             let reached = ordered.filter { loaded.doneEvents.contains($0.id) }.map(\.step).max() ?? -1
@@ -109,6 +131,11 @@ final class ChapterEngine: ObservableObject {
             loaded.version = 2
         }
         self.state = loaded
+        let itemsChanged = loaded.items != beforeItems
+        let settledChanged = Set(loaded.settledHandoffs ?? []) != beforeSettled
+        if itemsChanged || !wasSorted || settledChanged || !migrated.logs.isEmpty {
+            store.save(loaded)
+        }
     }
 
     func choiceBy(_ eventID: String) -> Chooser? {
@@ -123,21 +150,25 @@ final class ChapterEngine: ObservableObject {
 
     func isOpened(_ id: String) -> Bool { state.opened.contains(id) }
 
-    /// Письма в сумке (занимают отделения), в порядке сюжета.
-    var bagItems: [StoryConfig.Item] {
-        story.items.filter { status($0.id) == .inBag && $0.takesSlot }
+    private var carriedNow: [StoryConfig.Item] {
+        story.items.filter { status($0.id) == .inBag || status($0.id) == .inPocket }
     }
 
-    /// Что носится в сумке/кармане без отделения (бланк Веры, и т.п.).
-    var pocketItems: [StoryConfig.Item] {
-        story.items.filter {
-            (status($0.id) == .inPocket) || (status($0.id) == .inBag && !$0.takesSlot)
-        }
+    /// Письма и посылки, которые ещё надо передать.
+    var mailItems: [StoryConfig.Item] {
+        carriedNow.filter { BagPolicy.role(id: $0.id, kind: $0.kind) == .mail }
     }
 
-    var freeSlots: Int { max(0, story.slots - bagItems.count) }
+    /// Находки: их рассматривают, никуда не сдают.
+    var personalItems: [StoryConfig.Item] {
+        carriedNow.filter { BagPolicy.role(id: $0.id, kind: $0.kind) == .personal }
+    }
 
-    var needsSorting: Bool { !state.sortingDone }
+    /// Совместимость со счётчиком на иконке сумки: всё, что сейчас с собой.
+    var bagItems: [StoryConfig.Item] { mailItems }
+    var pocketItems: [StoryConfig.Item] { personalItems }
+
+    var needsSorting: Bool { false }
 
     /// Кандидаты утреннего разбора (письма на полке Почты).
     var sortCandidates: [StoryConfig.Item] {
@@ -202,6 +233,7 @@ final class ChapterEngine: ObservableObject {
         case "opened": return state.opened.contains(id)
         case "sealed": return s == .delivered && !state.opened.contains(id)
         case "sent": return s == .sent
+        case "read": return s == .read
         case "lost": return s == .lostWind
         case "atPost": return s == .atPost
         case "left": return s == .leftBehind
@@ -294,8 +326,7 @@ final class ChapterEngine: ObservableObject {
             case .event(let event):
                 if event.type == .sort {
                     if !state.sortingDone {
-                        guard shouldAutoResolve(after: index, step: event.step) else { break loop }
-                        performSort(selected: story.sortDefault ?? event.candidates ?? [], by: .postman)
+                        performSort(selected: event.candidates ?? [], by: .postman)
                     }
                     state.doneEvents.insert(event.id)
                     changed = true
@@ -381,24 +412,20 @@ final class ChapterEngine: ObservableObject {
                          title: story.resident(event.resident)?.name))
             enqueue(card(for: event, kind: .delivery, items: given, missed: missed))
             beat(id: event.id, title: place, body: pushLine(event) ?? "\(place). \(text)")
+            settleCarried(trigger: event.id)
 
         case .pickup:
             guard let id = event.item, let item = story.item(id) else { break }
-            var got: [String] = [], left: [String] = []
-            if status(id) == .onRoad {
-                if !item.takesSlot || freeSlots > 0 {
-                    state.items[id] = .inBag
-                    state.carried.insert(id)
-                    got.append(id)
-                    log(LogEntry(step: event.step, text: L10n.format("engine.pickup.took", describe(item)), kind: "pickup", place: place))
-                } else {
-                    state.items[id] = .leftBehind
-                    left.append(id)
-                    log(LogEntry(step: event.step, text: L10n.format("engine.pickup.full", describe(item)), kind: "pickup", place: place))
-                }
+            var got: [String] = []
+            if status(id) == .onRoad || status(id) == .leftBehind {
+                state.items[id] = item.takesSlot ? .inBag : .inPocket
+                state.carried.insert(id)
+                got.append(id)
+                log(LogEntry(step: event.step, text: L10n.format("engine.pickup.took", describe(item)), kind: "pickup", place: place))
             }
-            enqueue(card(for: event, kind: .pickup, items: got, missed: left))
+            enqueue(card(for: event, kind: .pickup, items: got, missed: []))
             beat(id: event.id, title: place, body: pushLine(event) ?? L10n.format("engine.pickup.push", place))
+            settleCarried(trigger: event.id)
 
         case .scene:
             for flag in event.flags ?? [] { state.flags.insert(flag) }
@@ -412,6 +439,7 @@ final class ChapterEngine: ObservableObject {
             }
             enqueue(card(for: event, kind: .scene, items: [], missed: []))
             beat(id: event.id, title: place, body: pushLine(event) ?? said.map { "\(place). \($0)" } ?? place)
+            settleCarried(trigger: event.id)
 
         case .finale:
             var sent: [String] = []
@@ -431,10 +459,30 @@ final class ChapterEngine: ObservableObject {
             log(LogEntry(step: event.step, text: L10n.text("engine.finale.log"), kind: "finale", place: place))
             enqueue(card(for: event, kind: .finale, items: sent, missed: []))
             beat(id: event.id, title: place, body: pushLine(event) ?? L10n.format("engine.finale.push", place))
+            settleCarried(trigger: event.id)
 
         case .sort, .choice:
             break
         }
+    }
+
+    /// Почта, чья точка передачи — это событие, уходит из сумки. Уже закрытое не возвращается.
+    private func settleCarried(trigger: String) {
+        var settled = state.settledHandoffs ?? []
+        guard !settled.contains(trigger) else { return }
+        var moved: [String] = []
+        for item in story.items where BagPolicy.handoff(chapter: story.chapter, id: item.id) == trigger {
+            let s = status(item.id)
+            guard s == .inBag || s == .inPocket else { continue }
+            state.items[item.id] = ItemStatus(rawValue: BagPolicy.closeStatus(chapter: story.chapter, id: item.id)) ?? .delivered
+            moved.append(item.id)
+        }
+        settled.append(trigger)
+        state.settledHandoffs = settled
+        guard !moved.isEmpty else { return }
+        let place = settlementName(story.event(trigger)?.settlement ?? "")
+        log(LogEntry(step: currentStep, text: L10n.text(BagPolicy.passedNoteKey(trigger: trigger)),
+                     kind: "handoff", place: place, title: L10n.text("bag.handoff.title")))
     }
 
     private func card(for event: StoryConfig.Event, kind: StoryCard.Kind, items: [String], missed: [String]) -> StoryCard {
@@ -484,15 +532,9 @@ final class ChapterEngine: ObservableObject {
     }
 
     private func performSort(selected: [String], by chooser: Chooser) {
-        var room = story.slots
-        for item in sortCandidates {
-            if selected.contains(item.id) && room > 0 && item.takesSlot {
-                state.items[item.id] = .inBag
-                state.carried.insert(item.id)
-                room -= 1
-            } else if item.takesSlot {
-                state.items[item.id] = .atPost
-            }
+        for item in sortCandidates where item.takesSlot && selected.contains(item.id) {
+            state.items[item.id] = .inBag
+            state.carried.insert(item.id)
         }
         state.sortingDone = true
         setChooser("sort", chooser)
@@ -588,6 +630,17 @@ final class ChapterEngine: ObservableObject {
                               text: line + " " + option.result, lines: [], items: [], missed: []))
             beat(id: event.id + ".auto", title: event.title ?? place, body: line)
         }
+    }
+
+    /// Телеграмму читают из сумки. После закрытия листа она уходит: это чтение, не вручение жителю.
+    func finishReading(_ id: String) {
+        guard story.chapter == 2, id == "l9" else { return }
+        let s = status(id)
+        guard s == .inBag || s == .inPocket else { return }
+        state.items[id] = .read
+        log(LogEntry(step: currentStep, text: L10n.text("bag.handoff.p_l9"),
+                     kind: "handoff", title: L10n.text("bag.handoff.title")))
+        commit()
     }
 
     func dismissCard(_ id: String) {

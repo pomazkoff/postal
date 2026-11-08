@@ -1,9 +1,8 @@
 import SwiftUI
 
-/// Сумка (ui/v4 screen_bag.jpg): две полки с письмами на бирках, под ними сумка с тремя отделениями.
-/// Режим разбора (утро на Почте): тап по письму — в сумку, тап по отделению — обратно, «В путь» — подтвердить.
-/// Обычный режим: что сейчас несём; тап по бирке или письму — прочитать.
-/// Координаты — кадр 1170×2532, как в ui_ch1.json → layout.bag.
+/// Сумка: почта и личные вещи на деревянных бирках, ниже — сама сумка.
+/// На бирке письма написано, куда его нести. Находку только рассматривают.
+/// Координаты — кадр 1170×2532, как в ui_ch1.json.
 struct BagScreen: View {
     enum Mode { case sort, view }
 
@@ -14,31 +13,10 @@ struct BagScreen: View {
 
     @State var selected: [String] = []
 
-    // layout.bag
-    let shelves: [CGPoint] = [CGPoint(x: 2, y: 506), CGPoint(x: 2, y: 976)]
-    struct Slot { let cx: Double; let base: Double; let tag: CGPoint; let angle: Double }
-    let slots: [Slot] = [
-        Slot(cx: 270, base: 552, tag: CGPoint(x: 160, y: 590), angle: -4),
-        Slot(cx: 880, base: 552, tag: CGPoint(x: 770, y: 590), angle: 3),
-        Slot(cx: 270, base: 1022, tag: CGPoint(x: 160, y: 1060), angle: -3),
-        Slot(cx: 880, base: 1022, tag: CGPoint(x: 770, y: 1060), angle: 4),
-    ]
     let titleHole = CGPoint(x: 595, y: 236)
     let bagRing = CGPoint(x: 470, y: 1262)
 
-    private var shelfItems: [StoryConfig.Item] {
-        switch mode {
-        case .sort: return Array((engine.sortCandidates + engine.pocketItems).prefix(4))
-        case .view: return Array((engine.bagItems + engine.pocketItems).prefix(4))
-        }
-    }
-
-    private var bagContents: [StoryConfig.Item] {
-        switch mode {
-        case .sort: return selected.compactMap { engine.story.item($0) }
-        case .view: return engine.bagItems
-        }
-    }
+    private var bagContents: [StoryConfig.Item] { engine.mailItems }
 
     var body: some View {
         FrameScreen(dim: 0.66) { m in
@@ -47,15 +25,8 @@ struct BagScreen: View {
                 Color.clear.contentShape(Rectangle())
                     .onTapGesture { if mode == .view { onClose() } }
 
-                ForEach(shelves.indices, id: \.self) { i in
-                    PlacedArt(name: "shelf", m: m, anchor: "origin", at: shelves[i])
-                }
-
-                ForEach(Array(shelfItems.enumerated()), id: \.element.id) { index, item in
-                    shelfSlot(item, slot: slots[index], m: m)
-                }
-
                 titleTag(m)
+                inventory(m)
                 bag(m)
 
                 ArrowButton(title: mode == .sort ? L10n.text("bag.go") : L10n.text("bag.close"), m: m) {
@@ -68,58 +39,70 @@ struct BagScreen: View {
         .onAppear { SoundPlayback.shared.effect("mail_bag") }
     }
 
-    // MARK: Полка
-
-    @ViewBuilder
-    private func shelfSlot(_ item: StoryConfig.Item, slot: Slot, m: FrameMapper) -> some View {
-        let inBag = mode == .sort && selected.contains(item.id)
-        let art = engine.isOpened(item.id) ? (item.artOpened ?? item.art) : item.art
-        if !inBag {
-            PlacedArt(name: art, m: m, anchor: "bottom", at: CGPoint(x: slot.cx, y: slot.base),
-                      rotation: slot.angle * 0.5, onTap: { tapItem(item) })
-                .transition(.scale(scale: 0.6).combined(with: .opacity))
+    /// Почта и находки одним свитком. Бирка говорит, куда нести или что это просто посмотреть.
+    private func inventory(_ m: FrameMapper) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: m.length(18)) {
+                section(L10n.text("bag.mail"), items: engine.mailItems, empty: L10n.text("bag.mail.empty"), m: m)
+                section(L10n.text("bag.personal"), items: engine.personalItems, empty: L10n.text("bag.personal.empty"), m: m)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.bottom, m.length(24))
         }
-        tag(for: item, slot: slot, m: m, dimmed: inBag)
+        .frame(width: m.length(980), height: m.length(760))
+        .position(m.point(585, 780))
     }
 
-    private func tag(for item: StoryConfig.Item, slot: Slot, m: FrameMapper, dimmed: Bool) -> some View {
-        let e = UIArt.entry("tag")
-        let hole = e.anchor("hole")
-        let k = m.scale
-        let line2: String
-        if !item.takesSlot {
-            line2 = L10n.text("bag.pocket")
-        } else if dimmed {
-            line2 = L10n.text("bag.inBag")
-        } else {
-            line2 = item.place
+    private func section(_ title: String, items: [StoryConfig.Item], empty: String, m: FrameMapper) -> some View {
+        VStack(alignment: .leading, spacing: m.length(8)) {
+            Text(title)
+                .font(Ink.title(m.length(40)))
+                .foregroundStyle(Ink.brown)
+            if items.isEmpty {
+                Text(empty)
+                    .font(Ink.font("hand", size: m.length(32)))
+                    .foregroundStyle(Ink.pencil)
+            } else {
+                ForEach(items) { item in
+                    carriedTag(item, m: m)
+                }
+            }
         }
-        return ZStack {
-            TagArt(line1: item.to, line2: line2, k: k)
-                .opacity(dimmed ? 0.72 : 1)
-                .contentShape(Rectangle())
-                .onTapGesture { onRead(item.id) }
-                .pinned(size: CGSize(width: e.width * k, height: e.height * k),
-                        anchor: CGPoint(x: hole.x * k, y: hole.y * k),
-                        at: m.point(slot.tag.x, slot.tag.y), rotation: slot.angle)
-            PlacedArt(name: "nail", m: m, at: slot.tag)
+    }
+
+    private func carriedTag(_ item: StoryConfig.Item, m: FrameMapper) -> some View {
+        let personal = BagPolicy.role(id: item.id, kind: item.kind) == .personal
+        let line1 = personal ? L10n.text(keepKey(item.id)) : item.to
+        let line2 = personal ? L10n.text("bag.look") : L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id))
+        return Button { onRead(item.id) } label: {
+            HStack(alignment: .center, spacing: m.length(12)) {
+                Image(uiImage: HUDImages.image(UIArt.entry(item.art).image))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: m.length(120), height: m.length(90))
+                    .accessibilityHidden(true)
+                TagArt(line1: line1, line2: line2, k: m.scale, scale: 0.78)
+            }
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(item.to), \(line2)")
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction { onRead(item.id) }
+        .buttonStyle(PressStyle())
+        .accessibilityLabel("\(line1). \(line2)")
+    }
+
+    private func keepKey(_ id: String) -> String {
+        switch id {
+        case "animal_cat_stamp": return "bag.keep.animal_cat_stamp"
+        case "animal_raven_scrap": return "bag.keep.animal_raven_scrap"
+        case "animal_dog_horn": return "bag.keep.animal_dog_horn"
+        default: return "bag.keep.other"
+        }
     }
 
     private func titleTag(_ m: FrameMapper) -> some View {
         let e = UIArt.entry("tag")
         let hole = e.anchor("hole")
         let k = m.scale
-        let line1 = mode == .sort ? L10n.text("bag.title.sort") : L10n.text("bag.title")
-        let used = bagContents.count
-        let slots = engine.story.slots
-        let line2 = mode == .sort
-            ? L10n.format("bag.slots", slots, Format.slots(slots))
-            : L10n.format("bag.used", used, slots)
+        let line1 = L10n.text("bag.title")
+        let line2 = L10n.text("bag.withYou")
         return ZStack {
             TagArt(line1: line1, line2: line2, k: k)
                 .pinned(size: CGSize(width: e.width * k, height: e.height * k),
@@ -136,7 +119,7 @@ struct BagScreen: View {
         let back = UIArt.entry("bag_back")
         let ring = back.anchor("ring")
         let origin = CGPoint(x: bagRing.x - ring.x, y: bagRing.y - ring.y)
-        let contents = bagContents
+        let contents = Array(bagContents.prefix(3))
         let labelW = back.value("labelWidth")
         return ZStack {
             PlacedArt(name: "bag_back", m: m, anchor: "origin", at: origin)
@@ -165,15 +148,6 @@ struct BagScreen: View {
     }
 
     // MARK: Действия
-
-    private func tapItem(_ item: StoryConfig.Item) {
-        guard mode == .sort, item.takesSlot else {
-            onRead(item.id)
-            return
-        }
-        guard !selected.contains(item.id), selected.count < engine.story.slots else { return }
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.78)) { selected.append(item.id) }
-    }
 
     private func tapStick(_ item: StoryConfig.Item) {
         guard mode == .sort else {

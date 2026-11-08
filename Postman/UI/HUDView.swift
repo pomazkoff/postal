@@ -194,6 +194,7 @@ struct HUDView: View {
 
     private func closeLetter(_ id: String) {
         letterID = nil
+        engine.finishReading(id)
     }
 
     // MARK: Кнопки сумки и карты

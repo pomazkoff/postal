@@ -60,6 +60,8 @@ struct ChapterState: Codable {
     var choiceBy: [String: String]?
     /// Сколько записей журнала игрок уже видел (журнал показывает log[journalSeenCount...]).
     var journalSeenCount: Int?
+    /// Точки передачи, на которых почта уже снята с сумки. Повторная миграция ничего не добавляет.
+    var settledHandoffs: [String]?
 }
 
 /// Чтение/запись ChapterState на диск. Пишет атомарно; битый файл → чистое состояние.

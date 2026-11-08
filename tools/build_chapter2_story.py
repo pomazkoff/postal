@@ -108,13 +108,13 @@ items = [
      "outside": "В.И. Пасечник. Лично.", "text": L[8][0]},
     {"id": "l9", "kind": "form", "takesSlot": False, "to": "Почтальону", "place": "от Пимена",
      "settlement": "krivulya", "from": "Пимен", "senderSettlement": "zvonarnya",
-     "art": "form", "stick": "stick_plain", "initial": "onRoad", "road": "road_envstake",
+     "art": "card_telegram", "stick": "stick_plain", "initial": "onRoad", "road": "road_envstake",
      "reader": {"paper": "sheet_telegram", "font": "tape", "envelope": None, "address": ["ПОЧТАЛЬОНУ"],
                 "attachment": None, "attachmentCaption": "узкая полоска телеграфной ленты; печать — оттиск большого пальца в воске"},
      "text": L[9][0]},
     {"id": "note_gar", "kind": "form", "takesSlot": False, "to": "Кадушки", "place": "записка лесника",
      "settlement": "gar", "from": "Лесник", "senderSettlement": "gar",
-     "art": "form", "stick": "stick_plain", "initial": "onRoad",
+     "art": "env_plain", "stick": "stick_plain", "initial": "onRoad",
      "reader": {"paper": "sheet", "font": "hand", "envelope": None, "address": [],
                 "attachment": None, "attachmentCaption": "не сюжетное — в ящик НИИ вместе с почтой Веры"},
      "text": "Кадушкам. Жив. Калитку чиню. Чаю мало. Если оказия — соли пришлите. Л."},
@@ -197,7 +197,7 @@ events = [
                line("", "Звон «на помин» — без подписи. Кто знает Морзе, может позже сопоставить.", "")]},
     {"id": "s_bell", "step": 20050, "type": "scene", "settlement": "krivulya",
      "lines": [line("", "Вечерний звон доносится с Долины. Счёт без слов."),
-               line("", "В кармане телеграмма Пимена про лампу.", "inPocket:l9")]},
+               line("", "С собой телеграмма Пимена про лампу.", "inPocket:l9")]},
     # Counter-mail results appear as scenes/pickups after Thursday (approx day2+)
     {"id": "p_l3", "step": 7200, "type": "pickup", "settlement": "penki", "item": "l3",
      "title": "Оказия вверх",
@@ -256,7 +256,7 @@ for ev in events:
 
 quests = [
     {"telegram": "Забрать письмо 1 из выемки на Седле", "event": "p_l1"},
-    {"telegram": "Оставить «нижних» в ящике НИИ (скролл)", "event": "s_nii_drop", "if": "inBag:l1"},
+    {"telegram": "Письма для нижней долины останутся в ящике НИИ", "event": "s_nii_drop", "if": "inBag:l1"},
     {"telegram": "Дойти до Кордона «Гарь»", "event": "arrive_gar"},
     {"telegram": "До Пеньков · ночёвка", "event": "arrive_penki"},
     {"telegram": "Перевал Хомут — темп", "event": "e_khomut"},
@@ -274,7 +274,7 @@ residents = [
 fates = [
     {"settlement": "sedlo", "if": "inBag:l1", "text": "Письмо Тимофея из мешка ещё в сумке — Нине через Веру не ушло."},
     {"settlement": "sedlo", "if": "delivered:l1", "text": "Письмо Тимофея оставлено «для нижних» / ушло с Верой."},
-    {"settlement": "gar", "if": "inPocket:note_gar", "text": "Записка лесника в кармане — к ящику НИИ."},
+    {"settlement": "gar", "if": "inPocket:note_gar", "text": "Записка лесника с собой — к ящику НИИ."},
     {"settlement": "khomut", "if": "flag:khomut_ok", "text": "Хомут пройден темпом."},
     {"settlement": "khomut", "if": "flag:khomut_detour", "text": "Хомут обойдён низом — писем на обходе нет."},
     {"settlement": "krivulya", "if": "inPocket:l9", "text": "Телеграмма Пимена: лампа погасла в 02:40."},
