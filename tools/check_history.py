@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""История пути: только уже сделанное, без будущей главы и чужих веток выбора."""
+"""История: только письма основной линии главы 1, не журнал всех событий."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,14 +13,26 @@ def fail(msg):
 src = (ROOT / "Postman/App/StoryChronicle.swift").read_text(encoding="utf-8")
 if "index <= activeIndex" not in src:
     fail("a chapter not yet reached must not be read")
-if "event.step <= reached" not in src or "done.contains(event.id)" not in src:
-    fail("an event is shown only after it has happened")
-if "choices[event.id]" not in src:
-    fail("a choice shows the picked result")
-if "event.options" in src and "for option" in src:
-    fail("unchosen branches must not be listed")
-if 'line.if == nil || line.if?.isEmpty == true' not in src:
-    fail("conditional lines stay out of the chronicle")
+if "beat.step <= reached" not in src or "progress.done.contains(beat.eventID)" not in src:
+    fail("a main-line paragraph waits for its own event and step")
+if "for event in story.events" in src or "story.events where" in src:
+    fail("history must not walk every done event")
+if "story.arrivals" in src:
+    fail("arrival blurbs are not the main story")
+if "engine.pickup" in src or "engine.deliver" in src or "engine.sort" in src:
+    fail("system pickup and delivery lines are not the narrative")
+for beat in ("d_l1", "d_l2", "d_l6", "d_vera", "finale", "l1", "l2", "l3", "l4", "l5", "l6", "l7"):
+    if beat not in src:
+        fail(f"main-line beat {beat} is missing")
+for side in ("e_cart", "e_animal", "e_ramka", "e_storm", "arrive:"):
+    if side in src:
+        fail(f"side event {side} was pulled into the main story")
+if "progress.choices[choiceID]" not in src or "options?.first" not in src:
+    fail("a letter consequence must be the recorded option only")
+if "opened.contains" not in src or "item.outside" not in src:
+    fail("a sealed letter must not open its inner text")
+if "chapter2-timeline" not in src:
+    fail("the missing chapter 2 source must stay named, not guessed")
 hud = (ROOT / "Postman/UI/HUDView.swift").read_text(encoding="utf-8")
 if "HistoryScrollView" not in hud or "showHistory" not in hud:
     fail("the history sheet must open from the road")
@@ -33,10 +45,12 @@ if "historyAnchor" not in view:
     fail("closing the sheet should keep the scroll position")
 if "history.empty" not in view:
     fail("a new game needs an empty state")
+if "history.where" in view:
+    fail("the history sheet must not print place and step headers")
 
 # Зеркало фильтра: ноль, кусок главы 1, вход в главу 2 без её событий.
 def visible(done, step, reached, chapter_index, active):
-    if chapter_index > active:
+    if chapter_index > active or chapter_index > 0:
         return False
     return step <= reached and done
 
@@ -49,8 +63,8 @@ if visible(False, 100, 500, 0, 0):
     fail("walking past a step is not the same as the event having happened")
 if visible(True, 50, 99999, 1, 0):
     fail("chapter 2 text must not appear just because chapter 1 is open")
-if not visible(True, 50, 200, 1, 1):
-    fail("a done chapter 2 event at a reached step is part of the story")
+if visible(True, 50, 200, 1, 1):
+    fail("a done chapter 2 event is not a main-line paragraph; that timeline is not in the repo")
 
 if "e.width - top.x" not in hud:
     fail("flipping the history tag must move the label onto the mirrored paper")

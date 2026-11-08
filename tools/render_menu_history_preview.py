@@ -704,7 +704,6 @@ def history_column(facts, copy, russian):
     title = font("YesevaOne.ttf", 64)
     chapter_f = font("YesevaOne.ttf", 40)
     head = font("YesevaOne.ttf", 48)
-    where = font("Kurale.ttf", 28)
     body = font("Neucha.ttf", 42)
 
     def line_h(face, text):
@@ -724,9 +723,6 @@ def history_column(facts, copy, russian):
             draw.text((0, y), line, font=head, fill=BROWN)
             y += line_h(head, line) + 4
         y += 8
-        place_line = fmt(copy["history.where"], fact["place"], steps_text(fact["world"], russian))
-        draw.text((0, y), place_line, font=where, fill=BROWN)
-        y += line_h(where, place_line) + 12
         fig = figure(fact["folder"], fact["resident"]) if fact["resident"] else None
         pic = place_image(fact["folder"], fact["place_id"])
         if fig or pic:
@@ -839,6 +835,64 @@ def build_fixture(world, stories):
     return choices, items, done, arrived
 
 
+def main_line(story, chapter_title, folder, done, items, opened, choices, reached):
+    """Те же абзацы, что StoryChronicle.beats. Не все события файла."""
+    beats = [
+        ("l1", 2900, "d_l1", "l1", False, "kuzma", "svai", None),
+        ("l2", 6000, "d_l2", "l2", False, "pimen", "zvonarnya", None),
+        ("l6", 9100, "d_l6", "l6", False, "nina", "kadushki", None),
+        ("l4", 13200, "d_vera", "l4", False, "vera", "nii", None),
+        ("l5", 13200, "d_vera", "l5", True, "vera", "nii", None),
+        ("l3", 20000, "finale", "l3", False, "nina", "sedlo", "e_wind"),
+        ("l7", 20000, "finale", "l7", False, None, "sedlo", None),
+    ]
+    by_id = {it["id"]: it for it in story["items"]}
+    events = {ev["id"]: ev for ev in story["events"]}
+    pages = []
+    for bid, step, event, item_id, secret, resident, place, choice in beats:
+        if step > reached or event not in done:
+            continue
+        item = by_id[item_id]
+        status = items.get(item_id)
+        if bid == "l4":
+            if items.get("batteries") != "delivered":
+                continue
+            body = item.get("text")
+        elif bid == "l3":
+            lost = status == "lostWind" and "e_wind" in done
+            if status != "sent" and not lost:
+                continue
+            body = item.get("text")
+        elif bid == "l7":
+            if status != "read":
+                continue
+            body = item.get("text")
+        elif secret:
+            if item_id in opened:
+                body = item.get("text")
+            elif status in ("delivered", "sent", "read"):
+                body = item.get("outside")
+            else:
+                body = None
+        else:
+            body = item.get("text") if status in ("delivered", "sent", "read", "lostWind") or item_id in opened else None
+        lines = [body] if body else []
+        if choice and choice in done and events[choice]["step"] <= reached and choices.get(choice):
+            picked = choices[choice]
+            result = next(o["result"] for o in events[choice]["options"] if o["id"] == picked)
+            if result not in lines:
+                lines.append(result)
+        if not lines:
+            continue
+        heading = " — ".join(part for part in (item.get("from"), item.get("to")) if part)
+        pages.append({
+            "id": bid, "chapter": chapter_title, "heading": heading,
+            "text": "\n\n".join(lines), "resident": resident,
+            "folder": folder, "place_id": place,
+        })
+    return pages
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     ru = strings("ru")
@@ -853,44 +907,24 @@ def main():
     }
     stories_en = {k: localize_story(v, k) for k, v in stories_ru.items()}
     choices, items, done, arrived = build_fixture(world_ru, stories_ru)
+    # Меню по-прежнему показывает каст старого прогона. История — отдельный частичный прогон писем.
     facts_ru = chronicle(world_ru, stories_ru, ru, 1, 300, choices, items, done, arrived)
     facts_en = chronicle(world_en, stories_en, en, 1, 300, choices, items, done, arrived)
-    joined_ru = "\n".join(f["text"] for f in facts_ru)
-    joined_en = "\n".join(f["text"] for f in facts_en)
-    def option_result(story, event_id, option_id):
-        event = next(e for e in story["events"] if e["id"] == event_id)
-        return next(o["result"] for o in event["options"] if o["id"] == option_id)
-
-    help_ru = option_result(stories_ru[1], "e_cart", "help")
-    around_ru = option_result(stories_ru[1], "e_cart", "around")
-    trade_ru = option_result(stories_ru[2], "e_animal_raven", "trade")
-    leave_ru = option_result(stories_ru[2], "e_animal_raven", "leave")
-    if help_ru not in joined_ru or trade_ru not in joined_ru:
-        fail("the chosen branches are missing from the chronicle")
-    if around_ru in joined_ru or leave_ru in joined_ru:
-        fail("an unchosen branch leaked into the chronicle")
-    if "До петухов, говорю" in joined_ru:
-        fail("a conditional line was reconstructed without the flag")
-    banned = ["В ельнике «Лапы»", "Гарь. Чёрные стволы", "Хомут. Два склона", "Жив. Калитку чиню"]
-    for line in banned:
-        if line in joined_ru:
-            fail(f"future mountain text leaked: {line}")
-    if not any(f["chapter"] == "Горы" for f in facts_ru) or not any(f["chapter"] == "Долина" for f in facts_ru):
-        fail("the chapter boundary is missing")
-    help_en = option_result(stories_en[1], "e_cart", "help")
-    around_en = option_result(stories_en[1], "e_cart", "around")
-    if help_en not in joined_en or around_en in joined_en:
-        fail("english chronicle did not keep the chosen cart branch")
-    if not any(f["resident"] for f in facts_ru):
-        fail("no revealed resident is attached to a fact")
-    pictured = 0
-    for fact in facts_ru:
-        if fact["resident"] and figure(fact["folder"], fact["resident"]):
-            pictured += 1
-        elif place_image(fact["folder"], fact["place_id"]):
-            pictured += 1
-    if pictured < 4:
-        fail(f"too few real illustrations resolved: {pictured}")
+    partial_done = {"d_l1", "d_l2"}
+    partial_items = {"l1": "delivered", "l2": "delivered"}
+    line_ru = main_line(stories_ru[1], "Долина", "Chapter1", partial_done, partial_items, set(), {}, 6000)
+    line_en = main_line(stories_en[1], "Valley", "Chapter1", partial_done, partial_items, set(), {}, 6000)
+    joined = "\n".join(page["text"] for page in line_ru)
+    l6 = next(it["text"] for it in stories_ru[1]["items"] if it["id"] == "l6")
+    l1 = next(it["text"] for it in stories_ru[1]["items"] if it["id"] == "l1")
+    if l1 not in joined:
+        fail("Nina's letter is missing from the partial main line")
+    if l6 in joined or "Взято" in joined or "шаг" in joined:
+        fail("the partial main line included a later letter or a log line")
+    if {page["id"] for page in line_ru} != {"l1", "l2"}:
+        fail(f"partial progress should be the first two letters, got {[p['id'] for p in line_ru]}")
+    if "Кузьме" not in line_ru[0]["heading"]:
+        fail("the heading must be the letter's own from/to")
 
     scene = road_scene()
     note = [
@@ -929,7 +963,7 @@ def main():
         frame, _, _ = menu_frame(scene, "ru", page, copy, story, lore, cast)
         banner(frame, note if page == 0 else [
             "OFFLINE composite · menu tab · not a simulator frame · not Ilya's save",
-            "QA fixture cast and quest, same progress as the history frames",
+            "Menu cast is a separate QA fixture from the history letters",
         ])
         frame.convert("RGB").save(OUT / name, quality=88)
     people_en = []
@@ -948,36 +982,29 @@ def main():
     ])
     frame.convert("RGB").save(OUT / "menu_quest_en.jpg", quality=88)
 
-    column, marks = history_column(facts_ru, ru, True)
-    if "1:e_cart" not in marks or "chapter:Горы" not in marks:
-        fail("choice or chapter mark missing from the painted column")
-    windows = {
-        "history_top_ru.jpg": None,
-        "history_choice_ru.jpg": "1:e_cart",
-        "history_chapter_ru.jpg": "chapter:Горы",
-    }
-    for name, focus in windows.items():
-        paint_history(scene, column, marks, focus, ru, note).convert("RGB").save(OUT / name, quality=88)
-    column_en, marks_en = history_column(facts_en, en, False)
-    paint_history(scene, column_en, marks_en, "1:e_cart", en, [
-        "OFFLINE composite · English history · chosen cart branch · not a simulator frame",
-        "QA fixture, not Ilya's save · unchosen branch and later mountains are omitted",
-    ]).convert("RGB").save(OUT / "history_choice_en.jpg", quality=88)
-    paint_history(scene, column_en, marks_en, "chapter:Mountains", en, [
-        "OFFLINE composite · English chapter boundary · not a simulator frame",
-        "QA fixture: Valley is complete, Mountains only through step 300",
-    ]).convert("RGB").save(OUT / "history_chapter_en.jpg", quality=88)
+    history_note = [
+        "OFFLINE composite · not a simulator frame · not Ilya's save",
+        "Main line only: timeline §2 letters. QA: d_l1 and d_l2 delivered, step 6000. Later letters omitted.",
+    ]
+    column, marks = history_column(line_ru, ru, True)
+    paint_history(scene, column, marks, None, ru, history_note).convert("RGB").save(OUT / "history_main_ru.jpg", quality=88)
+    paint_history(scene, column, marks, "l2", ru, history_note).convert("RGB").save(OUT / "history_main_ru_next.jpg", quality=88)
+    column_en, _ = history_column(line_en, en, False)
+    paint_history(scene, column_en, {}, None, en, [
+        "OFFLINE composite · English main line · not a simulator frame · not Ilya's save",
+        "Source: chapter1-timeline.md §2 and the letter text. Partial: first two deliveries only.",
+    ]).convert("RGB").save(OUT / "history_main_en.jpg", quality=88)
     short_phone_menu(scene, ru, quest_ru).convert("RGB").save(OUT / "menu_short_phone.jpg", quality=88)
 
-    # Старые имена, чтобы не оставлять прежние кривые кадры.
-    for stale in ("menu_larger_sheet.jpg", "road_history_tag.jpg", "history_scroll.jpg"):
+    for stale in ("menu_larger_sheet.jpg", "road_history_tag.jpg", "history_scroll.jpg",
+                  "history_top_ru.jpg", "history_choice_ru.jpg", "history_choice_en.jpg",
+                  "history_chapter_ru.jpg", "history_chapter_en.jpg"):
         path = OUT / stale
         if path.exists():
             path.unlink()
 
-    print(f"facts ru={len(facts_ru)} en={len(facts_en)} illustrated>={pictured}")
+    print(f"main-line letters: {[p['id'] for p in line_ru]}")
     print("quest:", quest_ru)
-    print("first:", facts_ru[0]["id"], "choice:", "1:e_cart", "mountains:", next(f["id"] for f in facts_ru if f["chapter"] == "Горы"))
     if FAILS:
         print(f"{len(FAILS)} preview check(s) failed:")
         for item in FAILS:

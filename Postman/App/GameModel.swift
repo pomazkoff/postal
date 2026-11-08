@@ -120,13 +120,14 @@ final class GameModel: ObservableObject {
     func historyFacts() -> [HistoryFact] {
         let known = StoryChronicle.Progress(
             done: engine.state.doneEvents, choices: engine.state.choices,
-            items: engine.state.items, carried: engine.state.carried, reached: chapterSteps)
+            items: engine.state.items, opened: engine.state.opened,
+            carried: engine.state.carried, reached: chapterSteps)
         return StoryChronicle.facts(world: world, activeIndex: chapterIndex, activeSteps: chapterSteps,
                                     active: known) { chapterID in
             guard let saved = ChapterStateStore(fileName: "chapter\(chapterID)_state.json").load() else { return nil }
             return StoryChronicle.Progress(done: saved.doneEvents, choices: saved.choices,
-                                           items: saved.items, carried: saved.carried,
-                                           reached: Int.max)
+                                           items: saved.items, opened: saved.opened,
+                                           carried: saved.carried, reached: Int.max)
         }
     }
 
