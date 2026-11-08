@@ -19,6 +19,7 @@ struct MapScreen: View {
     @State private var dragStart: (pan: CGPoint, translation: CGSize)?
     @State private var confirmReset = false
     @State private var note: MapNote?
+    @State private var didCenter = false
 
     static let maxZoom: CGFloat = 3
 
@@ -35,19 +36,37 @@ struct MapScreen: View {
             GeometryReader { geo in
                 ZStack {
                     if let map {
+                        let atlas = MapAtlas.make(valley: map)
                         let road = RoadGeometry(map.points)
-                        mapLayer(map, road: road, m: m)
-                            .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
-                            .scaleEffect(zoom, anchor: .topLeading)
-                            .offset(x: pan.x, y: pan.y)
-                            .contentShape(Rectangle())
-                            .simultaneousGesture(panGesture(m: m, size: geo.size))
-                            .simultaneousGesture(pinchGesture(m: m, size: geo.size))
-                            .onTapGesture(count: 2) { toggleZoom(map: map, road: road, m: m, size: geo.size) }
+                        let global = game.chapter.startStep + step
+                        let heroOnMountain = atlas.mountains != nil && global >= MountainPlaces.globalStart
+                        ZStack(alignment: .topLeading) {
+                            mapLayer(map, road: road, m: m, drawHero: !heroOnMountain)
+                                .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y))
+                            if let mountains = atlas.mountains {
+                                mountainLayer(mountains, global: global, m: m, drawHero: heroOnMountain)
+                            }
+                        }
+                        .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
+                        .scaleEffect(zoom, anchor: .topLeading)
+                        .offset(x: pan.x, y: pan.y)
+                        .contentShape(Rectangle())
+                        .simultaneousGesture(panGesture(m: m, size: geo.size, content: atlas.contentSize))
+                        .simultaneousGesture(pinchGesture(m: m, size: geo.size, content: atlas.contentSize))
+                        .onTapGesture(count: 2) { toggleZoom(map: map, atlas: atlas, m: m, size: geo.size) }
+                        .task(id: Int(geo.size.height)) {
+                            guard !didCenter, geo.size.height > 1 else { return }
+                            didCenter = true
+                            guard atlas.centersHero(viewSize: geo.size, scale: m.scale) else { return }
+                            let feet = atlas.point(globalStep: global)
+                            pan = clamped(CGPoint(x: geo.size.width / 2 - m.point(feet.x, feet.y).x,
+                                                  y: geo.size.height / 2 - m.point(feet.x, feet.y).y),
+                                          zoom: 1, m: m, size: geo.size, content: atlas.contentSize)
+                        }
                         if let note {
                             mapNote(note, m: m)
                         }
-                        chrome(map, m: m)
+                        chrome(map, m: m, mountains: atlas.mountains != nil)
                     } else {
                         Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
@@ -65,7 +84,7 @@ struct MapScreen: View {
     // MARK: Слой карты (в координатах кадра; масштабируется жестами)
 
     @ViewBuilder
-    private func mapLayer(_ map: ParchmentMap, road: RoadGeometry, m: FrameMapper) -> some View {
+    private func mapLayer(_ map: ParchmentMap, road: RoadGeometry, m: FrameMapper, drawHero: Bool) -> some View {
         let s = m.scale
         let f = map.fraction(step: sheetStep)
         let feet = road.point(at: f)
@@ -107,20 +126,20 @@ struct MapScreen: View {
                     .accessibilityAddTraits(.isButton)
             }
 
-            // Фигурка почтальона: ноги на дороге.
-            Image(uiImage: HUDImages.image(map.postman.image)).resizable()
-                .frame(width: map.postman.w * s, height: map.postman.h * s)
-                .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
-                .contentShape(Rectangle())
-                .position(m.point(feet.x + 4, feet.y + 14 - map.postman.h / 2))
-                .onTapGesture { openPostman() }
-                .accessibilityLabel(L10n.text("app.name"))
-                .accessibilityAddTraits(.isButton)
-
-            tag(valleySheet ? L10n.text("map.you") : L10n.text("map.sheetEnd"),
-                valleySheet ? Format.steps(step) + " " + L10n.text("abbr.steps") : L10n.text("map.notDrawn"),
-                at: layout.postmanTag, dim: false, rotation: 5, m: m)
-                .onTapGesture { openPostman() }
+            if drawHero {
+                Image(uiImage: HUDImages.image(map.postman.image)).resizable()
+                    .frame(width: map.postman.w * s, height: map.postman.h * s)
+                    .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
+                    .contentShape(Rectangle())
+                    .position(m.point(feet.x + 4, feet.y + 14 - map.postman.h / 2))
+                    .onTapGesture { openPostman() }
+                    .accessibilityLabel(L10n.text("app.name"))
+                    .accessibilityAddTraits(.isButton)
+                tag(valleySheet ? L10n.text("map.you") : L10n.text("map.sheetEnd"),
+                    valleySheet ? Format.steps(step) + " " + L10n.text("abbr.steps") : L10n.text("map.notDrawn"),
+                    at: layout.postmanTag, dim: false, rotation: 5, m: m)
+                    .onTapGesture { openPostman() }
+            }
             ForEach(map.settlements, id: \.id) { place in
                 if let c = layout.tags[place.id] {
                     tag(place.name, place.step == 0 ? L10n.text("map.start") : Format.steps(place.step) + " " + L10n.text("abbr.steps"), at: c,
@@ -266,16 +285,72 @@ struct MapScreen: View {
     // MARK: Рамка (не масштабируется)
 
     @ViewBuilder
-    private func chrome(_ map: ParchmentMap, m: FrameMapper) -> some View {
+    private func mountainLayer(_ sheet: MountainSheet, global: Int, m: FrameMapper, drawHero: Bool) -> some View {
+        let s = m.scale
+        if let image = UIImage(contentsOfFile: sheet.colorPath) {
+            Image(uiImage: image).resizable()
+                .frame(width: sheet.size.width * s, height: sheet.size.height * s)
+                .position(m.point(sheet.size.width / 2, sheet.size.height / 2))
+                .allowsHitTesting(false)
+        }
+        let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
+        let fraction = sheet.fraction(localStep: global >= sheet.globalStart ? local : 0)
+        let road = RoadGeometry(sheet.road)
+        if global >= sheet.globalStart {
+            WalkedDashes(points: road.prefix(to: fraction), m: m)
+        }
+        let next = sheet.settlements.first { $0.step > local && $0.id != "sedlo" }
+        ForEach(sheet.settlements.filter { $0.id != "sedlo" }, id: \.id) { place in
+            let reached = global >= sheet.globalStart + place.step
+            let state = PlaceState(reached ? .visited : place.id == next?.id ? .next : .ghost)
+            stake(place.roadPoint, name: place.name, state: state, m: m)
+                .onTapGesture { openMountain(place, sheet: sheet, global: global) }
+            placeIcon(place, state: state, m: m)
+                .onTapGesture { openMountain(place, sheet: sheet, global: global) }
+                .accessibilityLabel(place.name)
+                .accessibilityAddTraits(.isButton)
+        }
+        if drawHero {
+            let feet = road.point(at: fraction)
+            Image(uiImage: HUDImages.image("UI/map/postman")).resizable()
+                .frame(width: 87 * s, height: 230 * s)
+                .shadow(color: .black.opacity(0.35), radius: 5 * s, x: 8 * s, y: 6 * s)
+                .contentShape(Rectangle())
+                .position(m.point(feet.x + 4, feet.y + 14 - 115))
+                .onTapGesture { openPostman() }
+                .accessibilityLabel(L10n.text("app.name"))
+                .accessibilityAddTraits(.isButton)
+            tag(L10n.text("map.you"),
+                Format.steps(local) + " " + L10n.text("abbr.steps"),
+                at: CGPoint(x: feet.x - 180, y: feet.y + 30), dim: false, rotation: 5, m: m)
+                .onTapGesture { openPostman() }
+        }
+    }
+
+    private func openMountain(_ place: ParchmentMap.Place, sheet: MountainSheet, global: Int) {
+        let reached = global >= sheet.globalStart + place.step
+        let body: String
+        if reached, let line = arrivalText(place.id), !line.isEmpty {
+            body = line
+        } else if reached {
+            body = L10n.text("map.place.been")
+        } else {
+            let left = max(0, sheet.globalStart + place.step - global)
+            body = L10n.format("map.place.ahead", Format.steps(left) + " " + L10n.text("abbr.steps"))
+        }
+        note = MapNote(title: place.name, body: body, image: reached ? place.icon : nil)
+    }
+
+    private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
-            Text(L10n.text("map.region"))
+            Text(mountains && !valleySheet ? L10n.text("map.mountains") : L10n.text("map.region"))
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
                 .position(x: 310 * f, y: 150 * f)
-            Text(valleySheet
-                 ? L10n.format("map.chapterDay", game.chapter.id, dayNumber)
-                 : L10n.text("map.valleyOnly"))
+            Text(!mountains && !valleySheet
+                 ? L10n.text("map.valleyOnly")
+                 : L10n.format("map.chapterDay", game.chapter.id, dayNumber))
                 .font(Ink.label(40 * f))
                 .foregroundStyle(Ink.brown.opacity(0.8))
                 .lineLimit(1).minimumScaleFactor(0.6)
@@ -304,8 +379,8 @@ struct MapScreen: View {
         .position(m.point(1010, 300))
         .allowsHitTesting(false)
 
-        let total = valleySheet ? game.chapter.lengthSteps : map.lengthSteps
-        let counted = valleySheet ? step : sheetStep
+        let total = valleySheet || mountains ? game.chapter.lengthSteps : map.lengthSteps
+        let counted = valleySheet || mountains ? step : sheetStep
         PlacedArt(name: "tag", m: m, at: CGPoint(x: 300, y: 2380), scale: 420 / 437, rotation: 3) { e, f in
             Text(L10n.format("map.stepsOf", Format.steps(min(counted, total)), Format.steps(total)))
                 .font(Ink.title(46 * f))
@@ -313,7 +388,7 @@ struct MapScreen: View {
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .frame(width: 270 * f)
                 .position(x: 225 * f, y: 80 * f)
-            Text(valleySheet
+            Text(valleySheet || mountains
                  ? L10n.plural("map.stepWord", min(step, total)) + " · " + L10n.format("map.day", dayNumber)
                  : L10n.format("map.elsewhere", game.chapter.title, Format.steps(step)))
                 .font(Ink.label(36 * f))
@@ -355,16 +430,16 @@ struct MapScreen: View {
     // MARK: Жесты
 
     /// Карта в масштабе 1 — кадр 1170×2532 (aspectFill); при zoom её край не уходит внутрь экрана.
-    private func clamped(_ p: CGPoint, zoom z: CGFloat, m: FrameMapper, size: CGSize) -> CGPoint {
+    private func clamped(_ p: CGPoint, zoom z: CGFloat, m: FrameMapper, size: CGSize, content: CGSize) -> CGPoint {
         let origin = m.point(0, 0)
-        let w = 1170 * m.scale, h = 2532 * m.scale
+        let w = content.width * m.scale, h = content.height * m.scale
         let minX = size.width - z * (origin.x + w), maxX = -z * origin.x
         let minY = size.height - z * (origin.y + h), maxY = -z * origin.y
         return CGPoint(x: min(max(p.x, min(minX, maxX)), max(minX, maxX)),
                        y: min(max(p.y, min(minY, maxY)), max(minY, maxY)))
     }
 
-    private func panGesture(m: FrameMapper, size: CGSize) -> some Gesture {
+    private func panGesture(m: FrameMapper, size: CGSize, content: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 14)
             .onChanged { v in
                 guard pinchStart == nil else { dragStart = nil; return }
@@ -372,7 +447,7 @@ struct MapScreen: View {
                 guard let start = dragStart else { return }
                 pan = clamped(CGPoint(x: start.pan.x + v.translation.width - start.translation.width,
                                       y: start.pan.y + v.translation.height - start.translation.height),
-                              zoom: zoom, m: m, size: size)
+                              zoom: zoom, m: m, size: size, content: content)
             }
             .onEnded { v in
                 let fling = CGSize(width: v.predictedEndTranslation.width - v.translation.width,
@@ -380,12 +455,13 @@ struct MapScreen: View {
                 dragStart = nil
                 guard pinchStart == nil else { return }
                 withAnimation(.easeOut(duration: 0.45)) {
-                    pan = clamped(CGPoint(x: pan.x + fling.width, y: pan.y + fling.height), zoom: zoom, m: m, size: size)
+                    pan = clamped(CGPoint(x: pan.x + fling.width, y: pan.y + fling.height),
+                                  zoom: zoom, m: m, size: size, content: content)
                 }
             }
     }
 
-    private func pinchGesture(m: FrameMapper, size: CGSize) -> some Gesture {
+    private func pinchGesture(m: FrameMapper, size: CGSize, content: CGSize) -> some Gesture {
         MagnifyGesture()
             .onChanged { v in
                 if pinchStart == nil { pinchStart = (zoom, pan); dragStart = nil }
@@ -396,24 +472,24 @@ struct MapScreen: View {
                 let p = CGPoint(x: loc.x - (loc.x - start.pan.x) * z / start.zoom,
                                 y: loc.y - (loc.y - start.pan.y) * z / start.zoom)
                 zoom = z
-                pan = clamped(p, zoom: z, m: m, size: size)
+                pan = clamped(p, zoom: z, m: m, size: size, content: content)
             }
             .onEnded { _ in pinchStart = nil }
     }
 
     /// Двойной тап: приблизить к почтальону / вернуть всю долину.
-    private func toggleZoom(map: ParchmentMap, road: RoadGeometry, m: FrameMapper, size: CGSize) {
+    private func toggleZoom(map: ParchmentMap, atlas: MapAtlas, m: FrameMapper, size: CGSize) {
         withAnimation(.easeInOut(duration: 0.35)) {
             if zoom > 1.05 {
                 zoom = 1
-                pan = clamped(.zero, zoom: 1, m: m, size: size)
+                pan = clamped(.zero, zoom: 1, m: m, size: size, content: atlas.contentSize)
             } else {
                 let z: CGFloat = 2.2
-                let feet = m.point(road.point(at: map.fraction(step: sheetStep)).x,
-                                   road.point(at: map.fraction(step: sheetStep)).y)
+                let feet = m.point(atlas.point(globalStep: game.chapter.startStep + step).x,
+                                   atlas.point(globalStep: game.chapter.startStep + step).y)
                 zoom = z
                 pan = clamped(CGPoint(x: size.width / 2 - z * feet.x, y: size.height / 2 - z * feet.y),
-                              zoom: z, m: m, size: size)
+                              zoom: z, m: m, size: size, content: atlas.contentSize)
             }
         }
     }

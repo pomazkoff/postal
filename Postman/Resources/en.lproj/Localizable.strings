@@ -64,6 +64,7 @@
 "map.you" = "You are here";
 "map.start" = "start";
 "map.region" = "Valley";
+"map.mountains" = "Mountains";
 "map.chapterDay" = "chapter %lld · day %lld";
 "map.valleyOnly" = "the valley sheet, up to the Saddle";
 "map.notDrawn" = "The mountains are not drawn on this sheet.";

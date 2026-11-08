@@ -11,6 +11,7 @@
 		07042153650ABF829B97C7E8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCACD96FB2EB2135A6027C52 /* OnboardingView.swift */; };
 		0EE1B2AFDC9BF317564B80B8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4B47121C09B905AE839D86FA /* InfoPlist.strings */; };
 		115BBC6EAA3BC571742A928D /* ParchmentMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01760E025CA7499BBA902E /* ParchmentMap.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* MapAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C6D /* MapAtlas.swift */; };
 		125C249CD192CAE0C3C8C63A /* ResidentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC98412E54E1DA23EE778D /* ResidentLibrary.swift */; };
 		18A9E227AF982AB5D22693BF /* GameAssets in Resources */ = {isa = PBXBuildFile; fileRef = 9C96202E6822FA5A54435A26 /* GameAssets */; };
 		1DFEBF97155388623B6513FE /* PostmanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE18FADC135C4D594AD01790 /* PostmanApp.swift */; };
@@ -112,6 +113,7 @@
 		C0253CBE75D3425E9E6DB79A /* SoundPlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayback.swift; sourceTree = "<group>"; };
 		C2BFC384837C8FB85EEFFFC8 /* WorldConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldConfig.swift; sourceTree = "<group>"; };
 		CA01760E025CA7499BBA902E /* ParchmentMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParchmentMap.swift; sourceTree = "<group>"; };
+		B2C3D4E5F60718293A4B5C6D /* MapAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapAtlas.swift; sourceTree = "<group>"; };
 		CBF6A245991BBE1575D9CB4B /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		CCE71E55EFBE69C98E3C1E2A /* PocketWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketWatchView.swift; sourceTree = "<group>"; };
 		D4BDB7EAF4EEA8702C6DB10D /* HealthKitStepSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitStepSource.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				6843304C310D382CFBA71DAF /* AmbientConfig.swift */,
 				175F562A54F33ABB4D0EC66D /* ChapterState.swift */,
 				CA01760E025CA7499BBA902E /* ParchmentMap.swift */,
+				B2C3D4E5F60718293A4B5C6D /* MapAtlas.swift */,
 				88AC98412E54E1DA23EE778D /* ResidentLibrary.swift */,
 				677061F7742A708C8D8FAE40 /* RigConfig.swift */,
 				50123FB0218AE853B0BD21FB /* StoryConfig.swift */,
@@ -372,6 +375,7 @@
 				5136E52B9CA35E46C92665C1 /* AmbientConfig.swift in Sources */,
 				97EBE3BA66BFECCE7752830D /* ChapterState.swift in Sources */,
 				115BBC6EAA3BC571742A928D /* ParchmentMap.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* MapAtlas.swift in Sources */,
 				125C249CD192CAE0C3C8C63A /* ResidentLibrary.swift in Sources */,
 				3EEF2B0AD8A2BD0F98C5F9F5 /* RigConfig.swift in Sources */,
 				A201DE1893640D87D915C22E /* StoryConfig.swift in Sources */,

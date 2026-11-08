@@ -64,6 +64,7 @@
 "map.you" = "Вы здесь";
 "map.start" = "старт";
 "map.region" = "Долина";
+"map.mountains" = "Горы";
 "map.chapterDay" = "глава %lld · день %lld";
 "map.valleyOnly" = "лист долины, до Седла";
 "map.notDrawn" = "Горы на этом листе не нарисованы.";
