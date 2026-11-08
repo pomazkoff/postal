@@ -245,8 +245,8 @@ enum ParchmentLayout {
         let ts = tagSize
         var obstacles = places.map { $0.iconRect.insetBy(dx: $0.w * 0.12, dy: $0.h * 0.1) }
         if includePostman {
-            obstacles.append(CGRect(x: postmanFeet.x - postman.w * 0.4, y: postmanFeet.y - postman.h,
-                                    width: postman.w * 0.8, height: postman.h))
+            obstacles.append(CGRect(x: postmanFeet.x - postman.width * 0.4, y: postmanFeet.y - postman.height,
+                                    width: postman.width * 0.8, height: postman.height))
         }
         let bounds = CGRect(origin: .zero, size: frame).insetBy(dx: 12, dy: 12)
         func rect(_ c: CGPoint) -> CGRect {
@@ -276,17 +276,17 @@ enum ParchmentLayout {
         var result = Result()
         if includePostman {
             let p = postmanFeet
-            let dx = postman.w * 0.4 + ts.width / 2 + 8
+            let dx = postman.width * 0.4 + ts.width / 2 + 8
             result.postmanTag = pick([
-                CGPoint(x: p.x - dx - 70, y: p.y - postman.h * 0.72),
-                CGPoint(x: p.x - dx, y: p.y - postman.h * 0.45),
-                CGPoint(x: p.x + dx, y: p.y - postman.h * 0.45),
-                CGPoint(x: p.x - dx, y: p.y - postman.h * 0.05),
-                CGPoint(x: p.x + dx, y: p.y - postman.h * 0.05),
-                CGPoint(x: p.x - dx, y: p.y - postman.h * 0.85),
-                CGPoint(x: p.x + dx, y: p.y - postman.h * 0.85),
+                CGPoint(x: p.x - dx - 70, y: p.y - postman.height * 0.72),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.45),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.45),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.05),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.05),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.85),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.85),
                 CGPoint(x: p.x, y: p.y + ts.height / 2 + 10),
-                CGPoint(x: p.x, y: p.y - postman.h - ts.height / 2 - 6),
+                CGPoint(x: p.x, y: p.y - postman.height - ts.height / 2 - 6),
             ])
         }
         let order = places.sorted { a, b in

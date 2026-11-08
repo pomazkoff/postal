@@ -6,6 +6,7 @@
 """
 import json
 import math
+import re
 from pathlib import Path
 
 import numpy as np
@@ -125,6 +126,12 @@ if "WorldSteps.shown(local: place.step, origin: sheet.globalStart)" not in scree
     fail("mountain tags must add globalStart once")
 if "WorldSteps.shown(local: local, origin: sheet.globalStart)" not in screen:
     fail("the hero tag must show the world step")
+places_layout = (ROOT / "Postman/Model/ParchmentMap.swift").read_text(encoding="utf-8")
+places_layout = places_layout.split("static func layout(places:", 1)[1].split("return result", 1)[0]
+if re.search(r"postman\.[wh]\b", places_layout):
+    fail("CGSize layout must use width and height, not w and h")
+if "@ViewBuilder\n    private func chrome(" not in screen:
+    fail("chrome must be a ViewBuilder so the frame has a view to return")
 if screen.find("mapLayer(") > screen.find("mountainLayer("):
     fail("the mountain sheet must be drawn after the valley sheet, covering the overlap")
 atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")

@@ -377,6 +377,7 @@ struct MapScreen: View {
         note = MapNote(title: place.name, body: body, image: reached ? place.icon : nil)
     }
 
+    @ViewBuilder
     private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
