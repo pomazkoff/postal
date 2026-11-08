@@ -115,6 +115,16 @@ if shown != expect_world:
     fail(f"world labels {shown}")
 if doc["globalStart"] + 2419 != 22419:
     fail("hero world step")
+ahead = doc.get("aheadPx", 230.0)
+road_len = doc.get("roadLength") or 2432.4
+def mountain_front(world):
+    if world >= doc["globalStart"] + doc["lengthSteps"]:
+        return 2
+    return (world - doc["globalStart"]) / doc["lengthSteps"] + ahead / road_len
+if mountain_front(0) >= 0:
+    fail("world step 0 must leave the whole mountain sheet in pencil")
+if abs(mountain_front(22419) - (2419 / 25000 + ahead / road_len)) > 1e-9:
+    fail("chapter 2 step 2419 must keep the same front as before")
 if doc["globalStart"] + doc["lengthSteps"] != 45000:
     fail("chapter end is not 45000")
 # Локальные шаги в JSON не переписываются в мировые.
@@ -135,6 +145,8 @@ if "@ViewBuilder\n    private func chrome(" not in screen:
 if screen.find("mapLayer(") > screen.find("mountainLayer("):
     fail("the mountain sheet must be drawn after the valley sheet, covering the overlap")
 atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
+if "revealThreshold(worldStep:" not in atlas or "guard t0 > 0" not in atlas:
+    fail("an unwalked valley must not open the mountain sheet as if the player were at the saddle")
 if "origin + local" not in atlas:
     fail("world step display is origin plus the sheet-local step")
 ru = (ROOT / "Postman/Resources/ru.lproj/Localizable.strings").read_text(encoding="utf-8")

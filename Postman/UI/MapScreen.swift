@@ -35,9 +35,7 @@ struct MapScreen: View {
     /// Порог цвета на листе гор. −1, пока файла нет.
     private var mountainRevealKey: Double {
         guard let map, let sheet = MapAtlas.make(valley: map).mountains else { return -1 }
-        let global = game.chapter.startStep + step
-        let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
-        return sheet.revealThreshold(localStep: global >= sheet.globalStart ? local : 0)
+        return sheet.revealThreshold(worldStep: game.chapter.startStep + step)
     }
 
     var body: some View {
@@ -306,7 +304,7 @@ struct MapScreen: View {
         let fraction = sheet.fraction(localStep: onSheet ? local : 0)
         let road = RoadGeometry(sheet.road)
         let feet = road.point(at: fraction)
-        let t0 = sheet.revealThreshold(localStep: onSheet ? local : 0)
+        let t0 = sheet.revealThreshold(worldStep: global)
         let next = sheet.settlements.first { $0.step > (onSheet ? local : -1) }
         let reached = onSheet ? local : -1
         let tags = ParchmentLayout.layout(places: sheet.settlements,
@@ -314,7 +312,8 @@ struct MapScreen: View {
                                           postmanFeet: feet, frame: sheet.size,
                                           nextID: next?.id, reachedStep: reached,
                                           includePostman: drawHero)
-        let image = picture ?? UIImage(contentsOfFile: sheet.colorPath)
+        let fallback = t0 <= 0 ? sheet.pencilPath : sheet.colorPath
+        let image = picture ?? UIImage(contentsOfFile: fallback)
         if let image {
             Image(uiImage: image).resizable()
                 .frame(width: sheet.size.width * s, height: sheet.size.height * s)

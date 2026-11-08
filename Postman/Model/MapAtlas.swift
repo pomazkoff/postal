@@ -98,15 +98,18 @@ struct MountainSheet {
         return min(1, max(0, Double(localStep) / Double(lengthSteps)))
     }
 
-    func revealThreshold(localStep: Int) -> Double {
-        let f = fraction(localStep: localStep)
-        return f >= 1 ? 2 : f + aheadPx / max(1, roadLength)
+    /// Доля листа от мирового шага. До Седла доля отрицательная: aheadPx не
+    /// открывает горы с нуля Долины. На Седле и дальше — тот же запас вперёд, что у Долины.
+    func revealThreshold(worldStep: Int) -> Double {
+        if worldStep >= globalStart + lengthSteps { return 2 }
+        let f = Double(worldStep - globalStart) / Double(max(lengthSteps, 1))
+        return f + aheadPx / max(1, roadLength)
     }
 
     var softFraction: Double { softPx / max(1, roadLength) }
 
     func puffPoints(threshold t0: Double) -> [[Double]] {
-        guard t0 < puffs.maxT, puffs.levels > 0, !puffs.points.isEmpty else { return [] }
+        guard t0 > 0, t0 < puffs.maxT, puffs.levels > 0, !puffs.points.isEmpty else { return [] }
         let i = Int((t0 / puffs.maxT * Double(puffs.levels)).rounded())
         return puffs.points[min(max(0, i), puffs.points.count - 1)]
     }
