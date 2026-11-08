@@ -696,7 +696,7 @@ def place_image(folder, place_id):
 
 
 def history_column(facts, copy, russian):
-    width = 1040 - 96
+    width = 760
     column = Image.new("RGBA", (width, 20000), (0, 0, 0, 0))
     draw = ImageDraw.Draw(column)
     y = 0
@@ -910,21 +910,59 @@ def main():
     # Меню по-прежнему показывает каст старого прогона. История — отдельный частичный прогон писем.
     facts_ru = chronicle(world_ru, stories_ru, ru, 1, 300, choices, items, done, arrived)
     facts_en = chronicle(world_en, stories_en, en, 1, 300, choices, items, done, arrived)
-    partial_done = {"d_l1", "d_l2"}
-    partial_items = {"l1": "delivered", "l2": "delivered"}
-    line_ru = main_line(stories_ru[1], "Долина", "Chapter1", partial_done, partial_items, set(), {}, 6000)
-    line_en = main_line(stories_en[1], "Valley", "Chapter1", partial_done, partial_items, set(), {}, 6000)
+    def carried(status):
+        return status in ("inBag", "inPocket", "delivered", "sent", "read", "lostWind")
+
+    def narrative(copy, items, done, opened, chapter_title):
+        pages = []
+
+        def add(pid, title, text, resident, place):
+            pages.append({"id": pid, "chapter": chapter_title, "heading": title,
+                          "text": text, "resident": resident, "folder": "Chapter1", "place_id": place})
+
+        if "sort" in done:
+            bits = [copy["history.main.road.out"]]
+            if carried(items.get("l3")):
+                bits.append(copy["history.main.road.nina"])
+            if carried(items.get("l2")):
+                bits.append(copy["history.main.road.mitya"])
+            if items.get("l4") == "inPocket" or carried(items.get("l4")):
+                bits.append(copy["history.main.road.vera"])
+            add("road", copy["history.main.road.title"], " ".join(bits), None, "pochta")
+        if "d_l1" in done and items.get("l1") == "delivered":
+            add("stilts", copy["history.main.stilts.title"], copy["history.main.stilts.body"], "kuzma", "svai")
+        if "d_l2" in done and items.get("l2") == "delivered":
+            bits = [copy["history.main.belfry.body"]]
+            if carried(items.get("l5")):
+                bits.append(copy["history.main.belfry.fortyone"])
+            if "l5" in opened:
+                bits.append(copy["history.main.belfry.opened"])
+            add("belfry", copy["history.main.belfry.title"], " ".join(bits), "pimen", "zvonarnya")
+        if "s_nina" in done:
+            if items.get("l3") == "inBag":
+                ask = copy["history.main.ask.bag"]
+            elif items.get("l3") == "atPost":
+                ask = copy["history.main.ask.post"]
+            else:
+                ask = copy["history.main.ask.body"]
+            add("ask", copy["history.main.ask.title"], ask, "nina", "kadushki")
+        if "d_l6" in done and items.get("l6") == "delivered":
+            add("strange", copy["history.main.strange.title"], copy["history.main.strange.body"], "nina", "kadushki")
+        return pages
+
+    partial_items = {"l1": "delivered", "l2": "delivered", "l3": "inBag", "l4": "inPocket", "l5": "inBag", "l6": "delivered"}
+    partial_done = {"sort", "d_l1", "d_l2", "p_l5", "s_nina", "d_l6"}
+    line_ru = narrative(ru, partial_items, partial_done, set(), "Долина")
+    line_en = narrative(en, partial_items, partial_done, set(), "Valley")
     joined = "\n".join(page["text"] for page in line_ru)
-    l6 = next(it["text"] for it in stories_ru[1]["items"] if it["id"] == "l6")
-    l1 = next(it["text"] for it in stories_ru[1]["items"] if it["id"] == "l1")
-    if l1 not in joined:
-        fail("Nina's letter is missing from the partial main line")
-    if l6 in joined or "Взято" in joined or "шаг" in joined:
-        fail("the partial main line included a later letter or a log line")
-    if {page["id"] for page in line_ru} != {"l1", "l2"}:
-        fail(f"partial progress should be the first two letters, got {[p['id'] for p in line_ru]}")
-    if "Кузьме" not in line_ru[0]["heading"]:
-        fail("the heading must be the letter's own from/to")
+    if "Кто опустил этот ответ" not in joined:
+        fail("the noticed contradiction is missing")
+    if "Кузьма Ерофеич здраствуй" in joined or "Взято" in joined:
+        fail("the history reprinted a letter or a log line")
+    if ru["history.main.belfry.opened"] in joined or ru["history.main.saddle.ksenia"] in joined:
+        fail("a later or sealed revelation leaked into the partial story")
+    if {page["id"] for page in line_ru} != {"road", "stilts", "belfry", "ask", "strange"}:
+        fail(f"partial arc changed: {[p['id'] for p in line_ru]}")
 
     scene = road_scene()
     note = [
@@ -984,15 +1022,15 @@ def main():
 
     history_note = [
         "OFFLINE composite · not a simulator frame · not Ilya's save",
-        "Main line only: timeline §2 letters. QA: d_l1 and d_l2 delivered, step 6000. Later letters omitted.",
+        "QA partial: sort, Stilts, Belfry, Nina's question, box no. 2. Seal closed. Saddle not reached.",
     ]
     column, marks = history_column(line_ru, ru, True)
     paint_history(scene, column, marks, None, ru, history_note).convert("RGB").save(OUT / "history_main_ru.jpg", quality=88)
-    paint_history(scene, column, marks, "l2", ru, history_note).convert("RGB").save(OUT / "history_main_ru_next.jpg", quality=88)
+    paint_history(scene, column, marks, "strange", ru, history_note).convert("RGB").save(OUT / "history_main_ru_next.jpg", quality=88)
     column_en, _ = history_column(line_en, en, False)
     paint_history(scene, column_en, {}, None, en, [
-        "OFFLINE composite · English main line · not a simulator frame · not Ilya's save",
-        "Source: chapter1-timeline.md §2 and the letter text. Partial: first two deliveries only.",
+        "OFFLINE composite · English main arc · not a simulator frame · not Ilya's save",
+        "Same partial progress. Author secrets stay out. Chapters 3–5 are not in this build.",
     ]).convert("RGB").save(OUT / "history_main_en.jpg", quality=88)
     short_phone_menu(scene, ru, quest_ru).convert("RGB").save(OUT / "menu_short_phone.jpg", quality=88)
 

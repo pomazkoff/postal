@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""История: только письма основной линии главы 1, не журнал всех событий."""
+"""История: связный пересказ основной линии, не письма и не журнал событий."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,26 +13,29 @@ def fail(msg):
 src = (ROOT / "Postman/App/StoryChronicle.swift").read_text(encoding="utf-8")
 if "index <= activeIndex" not in src:
     fail("a chapter not yet reached must not be read")
-if "beat.step <= reached" not in src or "progress.done.contains(beat.eventID)" not in src:
+if "beat.step <= gate" not in src or "progress.done.contains(beat.eventID)" not in src:
     fail("a main-line paragraph waits for its own event and step")
-if "for event in story.events" in src or "story.events where" in src:
-    fail("history must not walk every done event")
-if "story.arrivals" in src:
-    fail("arrival blurbs are not the main story")
-if "engine.pickup" in src or "engine.deliver" in src or "engine.sort" in src:
-    fail("system pickup and delivery lines are not the narrative")
-for beat in ("d_l1", "d_l2", "d_l6", "d_vera", "finale", "l1", "l2", "l3", "l4", "l5", "l6", "l7"):
+if "for event in story.events" in src or "item.text" in src:
+    fail("history must not dump events or reprint letters")
+if "story.arrivals" in src or "engine.pickup" in src or "engine.deliver" in src:
+    fail("arrivals and system lines are not the narrative")
+for beat in ("\"road\"", "\"strange\"", "\"two\"", "\"roosters\"", "\"lamp\"", "d_l6", "p_l1", "p_l4", "p_l9"):
     if beat not in src:
-        fail(f"main-line beat {beat} is missing")
-for side in ("e_cart", "e_animal", "e_ramka", "e_storm", "arrive:"):
+        fail(f"main-line gate {beat} is missing")
+for side in ("e_cart", "e_animal", "e_ramka", "e_storm"):
     if side in src:
         fail(f"side event {side} was pulled into the main story")
-if "progress.choices[choiceID]" not in src or "options?.first" not in src:
-    fail("a letter consequence must be the recorded option only")
-if "opened.contains" not in src or "item.outside" not in src:
-    fail("a sealed letter must not open its inner text")
-if "chapter2-timeline" not in src:
-    fail("the missing chapter 2 source must stay named, not guessed")
+if 'choices["e_wind"]' not in src:
+    fail("the wind paragraph must follow the recorded choice")
+if 'opened.contains("l5")' not in src:
+    fail("Pimen's inner tape waits until the seal is opened")
+if "history.main.belfry.fortyone" not in src:
+    fail("the number 41 is only the outside of the account")
+if "chapterID: 3" in src or "chapterID: 4" in src or "chapterID: 5" in src:
+    fail("chapters 3–5 are not part of the playable history")
+for banned in ("Агния", "Савелий", "хвостохранилищ", "включила К-2", "214 подпис"):
+    if banned in src:
+        fail(f"author secret leaked into the chronicle code: {banned}")
 hud = (ROOT / "Postman/UI/HUDView.swift").read_text(encoding="utf-8")
 if "HistoryScrollView" not in hud or "showHistory" not in hud:
     fail("the history sheet must open from the road")
@@ -47,6 +50,23 @@ if "history.empty" not in view:
     fail("a new game needs an empty state")
 if "history.where" in view:
     fail("the history sheet must not print place and step headers")
+
+ru = (ROOT / "Postman/Resources/ru.lproj/Localizable.strings").read_text(encoding="utf-8")
+en = (ROOT / "Postman/Resources/en.lproj/Localizable.strings").read_text(encoding="utf-8")
+keys = [
+    "history.main.road.out", "history.main.strange.body", "history.main.two.body",
+    "history.main.roosters.body", "history.main.lamp.compared", "history.main.belfry.opened",
+    "history.main.gorge.body",
+]
+for key in keys:
+    if f'"{key}"' not in ru or f'"{key}"' not in en:
+        fail(f"missing narrative string {key}")
+blob = "\n".join(line for line in (ru + "\n" + en).splitlines() if "history.main." in line)
+for banned in ("Агния", "Савелий", "хвостохранилищ", "включила К-2", "Agnia forged", "Vera switched"):
+    if banned in blob:
+        fail(f"author secret in the history strings: {banned}")
+if not (ROOT / "docs/canon/story-bible.md").exists():
+    fail("the canon file was not kept with the repo")
 
 # Зеркало фильтра: ноль, кусок главы 1, вход в главу 2 без её событий.
 def visible(done, step, reached, chapter_index, active):
