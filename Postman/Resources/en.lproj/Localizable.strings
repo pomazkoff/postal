@@ -175,6 +175,11 @@
 "baked.sheet_telegram" = "The band on this sheet is still the Russian word for telegram.";
 
 "menu.open" = "Menu";
+"history.open" = "History";
+"history.open.a11y" = "Open the story so far";
+"history.title" = "History";
+"history.empty" = "Nothing here yet. The postman has not told anything.";
+"history.where" = "%@ · step %@";
 "menu.open.a11y" = "Menu";
 "menu.title" = "Menu";
 "menu.close" = "Onward";

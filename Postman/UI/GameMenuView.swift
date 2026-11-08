@@ -96,9 +96,14 @@ struct GameMenuView: View {
         let centers = MenuTabLayout.centers(columns: columns, tagSize: tagSize,
                                             visibleWidth: visible, firstCenterY: firstY)
         let tabsBottom = (centers.map(\.y).max() ?? firstY) + tagSize.height / 2
-        let sheetScale: CGFloat = 0.58
-        let sheetH = UIArt.entry("sheet").height * sheetScale
-        let sheetY = min(tabsBottom + 28 + sheetH / 2, 1888)
+        let sheetArt = UIArt.entry("sheet")
+        let top = tabsBottom + 8
+        let bottomLimit: CGFloat = 1960
+        let fitH = max(0.72, (bottomLimit - top) / sheetArt.height)
+        let fitW = max(0.72, (visible - 28) / sheetArt.width)
+        let sheetScale = min(fitH, fitW, 1.02)
+        let sheetH = sheetArt.height * sheetScale
+        let sheetY = top + sheetH / 2
         return (centers, sheetY, sheetScale, scale)
     }
 
@@ -128,7 +133,7 @@ struct GameMenuView: View {
             let top = e.anchor("line1")
             let bottom = e.anchor("line2")
             Text(title)
-                .font(Ink.title(54 * f))
+                .font(Ink.title(48 * f))
                 .foregroundStyle(Ink.brown)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -171,11 +176,11 @@ struct GameMenuView: View {
         }()
         return VStack(alignment: .leading, spacing: m.length(18)) {
             Text(L10n.text("menu.quest.title"))
-                .font(Ink.title(m.length(44)))
+                .font(Ink.title(m.length(56)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             Text(body)
-                .font(Ink.font("hand", size: m.length(40)))
+                .font(Ink.font("hand", size: m.length(46)))
                 .foregroundStyle(Ink.pencil)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -185,12 +190,12 @@ struct GameMenuView: View {
     private func peopleSection(_ m: FrameMapper) -> some View {
         VStack(alignment: .leading, spacing: m.length(28)) {
             Text(L10n.text("menu.people.title"))
-                .font(Ink.title(m.length(44)))
+                .font(Ink.title(m.length(56)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             if people.isEmpty {
                 Text(L10n.text("menu.people.empty"))
-                    .font(Ink.font("hand", size: m.length(40)))
+                    .font(Ink.font("hand", size: m.length(46)))
                     .foregroundStyle(Ink.pencil)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
@@ -212,7 +217,7 @@ struct GameMenuView: View {
             }
             VStack(alignment: .leading, spacing: m.length(8)) {
                 Text(person.name)
-                    .font(Ink.title(m.length(36)))
+                    .font(Ink.title(m.length(44)))
                     .foregroundStyle(Ink.brown)
                 if !person.text.isEmpty {
                     Text(person.text)
@@ -232,11 +237,11 @@ struct GameMenuView: View {
     private func about(_ m: FrameMapper) -> some View {
         VStack(alignment: .leading, spacing: m.length(16)) {
             Text(L10n.text("menu.about.title"))
-                .font(Ink.title(m.length(44)))
+                .font(Ink.title(m.length(56)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             Text(L10n.text("menu.about.body"))
-                .font(Ink.font("hand", size: m.length(36)))
+                .font(Ink.font("hand", size: m.length(44)))
                 .foregroundStyle(Ink.pencil)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -246,7 +251,7 @@ struct GameMenuView: View {
     private func settings(_ m: FrameMapper) -> some View {
         VStack(alignment: .leading, spacing: m.length(28)) {
             Text(L10n.text("menu.settings"))
-                .font(Ink.title(m.length(44)))
+                .font(Ink.title(m.length(56)))
                 .foregroundStyle(Ink.brown)
                 .accessibilityAddTraits(.isHeader)
             language(m)

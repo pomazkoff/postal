@@ -175,6 +175,11 @@
 "baked.sheet_telegram" = "На бланке уже написано: телеграмма.";
 
 "menu.open" = "Меню";
+"history.open" = "История";
+"history.open.a11y" = "Открыть историю пути";
+"history.title" = "История";
+"history.empty" = "Пока здесь пусто. Почтальон ещё ничего не рассказал.";
+"history.where" = "%@ · шаг %@";
 "menu.open.a11y" = "Меню";
 "menu.title" = "Меню";
 "menu.close" = "В путь";

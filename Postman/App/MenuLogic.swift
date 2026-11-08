@@ -138,9 +138,9 @@ enum ReminderPreference {
 /// Иначе две и две: на телефоне длинные подписи иначе не читаются.
 enum MenuTabLayout {
     static let canvasWidth: CGFloat = 1170
-    static let tagScale: CGFloat = 1.08
-    static let gap: CGFloat = 22
-    static let margin: CGFloat = 18
+    static let tagScale: CGFloat = 0.88
+    static let gap: CGFloat = 14
+    static let margin: CGFloat = 16
 
     static func columns(viewWidth: CGFloat, itemWidth: CGFloat, gap: CGFloat, margin: CGFloat) -> Int {
         guard itemWidth > 0, viewWidth > 0 else { return 2 }
@@ -178,11 +178,17 @@ enum RoadMenuButton {
     }
 
     static func center(bag: CGRect, map: CGRect, buttonSize: CGSize, canvasHeight: CGFloat, safeBottom: CGFloat) -> CGPoint {
+        pair(bag: bag, map: map, buttonSize: buttonSize, canvasHeight: canvasHeight, safeBottom: safeBottom).menu
+    }
+
+    /// «Меню» сверху, «История» под ним, в том же зазоре и выше домашнего индикатора.
+    static func pair(bag: CGRect, map: CGRect, buttonSize: CGSize, canvasHeight: CGFloat, safeBottom: CGFloat) -> (menu: CGPoint, history: CGPoint) {
         let x = bag.maxX + (map.minX - bag.maxX) / 2
-        let limit = canvasHeight - max(0, safeBottom) - 12
-        var y = (bag.midY + map.midY) / 2
+        let limit = canvasHeight - max(0, safeBottom) - 8
+        let gap: CGFloat = 12
         let half = buttonSize.height / 2
-        if y + half > limit { y = limit - half }
-        return CGPoint(x: x, y: max(half, y))
+        let historyY = min(limit - half, max(half, bag.midY))
+        let menuY = max(half, historyY - gap - buttonSize.height)
+        return (CGPoint(x: x, y: menuY), CGPoint(x: x, y: historyY))
     }
 }

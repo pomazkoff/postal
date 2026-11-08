@@ -269,7 +269,7 @@ if "m.point(190, 2330)" not in hud or "m.point(990, 2330)" not in hud:
     fail("bag and map anchors moved")
 if "m.point(168, 1480)" in hud:
     fail("menu button is still mid-screen on the left")
-if "RoadMenuButton.center" not in hud or "enum RoadMenuButton" not in logic:
+if "RoadMenuButton.pair" not in hud or "enum RoadMenuButton" not in logic:
     fail("menu button must sit between the bag and the map")
 if ".blur(radius:" not in hud or ".blur(radius:" not in (ROOT / "Postman/UI/GameView.swift").read_text(encoding="utf-8"):
     fail("the open menu must blur both the road and the HUD")
@@ -329,10 +329,10 @@ def button_center(bag, map_rect, button, canvas_h, safe_bottom):
     return x, max(half, y)
 
 
-# tag 437×280 at 1.08 does not fit four across a 1170 frame.
-if columns(1170, 437 * 1.08, 22, 18) != 2:
+# tag 437×280 at 0.88 still does not fit four across a 1170 frame.
+if columns(1170, 437 * 0.88, 14, 16) != 2:
     fail("phone-width frame must stack the section tags 2×2")
-if columns(2200, 437 * 1.08, 22, 18) != 4:
+if columns(2200, 437 * 0.88, 14, 16) != 4:
     fail("a wide frame can keep four section tags in a row")
 
 ui = json.loads((ROOT / "Postman/GameAssets/UI/ui_ch1.json").read_text(encoding="utf-8"))["art"]
@@ -346,8 +346,17 @@ button = (287 * 1.22, 201 * 1.22)
 cx, cy = button_center(bag_rect, map_rect, button, 2532, 110)
 if not (bag_rect[0] + bag_rect[2] < cx - button[0] / 2 and cx + button[0] / 2 < map_rect[0]):
     fail(f"menu button overlaps the bag or the map: {cx}")
-if cy + button[1] / 2 > 2532 - 110:
-    fail("menu button ignores the home indicator")
+limit = 2532 - 110 - 8
+history_y = min(limit - button[1] / 2, max(button[1] / 2, bag_rect[1] + bag_rect[3] / 2))
+menu_y = max(button[1] / 2, history_y - 12 - button[1])
+if history_y + button[1] / 2 > 2532 - 110:
+    fail("history button ignores the home indicator")
+if menu_y + button[1] / 2 > history_y - button[1] / 2:
+    fail("history button overlaps the menu button")
+if "flipX: true" not in hud or "history.open" not in hud:
+    fail("history tag must mirror the menu tag and keep the word upright")
+if "0.58" in (ROOT / "Postman/UI/GameMenuView.swift").read_text(encoding="utf-8"):
+    fail("the menu sheet should grow past the old 0.58 scale")
 if "accessibilityReduceMotion" not in (ROOT / "Postman/UI/GameView.swift").read_text(encoding="utf-8"):
     fail("menu blur should not animate when motion is reduced")
 

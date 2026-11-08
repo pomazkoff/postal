@@ -11,6 +11,7 @@ struct HUDView: View {
     @State private var watchExpanded = false
     @State private var panel: Panel?
     @State private var showMenu = false
+    @State private var showHistory = false
     @State private var letterID: String?
     @State private var confirmReset = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -32,6 +33,7 @@ struct HUDView: View {
         case sorting
         case journey
         case menu
+        case history
         case none
     }
 
@@ -48,6 +50,7 @@ struct HUDView: View {
         }
         if engine.isFinished && !engine.state.endCardSeen && engine.nextCard == nil { return .panel(.endCard) }
         if showMenu { return .menu }
+        if showHistory { return .history }
         return .none
     }
 
@@ -161,6 +164,10 @@ struct HUDView: View {
                 onMap: { showMenu = false; game.roadMenuOpen = false; panel = .map },
                 onBag: { showMenu = false; game.roadMenuOpen = false; panel = .bag }
             )
+        case .history:
+            HistoryScrollView {
+                showHistory = false
+            }
         case .card(let card):
             StoryCardView(card: card) { finishCard(card) }
                 .id(card.id)
@@ -217,6 +224,7 @@ struct HUDView: View {
 
             if screen == .none {
                 menuButton(m, safeBottom: safeBottom)
+                historyButton(m, safeBottom: safeBottom)
             }
 
             // «К почтальону»: деревянная стрелка с головой героя у края экрана, куда он ушёл.
@@ -242,8 +250,8 @@ struct HUDView: View {
                                            bodyCenter: mapArt.bodyCenter, anchor: RoadMenuButton.mapAnchor)
         let button = CGSize(width: tag.width * scale, height: tag.height * scale)
         let safeDesign = safeBottom / max(m.scale, 0.01)
-        let center = RoadMenuButton.center(bag: bag, map: map, buttonSize: button,
-                                            canvasHeight: RoadMenuButton.canvasHeight, safeBottom: safeDesign)
+        let center = RoadMenuButton.pair(bag: bag, map: map, buttonSize: button,
+                                         canvasHeight: RoadMenuButton.canvasHeight, safeBottom: safeDesign).menu
         return Button {
             showMenu = true
             game.roadMenuOpen = true
@@ -264,6 +272,39 @@ struct HUDView: View {
         .buttonStyle(PressStyle())
         .position(m.point(Double(center.x), Double(center.y)))
         .accessibilityLabel(L10n.text("menu.open.a11y"))
+    }
+
+    /// Та же бирка, что «Меню», отражена по горизонтали и стоит сразу под ней.
+    private func historyButton(_ m: FrameMapper, safeBottom: CGFloat) -> some View {
+        let scale = RoadMenuButton.tagScale
+        let tag = UIArt.entry("tag_small")
+        let bagArt = UIArt.entry("hud_bag")
+        let mapArt = UIArt.entry("hud_map")
+        let bag = RoadMenuButton.imageRect(width: bagArt.width, height: bagArt.height,
+                                           bodyCenter: bagArt.bodyCenter, anchor: RoadMenuButton.bagAnchor)
+        let map = RoadMenuButton.imageRect(width: mapArt.width, height: mapArt.height,
+                                           bodyCenter: mapArt.bodyCenter, anchor: RoadMenuButton.mapAnchor)
+        let button = CGSize(width: tag.width * scale, height: tag.height * scale)
+        let safeDesign = safeBottom / max(m.scale, 0.01)
+        let center = RoadMenuButton.pair(bag: bag, map: map, buttonSize: button,
+                                         canvasHeight: RoadMenuButton.canvasHeight, safeBottom: safeDesign).history
+        return Button { showHistory = true } label: {
+            ArtView(name: "tag_small", k: m.scale, scale: scale, flipX: true) { e, f in
+                let top = e.anchor("line1")
+                let bottom = e.anchor("line2")
+                Text(L10n.text("history.open"))
+                    .font(Ink.title(52 * f))
+                    .foregroundStyle(Ink.brown)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(width: e.value("textWidth") * f)
+                    .position(x: top.x * f, y: (top.y + bottom.y) / 2 * f)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressStyle())
+        .position(m.point(Double(center.x), Double(center.y)))
+        .accessibilityLabel(L10n.text("history.open.a11y"))
     }
 
     private func postmanButton(_ off: WorldScene.Offscreen, _ m: FrameMapper) -> some View {
