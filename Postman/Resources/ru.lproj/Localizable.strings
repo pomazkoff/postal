@@ -38,6 +38,7 @@
 "bag.mail" = "Почта";
 "bag.mail.empty" = "Сдавать пока нечего.";
 "bag.personal" = "Личные вещи";
+"bag.more" = "ниже";
 "bag.personal.empty" = "Находок пока нет.";
 "bag.look" = "Рассмотреть";
 "bag.keep.other" = "Находка";

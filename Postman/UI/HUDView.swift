@@ -200,11 +200,11 @@ struct HUDView: View {
     // MARK: Кнопки сумки и карты
 
     private func bottomButtons(_ m: FrameMapper, safeBottom: CGFloat) -> some View {
-        let count = engine.bagItems.count + engine.pocketItems.count
+        let badge = bagBadge
         return ZStack {
             Button { openBag() } label: {
                 ArtView(name: "hud_bag", k: m.scale) { e, f in
-                    TagArt(line1: "\(count)", line2: Format.letters(count), k: f, small: true, scale: 0.8,
+                    TagArt(line1: badge.line1, line2: badge.line2, k: f, small: true, scale: 0.8,
                            size1: 64, size2: 40)
                         .rotationEffect(.degrees(8))
                         .position(x: (e.body.maxX - 10) * f, y: (e.body.maxY - 30) * f)
@@ -213,7 +213,7 @@ struct HUDView: View {
             }
             .buttonStyle(PressStyle())
             .pinned(size: artSize("hud_bag", m), anchor: bodyCenter("hud_bag", m), at: m.point(190, 2330))
-            .accessibilityLabel(L10n.format("bag.a11y", count, Format.letters(count)))
+            .accessibilityLabel(L10n.format("bag.a11y", badge.count, badge.line2))
 
             Button { panel = .map } label: {
                 ArtView(name: "hud_map", k: m.scale)
@@ -324,6 +324,16 @@ struct HUDView: View {
         .buttonStyle(PressStyle())
         .pinned(size: size, anchor: anchor, at: m.point(left ? 200 : 970, 1960), rotation: left ? 3 : -3)
         .accessibilityLabel(left ? L10n.text("hud.postman.left") : L10n.text("hud.postman.right"))
+    }
+
+    /// На бирке сумки — только почта. Личные вещи не называем письмами.
+    /// Если писем нет, а находки есть, считаем находки своим словом.
+    private var bagBadge: (line1: String, line2: String, count: Int) {
+        let mail = engine.mailItems.count
+        if mail > 0 { return ("\(mail)", Format.letters(mail), mail) }
+        let things = engine.personalItems.count
+        if things > 0 { return ("\(things)", Format.things(things), things) }
+        return ("0", Format.letters(0), 0)
     }
 
     private func openBag() {

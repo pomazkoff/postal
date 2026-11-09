@@ -206,6 +206,8 @@ private struct JournalCard: View {
         case "pickup": return "stick_plain"
         case "finale": return "env_ksenia"
         case "choice", "sort": return "tag_small"
+        case "handoff": return "env_plain"
+        case "opened": return "env_wax"
         default: return nil
         }
     }
@@ -219,12 +221,22 @@ private struct JournalCard: View {
     }
 
     private var when: String {
-        var parts = [Format.steps(entry.step) + " " + L10n.text("abbr.steps")]
+        var parts: [String] = []
+        // Ноль шагов — запись без места на дороге (старый сейв). Такой счётчик не показываем.
+        if entry.step > 0 {
+            parts.append(Format.steps(entry.step) + " " + L10n.text("abbr.steps"))
+        }
         if let date = entry.date {
             let f = Calendar.current.isDateInToday(date) ? Self.time : Self.dayTime
             parts.append(f.string(from: date))
         }
         return parts.joined(separator: " · ")
+    }
+
+    private var showsPicture: Bool {
+        let placeImg = place.flatMap { JournalAssets.placeImage($0.id, chapterFolder: chapterFolder) }
+        let fig = resident.flatMap { ResidentLibrary.figure(for: $0) }
+        return placeImg != nil || fig != nil || icon != nil
     }
 
     private var caption: String {
@@ -238,17 +250,21 @@ private struct JournalCard: View {
         let scale = min(maxW / max(1, e.width * k), maxH / max(1, e.height * k))
         PaperArt(name: "sheet", k: k, scale: scale) { size in
             VStack(alignment: .leading, spacing: m.length(16)) {
-                picture(width: size.width, height: min(size.height * 0.55, size.width * 0.8))
+                if showsPicture {
+                    picture(width: size.width, height: min(size.height * 0.55, size.width * 0.8))
+                }
                 HStack(alignment: .firstTextBaseline) {
                     Text(caption)
                         .font(Ink.label(m.length(32)))
                         .foregroundStyle(Ink.brown.opacity(0.8))
                         .lineLimit(1).minimumScaleFactor(0.6)
                     Spacer(minLength: m.length(8))
-                    Text(when)
-                        .font(Ink.font("draft", size: m.length(26)))
-                        .foregroundStyle(Ink.stampRed.opacity(0.8))
-                        .lineLimit(1).minimumScaleFactor(0.6)
+                    if !when.isEmpty {
+                        Text(when)
+                            .font(Ink.font("draft", size: m.length(26)))
+                            .foregroundStyle(Ink.stampRed.opacity(0.8))
+                            .lineLimit(1).minimumScaleFactor(0.6)
+                    }
                 }
                 Rectangle().fill(Ink.brown.opacity(0.25)).frame(height: max(1, m.length(3)))
                 Text(entry.text)
@@ -299,20 +315,13 @@ private struct JournalCard: View {
                     .padding(.trailing, placeImg == nil ? (width - w) / 2 : m.length(20))
                     .offset(x: -shift * 0.8)
             }
-            if placeImg == nil && fig == nil {
-                if let icon {
-                    let ie = UIArt.entry(icon)
-                    let side = min(height * 0.6, m.length(260))
-                    let fit = min(side / max(1, ie.width * m.scale), side / max(1, ie.height * m.scale))
-                    ArtView(name: icon, k: m.scale, scale: fit)
-                        .rotationEffect(.degrees(entry.step % 2 == 0 ? -5 : 4))
-                        .frame(width: width, height: height)
-                } else {
-                    Text(entry.place ?? "")
-                        .font(Ink.title(m.length(60)))
-                        .foregroundStyle(Ink.brown.opacity(0.5))
-                        .frame(width: width, height: height)
-                }
+            if placeImg == nil && fig == nil, let icon {
+                let ie = UIArt.entry(icon)
+                let side = min(height * 0.6, m.length(260))
+                let fit = min(side / max(1, ie.width * m.scale), side / max(1, ie.height * m.scale))
+                ArtView(name: icon, k: m.scale, scale: fit)
+                    .rotationEffect(.degrees(entry.step % 2 == 0 ? -5 : 4))
+                    .frame(width: width, height: height)
             }
             if let resident, fig != nil {
                 Text(resident.name)

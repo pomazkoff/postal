@@ -16,9 +16,9 @@ OUT = Path("/opt/cursor/artifacts/bag-screen")
 W, H = 1170, 2532
 
 # Совпадает с BagScreen.swift
-SCROLL_TOP = 390
-SCROLL_H = 960
-BAG_RING = (400, 1415)
+SCROLL_TOP = 400
+SCROLL_H = 1080
+BAG_RING = (400, 1560)
 TITLE = (585, 210)
 ARROW_RIGHT, ARROW_BOTTOM = 1136, 2470
 
@@ -168,16 +168,18 @@ def draw_ui(base, mail, personal, copy, scroll=0):
     ]
     for title, items, empty, on_left in groups:
         sprite, hole = section_image(title)
-        at = (210 if on_left else 585, y + 120)
-        scroll_layer, box = paste(scroll_layer, sprite, hole, at, angle=-3 if on_left else 2)
+        scroll_layer, box = paste(scroll_layer, sprite, hole, (585, y + 90), angle=-2 if on_left else 2)
         boxes.append((title, box))
-        y += 250
+        y += 180
         pairs = [(None, None)] if not items else [
             (items[i], items[i + 1] if i + 1 < len(items) else None) for i in range(0, len(items), 2)
         ]
         for left, right in pairs:
+            shelf_y = y + 8
+            base_y = shelf_y + 22
+            tag_y = shelf_y + 108
             image, entry = load_art("shelf")
-            scroll_layer, box = paste(scroll_layer, image, (0, 0), (2, y + 36))
+            scroll_layer, box = paste(scroll_layer, image, (0, 0), (2, shelf_y), 0.82)
             boxes.append(("shelf", box))
             slots = [(left, 290, 175, -4)]
             if items:
@@ -185,7 +187,7 @@ def draw_ui(base, mail, personal, copy, scroll=0):
             for item, cx, tx, angle in slots:
                 if item is None and not items:
                     sprite, hole, tsize = tag_image(empty, "", 0.9)
-                    scroll_layer, box = paste(scroll_layer, sprite, hole, (tx, y + 150), angle=angle)
+                    scroll_layer, box = paste(scroll_layer, sprite, hole, (tx, tag_y), angle=angle)
                     boxes.append(("empty", box))
                     continue
                 if item is None:
@@ -193,17 +195,24 @@ def draw_ui(base, mail, personal, copy, scroll=0):
                 image, entry = load_art(item["art"])
                 anchor = body_anchor(entry, "bottom")
                 scale = min(0.82, 200 / entry["height"])
-                scroll_layer, box = paste(scroll_layer, image, anchor, (cx, y + 64), scale, angle * 0.4)
+                scroll_layer, box = paste(scroll_layer, image, anchor, (cx, base_y), scale, angle * 0.4)
                 boxes.append((item["id"], box))
                 sprite, hole, tsize = tag_image(item["line1"], item["line2"], 0.9)
-                at = (tx, y + 150)
+                at = (tx, tag_y)
                 scroll_layer, box = paste(scroll_layer, sprite, hole, at, angle=angle)
                 boxes.append((item["id"] + " tag", box))
                 nail, nentry = load_art("nail")
                 scroll_layer, _ = paste(scroll_layer, nail, body_anchor(nentry, "center"), at, 0.85)
                 if tsize < 15:
                     notes.append(f"{item['id']} text {tsize:.0f}px: {item['line2']}")
-            y += 390
+            y += 310
+    if y > SCROLL_TOP + SCROLL_H + 8 and scroll == 0:
+        hint, entry = load_art("tag_small")
+        draw = ImageDraw.Draw(hint)
+        face = font("YesevaOne.ttf", 32)
+        ytext = (entry["anchors"]["line1"][1] + entry["anchors"]["line2"][1]) / 2
+        draw.text((entry["anchors"]["line1"][0], ytext), copy["bag.more"], font=face, fill=(69, 46, 28, 255), anchor="mm")
+        scroll_layer, _ = paste(scroll_layer, hint, tuple(entry["anchors"]["hole"]), (585, SCROLL_TOP + SCROLL_H - 40), 0.72)
     band = scroll_layer.crop((0, SCROLL_TOP, W, SCROLL_TOP + SCROLL_H))
     base.paste(band, (0, SCROLL_TOP), band)
     # кожаная сумка без меловых имён
@@ -224,10 +233,36 @@ def draw_ui(base, mail, personal, copy, scroll=0):
     draw.text(t, copy["bag.close"], font=face, fill=(242, 234, 214, 255), anchor="mm")
     base, arrow_box = paste(base, arrow, ((body[0] + body[2] / 2), (body[1] + body[3] / 2)), center)
     boxes.append(("arrow", arrow_box))
+    base = bag_badge(base, copy, len(mail), len(personal))
     # пересечение сумки и стрелки
     if overlaps(bag_box, arrow_box, 8):
         notes.append(f"bag overlaps close arrow {bag_box} {arrow_box}")
     return base, notes
+
+
+def ru_plural(n, one, few, many):
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14):
+        return few
+    return many
+
+
+def bag_badge(base, copy, mail, things):
+    """На дорожной сумке только почта. Находки — своим словом, и только если писем нет."""
+    russian = "Почта" in copy.get("bag.mail", "")
+    if mail > 0:
+        count, word = mail, (ru_plural(mail, "письмо", "письма", "писем") if russian else ("letter" if mail == 1 else "letters"))
+    elif things > 0:
+        count, word = things, (ru_plural(things, "вещь", "вещи", "вещей") if russian else ("thing" if things == 1 else "things"))
+    else:
+        count, word = 0, ("писем" if russian else "letters")
+    badge, entry = load_art("tag_small")
+    draw = ImageDraw.Draw(badge)
+    draw.text(tuple(entry["anchors"]["line1"]), str(count), font=font("YesevaOne.ttf", 42), fill=(69, 46, 28, 255), anchor="mm")
+    draw.text(tuple(entry["anchors"]["line2"]), word, font=font("Kurale.ttf", 28), fill=(69, 46, 28, 255), anchor="mm")
+    base, _ = paste(base, badge, tuple(entry["anchors"]["hole"]), (190, 2280), 0.7, 8)
+    return base
 
 
 def overlaps(a, b, pad=0):
@@ -371,5 +406,39 @@ def main():
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки, прокрутка"), "bag_ch2_penki_ru_scroll.jpg", notes)
 
 
+def journal_card(code):
+    """Карточка сдачи почты: конверт вместо пустой рамки, без «0 ш.»."""
+    copy = strings(code)
+    sheet, entry = load_art("sheet")
+    scale = 900 / entry["width"]
+    paper = sheet.resize((int(entry["width"] * scale), int(entry["height"] * scale)), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (W, H), (24, 64, 68, 255))
+    canvas.paste(paper, ((W - paper.width) // 2, 280), paper)
+    env, eentry = load_art("env_plain")
+    env.thumbnail((280, 220), Image.Resampling.LANCZOS)
+    canvas.paste(env, ((W - env.width) // 2, 520), env)
+    draw = ImageDraw.Draw(canvas)
+    draw.text((220, 820), copy["bag.handoff.title"], font=font("Kurale.ttf", 36), fill=(69, 46, 28, 255))
+    body = copy["bag.handoff.s_nii_drop"]
+    y = 900
+    face = font("Kurale.ttf", 34)
+    words = body.split()
+    line = ""
+    for word in words:
+        trial = word if not line else line + " " + word
+        if draw.textlength(trial, font=face) > 720:
+            draw.text((220, y), line, font=face, fill=(70, 62, 54, 255))
+            y += 46
+            line = word
+        else:
+            line = trial
+    if line:
+        draw.text((220, y), line, font=face, fill=(70, 62, 54, 255))
+    label = "OFFLINE composite, not a simulator frame" if code == "en" else "ОФЛАЙН-склейка, не кадр симулятора"
+    save(banner(canvas, label + " · journal"), f"journal_handoff_{code}.jpg", [])
+
+
 if __name__ == "__main__":
     main()
+    journal_card("ru")
+    journal_card("en")

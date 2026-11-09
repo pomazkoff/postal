@@ -169,6 +169,24 @@ engine = (ROOT / "Postman/App/ChapterEngine.swift").read_text(encoding="utf-8")
 view = (ROOT / "Postman/UI/BagScreen.swift").read_text(encoding="utf-8")
 if "freeSlots" in engine:
     fail("pickup still refuses mail when the bag is full")
+hud = (ROOT / "Postman/UI/HUDView.swift").read_text(encoding="utf-8")
+if "bagItems.count + engine.pocketItems.count" in hud:
+    fail("the road bag counts personal finds as letters")
+if "engine.mailItems.count" not in hud or "Format.things" not in hud:
+    fail("the road bag does not count mail, and finds, with their own words")
+if "bag.more" not in view:
+    fail("a long bag does not say there is more below")
+journal = (ROOT / "Postman/UI/JournalScreen.swift").read_text(encoding="utf-8")
+if 'case "handoff": return "env_plain"' not in journal:
+    fail("a mail handoff card has no picture")
+if "entry.step > 0" not in journal:
+    fail("a journal card still prints a zero step count")
+if "showsPicture" not in journal:
+    fail("a journal card draws a frame when it has no picture")
+if 'Text(entry.place ?? "")' in journal:
+    fail("an empty journal frame is still filled with a blank caption")
+if "step: event?.step ?? 0" not in engine:
+    fail("a migrated handoff is still logged at step 0")
 if "prefix(4)" in view or "prefix(3)" in view or "bag.used" in view or "bag.pocket" in view or "Ink.chalk" in view:
     fail("the bag still hides items, counts slots, or writes chalk names on three compartments")
 if 'name: "shelf"' not in view and 'place("shelf"' not in view:
@@ -186,7 +204,7 @@ if '(2, "l9")' in body:
     fail("the telegram is taken out of the bag at pickup, before it can be read")
 ru = (ROOT / "Postman/Resources/ru.lproj/Localizable.strings").read_text(encoding="utf-8")
 en = (ROOT / "Postman/Resources/en.lproj/Localizable.strings").read_text(encoding="utf-8")
-for key in ["bag.mail", "bag.personal", "bag.look", "bag.took.all", "bag.recovered", "bag.chapter.kept",
+for key in ["bag.mail", "bag.personal", "bag.more", "bag.look", "bag.took.all", "bag.recovered", "bag.chapter.kept",
             "bag.handoff.s_nii_drop", "bag.handoff.finale", "bag.handoff.p_l9",
             "bag.act.1.l1", "bag.act.1.l6", "bag.act.2.l1", "bag.act.2.note_gar",
             "bag.keep.animal_cat_stamp", "bag.keep.animal_raven_scrap", "bag.keep.animal_dog_horn"]:

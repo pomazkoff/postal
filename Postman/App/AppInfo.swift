@@ -37,6 +37,9 @@ enum Format {
     /// 0 letters, 1 letter, 2 letters. По-русски: письмо / письма / писем (0 — писем).
     static func letters(_ n: Int) -> String { L10n.plural("unit.letters", n) }
 
+    /// 0 things, 1 thing, 2 things. По-русски: вещей / вещь / вещи.
+    static func things(_ n: Int) -> String { L10n.plural("unit.things", n) }
+
     static func stepsWord(_ n: Int) -> String { L10n.plural("unit.steps", n) }
 
     /// 0 chapters, 1 chapter, 2 chapters. По-русски: глав / глава / главы.

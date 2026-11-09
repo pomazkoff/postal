@@ -20,6 +20,24 @@
 			<string>letters</string>
 		</dict>
 	</dict>
+	<key>unit.things</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@word@</string>
+		<key>word</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>zero</key>
+			<string>things</string>
+			<key>one</key>
+			<string>thing</string>
+			<key>other</key>
+			<string>things</string>
+		</dict>
+	</dict>
 	<key>unit.steps</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

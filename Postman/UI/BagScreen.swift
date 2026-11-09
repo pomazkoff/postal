@@ -11,10 +11,12 @@ struct BagScreen: View {
     let onRead: (String) -> Void
     let onClose: () -> Void
 
+    @State private var moreBelow = false
+
     /// Окно полок. Ниже него стоит кожаная сумка, ещё ниже — стрелка «Закрыть».
-    private let scrollTop = 390.0
-    private let scrollHeight = 960.0
-    private let bagRing = CGPoint(x: 400, y: 1415)
+    private let scrollTop = 400.0
+    private let scrollHeight = 1080.0
+    private let bagRing = CGPoint(x: 400, y: 1560)
     private let titleHole = CGPoint(x: 585, y: 210)
 
     var body: some View {
@@ -59,18 +61,58 @@ struct BagScreen: View {
     // MARK: Полки
 
     private func shelves(_ m: FrameMapper) -> some View {
-        ScrollView(.vertical, showsIndicators: true) {
-            VStack(spacing: 0) {
-                group(L10n.text("bag.mail"), items: engine.mailItems, empty: L10n.text("bag.mail.empty"),
-                      headerOnLeft: true, m: m)
-                group(L10n.text("bag.personal"), items: engine.personalItems, empty: L10n.text("bag.personal.empty"),
-                      headerOnLeft: false, m: m)
+        ZStack(alignment: .bottom) {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    group(L10n.text("bag.mail"), items: engine.mailItems, empty: L10n.text("bag.mail.empty"),
+                          headerOnLeft: true, m: m)
+                    group(L10n.text("bag.personal"), items: engine.personalItems, empty: L10n.text("bag.personal.empty"),
+                          headerOnLeft: false, m: m)
+                }
+                .frame(maxWidth: .infinity)
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.preference(key: BagScrollTail.self,
+                                               value: geo.frame(in: .named("bagShelves")).maxY)
+                    }
+                )
             }
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, m.length(12))
+            .coordinateSpace(name: "bagShelves")
+            .onPreferenceChange(BagScrollTail.self) { tail in
+                moreBelow = tail > m.length(scrollHeight) + 16
+            }
+            if moreBelow {
+                moreHint(m)
+                    .padding(.bottom, m.length(4))
+                    .allowsHitTesting(false)
+            }
         }
         .frame(width: m.length(1170), height: m.length(scrollHeight))
         .position(m.point(585, scrollTop + scrollHeight / 2))
+    }
+
+    private func moreHint(_ m: FrameMapper) -> some View {
+        let e = UIArt.entry("tag_small")
+        let hole = e.anchor("hole")
+        let f = m.scale * 0.72
+        return ZStack {
+            ArtView(name: "tag_small", k: m.scale, scale: 0.72) { entry, scale in
+                let top = entry.anchor("line1")
+                let bottom = entry.anchor("line2")
+                Text(L10n.text("bag.more"))
+                    .font(Ink.title(36 * scale))
+                    .foregroundStyle(Ink.brown)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(width: entry.value("textWidth") * scale)
+                    .position(x: top.x * scale, y: (top.y + bottom.y) / 2 * scale)
+            }
+            .pinned(size: CGSize(width: e.width * f, height: e.height * f),
+                    anchor: CGPoint(x: hole.x * f, y: hole.y * f),
+                    at: CGPoint(x: m.length(585), y: m.length(70)))
+        }
+        .frame(width: m.length(420), height: m.length(150))
+        .accessibilityLabel(L10n.text("bag.more"))
     }
 
     private func group(_ title: String, items: [StoryConfig.Item], empty: String, headerOnLeft: Bool, m: FrameMapper) -> some View {
@@ -93,8 +135,8 @@ struct BagScreen: View {
         let hole = e.anchor("hole")
         let tagScale: CGFloat = 0.8
         let f = m.scale * tagScale
-        let x = onLeft ? 210.0 : 585.0
-        let y = 120.0
+        let x = 585.0
+        let y = 90.0
         return ZStack {
             ArtView(name: "tag", k: m.scale, scale: tagScale) { entry, scale in
                 let top = entry.anchor("line1")
@@ -109,22 +151,22 @@ struct BagScreen: View {
             }
             .pinned(size: CGSize(width: e.width * f, height: e.height * f),
                     anchor: CGPoint(x: hole.x * f, y: hole.y * f),
-                    at: CGPoint(x: m.length(x), y: m.length(y)), rotation: onLeft ? -3 : 2)
+                    at: CGPoint(x: m.length(x), y: m.length(y)), rotation: onLeft ? -2 : 2)
             place("nail", m: m, at: CGPoint(x: x, y: y), scale: 0.8)
         }
-        .frame(width: m.length(1170), height: m.length(250))
+        .frame(width: m.length(1170), height: m.length(180), alignment: .topLeading)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 
     private func shelf(_ left: StoryConfig.Item?, _ right: StoryConfig.Item?, empty: String?, m: FrameMapper) -> some View {
-        let height = 390.0
-        let shelfY = 36.0
-        let baseY = shelfY + 28
-        let tagY = shelfY + 114
+        let height = 310.0
+        let shelfY = 8.0
+        let baseY = shelfY + 22
+        let tagY = shelfY + 108
         return ZStack(alignment: .topLeading) {
             Color.clear
-            place("shelf", m: m, anchor: "origin", at: CGPoint(x: 2, y: shelfY))
+            place("shelf", m: m, anchor: "origin", at: CGPoint(x: 2, y: shelfY), scale: 0.82)
             itemSlot(left, empty: empty, cx: 290, base: baseY, tag: CGPoint(x: 175, y: tagY), angle: -4, m: m)
             if empty == nil {
                 itemSlot(right, empty: nil, cx: 890, base: baseY, tag: CGPoint(x: 790, y: tagY), angle: 3, m: m)
@@ -230,4 +272,10 @@ struct BagScreen: View {
                     anchor: CGPoint(x: a.x * f, y: a.y * f),
                     at: CGPoint(x: m.length(at.x), y: m.length(at.y)), rotation: rotation)
     }
+}
+
+/// Низ содержимого полок в координатах окна. Больше высоты окна — ниже ещё есть вещи.
+private struct BagScrollTail: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }

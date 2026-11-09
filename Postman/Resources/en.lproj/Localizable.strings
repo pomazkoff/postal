@@ -38,6 +38,7 @@
 "bag.mail" = "Mail";
 "bag.mail.empty" = "Nothing to hand over yet.";
 "bag.personal" = "Personal things";
+"bag.more" = "more";
 "bag.personal.empty" = "No finds yet.";
 "bag.look" = "Look at it";
 "bag.keep.other" = "A find";

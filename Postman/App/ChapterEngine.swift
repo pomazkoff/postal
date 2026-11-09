@@ -119,7 +119,11 @@ final class ChapterEngine: ObservableObject {
         loaded.settledHandoffs = Array(migrated.settled).sorted()
         for key in migrated.logs {
             let title = key.hasPrefix("bag.handoff.") ? L10n.text("bag.handoff.title") : L10n.text("bag.title")
-            loaded.log.append(LogEntry(step: 0, text: L10n.text(key), kind: "handoff", title: title))
+            let trigger = key.hasPrefix("bag.handoff.") ? String(key.dropFirst("bag.handoff.".count)) : ""
+            let event = story.event(trigger)
+            let place = event.map { settlementName($0.settlement) }
+            loaded.log.append(LogEntry(step: event?.step ?? 0, text: L10n.text(key), kind: "handoff",
+                                       place: place, title: title))
         }
         if loaded.version < 2 {
             // Сохранение до «истории без игрока»: прошлые прибытия не пушим, старый лог журналом не показываем.
