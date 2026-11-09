@@ -2,4 +2,5 @@
 "CFBundleName" = "Postman";
 "NSHealthShareUsageDescription" = "The postman walks when you do. The game reads your step count from Health so it can move him along the road. The data stays on this device.";
 "NSHealthUpdateUsageDescription" = "The game does not write anything to Health.";
+"NSMotionUsageDescription" = "The postman walks when you do. The game reads your steps from Motion and Fitness so the road can move even while the phone is locked. The data stays on this device.";
 "NSLocationWhenInUseUsageDescription" = "A rough location is only for the weather in the Valley: if it is raining or snowing where you are, it rains or snows on the postman too. Precise coordinates are not used and are not stored.";

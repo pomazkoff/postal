@@ -242,6 +242,8 @@ final class GameModel: ObservableObject {
         engine.liveViewing = false
         steps.start()
         WeatherService.shared.start(askPermission: true)
+        ForegroundDay.noteOpened()
+        AppCore.shared.noteBecameActive()
         Task { await AppCore.shared.notifier.refreshAuthorizationStatus() }
     }
 

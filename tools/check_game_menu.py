@@ -153,6 +153,9 @@ def allows_posting(stored, known):
     if stored is not None:
         if not stored:
             return False
+        # Непрочитанный статус не выбрасывает явный «вкл»: сначала читают разрешение.
+        if known is None:
+            return True
         return known == "allowed"
     if known is not None:
         return known == "allowed"
@@ -163,6 +166,8 @@ if not allows_posting(None, "allowed") or not allows_posting(True, "allowed"):
     fail("people who already allowed, or who turned reminders on, must still be scheduled")
 if not allows_posting(None, None):
     fail("an unread status must not drop reminders for someone who already allowed them")
+if not allows_posting(True, None):
+    fail("an explicit on must not be dropped before the phone status is read")
 for known in ("notDetermined", "denied", None):
     if allows_posting(False, known):
         fail("an explicit off must not schedule")

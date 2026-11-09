@@ -9,6 +9,12 @@ final class HealthKitStepSource {
 
     static var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
+    /// Телефон заблокирован: база «Здоровья» недоступна, это не ноль шагов.
+    static func isProtectedData(_ error: Error) -> Bool {
+        let ns = error as NSError
+        return ns.domain == HKError.errorDomain && ns.code == HKError.Code.errorDatabaseInaccessible.rawValue
+    }
+
     /// Показывает системный диалог (один раз). HealthKit НЕ сообщает, дал ли пользователь
     /// доступ на чтение: при отказе запросы просто возвращают 0.
     func requestAuthorization() async throws {

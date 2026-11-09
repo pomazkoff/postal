@@ -194,7 +194,9 @@ class ChapterProgressTests(unittest.TestCase):
         self.assertIn('startGeneration += 1', body(steps, 'func resetForNewStart()'))
         refresh = body(steps, 'private func performRefresh()')
         self.assertIn('let generation = startGeneration', refresh)
-        self.assertEqual(refresh.count('guard generation == startGeneration'), 2)
+        health = refresh.split('if mode == .healthKit', 1)[1].split('PedometerStepSource.isAvailable', 1)[0]
+        self.assertEqual(health.count('guard generation == startGeneration'), 2)
+        self.assertGreaterEqual(refresh.count('guard generation == startGeneration'), 2)
 
 
 class WorldStripTests(unittest.TestCase):

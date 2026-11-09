@@ -36,6 +36,8 @@ final class AppCore {
     private var postedBeatIDs = Set<String>()
     private var inBackgroundWake = false
     private var wakePosts = 0
+    private var wakeScheduled = 0
+    private var noticeTask: Task<Void, Never>?
 
     private init() {
         let progress = ProgressStore()
@@ -51,6 +53,14 @@ final class AppCore {
 
         bindEngineNotifications()
         notifier.registerCategories(for: engine.story)
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.protectedDataDidBecomeAvailableNotification,
+            object: nil, queue: .main) { _ in
+            Task { @MainActor in
+                guard ProtectedCatchUp.pending else { return }
+                await AppCore.shared.backgroundRefresh()
+            }
+        }
         steps.$totalSteps
             .sink { [weak self] total in self?.syncEngine(total: total) }
             .store(in: &cancellables)
@@ -162,6 +172,9 @@ final class AppCore {
             switchToChapter(idx)
         }
         engine.update(chapterSteps: chapterSteps(total: total))
+        if UIApplication.shared.applicationState == .active {
+            scheduleNoticesSoon()
+        }
     }
 
     // MARK: Пуши
@@ -178,13 +191,21 @@ final class AppCore {
     }
 
     private func postBeat(_ beat: ChapterEngine.Beat) {
-        // Выключенные и ещё не разрешённые напоминания не помечают остановку отправленной:
-        // включение не ставит её второй раз, а ещё не отправленный выбор уйдёт один раз.
+        Task { await commitBeat(beat) }
+    }
+
+    /// Статус читается до отметки «уже отправлено». Непрочитанный явный «вкл» не выбрасывается,
+    /// а отказ iOS не помечает остановку, чтобы её можно было поставить позже.
+    private func commitBeat(_ beat: ChapterEngine.Beat) async {
+        if notifier.knownAuth == nil {
+            await notifier.refreshAuthorizationStatus()
+        }
         guard ReminderPreference.allowsPosting(known: notifier.knownAuth) else { return }
         guard !postedBeatIDs.contains(beat.id) else { return }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)
         if inBackgroundWake { wakePosts += 1 }
+        notifier.cancelAhead(id: beat.id)
         notifier.post(title: beat.title, body: beat.body, id: beat.id, choiceEventID: beat.choiceEventID)
     }
 
@@ -262,20 +283,68 @@ final class AppCore {
         await steps.refresh()
         syncEngine(total: steps.totalSteps)
         inBackgroundWake = false
-        BackgroundWakeNote.record(steps: steps.totalSteps, posted: wakePosts, at: Date())
+        await refreshNotices()
+        BackgroundWakeNote.record(steps: steps.totalSteps, posted: wakePosts, scheduled: wakeScheduled,
+                                  protected: ProtectedCatchUp.pending, at: Date())
+    }
+
+    func noteBecameActive() {
+        ForegroundDay.noteOpened()
+        if ProtectedCatchUp.pending {
+            Task { await backgroundRefresh() }
+        } else {
+            scheduleNoticesSoon()
+        }
     }
 
     func appDidEnterBackground() {
         scheduleRefresh()
-        flushDeferredChoicePushes()
-        // Шаги, которые уже есть в Здоровье на момент сворачивания. Без background task
+        // Шаги, которые уже есть на момент сворачивания. Без background task
         // iOS обрывает этот запрос, и остановка не ставится.
         let wake = BackgroundWake(completion: nil)
         wake.begin(name: "postman.step-catchup")
         Task {
+            await notifier.refreshAuthorizationStatus()
+            flushDeferredChoicePushes()
             await backgroundRefresh()
             wake.finish()
         }
+    }
+
+    func scheduleNoticesSoon() {
+        noticeTask?.cancel()
+        noticeTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            guard !Task.isCancelled else { return }
+            await refreshNotices()
+        }
+    }
+
+    /// Заранее поставить 1–3 ближайшие остановки и, если сегодня ещё тихо, вечернее напоминание.
+    private func refreshNotices() async {
+        if notifier.knownAuth == nil {
+            await notifier.refreshAuthorizationStatus()
+        }
+        guard progress.onboardingDone else { return }
+        guard ReminderPreference.allowsPosting(known: notifier.knownAuth) else {
+            wakeScheduled = 0
+            notifier.cancelAheadAndDaily()
+            return
+        }
+        let worldNow = chapter.startStep + engine.currentStep
+        let stops = engine.upcomingStops(limit: 24).map {
+            NoticePlan.Stop(id: $0.id, worldStep: chapter.startStep + $0.step, place: $0.place, isChoice: $0.isChoice)
+        }
+        let planned = NoticePlan.items(stops: stops, currentWorldStep: worldNow, posted: postedBeatIDs,
+                                       ratePerHour: steps.stepsPerHour)
+        wakeScheduled = planned.count
+        notifier.replaceAhead(planned)
+        let now = Date()
+        let hour = Calendar.current.component(.hour, from: now)
+        let minute = Calendar.current.component(.minute, from: now)
+        let daily = NoticePlan.dailyShouldSchedule(remindersOn: true, walkedToday: steps.todaySteps > 0,
+                                                   openedToday: ForegroundDay.openedToday(now), hour: hour, minute: minute)
+        notifier.setDailyReminder(enabled: daily)
     }
 
     /// Неотвеченные выборы, которые игрок видел в приложении и ушёл — пуш с кнопками на локскрин.
@@ -302,11 +371,29 @@ enum BackgroundWakeNote {
     static let postedKey = "postman.backgroundWake.posted"
     static let dateKey = "postman.backgroundWake.date"
 
-    static func record(steps: Int, posted: Int, at date: Date) {
+    static let scheduledKey = "postman.backgroundWake.scheduled"
+    static let protectedKey = "postman.backgroundWake.protected"
+    static let logKey = "postman.backgroundWake.log"
+
+    static func record(steps: Int, posted: Int, scheduled: Int = 0, protected: Bool = false, at date: Date) {
         let defaults = UserDefaults.standard
         defaults.set(steps, forKey: stepsKey)
         defaults.set(posted, forKey: postedKey)
+        defaults.set(scheduled, forKey: scheduledKey)
+        defaults.set(protected, forKey: protectedKey)
         defaults.set(date, forKey: dateKey)
+        #if DEBUG
+        var log = defaults.array(forKey: logKey) as? [[String: Any]] ?? []
+        log.append([
+            "at": date.timeIntervalSince1970,
+            "steps": steps,
+            "posted": posted,
+            "scheduled": scheduled,
+            "protected": protected
+        ])
+        if log.count > 20 { log.removeFirst(log.count - 20) }
+        defaults.set(log, forKey: logKey)
+        #endif
     }
 
     static var summary: (steps: Int, posted: Int, date: Date)? {

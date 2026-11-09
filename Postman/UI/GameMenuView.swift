@@ -456,10 +456,12 @@ struct GameMenuView: View {
             AppCore.shared.notifier.cancelPending()
         case .setOn:
             ReminderPreference.setOn(true)
+            AppCore.shared.scheduleNoticesSoon()
         case .request:
             let granted = await AppCore.shared.notifier.requestAuthorization()
             ReminderPreference.setOn(granted)
             await refreshAuth()
+            if granted { AppCore.shared.scheduleNoticesSoon() }
         case .openSettings:
             openSettings()
         }

@@ -301,6 +301,33 @@ final class ChapterEngine: ObservableObject {
 
     private func isDone(_ stop: Stop) -> Bool { state.doneEvents.contains(stop.key) }
 
+    /// Ближайшие ещё не пройденные остановки этой главы. Шаг — местный, мир считает AppCore.
+    struct RoadStop {
+        var id: String
+        var step: Int
+        var place: String
+        var isChoice: Bool
+    }
+
+    func upcomingStops(limit: Int) -> [RoadStop] {
+        var found: [RoadStop] = []
+        for stop in timeline where stop.step > currentStep && !isDone(stop) {
+            let place: String
+            let choice: Bool
+            switch stop.kind {
+            case .arrival(_, let name, _):
+                place = name
+                choice = false
+            case .event(let event):
+                place = settlementName(event.settlement)
+                choice = event.type == .choice
+            }
+            found.append(RoadStop(id: stop.key, step: stop.step, place: place, isChoice: choice))
+            if found.count >= limit { break }
+        }
+        return found
+    }
+
     /// Пора ли почтальону решить самому: следующая остановка уже наступила или прошло timeoutSteps.
     private func shouldAutoResolve(after index: Int, step: Int) -> Bool {
         switch choiceMode {

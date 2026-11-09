@@ -20,6 +20,8 @@ LOCATION_WHEN_IN_USE = ("A rough location is only for the weather in the Valley:
                         "where you are, it rains or snows on the postman too. Precise coordinates are not used "
                         "and are not stored.")
 HEALTH_UPDATE = "The game does not write anything to Health."
+MOTION = ("The postman walks when you do. The game reads your steps from Motion and Fitness "
+          "so the road can move even while the phone is locked. The data stays on this device.")
 
 def oid(key):
     return hashlib.md5(key.encode("utf-8")).hexdigest()[:24].upper()
@@ -180,6 +182,7 @@ target_common = {
     "INFOPLIST_KEY_LSApplicationCategoryType": "public.app-category.games",
     "INFOPLIST_KEY_NSHealthShareUsageDescription": HEALTH_SHARE,
     "INFOPLIST_KEY_NSHealthUpdateUsageDescription": HEALTH_UPDATE,
+    "INFOPLIST_KEY_NSMotionUsageDescription": MOTION,
     "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription": LOCATION_WHEN_IN_USE,
     "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "YES",
     "INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents": "YES",

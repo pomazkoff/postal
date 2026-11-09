@@ -160,6 +160,11 @@
 "notify.ifQuiet" = "%@ (если промолчишь — так)";
 "notify.test.title" = "Почтальон";
 "notify.test.body" = "Тестовый пуш. Если видишь это — уведомления доходят.";
+"notify.ahead.title" = "Почтальон";
+"notify.ahead.body" = "Почтальон подходит к %@. Остановка ещё впереди.";
+"notify.ahead.place" = "следующей остановке";
+"notify.daily.title" = "Почтальон ждёт";
+"notify.daily.body" = "Сегодня почтальон ещё не выходил на дорогу. Прогулка сдвинет его с места.";
 
 "engine.mode.notify" = "пуш, потом сам";
 "engine.mode.auto" = "почтальон сам";

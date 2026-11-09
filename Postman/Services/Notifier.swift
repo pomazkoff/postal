@@ -80,7 +80,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.categoryIdentifier = Self.choicePrefix + choiceEventID
             content.userInfo = ["event": choiceEventID]
         }
-        let request = UNNotificationRequest(identifier: "beat." + id, content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: NoticePlan.immediatePrefix + id, content: content, trigger: nil)
         center.add(request) { error in
             #if DEBUG
             if let error { print("Notifier: \(error.localizedDescription)") }
@@ -106,9 +106,86 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    /// Ближайшие остановки, до которых ещё идти. Тот же идентификатор заменяется, лишние снимаются.
+    /// Текст не говорит, что остановка уже случилась: темп — оценка.
+    func replaceAhead(_ items: [NoticePlan.Item]) {
+        let keeping = Set(items.map(\.identifier))
+        center.getPendingNotificationRequests { [weak self] pending in
+            guard let self else { return }
+            let stale = NoticePlan.staleIdentifiers(pending: pending.map(\.identifier), keeping: keeping)
+            if !stale.isEmpty {
+                self.center.removePendingNotificationRequests(withIdentifiers: stale)
+            }
+        }
+        center.getDeliveredNotifications { [weak self] delivered in
+            guard let self else { return }
+            let stale = NoticePlan.staleIdentifiers(pending: delivered.map(\.request.identifier), keeping: keeping)
+            if !stale.isEmpty {
+                self.center.removeDeliveredNotifications(withIdentifiers: stale)
+            }
+        }
+        for item in items {
+            let content = UNMutableNotificationContent()
+            let place = item.place.isEmpty ? L10n.text("notify.ahead.place") : item.place
+            content.title = L10n.text("notify.ahead.title")
+            content.body = L10n.format("notify.ahead.body", place)
+            content.sound = nil
+            content.threadIdentifier = Self.thread
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: item.after, repeats: false)
+            let request = UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger)
+            center.add(request) { error in
+                #if DEBUG
+                if let error { print("Notifier ahead: \(error.localizedDescription)") }
+                #endif
+            }
+        }
+    }
+
+    func cancelAhead(id: String) {
+        let identifier = NoticePlan.aheadPrefix + id
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+        center.removeDeliveredNotifications(withIdentifiers: [identifier])
+    }
+
+    func cancelAheadAndDaily() {
+        center.getPendingNotificationRequests { [weak self] pending in
+            guard let self else { return }
+            let ids = pending.map(\.identifier).filter {
+                $0.hasPrefix(NoticePlan.aheadPrefix) || $0 == NoticePlan.dailyID
+            }
+            if !ids.isEmpty {
+                self.center.removePendingNotificationRequests(withIdentifiers: ids)
+            }
+        }
+    }
+
+    /// Мягкое напоминание в 18:00, если сегодня ещё не ходили и игру не открывали.
+    func setDailyReminder(enabled: Bool) {
+        if !enabled {
+            center.removePendingNotificationRequests(withIdentifiers: [NoticePlan.dailyID])
+            return
+        }
+        let content = UNMutableNotificationContent()
+        content.title = L10n.text("notify.daily.title")
+        content.body = L10n.text("notify.daily.body")
+        content.sound = nil
+        content.threadIdentifier = Self.thread
+        var parts = DateComponents()
+        parts.hour = NoticePlan.dailyHour
+        parts.minute = 0
+        let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: true)
+        let request = UNNotificationRequest(identifier: NoticePlan.dailyID, content: content, trigger: trigger)
+        center.add(request) { error in
+            #if DEBUG
+            if let error { print("Notifier daily: \(error.localizedDescription)") }
+            #endif
+        }
+    }
+
     /// Пуш выбора больше не актуален (ответили в приложении / почтальон решил сам).
     func withdraw(id: String) {
-        center.removeDeliveredNotifications(withIdentifiers: ["beat." + id])
+        center.removeDeliveredNotifications(withIdentifiers: [NoticePlan.immediatePrefix + id])
+        cancelAhead(id: id)
     }
 
     /// Сброс истории: убрать и показанные, и запланированные пуши, обнулить бейдж.
