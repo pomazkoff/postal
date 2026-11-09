@@ -169,8 +169,10 @@ engine = (ROOT / "Postman/App/ChapterEngine.swift").read_text(encoding="utf-8")
 view = (ROOT / "Postman/UI/BagScreen.swift").read_text(encoding="utf-8")
 if "freeSlots" in engine:
     fail("pickup still refuses mail when the bag is full")
-if "prefix(4)" in view or "bag.used" in view or "bag.pocket" in view:
-    fail("the bag still hides items or talks about pockets and a slot limit")
+if "prefix(4)" in view or "prefix(3)" in view or "bag.used" in view or "bag.pocket" in view or "Ink.chalk" in view:
+    fail("the bag still hides items, counts slots, or writes chalk names on three compartments")
+if 'name: "shelf"' not in view and 'place("shelf"' not in view:
+    fail("the bag is no longer the wooden shelves")
 if "needsSorting: Bool { false }" not in engine:
     fail("the morning choice can still block the road")
 body = src.split("static func handoff", 1)[1].split("static func pickupEvent", 1)[0]
@@ -196,10 +198,24 @@ if '"id": "animal_cat_stamp"' in ch1 and '"art": "form"' in ch1.split('"id": "an
     fail("the brass stamp still uses the requisition picture")
 arts = {
     "note_gar": "env_plain",
-    "animal_raven_scrap": "att_wrapper_yellow",
-    "animal_dog_horn": "pin_red",
+    "animal_raven_scrap": "find_cloth",
+    "animal_dog_horn": "find_horn",
     "l9": "card_telegram",
 }
+if '"art": "find_stamp"' not in ch1.split('"id": "animal_cat_stamp"', 1)[1][:400]:
+    fail("the brass stamp has no picture of its own")
+form_items = []
+for story in (ch1, ch2):
+    parts = story.split('"art": "form"')
+    form_items.append(len(parts) - 1)
+if form_items != [1, 0]:
+    fail(f"the requisition picture is reused: {form_items}")
+ui = (ROOT / "Postman/GameAssets/UI/ui_ch1.json").read_text(encoding="utf-8")
+for name in ("find_cloth", "find_horn", "find_stamp"):
+    if f'"image": "UI/ch1/{name}"' not in ui:
+        fail(f"{name} is not in the UI catalog")
+    if not (ROOT / f"Postman/GameAssets/UI/ch1/{name}.png").exists():
+        fail(f"missing picture {name}")
 for name, art in arts.items():
     chunk = ch2.split(f'"id": "{name}"', 1)[1][:500]
     if f'"art": "{art}"' not in chunk:

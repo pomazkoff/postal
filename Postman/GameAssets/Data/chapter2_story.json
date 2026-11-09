@@ -300,7 +300,7 @@
       "settlement": "sedlo",
       "from": "Ворон",
       "senderSettlement": "sedlo",
-      "art": "att_wrapper_yellow",
+      "art": "find_cloth",
       "stick": "stick_plain",
       "initial": "onRoad",
       "text": "Маленький обрывок выцветшей оранжевой ткани. Ворон принёс его в обмен на блестящую пуговицу. Ни надписей, ни меток."
@@ -314,7 +314,7 @@
       "settlement": "penki",
       "from": "Пёс Пеньки",
       "senderSettlement": "penki",
-      "art": "pin_red",
+      "art": "find_horn",
       "stick": "stick_plain",
       "initial": "leftBehind",
       "text": "Маленький ржавый рупор, набитый опилками. Пёс выскреб его у края лесосеки. Приложишь к уху — тишина."

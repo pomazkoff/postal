@@ -34,7 +34,7 @@
 "bag.slots" = "в сумке %lld %@";
 "bag.used" = "занято %lld из %lld";
 "bag.a11y" = "Сумка, %lld %@";
-"bag.withYou" = "вся почта с собой";
+"bag.withYou" = "с собой";
 "bag.mail" = "Почта";
 "bag.mail.empty" = "Сдавать пока нечего.";
 "bag.personal" = "Личные вещи";

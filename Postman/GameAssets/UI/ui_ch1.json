@@ -749,6 +749,57 @@
      246
     ]
    }
+  },
+  "find_cloth": {
+   "image": "UI/ch1/find_cloth",
+   "width": 281,
+   "height": 278,
+   "anchors": {
+    "bottom": [
+     121.5,
+     244
+    ],
+    "body": [
+     24,
+     77,
+     195,
+     167
+    ]
+   }
+  },
+  "find_horn": {
+   "image": "UI/ch1/find_horn",
+   "width": 295,
+   "height": 278,
+   "anchors": {
+    "bottom": [
+     147.5,
+     254
+    ],
+    "body": [
+     24,
+     24,
+     247,
+     230
+    ]
+   }
+  },
+  "find_stamp": {
+   "image": "UI/ch1/find_stamp",
+   "width": 276,
+   "height": 278,
+   "anchors": {
+    "bottom": [
+     138.5,
+     230
+    ],
+    "body": [
+     31,
+     24,
+     215,
+     206
+    ]
+   }
   }
  },
  "layout": {

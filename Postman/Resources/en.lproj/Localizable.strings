@@ -34,7 +34,7 @@
 "bag.slots" = "%lld %@ in the bag";
 "bag.used" = "%lld of %lld taken";
 "bag.a11y" = "Bag, %lld %@";
-"bag.withYou" = "all the mail is with you";
+"bag.withYou" = "with you";
 "bag.mail" = "Mail";
 "bag.mail.empty" = "Nothing to hand over yet.";
 "bag.personal" = "Personal things";
