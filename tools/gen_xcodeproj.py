@@ -3,7 +3,10 @@
 
 Сканирует Postman/**/*.swift, поэтому после добавления файлов достаточно перезапустить:
     python3 tools/gen_xcodeproj.py
-ID объектов детерминированы (md5 от ключа), 24 hex-символа.
+ID объектов детерминированы (md5 от ключа, 24 hex). Если усечение уже занято,
+ключ солится и считается заново: в файл не записывается повтор. ID нельзя
+вписывать руками — последовательность A1B2… совпала с MapAtlas и Xcode
+открыл проект как повреждённый.
 Альтернатива — XcodeGen: `xcodegen generate` по project.yml (результат эквивалентен).
 """
 import hashlib, os, re
@@ -23,8 +26,14 @@ HEALTH_UPDATE = "The game does not write anything to Health."
 MOTION = ("The postman walks when you do. The game reads your steps from Motion and Fitness "
           "so the road can move even while the phone is locked. The data stays on this device.")
 
-def oid(key):
-    return hashlib.md5(key.encode("utf-8")).hexdigest()[:24].upper()
+def object_id(key, used):
+    """24 hex. Первый кандидат — md5(key)[:24]. Занятый ID не переиспользуется."""
+    for n in range(1024):
+        material = key if n == 0 else f"{key}\0{n}"
+        i = hashlib.md5(material.encode("utf-8")).hexdigest()[:24].upper()
+        if i not in used:
+            return i
+    raise SystemExit(f"could not allocate a unique id for {key}")
 
 SAFE = re.compile(r"^[A-Za-z0-9_./]+$")
 def q(v):
@@ -48,8 +57,7 @@ assert config_files == ["App.xcconfig"], config_files
 
 objs = {}    # id -> (isa, body-lines, comment)
 def add(key, isa, fields, comment):
-    i = oid(key)
-    assert i not in objs, f"duplicate id for {key}"
+    i = object_id(key, objs)
     objs[i] = (isa, fields, comment)
     return i
 
@@ -292,24 +300,38 @@ for sec in SECTIONS:
             out.append("\t\t};")
     out.append(f"/* End {sec} section */")
 out += ["\t};", f"\trootObject = {project} /* Project object */;", "}", ""]
+pbx_text = "\n".join(out)
 
-os.makedirs(os.path.join(PROJ, "project.xcworkspace"), exist_ok=True)
-with open(os.path.join(PROJ, "project.pbxproj"), "w", encoding="utf-8") as fh:
-    fh.write("\n".join(out))
-with open(os.path.join(PROJ, "project.xcworkspace", "contents.xcworkspacedata"), "w", encoding="utf-8") as fh:
-    fh.write('<?xml version="1.0" encoding="UTF-8"?>\n<Workspace\n   version = "1.0">\n   <FileRef\n      location = "self:">\n   </FileRef>\n</Workspace>\n')
+defined = re.findall(r"(?m)^\t\t([0-9A-F]{24})(?: /\* .*? \*/)? = \{", pbx_text)
+if len(defined) != len(set(defined)) or len(defined) != len(objs):
+    raise SystemExit("refusing to write project.pbxproj: object IDs are not unique")
+for i, (isa, fields, _comment) in objs.items():
+    if isa != "PBXBuildFile":
+        continue
+    ref = dict(fields).get("fileRef")
+    rid = ref[0] if isinstance(ref, tuple) else ref
+    target = objs.get(rid)
+    if not target or target[0] not in ("PBXFileReference", "PBXVariantGroup"):
+        raise SystemExit(f"refusing to write project.pbxproj: {i} fileRef is not a file reference")
 
-# shared scheme
-scheme_dir = os.path.join(PROJ, "xcshareddata", "xcschemes")
-os.makedirs(scheme_dir, exist_ok=True)
-br = f'''            <BuildableReference
+def write_project():
+    os.makedirs(os.path.join(PROJ, "project.xcworkspace"), exist_ok=True)
+    with open(os.path.join(PROJ, "project.pbxproj"), "w", encoding="utf-8") as fh:
+        fh.write(pbx_text)
+    with open(os.path.join(PROJ, "project.xcworkspace", "contents.xcworkspacedata"), "w", encoding="utf-8") as fh:
+        fh.write('<?xml version="1.0" encoding="UTF-8"?>\n<Workspace\n   version = "1.0">\n   <FileRef\n      location = "self:">\n   </FileRef>\n</Workspace>\n')
+
+    # shared scheme
+    scheme_dir = os.path.join(PROJ, "xcshareddata", "xcschemes")
+    os.makedirs(scheme_dir, exist_ok=True)
+    br = f'''            <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "{target}"
                BuildableName = "Postman.app"
                BlueprintName = "{TARGET}"
                ReferencedContainer = "container:Postman.xcodeproj">
             </BuildableReference>'''
-scheme = f'''<?xml version="1.0" encoding="UTF-8"?>
+    scheme = f'''<?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1500"
    version = "1.7">
@@ -369,6 +391,9 @@ scheme = f'''<?xml version="1.0" encoding="UTF-8"?>
    </ArchiveAction>
 </Scheme>
 '''
-with open(os.path.join(scheme_dir, "Postman.xcscheme"), "w", encoding="utf-8") as fh:
-    fh.write(scheme)
-print("objects:", len(objs), "swift files:", sum(len(v) for v in swift.values()))
+    with open(os.path.join(scheme_dir, "Postman.xcscheme"), "w", encoding="utf-8") as fh:
+        fh.write(scheme)
+    print("objects:", len(objs), "swift files:", sum(len(v) for v in swift.values()))
+
+if __name__ == "__main__":
+    write_project()

@@ -19,8 +19,8 @@
 		23783578EC5F807833C169B3 /* Readability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AEAB53B608D371261AE59C /* Readability.swift */; };
 		35F6638AAEE7FBC6DD1A8354 /* SoundPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0253CBE75D3425E9E6DB79A /* SoundPlayback.swift */; };
 		3884C56B8AC92F51B8B5796B /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF2DC5B072EF65B3CD01CED /* Notifier.swift */; };
-		B2C3D4E5F60718293A4B5C6D /* PedometerStepSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* PedometerStepSource.swift */; };
-		D4E5F60718293A4B5C6D7E8F /* NoticePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* NoticePlan.swift */; };
+		41CDE024326E67C7BA51E3EC /* PedometerStepSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0763163214DE75A18C54531 /* PedometerStepSource.swift */; };
+		AC41FAA5423736AA5FE8FE3D /* NoticePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3332FD48B2A24D92A7C2BC3C /* NoticePlan.swift */; };
 		3ECEE587C991A3CDCED80ABE /* LetterScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBF04F23550F1DC8B0FC245 /* LetterScreen.swift */; };
 		3EEF2B0AD8A2BD0F98C5F9F5 /* RigConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677061F7742A708C8D8FAE40 /* RigConfig.swift */; };
 		423C4117C274B5656E156F1D /* HealthKitStepSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BDB7EAF4EEA8702C6DB10D /* HealthKitStepSource.swift */; };
@@ -89,8 +89,8 @@
 		4F5D1667197C441C632DFCB2 /* FirstMailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMailCard.swift; sourceTree = "<group>"; };
 		50123FB0218AE853B0BD21FB /* StoryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryConfig.swift; sourceTree = "<group>"; };
 		5336BA7D2076FF02953FF4A6 /* AppCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCore.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5C /* PedometerStepSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerStepSource.swift; sourceTree = "<group>"; };
-		C3D4E5F60718293A4B5C6D7E /* NoticePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticePlan.swift; sourceTree = "<group>"; };
+		F0763163214DE75A18C54531 /* PedometerStepSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerStepSource.swift; sourceTree = "<group>"; };
+		3332FD48B2A24D92A7C2BC3C /* NoticePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticePlan.swift; sourceTree = "<group>"; };
 		62C0D773131DA627EA8747FD /* ProgressStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStore.swift; sourceTree = "<group>"; };
 		63C893839AA8275E5759B3CF /* HUDLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDLayout.swift; sourceTree = "<group>"; };
 		65F2D7ADC62827D6B3D25970 /* StoryCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCards.swift; sourceTree = "<group>"; };
@@ -203,7 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				D4BDB7EAF4EEA8702C6DB10D /* HealthKitStepSource.swift */,
-				A1B2C3D4E5F60718293A4B5C /* PedometerStepSource.swift */,
+				F0763163214DE75A18C54531 /* PedometerStepSource.swift */,
 				9FF2DC5B072EF65B3CD01CED /* Notifier.swift */,
 				62C0D773131DA627EA8747FD /* ProgressStore.swift */,
 				C0253CBE75D3425E9E6DB79A /* SoundPlayback.swift */,
@@ -261,7 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				5336BA7D2076FF02953FF4A6 /* AppCore.swift */,
-				C3D4E5F60718293A4B5C6D7E /* NoticePlan.swift */,
+				3332FD48B2A24D92A7C2BC3C /* NoticePlan.swift */,
 				783EC7CAE7D0D0D827FDEDBF /* AppDelegate.swift */,
 				AFBDCEC2B8919802C364ECCC /* AppInfo.swift */,
 				8D74947F0E37B01A06C42C05 /* AudioMix.swift */,
@@ -372,8 +372,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5ACB753E7D7C31256B365022 /* AppCore.swift in Sources */,
-				D4E5F60718293A4B5C6D7E8F /* NoticePlan.swift in Sources */,
-				B2C3D4E5F60718293A4B5C6D /* PedometerStepSource.swift in Sources */,
+				AC41FAA5423736AA5FE8FE3D /* NoticePlan.swift in Sources */,
+				41CDE024326E67C7BA51E3EC /* PedometerStepSource.swift in Sources */,
 				017CC6F86454321D6D579F43 /* AppDelegate.swift in Sources */,
 				75C4F2E7F9271B156EC1D679 /* AppInfo.swift in Sources */,
 				D6984BA4CC1C410598B48EA2 /* AudioMix.swift in Sources */,
