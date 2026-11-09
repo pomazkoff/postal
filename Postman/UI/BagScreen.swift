@@ -18,6 +18,7 @@ struct BagScreen: View {
     private let titleHole = CGPoint(x: 585, y: 210)
 
     var body: some View {
+        // Затемнение прозрачное: под полками и сумкой продолжается та же локация, что на дороге.
         FrameScreen(dim: 0.66) { m in
             ZStack {
                 Color.clear.contentShape(Rectangle())

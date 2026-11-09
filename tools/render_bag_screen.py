@@ -239,26 +239,61 @@ def dim(image):
     return Image.alpha_composite(image, veil)
 
 
-def valley():
-    ridges = Image.open(ROOT / "Postman/GameAssets/Chapter1/places/bg_far_ridges_tile.png").convert("RGBA")
-    fields = Image.open(ROOT / "Postman/GameAssets/Chapter1/places/bg_mid_fields_tile.png").convert("RGBA")
-    place = Image.open(ROOT / "Postman/GameAssets/Chapter1/places/place_pochta_main.png").convert("RGBA")
-    sky = Image.new("RGBA", (W, H), (58, 110, 112, 255))
-    sky.paste(ridges.resize((W, 900), Image.Resampling.LANCZOS), (0, 80), ridges.resize((W, 900), Image.Resampling.LANCZOS))
-    sky.paste(fields.resize((W, 700), Image.Resampling.LANCZOS), (0, 620), fields.resize((W, 700), Image.Resampling.LANCZOS))
-    ph = 980
-    pw = int(place.width * ph / place.height)
-    place = place.resize((pw, ph), Image.Resampling.LANCZOS)
-    sky.paste(place, ((W - pw) // 2, 280), place)
+def earth_color(image):
+    px = image.load()
+    width, height = image.size
+    for y in range(height - 1, int(height * 0.45), -4):
+        colors = [px[x, y][:3] for x in range(0, width, 12) if px[x, y][3] > 210]
+        if len(colors) > width / 24:
+            return tuple(sum(c[i] for c in colors) // len(colors) for i in range(3))
+    return (150, 124, 92)
+
+
+def fit_width(image, width):
+    height = max(1, int(image.height * width / image.width))
+    return image.resize((width, height), Image.Resampling.LANCZOS)
+
+
+def scatter(canvas, folder, names, spots):
+    ready = [folder / name for name in names if (folder / name).exists()]
+    for index, (x, foot) in enumerate(spots):
+        if not ready:
+            return
+        prop = Image.open(ready[index % len(ready)]).convert("RGBA")
+        prop.thumbnail((240, 240), Image.Resampling.LANCZOS)
+        canvas.paste(prop, (x, foot - prop.height), prop)
+
+
+def location_backdrop(chapter):
+    places = ROOT / f"Postman/GameAssets/Chapter{chapter}/places"
+    foreground = ROOT / f"Postman/GameAssets/Chapter{chapter}/foreground"
+    fields = Image.open(places / "bg_mid_fields_tile.png").convert("RGBA")
+    ridges = Image.open(places / "bg_far_ridges_tile.png").convert("RGBA")
+    canvas = Image.new("RGBA", (W, H), earth_color(fields) + (255,))
+    ridges_s = fit_width(ridges, W + 60)
+    canvas.paste(ridges_s, (-30, 0), ridges_s)
+    # Сам холст локации доходит до низа кадра: низ картинки — земля под сумкой.
+    fields_h = H - 280
+    fields_s = fields.resize((max(W, int(fields.width * fields_h / fields.height)), fields_h), Image.Resampling.LANCZOS)
+    if fields_s.width > W:
+        left = (fields_s.width - W) // 2
+        fields_s = fields_s.crop((left, 0, left + W, fields_h))
+    canvas.paste(fields_s, (0, 280), fields_s)
+    place_name = "place_pochta_main.png" if chapter == 1 else "place_penki_main.png"
+    place = Image.open(places / place_name).convert("RGBA")
+    ph = 860
+    place = place.resize((int(place.width * ph / place.height), ph), Image.Resampling.LANCZOS)
+    canvas.paste(place, ((W - place.width) // 2, 240), place)
+    if chapter == 1:
+        names = ["fg_grass_a.png", "fg_grass_b.png", "fg_fern.png", "fg_dill.png"]
+    else:
+        names = ["fg_fern_needles.png", "fg_fir_paw.png", "fg_boulder.png", "fg_reeds.png"]
+    scatter(canvas, foreground, names, [
+        (20, 1680), (980, 1740), (70, 2140), (860, 2200), (1040, 2420), (180, 2460), (620, 2480),
+    ])
     watch, _ = load_art_path(ROOT / "Postman/GameAssets/UI/watch_collapsed.png", (311, 645))
-    sky.paste(watch, (507, 0), watch)
-    return dim(sky)
-
-
-def penki_shot():
-    shot = Image.open("/home/ubuntu/.cursor/projects/agent-repos-POSTAL/assets/bag_chapter2_t410.png").convert("RGBA")
-    # Кадр макета вписан в скрин почти целиком. Кладём UI в макет, потом масштабируем на скрин.
-    return shot
+    canvas.paste(watch, (507, 0), watch)
+    return dim(canvas)
 
 
 def load_art_path(path, size):
@@ -312,27 +347,27 @@ def main():
         copy = strings(code)
         mail1 = [item(ch1, code, copy, 1, i) for i in ("l3", "l4", "l5", "l6", "batteries")]
         personal1 = [item(ch1, code, copy, 1, "animal_cat_stamp")]
-        base = valley()
+        base = location_backdrop(1)
         frame, notes = draw_ui(base, mail1, personal1, copy, scroll=0)
         label = "OFFLINE composite, not a simulator frame" if code == "en" else "ОФЛАЙН-склейка, не кадр симулятора"
         save(banner(frame, label), f"bag_ch1_{code}.jpg", notes)
-        frame, notes = draw_ui(valley(), mail1, personal1, copy, scroll=1100)
+        frame, notes = draw_ui(location_backdrop(1), mail1, personal1, copy, scroll=1100)
         save(banner(frame, label + " · scroll"), f"bag_ch1_{code}_scroll.jpg", notes)
 
         mail2 = [item(ch2, code, copy, 2, i) for i in ("l3", "l4", "l5", "l6", "l7", "l8", "note_gar", "l9")]
         personal2 = [item(ch2, code, copy, 2, i) for i in ("animal_raven_scrap", "animal_dog_horn")]
-        frame, notes = draw_ui(valley(), mail2, personal2, copy, scroll=0)
+        frame, notes = draw_ui(location_backdrop(2), mail2, personal2, copy, scroll=0)
         save(banner(frame, label), f"bag_ch2_{code}.jpg", notes)
-        frame, notes = draw_ui(valley(), mail2, personal2, copy, scroll=1160)
+        frame, notes = draw_ui(location_backdrop(2), mail2, personal2, copy, scroll=1160)
         save(banner(frame, label + " · scroll"), f"bag_ch2_{code}_scroll.jpg", notes)
 
     # Середина главы 2 у Пеньков: записка и две находки, без чужих бланков.
     copy = strings("ru")
     mail = [item(ch2, "ru", copy, 2, "note_gar")]
     personal = [item(ch2, "ru", copy, 2, i) for i in ("animal_raven_scrap", "animal_dog_horn")]
-    frame, notes = draw_ui(valley(), mail, personal, copy, scroll=0)
+    frame, notes = draw_ui(location_backdrop(2), mail, personal, copy, scroll=0)
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки"), "bag_ch2_penki_ru.jpg", notes)
-    frame, notes = draw_ui(valley(), mail, personal, copy, scroll=640)
+    frame, notes = draw_ui(location_backdrop(2), mail, personal, copy, scroll=640)
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки, прокрутка"), "bag_ch2_penki_ru_scroll.jpg", notes)
 
 
