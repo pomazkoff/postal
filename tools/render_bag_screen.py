@@ -128,13 +128,21 @@ def tag_image(line1, line2, scale=0.9):
 
 
 def section_image(title):
-    image, entry = load_art("tag_small")
+    """Та же бирка и тот же кегль для «Почта» и «Личные вещи», без ужатия длинной строки."""
+    scale = 0.8
+    image, entry = load_art("tag")
+    image = image.resize((int(entry["width"] * scale), int(entry["height"] * scale)), Image.Resampling.LANCZOS)
     draw = ImageDraw.Draw(image)
-    w = entry["anchors"]["textWidth"][0]
-    y = (entry["anchors"]["line1"][1] + entry["anchors"]["line2"][1]) / 2
-    face, _ = fit(draw, title, "YesevaOne.ttf", w, 46, 18)
-    draw.text((entry["anchors"]["line1"][0], y), title, font=face, fill=(69, 46, 28, 255), anchor="mm")
-    return image, tuple(entry["anchors"]["hole"])
+    w = entry["anchors"]["textWidth"][0] * scale
+    y = (entry["anchors"]["line1"][1] + entry["anchors"]["line2"][1]) / 2 * scale
+    size = 32 * scale
+    face = font("YesevaOne.ttf", size)
+    width = draw.textlength(title, font=face)
+    if width > w:
+        raise SystemExit(f"section title does not fit: {title!r} {width:.0f} > {w:.0f}")
+    draw.text((entry["anchors"]["line1"][0] * scale, y), title, font=face, fill=(69, 46, 28, 255), anchor="mm")
+    hole = (entry["anchors"]["hole"][0] * scale, entry["anchors"]["hole"][1] * scale)
+    return image, hole
 
 
 def draw_ui(base, mail, personal, copy, scroll=0):
@@ -160,16 +168,16 @@ def draw_ui(base, mail, personal, copy, scroll=0):
     ]
     for title, items, empty, on_left in groups:
         sprite, hole = section_image(title)
-        at = (210 if on_left else 585, y + 96)
+        at = (210 if on_left else 585, y + 120)
         scroll_layer, box = paste(scroll_layer, sprite, hole, at, angle=-3 if on_left else 2)
         boxes.append((title, box))
-        y += 170
+        y += 250
         pairs = [(None, None)] if not items else [
             (items[i], items[i + 1] if i + 1 < len(items) else None) for i in range(0, len(items), 2)
         ]
         for left, right in pairs:
             image, entry = load_art("shelf")
-            scroll_layer, box = paste(scroll_layer, image, (0, 0), (2, y + 56))
+            scroll_layer, box = paste(scroll_layer, image, (0, 0), (2, y + 36))
             boxes.append(("shelf", box))
             slots = [(left, 290, 175, -4)]
             if items:
@@ -177,7 +185,7 @@ def draw_ui(base, mail, personal, copy, scroll=0):
             for item, cx, tx, angle in slots:
                 if item is None and not items:
                     sprite, hole, tsize = tag_image(empty, "", 0.9)
-                    scroll_layer, box = paste(scroll_layer, sprite, hole, (tx, y + 196), angle=angle)
+                    scroll_layer, box = paste(scroll_layer, sprite, hole, (tx, y + 150), angle=angle)
                     boxes.append(("empty", box))
                     continue
                 if item is None:
@@ -185,17 +193,17 @@ def draw_ui(base, mail, personal, copy, scroll=0):
                 image, entry = load_art(item["art"])
                 anchor = body_anchor(entry, "bottom")
                 scale = min(0.82, 200 / entry["height"])
-                scroll_layer, box = paste(scroll_layer, image, anchor, (cx, y + 84), scale, angle * 0.4)
+                scroll_layer, box = paste(scroll_layer, image, anchor, (cx, y + 64), scale, angle * 0.4)
                 boxes.append((item["id"], box))
                 sprite, hole, tsize = tag_image(item["line1"], item["line2"], 0.9)
-                at = (tx, y + 196)
+                at = (tx, y + 150)
                 scroll_layer, box = paste(scroll_layer, sprite, hole, at, angle=angle)
                 boxes.append((item["id"] + " tag", box))
                 nail, nentry = load_art("nail")
                 scroll_layer, _ = paste(scroll_layer, nail, body_anchor(nentry, "center"), at, 0.85)
                 if tsize < 15:
                     notes.append(f"{item['id']} text {tsize:.0f}px: {item['line2']}")
-            y += 440
+            y += 390
     band = scroll_layer.crop((0, SCROLL_TOP, W, SCROLL_TOP + SCROLL_H))
     base.paste(band, (0, SCROLL_TOP), band)
     # кожаная сумка без меловых имён
@@ -308,14 +316,14 @@ def main():
         frame, notes = draw_ui(base, mail1, personal1, copy, scroll=0)
         label = "OFFLINE composite, not a simulator frame" if code == "en" else "ОФЛАЙН-склейка, не кадр симулятора"
         save(banner(frame, label), f"bag_ch1_{code}.jpg", notes)
-        frame, notes = draw_ui(valley(), mail1, personal1, copy, scroll=900)
+        frame, notes = draw_ui(valley(), mail1, personal1, copy, scroll=1100)
         save(banner(frame, label + " · scroll"), f"bag_ch1_{code}_scroll.jpg", notes)
 
         mail2 = [item(ch2, code, copy, 2, i) for i in ("l3", "l4", "l5", "l6", "l7", "l8", "note_gar", "l9")]
         personal2 = [item(ch2, code, copy, 2, i) for i in ("animal_raven_scrap", "animal_dog_horn")]
         frame, notes = draw_ui(valley(), mail2, personal2, copy, scroll=0)
         save(banner(frame, label), f"bag_ch2_{code}.jpg", notes)
-        frame, notes = draw_ui(valley(), mail2, personal2, copy, scroll=1400)
+        frame, notes = draw_ui(valley(), mail2, personal2, copy, scroll=1160)
         save(banner(frame, label + " · scroll"), f"bag_ch2_{code}_scroll.jpg", notes)
 
     # Середина главы 2 у Пеньков: записка и две находки, без чужих бланков.
@@ -324,7 +332,7 @@ def main():
     personal = [item(ch2, "ru", copy, 2, i) for i in ("animal_raven_scrap", "animal_dog_horn")]
     frame, notes = draw_ui(valley(), mail, personal, copy, scroll=0)
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки"), "bag_ch2_penki_ru.jpg", notes)
-    frame, notes = draw_ui(valley(), mail, personal, copy, scroll=520)
+    frame, notes = draw_ui(valley(), mail, personal, copy, scroll=640)
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки, прокрутка"), "bag_ch2_penki_ru_scroll.jpg", notes)
 
 

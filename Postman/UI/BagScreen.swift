@@ -86,38 +86,41 @@ struct BagScreen: View {
         }
     }
 
+    /// Одна и та же бирка и один размер букв. «Личные вещи» и Personal things входят целиком.
     private func sectionTag(_ title: String, onLeft: Bool, m: FrameMapper) -> some View {
-        let e = UIArt.entry("tag_small")
+        let e = UIArt.entry("tag")
         let hole = e.anchor("hole")
-        let f = m.scale
+        let tagScale: CGFloat = 0.8
+        let f = m.scale * tagScale
         let x = onLeft ? 210.0 : 585.0
+        let y = 120.0
         return ZStack {
-            ArtView(name: "tag_small", k: f) { entry, scale in
+            ArtView(name: "tag", k: m.scale, scale: tagScale) { entry, scale in
                 let top = entry.anchor("line1")
                 let bottom = entry.anchor("line2")
                 Text(title)
-                    .font(Ink.title(46 * scale))
+                    .font(Ink.title(32 * scale))
                     .foregroundStyle(Ink.brown)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+                    .minimumScaleFactor(1)
                     .frame(width: entry.value("textWidth") * scale)
                     .position(x: top.x * scale, y: (top.y + bottom.y) / 2 * scale)
             }
             .pinned(size: CGSize(width: e.width * f, height: e.height * f),
                     anchor: CGPoint(x: hole.x * f, y: hole.y * f),
-                    at: CGPoint(x: m.length(x), y: m.length(96)), rotation: onLeft ? -3 : 2)
-            place("nail", m: m, at: CGPoint(x: x, y: 96), scale: 0.8)
+                    at: CGPoint(x: m.length(x), y: m.length(y)), rotation: onLeft ? -3 : 2)
+            place("nail", m: m, at: CGPoint(x: x, y: y), scale: 0.8)
         }
-        .frame(width: m.length(1170), height: m.length(170))
+        .frame(width: m.length(1170), height: m.length(250))
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 
     private func shelf(_ left: StoryConfig.Item?, _ right: StoryConfig.Item?, empty: String?, m: FrameMapper) -> some View {
-        let height = 440.0
-        let shelfY = 56.0
+        let height = 390.0
+        let shelfY = 36.0
         let baseY = shelfY + 28
-        let tagY = shelfY + 140
+        let tagY = shelfY + 114
         return ZStack(alignment: .topLeading) {
             Color.clear
             place("shelf", m: m, anchor: "origin", at: CGPoint(x: 2, y: shelfY))
