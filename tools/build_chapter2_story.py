@@ -116,7 +116,7 @@ items = [
      "settlement": "gar", "from": "Лесник", "senderSettlement": "gar",
      "art": "env_plain", "stick": "stick_plain", "initial": "onRoad",
      "reader": {"paper": "sheet", "font": "hand", "envelope": None, "address": [],
-                "attachment": None, "attachmentCaption": "не сюжетное — в ящик НИИ вместе с почтой Веры"},
+                "attachment": None, "attachmentCaption": "в будку на Хомуте, с почтой вниз"},
      "text": "Кадушкам. Жив. Калитку чиню. Чаю мало. Если оказия — соли пришлите. Л."},
 ]
 
@@ -151,7 +151,7 @@ events = [
                line("Лесник", "Чаю мало. Керосин есть. Садись."),
                line("", "Две кружки. Вторая качается.", "")]},
     {"id": "p_note_gar", "step": 2850, "type": "pickup", "settlement": "gar", "resident": "lesnik", "item": "note_gar",
-     "lines": [line("Лесник", "В ящик НИИ положи, с Вереной почтой. Не сюжет — просто весточка.", "inPocket:note_gar"),
+     "lines": [line("Лесник", "В будку на Хомуте положи, с почтой вниз. Просто весточка.", "inPocket:note_gar"),
                line("Лесник", "Ну, как знаешь.", "")]},
     {"id": "arrive_penki", "step": 6500, "type": "scene", "settlement": "penki", "resident": "brigadir",
      "title": "Лесосека «Пеньки»",
@@ -274,7 +274,7 @@ residents = [
 fates = [
     {"settlement": "sedlo", "if": "inBag:l1", "text": "Письмо Тимофея из мешка ещё в сумке — Нине через Веру не ушло."},
     {"settlement": "sedlo", "if": "delivered:l1", "text": "Письмо Тимофея оставлено «для нижних» / ушло с Верой."},
-    {"settlement": "gar", "if": "inPocket:note_gar", "text": "Записка лесника с собой — к ящику НИИ."},
+    {"settlement": "gar", "if": "inPocket:note_gar", "text": "Записка лесника с собой — в будку на Хомуте."},
     {"settlement": "khomut", "if": "flag:khomut_ok", "text": "Хомут пройден темпом."},
     {"settlement": "khomut", "if": "flag:khomut_detour", "text": "Хомут обойдён низом — писем на обходе нет."},
     {"settlement": "krivulya", "if": "inPocket:l9", "text": "Телеграмма Пимена: лампа погасла в 02:40."},

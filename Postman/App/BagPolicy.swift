@@ -29,18 +29,42 @@ enum BagPolicy {
         return .personal
     }
 
-    /// Событие, на котором вещь уже должна покинуть сумку. nil — находка, её не вручают.
-    static func handoff(chapter: Int, id: String) -> String? {
+    struct Drop: Equatable {
+        var event: String
+        var step: Int
+    }
+
+    /// Куда письмо можно сдать, от ближней точки к дальней. Первая точка всегда строго после подбора.
+    /// Если её уже прошли, годится следующая, которая ещё впереди. Находки сюда не входят.
+    static func drops(chapter: Int, id: String) -> [Drop] {
         switch (chapter, id) {
-        case (1, "l1"): return "d_l1"
-        case (1, "l2"): return "d_l2"
-        case (1, "l3"), (1, "l7"): return "finale"
-        case (1, "l4"), (1, "l5"), (1, "batteries"): return "d_vera"
-        case (1, "l6"): return "d_l6"
-        case (2, "l1"), (2, "l2"): return "s_nii_drop"
-        case (2, "l3"), (2, "l4"), (2, "l5"), (2, "l6"), (2, "l7"), (2, "l8"), (2, "note_gar"): return "finale"
-        default: return nil
+        case (1, "l1"): return [Drop(event: "d_l1", step: 2900)]
+        case (1, "l2"): return [Drop(event: "d_l2", step: 6000)]
+        case (1, "l3"), (1, "l7"): return [Drop(event: "finale", step: 20000)]
+        case (1, "l4"), (1, "l5"), (1, "batteries"): return [Drop(event: "d_vera", step: 13200)]
+        case (1, "l6"): return [Drop(event: "d_l6", step: 9100)]
+        case (2, "l1"), (2, "l2"):
+            return [Drop(event: "s_nii_drop", step: 400),
+                    Drop(event: "e_khomut", step: 11000),
+                    Drop(event: "finale", step: 25000)]
+        case (2, "note_gar"), (2, "l3"), (2, "l4"), (2, "l5"):
+            return [Drop(event: "e_khomut", step: 11000),
+                    Drop(event: "finale", step: 25000)]
+        case (2, "l6"), (2, "l7"), (2, "l8"):
+            return [Drop(event: "finale", step: 25000)]
+        default:
+            return []
         }
+    }
+
+    /// Ближняя сдача. nil — находка или письмо, которое читают на месте.
+    static func handoff(chapter: Int, id: String) -> String? {
+        drops(chapter: chapter, id: id).first?.event
+    }
+
+    /// Сдача, которая ещё впереди игрока. Пройденную точку не называем.
+    static func ahead(chapter: Int, id: String, playerStep: Int) -> Drop? {
+        drops(chapter: chapter, id: id).first { $0.step > playerStep }
     }
 
     static func pickupEvent(chapter: Int, id: String) -> String? {
@@ -66,11 +90,25 @@ enum BagPolicy {
     }
 
     static func actionKey(chapter: Int, id: String) -> String {
-        "bag.act.\(chapter).\(id)"
+        actionKey(chapter: chapter, id: id, playerStep: -1)
+    }
+
+    /// Бирка называет ту сдачу, которая ещё впереди. Если ближнюю уже прошли, берётся следующая.
+    static func actionKey(chapter: Int, id: String, playerStep: Int) -> String {
+        let list = drops(chapter: chapter, id: id)
+        if let active = list.first(where: { $0.step > playerStep }), active.event != list.first?.event {
+            return "bag.act.drop.\(chapter).\(active.event)"
+        }
+        return "bag.act.\(chapter).\(id)"
     }
 
     /// Ключ одной строки в журнал, когда уже пройденная точка наконец забирает почту из старого сейва.
+    /// У «finale» в ключе остаётся имя события: по нему журнал находит шаг. Текст зависит от главы.
     static func passedNoteKey(trigger: String) -> String { "bag.handoff.\(trigger)" }
+
+    static func passedNoteTextKey(chapter: Int, trigger: String) -> String {
+        trigger == "finale" ? "bag.handoff.\(chapter).finale" : passedNoteKey(trigger: trigger)
+    }
 
     private static let carried: Set<String> = ["inBag", "inPocket"]
     private static let closed: Set<String> = ["delivered", "sent", "read", "lostWind"]
@@ -108,14 +146,16 @@ enum BagPolicy {
             if recovered { logs.append("bag.recovered") }
         }
 
-        for trigger in snap.done where !settled.contains(trigger) {
-            var moved = false
-            for (id, status) in items where handoff(chapter: chapter, id: id) == trigger && carried.contains(status) {
-                items[id] = closeStatus(chapter: chapter, id: id)
-                moved = true
-            }
+        var movedAt: Set<String> = []
+        for (id, status) in items where carried.contains(status) {
+            guard let hit = drops(chapter: chapter, id: id).first(where: { snap.done.contains($0.event) }) else { continue }
+            guard !settled.contains(hit.event) else { continue }
+            items[id] = closeStatus(chapter: chapter, id: id)
+            movedAt.insert(hit.event)
+        }
+        for trigger in snap.done.sorted() where !settled.contains(trigger) {
             settled.insert(trigger)
-            if moved { logs.append(passedNoteKey(trigger: trigger)) }
+            if movedAt.contains(trigger) { logs.append(passedNoteKey(trigger: trigger)) }
         }
 
         return Change(items: items, sortingDone: sorting, settled: settled, logs: logs)

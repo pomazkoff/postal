@@ -50,7 +50,10 @@
 "bag.chapter.kept" = "The valley mail stays with this chapter: what was handed over has been handed over. The mountains have another bag, and each tag says where that piece goes.";
 "bag.handoff.title" = "Mail handed over";
 "bag.handoff.s_nii_drop" = "The letters for the lower valley are in the Institute box. Vera will take them on Thursday.";
-"bag.handoff.finale" = "The rest of the mail for Vera is in the Institute box.";
+"bag.handoff.finale" = "The rest of the mail was left at the Throat, where the path drops away.";
+"bag.handoff.1.finale" = "The letter was put in the box at the Saddle.";
+"bag.handoff.2.finale" = "The rest of the mail was left at the Throat, where the path drops away.";
+"bag.handoff.e_khomut" = "The mail for the lower valley was left in the hut at the Collar.";
 "bag.handoff.p_l9" = "The telegram has been read.";
 "bag.handoff.d_l1" = "The letter was handed over at the Stilts.";
 "bag.handoff.d_l2" = "The letter was handed over at the Belfry.";
@@ -66,14 +69,16 @@
 "bag.act.1.batteries" = "Take them to the Institute";
 "bag.act.2.l1" = "Leave in the Institute box; Vera will take it";
 "bag.act.2.l2" = "Leave in the Institute box; Vera will take it";
-"bag.act.2.l3" = "Leave in the Institute box";
-"bag.act.2.l4" = "Leave in the Institute box; Vera will take it";
-"bag.act.2.l5" = "Leave in the Institute box; Vera will take it";
-"bag.act.2.l6" = "Leave in the Institute box";
-"bag.act.2.l7" = "Leave in the Institute box; Vera will take it";
-"bag.act.2.l8" = "Leave in the Institute box";
-"bag.act.2.note_gar" = "Leave in the Institute box; Vera will take it";
+"bag.act.2.l3" = "Leave it in the hut at the Collar";
+"bag.act.2.l4" = "Leave it in the hut at the Collar";
+"bag.act.2.l5" = "Leave it in the hut at the Collar";
+"bag.act.2.l6" = "Carry it to the Throat";
+"bag.act.2.l7" = "Carry it to the Throat";
+"bag.act.2.l8" = "Carry it to the Throat";
+"bag.act.2.note_gar" = "Leave it in the hut at the Collar";
 "bag.act.2.l9" = "Read";
+"bag.act.drop.2.e_khomut" = "Leave it in the hut at the Collar";
+"bag.act.drop.2.finale" = "Carry it to the Throat";
 
 "hud.map" = "Map";
 "hud.postman.left" = "The postman is off to the left — go back to him";

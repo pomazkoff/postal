@@ -1008,7 +1008,7 @@
           "place": "the ranger's note",
           "from": "Ranger",
           "address": [],
-          "attachmentCaption": "into the Institute box, with Vera's mail",
+          "attachmentCaption": "into the hut at the Collar, with the mail going down",
           "text": "To the Tubs. Alive. Mending the gate. Short on tea. If someone is passing — send salt. L."
         },
         "animal_raven_scrap": {
@@ -1135,7 +1135,7 @@
           "lines": [
             {
               "who": "Ranger",
-              "text": "Put it in the Institute box, with Vera's mail. Just a word."
+              "text": "Put it in the hut at the Collar, with the mail going down. Just a word."
             },
             {
               "who": "Ranger",
@@ -1428,7 +1428,7 @@
       "fates": {
         "sedlo|inBag:l1": "Timofey's letter from the sack is still in the bag — it did not go to Nina by way of Vera.",
         "sedlo|delivered:l1": "Timofey's letter was left “for down below” / went with Vera.",
-        "gar|inPocket:note_gar": "The ranger's note is with you — for the Institute box.",
+        "gar|inPocket:note_gar": "The ranger's note is with you — for the hut at the Collar.",
         "krivulya|read:l9": "Pimen's telegram has been read.",
         "khomut|flag:khomut_ok": "The Collar was crossed at pace.",
         "khomut|flag:khomut_detour": "The Collar was gone around below — no letters on the detour.",

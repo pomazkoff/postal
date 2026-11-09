@@ -122,7 +122,9 @@ final class ChapterEngine: ObservableObject {
             let trigger = key.hasPrefix("bag.handoff.") ? String(key.dropFirst("bag.handoff.".count)) : ""
             let event = story.event(trigger)
             let place = event.map { settlementName($0.settlement) }
-            loaded.log.append(LogEntry(step: event?.step ?? 0, text: L10n.text(key), kind: "handoff",
+            let textKey = key.hasPrefix("bag.handoff.")
+                ? BagPolicy.passedNoteTextKey(chapter: story.chapter, trigger: trigger) : key
+            loaded.log.append(LogEntry(step: event?.step ?? 0, text: L10n.text(textKey), kind: "handoff",
                                        place: place, title: title))
         }
         if loaded.version < 2 {
@@ -372,6 +374,9 @@ final class ChapterEngine: ObservableObject {
                 changed = true
             }
         }
+        let beforeSweep = state.items
+        sweepPassedMail()
+        if state.items != beforeSweep { changed = true }
         if changed { commit() }
     }
 
@@ -475,7 +480,7 @@ final class ChapterEngine: ObservableObject {
         var settled = state.settledHandoffs ?? []
         guard !settled.contains(trigger) else { return }
         var moved: [String] = []
-        for item in story.items where BagPolicy.handoff(chapter: story.chapter, id: item.id) == trigger {
+        for item in story.items where BagPolicy.drops(chapter: story.chapter, id: item.id).contains(where: { $0.event == trigger }) {
             let s = status(item.id)
             guard s == .inBag || s == .inPocket else { continue }
             state.items[item.id] = ItemStatus(rawValue: BagPolicy.closeStatus(chapter: story.chapter, id: item.id)) ?? .delivered
@@ -484,9 +489,27 @@ final class ChapterEngine: ObservableObject {
         settled.append(trigger)
         state.settledHandoffs = settled
         guard !moved.isEmpty else { return }
-        let place = settlementName(story.event(trigger)?.settlement ?? "")
-        log(LogEntry(step: currentStep, text: L10n.text(BagPolicy.passedNoteKey(trigger: trigger)),
+        let event = story.event(trigger)
+        let place = settlementName(event?.settlement ?? "")
+        log(LogEntry(step: event?.step ?? currentStep,
+                     text: L10n.text(BagPolicy.passedNoteTextKey(chapter: story.chapter, trigger: trigger)),
                      kind: "handoff", place: place, title: L10n.text("bag.handoff.title")))
+    }
+
+    /// Письмо, у которого не осталось точки впереди, не лежит в сумке. Сдача пишется один раз.
+    private func sweepPassedMail() {
+        for item in story.items {
+            let list = BagPolicy.drops(chapter: story.chapter, id: item.id)
+            guard let last = list.last else { continue }
+            guard BagPolicy.ahead(chapter: story.chapter, id: item.id, playerStep: currentStep) == nil else { continue }
+            let s = status(item.id)
+            guard s == .inBag || s == .inPocket else { continue }
+            if state.settledHandoffs?.contains(last.event) == true {
+                state.items[item.id] = ItemStatus(rawValue: BagPolicy.closeStatus(chapter: story.chapter, id: item.id)) ?? .delivered
+            } else {
+                settleCarried(trigger: last.event)
+            }
+        }
     }
 
     private func card(for event: StoryConfig.Event, kind: StoryCard.Kind, items: [String], missed: [String]) -> StoryCard {
@@ -626,6 +649,7 @@ final class ChapterEngine: ObservableObject {
         let place = settlementName(event.settlement)
         log(LogEntry(step: event.step, text: option.result, kind: "choice", place: place,
                      title: event.title, by: chooser.rawValue))
+        settleCarried(trigger: event.id)
         if chooser == .postman {
             // Игрок не ответил: показываем, как решил почтальон (карточка-сцена) и сообщаем пушем.
             let line = option.auto ?? L10n.format("engine.choice.auto", option.label.lowercased())

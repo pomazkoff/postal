@@ -404,6 +404,11 @@ def main():
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки"), "bag_ch2_penki_ru.jpg", notes)
     frame, notes = draw_ui(location_backdrop(2), mail, personal, copy, scroll=640)
     save(banner(frame, "ОФЛАЙН-склейка, не кадр симулятора · Пеньки, прокрутка"), "bag_ch2_penki_ru_scroll.jpg", notes)
+    copy = strings("en")
+    mail = [item(ch2, "en", copy, 2, "note_gar")]
+    personal = [item(ch2, "en", copy, 2, i) for i in ("animal_raven_scrap", "animal_dog_horn")]
+    frame, notes = draw_ui(location_backdrop(2), mail, personal, copy, scroll=0)
+    save(banner(frame, "OFFLINE composite, not a simulator frame · Stumps"), "bag_ch2_penki_en.jpg", notes)
 
 
 def journal_card(code):

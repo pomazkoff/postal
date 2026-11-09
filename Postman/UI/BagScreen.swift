@@ -180,7 +180,7 @@ struct BagScreen: View {
         if let item {
             let personal = BagPolicy.role(id: item.id, kind: item.kind) == .personal
             let line1 = personal ? L10n.text(keepKey(item.id)) : item.to
-            let line2 = personal ? L10n.text("bag.look") : L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id))
+            let line2 = personal ? L10n.text("bag.look") : L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id, playerStep: engine.currentStep))
             place(item.art, m: m, anchor: "bottom", at: CGPoint(x: cx, y: base), scale: itemScale(item.art), rotation: angle * 0.4) {
                 onRead(item.id)
             }
