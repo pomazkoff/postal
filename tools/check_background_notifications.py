@@ -2,8 +2,8 @@
 """Локальные уведомления: заранее поставленные остановки и вечерняя строка.
 
 Факты кода, не отчёт о доставке на конкретный iPhone.
-Открытая игра не ставит баннер на уже видимую остановку. Ближайшие 1–3 точки
-ставятся по темпу ходьбы (UNTimeIntervalNotificationTrigger). Выбор с кнопками —
+Открытая игра не ставит баннер на уже видимую остановку. Одна ближайшая точка
+ставится по темпу ходьбы (UNTimeIntervalNotificationTrigger). Выбор с кнопками —
 только когда остановка уже наступила. Ежедневная строка в 18:00 — календарная
 и повторяется, и только если сегодня ещё не ходили и игру не открывали.
 """
@@ -127,7 +127,7 @@ if "cancelAhead" not in core.split("postedBeatIDs.insert", 1)[1].split("notifier
 
 # Темп и план совпадают с NoticePlan.swift.
 MIN_RATE, MAX_RATE, FALLBACK = 200.0, 6000.0, 800.0
-MIN_WINDOW, MIN_LEAD, MAX_LEAD, HORIZON = 15 * 60, 60.0, 36 * 3600, 3
+MIN_WINDOW, MIN_LEAD, MAX_LEAD, HORIZON = 15 * 60, 60.0, 36 * 3600, 1
 
 
 def rate(steps_n, seconds):
@@ -171,20 +171,55 @@ stops = [
     {"id": "repka", "world": 15500, "choice": False},
     {"id": "later", "world": 24000, "choice": False},
 ]
-# 6679 is already past Пеньки at 6500, so the next three are the pass, Turnip and the one after.
+# Одна остановка. 6679 уже за Пеньками (6500), поэтому это Хомут, не три места сразу.
 picked = select(stops, 6679, {"gone"})
-if [item["id"] for item in picked] != ["khomut", "repka", "later"]:
-    fail(f"the next three non-choice stops were {picked}")
+if [item["id"] for item in picked] != ["khomut"]:
+    fail(f"the single next stop was {picked}")
+if len(picked) != 1:
+    fail("only one ahead notice may be scheduled")
 ids = ["ahead." + item["id"] for item in picked]
-if ids != ["ahead.khomut", "ahead.repka", "ahead.later"]:
+if ids != ["ahead.khomut"]:
     fail("ahead identifiers must stay stable")
-if stale(["ahead.khomut", "ahead.old", "daily.walk", "beat.penki"], set(ids)) != ["ahead.old"]:
+if stale(["ahead.khomut", "ahead.old", "ahead.repka", "daily.walk", "beat.penki"], set(ids)) != ["ahead.old", "ahead.repka"]:
     fail("reschedule must remove only stale ahead requests")
 before = select(stops, 6000, set())
-if [item["id"] for item in before] != ["penki", "khomut", "repka"]:
+if [item["id"] for item in before] != ["penki"]:
     fail(f"before Penki the choice must be skipped, got {before}")
 if any(item["id"] == "penki" for item in select(stops, 6000, {"penki"})):
     fail("a posted stop must not stay scheduled")
+
+if "static let horizon = 1" not in plan:
+    fail("only the nearest stop is scheduled ahead")
+ru = read("Postman/Resources/ru.lproj/Localizable.strings")
+en = read("Postman/Resources/en.lproj/Localizable.strings")
+if "подходит" in ru or "подходит" in notifier or "nearing" in en:
+    fail("an ahead notice must not claim the postman is arriving")
+if "До %@ осталось немного. Прогуляешься?" not in ru:
+    fail("the Russian invitation must use the genitive after До")
+if "It's not far to %@. Fancy a walk?" not in en:
+    fail("the English invitation is missing")
+if "До следующей остановки осталось немного. Прогуляешься?" not in ru:
+    fail("a missing genitive needs the Russian fallback")
+if "notify.ahead.fallback" not in notifier:
+    fail("an empty place must use the fallback sentence")
+
+import json
+world = json.loads(read("Postman/GameAssets/Data/world.json"))
+overlay = json.loads(read("Postman/GameAssets/L10n/en.json"))
+for chapter in world["chapters"]:
+    names = {s["id"]: s for s in chapter["settlements"]}
+    en_sets = overlay["world"]["chapters"][str(chapter["id"])]["settlements"]
+    story = json.loads(read(f"Postman/GameAssets/Data/chapter{chapter['id']}_story.json"))
+    used = {a["settlement"] for a in story.get("arrivals") or []}
+    used |= {e.get("settlement") for e in story["events"] if e.get("settlement")}
+    for sid in sorted(used):
+        row = names.get(sid)
+        if not row or not str(row.get("nameGenitive") or "").strip():
+            fail(f"chapter {chapter['id']} place {sid} has no genitive")
+            continue
+        en_row = en_sets.get(sid) or {}
+        if not str(en_row.get("nameGenitive") or "").strip():
+            fail(f"chapter {chapter['id']} place {sid} has no English form")
 
 
 def daily(on, walked, opened, hour, minute):

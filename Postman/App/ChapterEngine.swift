@@ -67,17 +67,19 @@ final class ChapterEngine: ObservableObject {
 
     private let store: ChapterStateStore
     private let settlementName: (String) -> String
+    private let genitiveByID: [String: String]
     private let gameStartDate: () -> Date?
     private let orderedEvents: [StoryConfig.Event]
     private let timeline: [Stop]
 
-    /// settlements — (id, имя, шаг) из world.json: прибытия стоят перед событиями того же шага.
+    /// settlements — (id, имя, родительный, шаг) из world.json: прибытия стоят перед событиями того же шага.
     init(story: StoryConfig, store: ChapterStateStore = ChapterStateStore(),
-         settlements: [(id: String, name: String, step: Int)] = [],
+         settlements: [(id: String, name: String, genitive: String, step: Int)] = [],
          settlementName: @escaping (String) -> String, gameStartDate: @escaping () -> Date?) {
         self.story = story
         self.store = store
         self.settlementName = settlementName
+        self.genitiveByID = Dictionary(uniqueKeysWithValues: settlements.map { ($0.id, $0.genitive) })
         self.gameStartDate = gameStartDate
         let ordered = story.events.enumerated()
             .sorted { ($0.element.step, $0.offset) < ($1.element.step, $1.offset) }
@@ -306,6 +308,8 @@ final class ChapterEngine: ObservableObject {
         var id: String
         var step: Int
         var place: String
+        /// Родительный для «До …». Пусто, если формы нет: тогда зовём без названия.
+        var genitive: String
         var isChoice: Bool
     }
 
@@ -313,16 +317,19 @@ final class ChapterEngine: ObservableObject {
         var found: [RoadStop] = []
         for stop in timeline where stop.step > currentStep && !isDone(stop) {
             let place: String
+            let genitive: String
             let choice: Bool
             switch stop.kind {
-            case .arrival(_, let name, _):
+            case .arrival(let id, let name, _):
                 place = name
+                genitive = genitiveByID[id] ?? ""
                 choice = false
             case .event(let event):
                 place = settlementName(event.settlement)
+                genitive = genitiveByID[event.settlement] ?? ""
                 choice = event.type == .choice
             }
-            found.append(RoadStop(id: stop.key, step: stop.step, place: place, isChoice: choice))
+            found.append(RoadStop(id: stop.key, step: stop.step, place: place, genitive: genitive, isChoice: choice))
             if found.count >= limit { break }
         }
         return found

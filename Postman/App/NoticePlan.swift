@@ -10,7 +10,7 @@ enum NoticePlan {
     static let minPaceWindow: TimeInterval = 15 * 60
     static let maxLead: TimeInterval = 36 * 3600
     static let minLead: TimeInterval = 60
-    static let horizon = 3
+    static let horizon = 1
     static let aheadPrefix = "ahead."
     static let immediatePrefix = "beat."
     static let dailyID = "daily.walk"
@@ -26,7 +26,8 @@ enum NoticePlan {
     struct Item {
         var id: String
         var identifier: String
-        var place: String
+        /// Форма после «До» (родительный). Пустая строка — безопасная фраза без названия.
+        var genitive: String
         var after: TimeInterval
     }
 
@@ -44,7 +45,7 @@ enum NoticePlan {
         return min(max(seconds, minLead), maxLead)
     }
 
-    /// Ближайшие 1…3 остановки впереди. Уже отправленные и выборы с кнопками пропускаются.
+    /// Одна ближайшая остановка впереди. Уже отправленные и выборы с кнопками пропускаются.
     static func select(stops: [Stop], currentWorldStep: Int, posted: Set<String>) -> [Stop] {
         var chosen: [Stop] = []
         for stop in stops where stop.worldStep > currentWorldStep && !stop.isChoice && !posted.contains(stop.id) {
@@ -58,7 +59,7 @@ enum NoticePlan {
         select(stops: stops, currentWorldStep: currentWorldStep, posted: posted).map { stop in
             Item(id: stop.id,
                  identifier: aheadPrefix + stop.id,
-                 place: stop.place,
+                 genitive: stop.place,
                  after: lead(distance: stop.worldStep - currentWorldStep, ratePerHour: ratePerHour))
         }
     }

@@ -161,8 +161,8 @@
 "notify.test.title" = "Postman";
 "notify.test.body" = "Test notification. If you see this, they get through.";
 "notify.ahead.title" = "The postman";
-"notify.ahead.body" = "The postman is nearing %@. The stop is still ahead.";
-"notify.ahead.place" = "the next stop";
+"notify.ahead.body" = "It's not far to %@. Fancy a walk?";
+"notify.ahead.fallback" = "It's not far to the next stop. Fancy a walk?";
 "notify.daily.title" = "The postman is waiting";
 "notify.daily.body" = "The postman has not set out on the road today. A walk will move him along.";
 

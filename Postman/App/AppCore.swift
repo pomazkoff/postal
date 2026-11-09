@@ -107,7 +107,7 @@ final class AppCore {
         return ChapterEngine(
             story: story,
             store: ChapterStateStore(fileName: "chapter\(chapter.id)_state.json"),
-            settlements: chapter.settlements.map { (id: $0.id, name: $0.name, step: $0.step) },
+            settlements: chapter.settlements.map { (id: $0.id, name: $0.name, genitive: $0.nameGenitive, step: $0.step) },
             settlementName: { id in chapter.settlements.first { $0.id == id }?.name ?? id },
             gameStartDate: { progress.gameStartDate })
     }
@@ -320,7 +320,7 @@ final class AppCore {
         }
     }
 
-    /// Заранее поставить 1–3 ближайшие остановки и, если сегодня ещё тихо, вечернее напоминание.
+    /// Заранее поставить одну ближайшую остановку и, если сегодня ещё тихо, вечернее напоминание.
     private func refreshNotices() async {
         if notifier.knownAuth == nil {
             await notifier.refreshAuthorizationStatus()
@@ -333,7 +333,7 @@ final class AppCore {
         }
         let worldNow = chapter.startStep + engine.currentStep
         let stops = engine.upcomingStops(limit: 24).map {
-            NoticePlan.Stop(id: $0.id, worldStep: chapter.startStep + $0.step, place: $0.place, isChoice: $0.isChoice)
+            NoticePlan.Stop(id: $0.id, worldStep: chapter.startStep + $0.step, place: $0.genitive, isChoice: $0.isChoice)
         }
         let planned = NoticePlan.items(stops: stops, currentWorldStep: worldNow, posted: postedBeatIDs,
                                        ratePerHour: steps.stepsPerHour)

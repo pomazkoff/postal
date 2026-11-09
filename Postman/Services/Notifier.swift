@@ -126,9 +126,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
         for item in items {
             let content = UNMutableNotificationContent()
-            let place = item.place.isEmpty ? L10n.text("notify.ahead.place") : item.place
             content.title = L10n.text("notify.ahead.title")
-            content.body = L10n.format("notify.ahead.body", place)
+            content.body = item.genitive.isEmpty
+                ? L10n.text("notify.ahead.fallback")
+                : L10n.format("notify.ahead.body", item.genitive)
             content.sound = nil
             content.threadIdentifier = Self.thread
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: item.after, repeats: false)
