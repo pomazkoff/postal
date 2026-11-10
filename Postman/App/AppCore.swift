@@ -161,6 +161,7 @@ final class AppCore {
     /// Догнать сюжет до текущих шагов (идемпотентно). При переходе через startStep гл.2 — смена главы.
     func syncEngine(total: Int) {
         guard steps.hasLoaded, progress.onboardingDone else { return }
+        engine.promptsOnScreen = UIApplication.shared.applicationState == .active
         let idx = Self.resolveChapterIndex(world: world, progress: progress, totalSteps: total)
         if progress.forceChapterIndex == nil, idx > chapterIndex {
             // Догоняем каждую пройденную главу до конца; лента при этом не меняется.
@@ -202,11 +203,38 @@ final class AppCore {
         }
         guard ReminderPreference.allowsPosting(known: notifier.knownAuth) else { return }
         guard !postedBeatIDs.contains(beat.id) else { return }
+        if beat.choiceEventID != nil {
+            let aheadID = NoticePlan.aheadPrefix + beat.id
+            let beatID = NoticePlan.immediatePrefix + beat.id
+            let pending = await notifier.pendingIdentifiers()
+            let delivered = await notifier.deliveredIdentifiers()
+            let alreadyOut = pending.contains(aheadID) || delivered.contains(aheadID) || delivered.contains(beatID)
+            if engine.hasPreAnswer(beat.id) || engine.state.choices[beat.id] != nil {
+                notifier.cancelAhead(id: beat.id)
+                rememberPosted(beat.id)
+                return
+            }
+            if alreadyOut {
+                rememberPosted(beat.id)
+                if delivered.contains(aheadID) || delivered.contains(beatID) {
+                    engine.noteChoicePushesFired(identifiers: [aheadID, beatID], at: engine.currentStep)
+                }
+                return
+            }
+        }
         postedBeatIDs.insert(beat.id)
         deferredBeats.removeValue(forKey: beat.id)
         if inBackgroundWake { wakePosts += 1 }
         notifier.cancelAhead(id: beat.id)
         notifier.post(title: beat.title, body: beat.body, id: beat.id, choiceEventID: beat.choiceEventID)
+        if beat.choiceEventID != nil {
+            engine.noteChoicePushesFired(identifiers: [NoticePlan.immediatePrefix + beat.id], at: engine.currentStep)
+        }
+    }
+
+    private func rememberPosted(_ id: String) {
+        postedBeatIDs.insert(id)
+        deferredBeats.removeValue(forKey: id)
     }
 
     /// DEBUG: баннер прямо сейчас, даже если игра открыта.
@@ -281,6 +309,8 @@ final class AppCore {
         wakePosts = 0
         inBackgroundWake = true
         await steps.refresh()
+        let delivered = await notifier.deliveredIdentifiers()
+        engine.noteChoicePushesFired(identifiers: delivered, at: chapterSteps(total: steps.totalSteps))
         syncEngine(total: steps.totalSteps)
         inBackgroundWake = false
         await refreshNotices()
@@ -333,12 +363,19 @@ final class AppCore {
         }
         let worldNow = chapter.startStep + engine.currentStep
         let stops = engine.upcomingStops(limit: 24).map {
-            NoticePlan.Stop(id: $0.id, worldStep: chapter.startStep + $0.step, place: $0.genitive, isChoice: $0.isChoice)
+            NoticePlan.Stop(id: $0.id, worldStep: chapter.startStep + $0.step, place: $0.genitive,
+                            isChoice: $0.isChoice, title: $0.title, body: $0.body)
         }
         let planned = NoticePlan.items(stops: stops, currentWorldStep: worldNow, posted: postedBeatIDs,
                                        ratePerHour: steps.stepsPerHour)
+        for item in planned where item.choice != nil {
+            engine.noteChoicePushScheduled(item.id)
+        }
+        let delivered = await notifier.deliveredIdentifiers()
+        engine.noteChoicePushesFired(identifiers: delivered, at: engine.currentStep)
         wakeScheduled = planned.count
-        notifier.replaceAhead(planned)
+        let retain = Set(engine.unansweredChoiceIDs().map { NoticePlan.aheadPrefix + $0 })
+        notifier.replaceAhead(planned, retain: retain)
         let now = Date()
         let hour = Calendar.current.component(.hour, from: now)
         let minute = Calendar.current.component(.minute, from: now)
@@ -350,8 +387,10 @@ final class AppCore {
     /// Неотвеченные выборы, которые игрок видел в приложении и ушёл — пуш с кнопками на локскрин.
     private func flushDeferredChoicePushes() {
         for beat in deferredBeats.values where beat.choiceEventID != nil {
-            if engine.state.choices[beat.id] == nil {
+            if engine.state.choices[beat.id] == nil && !engine.hasPreAnswer(beat.id) {
                 postBeat(beat)
+            } else {
+                notifier.cancelAhead(id: beat.id)
             }
         }
         deferredBeats.removeAll()

@@ -3,8 +3,8 @@
 
 Факты кода, не отчёт о доставке на конкретный iPhone.
 Открытая игра не ставит баннер на уже видимую остановку. Одна ближайшая точка
-ставится по темпу ходьбы (UNTimeIntervalNotificationTrigger). Выбор с кнопками —
-только когда остановка уже наступила. Ежедневная строка в 18:00 — календарная
+ставится по темпу ходьбы (UNTimeIntervalNotificationTrigger). Если это выбор,
+заранее ставится сам пуш с кнопками. Ежедневная строка в 18:00 — календарная
 и повторяется, и только если сегодня ещё не ходили и игру не открывали.
 """
 from pathlib import Path
@@ -118,8 +118,24 @@ if "ProtectedCatchUp.mark" not in steps or "isProtectedData" not in health:
     fail("a protected Health database must be marked for catch-up, not treated as zero steps")
 if "upcomingStops" not in read("Postman/App/ChapterEngine.swift"):
     fail("the chapter must name the stops still ahead")
-if "isChoice" not in plan or "posted.contains" not in plan:
-    fail("a choice or an already posted stop must not be scheduled ahead")
+select_src = plan.split("static func select", 1)[1].split("static func items", 1)[0]
+if "!stop.isChoice" in select_src or "posted.contains" not in select_src:
+    fail("the nearest stop is scheduled even when it is a choice; an already posted stop is not")
+items_src = plan.split("static func items", 1)[1].split("static func stale", 1)[0]
+if "stop.isChoice" not in items_src or "ChoiceNotice" not in items_src:
+    fail("a scheduled choice must carry the choice push, not the walk invitation")
+ahead = notifier.split("func replaceAhead", 1)[1].split("func cancelAhead", 1)[0]
+if "item.choice" not in ahead or "choicePrefix" not in ahead:
+    fail("the ahead choice must use the choice category and the stop's own words")
+if "notify.ahead.fallback" not in ahead:
+    fail("a non-choice stop still uses the invitation")
+engine = read("Postman/App/ChapterEngine.swift")
+if "preAnswers" not in engine or "choicePushStep" not in engine or "choicePushWaiting" not in engine:
+    fail("a choice answer and the push step must be remembered")
+if "promptsOnScreen" not in engine or "max(step, fired" not in engine:
+    fail("the 400 steps start from the later of the push and the stop")
+if "pendingIdentifiers" not in core or "deliveredIdentifiers" not in core or "alreadyOut" not in core:
+    fail("a reached choice must not post a second push when one is already pending or delivered")
 if "staleIdentifiers" not in plan or "replaceAhead" not in notifier:
     fail("rescheduling must drop stale ahead requests")
 if "cancelAhead" not in core.split("postedBeatIDs.insert", 1)[1].split("notifier.post", 1)[0]:
@@ -144,12 +160,45 @@ def lead(distance, per_hour):
 def select(stops, now, posted):
     chosen = []
     for stop in stops:
-        if stop["world"] <= now or stop["choice"] or stop["id"] in posted:
+        if stop["world"] <= now or stop["id"] in posted:
             continue
         chosen.append(stop)
         if len(chosen) == HORIZON:
             break
     return chosen
+
+
+def notice_kind(stop):
+    return "choice" if stop["choice"] else "invite"
+
+
+def on_tap(current, stop_step, already):
+    if already:
+        return "ignore"
+    if current < stop_step:
+        return "preanswer"
+    return "apply"
+
+
+def apply_at_reach(preanswer, default):
+    return preanswer if preanswer else default
+
+
+def timeout_due(current, stop_step, push_step, waiting, on_screen, timeout=400):
+    """400 шагов от более позднего из пуша и остановки. Пока пуш только поставлен — часы молчат."""
+    clock = on_screen or push_step is not None or not waiting
+    if not clock:
+        return False
+    armed = max(stop_step, stop_step if push_step is None else push_step)
+    return current >= armed + timeout
+
+
+def wake_post(pending, delivered, answered):
+    if answered:
+        return "cancel"
+    if pending or delivered:
+        return "skip"
+    return "post"
 
 
 def stale(pending, keeping):
@@ -184,9 +233,36 @@ if stale(["ahead.khomut", "ahead.old", "ahead.repka", "daily.walk", "beat.penki"
     fail("reschedule must remove only stale ahead requests")
 before = select(stops, 6000, set())
 if [item["id"] for item in before] != ["penki"]:
-    fail(f"before Penki the choice must be skipped, got {before}")
+    fail(f"past the choice, the next stop was {before}")
+if notice_kind(before[0]) != "invite":
+    fail("a plain stop stays an invitation")
+early = select(stops, 200, set())
+if [item["id"] for item in early] != ["choice"] or notice_kind(early[0]) != "choice":
+    fail(f"the nearest choice must be the one scheduled push, got {early}")
 if any(item["id"] == "penki" for item in select(stops, 6000, {"penki"})):
     fail("a posted stop must not stay scheduled")
+
+if on_tap(100, 400, False) != "preanswer" or on_tap(400, 400, False) != "apply":
+    fail("a tap before the stop is stored, and a tap at the stop is applied")
+if on_tap(500, 400, True) != "ignore":
+    fail("an answer after the postman has chosen is ignored")
+if apply_at_reach("shelter", "burst") != "shelter":
+    fail("a stored answer replaces the automatic choice when the stop is reached")
+if apply_at_reach(None, "burst") != "burst":
+    fail("with no stored answer the postman still chooses")
+# Пуш раньше остановки: 400 шагов от остановки. Пуш позже: от пуша.
+if timeout_due(11399, 11000, 10000, False, False) or not timeout_due(11400, 11000, 10000, False, False):
+    fail("an early choice push still leaves 400 steps after the stop")
+if timeout_due(11599, 11000, 11200, False, False) or not timeout_due(11600, 11000, 11200, False, False):
+    fail("a late choice push starts the 400 steps when it is shown")
+if timeout_due(11400, 11000, None, True, False):
+    fail("a choice push that has not been shown yet must not expire at the stop")
+if not timeout_due(11400, 11000, None, False, False):
+    fail("with no scheduled push the 400 steps still start at the stop")
+if wake_post(True, False, False) != "skip" or wake_post(False, True, False) != "skip":
+    fail("a pending or already shown choice push must not be posted again")
+if wake_post(True, False, True) != "cancel" or wake_post(False, False, False) != "post":
+    fail("an answered choice cancels its pending push, and a missing one is posted at the stop")
 
 if "static let horizon = 1" not in plan:
     fail("only the nearest stop is scheduled ahead")

@@ -1,8 +1,8 @@
 import Foundation
 
 /// Чистый план локальных уведомлений. Время остановки заранее неизвестно,
-/// поэтому ближайшие точки ставятся по темпу ходьбы, а не по календарю сюжета.
-/// Выбор с кнопками сюда не входит: его можно поставить только когда остановка уже наступила.
+/// поэтому ближайшая точка ставится по темпу ходьбы, а не по календарю сюжета.
+/// Если эта точка — выбор, заранее ставится сам пуш с кнопками, а не приглашение пройтись.
 enum NoticePlan {
     static let minStepsPerHour = 200.0
     static let maxStepsPerHour = 6000.0
@@ -21,6 +21,16 @@ enum NoticePlan {
         var worldStep: Int
         var place: String
         var isChoice: Bool
+        /// Заголовок и текст пуша выбора. Для обычной остановки пустые.
+        var title: String
+        var body: String
+    }
+
+    /// Тот же пуш, что поставился бы при наступлении выбора: категория и свои строки.
+    struct ChoiceNotice {
+        var eventID: String
+        var title: String
+        var body: String
     }
 
     struct Item {
@@ -29,6 +39,7 @@ enum NoticePlan {
         /// Форма после «До» (родительный). Пустая строка — безопасная фраза без названия.
         var genitive: String
         var after: TimeInterval
+        var choice: ChoiceNotice?
     }
 
     /// Шагов в час по недавнему окну. Короткое или пустое окно — спокойный запасной темп.
@@ -45,10 +56,11 @@ enum NoticePlan {
         return min(max(seconds, minLead), maxLead)
     }
 
-    /// Одна ближайшая остановка впереди. Уже отправленные и выборы с кнопками пропускаются.
+    /// Одна ближайшая остановка впереди. Уже отправленные пропускаются. Выбор не пропускается:
+    /// если он ближайший, ставится именно он.
     static func select(stops: [Stop], currentWorldStep: Int, posted: Set<String>) -> [Stop] {
         var chosen: [Stop] = []
-        for stop in stops where stop.worldStep > currentWorldStep && !stop.isChoice && !posted.contains(stop.id) {
+        for stop in stops where stop.worldStep > currentWorldStep && !posted.contains(stop.id) {
             chosen.append(stop)
             if chosen.count == horizon { break }
         }
@@ -57,10 +69,14 @@ enum NoticePlan {
 
     static func items(stops: [Stop], currentWorldStep: Int, posted: Set<String>, ratePerHour: Double) -> [Item] {
         select(stops: stops, currentWorldStep: currentWorldStep, posted: posted).map { stop in
-            Item(id: stop.id,
-                 identifier: aheadPrefix + stop.id,
-                 genitive: stop.place,
-                 after: lead(distance: stop.worldStep - currentWorldStep, ratePerHour: ratePerHour))
+            let choice = stop.isChoice
+                ? ChoiceNotice(eventID: stop.id, title: stop.title, body: stop.body)
+                : nil
+            return Item(id: stop.id,
+                        identifier: aheadPrefix + stop.id,
+                        genitive: stop.place,
+                        after: lead(distance: stop.worldStep - currentWorldStep, ratePerHour: ratePerHour),
+                        choice: choice)
         }
     }
 

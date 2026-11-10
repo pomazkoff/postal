@@ -106,10 +106,27 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    func pendingIdentifiers() async -> Set<String> {
+        await withCheckedContinuation { continuation in
+            center.getPendingNotificationRequests { requests in
+                continuation.resume(returning: Set(requests.map(\.identifier)))
+            }
+        }
+    }
+
+    func deliveredIdentifiers() async -> Set<String> {
+        await withCheckedContinuation { continuation in
+            center.getDeliveredNotifications { notes in
+                continuation.resume(returning: Set(notes.map(\.request.identifier)))
+            }
+        }
+    }
+
     /// Ближайшие остановки, до которых ещё идти. Тот же идентификатор заменяется, лишние снимаются.
-    /// Текст не говорит, что остановка уже случилась: темп — оценка.
-    func replaceAhead(_ items: [NoticePlan.Item]) {
-        let keeping = Set(items.map(\.identifier))
+    /// Обычная остановка зовёт пройтись. Выбор ставит свои кнопки и свой текст.
+    /// `retain` — уже поставленный пуш выбора, который ещё не отвечен: его не снимаем как устаревший.
+    func replaceAhead(_ items: [NoticePlan.Item], retain: Set<String> = []) {
+        let keeping = Set(items.map(\.identifier)).union(retain)
         center.getPendingNotificationRequests { [weak self] pending in
             guard let self else { return }
             let stale = NoticePlan.staleIdentifiers(pending: pending.map(\.identifier), keeping: keeping)
@@ -126,10 +143,17 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
         for item in items {
             let content = UNMutableNotificationContent()
-            content.title = L10n.text("notify.ahead.title")
-            content.body = item.genitive.isEmpty
-                ? L10n.text("notify.ahead.fallback")
-                : L10n.format("notify.ahead.body", item.genitive)
+            if let choice = item.choice {
+                content.title = choice.title
+                content.body = choice.body.isEmpty ? choice.title : choice.body
+                content.categoryIdentifier = Self.choicePrefix + choice.eventID
+                content.userInfo = ["event": choice.eventID]
+            } else {
+                content.title = L10n.text("notify.ahead.title")
+                content.body = item.genitive.isEmpty
+                    ? L10n.text("notify.ahead.fallback")
+                    : L10n.format("notify.ahead.body", item.genitive)
+            }
             content.sound = nil
             content.threadIdentifier = Self.thread
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: item.after, repeats: false)

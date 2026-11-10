@@ -311,6 +311,9 @@ final class ChapterEngine: ObservableObject {
         /// Родительный для «До …». Пусто, если формы нет: тогда зовём без названия.
         var genitive: String
         var isChoice: Bool
+        /// Заголовок и тело пуша выбора — те же, что поставились бы в момент остановки.
+        var title: String
+        var body: String
     }
 
     func upcomingStops(limit: Int) -> [RoadStop] {
@@ -319,29 +322,96 @@ final class ChapterEngine: ObservableObject {
             let place: String
             let genitive: String
             let choice: Bool
+            let title: String
+            let body: String
             switch stop.kind {
             case .arrival(let id, let name, _):
                 place = name
                 genitive = genitiveByID[id] ?? ""
                 choice = false
+                title = ""
+                body = ""
             case .event(let event):
                 place = settlementName(event.settlement)
                 genitive = genitiveByID[event.settlement] ?? ""
                 choice = event.type == .choice
+                title = choice ? (event.title ?? place) : ""
+                body = choice ? (pushLine(event) ?? event.text ?? "") : ""
             }
-            found.append(RoadStop(id: stop.key, step: stop.step, place: place, genitive: genitive, isChoice: choice))
+            found.append(RoadStop(id: stop.key, step: stop.step, place: place, genitive: genitive,
+                                  isChoice: choice, title: title, body: body))
             if found.count >= limit { break }
         }
         return found
     }
 
+    /// Игра на экране: выбор виден карточкой, и 400 шагов идут от остановки, не от пуша.
+    var promptsOnScreen = false
+
+    func hasPreAnswer(_ id: String) -> Bool { state.preAnswers?[id] != nil }
+
+    /// Выбор ещё на экране или в очереди карточек и ответа нет.
+    func unansweredChoiceIDs() -> [String] {
+        state.pendingCards.filter { $0.kind == .choice && state.choices[$0.id] == nil }.map(\.id)
+    }
+
+    /// Заранее поставленный пуш выбора. Пока он не показан, таймаут от шага остановки не идёт.
+    func noteChoicePushScheduled(_ id: String) {
+        guard state.choicePushStep?[id] == nil else { return }
+        var waiting = state.choicePushWaiting ?? []
+        guard !waiting.contains(id) else { return }
+        waiting.append(id)
+        state.choicePushWaiting = waiting
+        commit()
+    }
+
+    /// Пуш уже в центре уведомлений. Первый замеченный шаг не сдвигается вперёд.
+    func noteChoicePushesFired(identifiers: Set<String>, at step: Int) {
+        var fired = state.choicePushStep ?? [:]
+        var waiting = state.choicePushWaiting ?? []
+        var changed = false
+        for raw in identifiers {
+            let id: String
+            if raw.hasPrefix(NoticePlan.aheadPrefix) {
+                id = String(raw.dropFirst(NoticePlan.aheadPrefix.count))
+            } else if raw.hasPrefix(NoticePlan.immediatePrefix) {
+                id = String(raw.dropFirst(NoticePlan.immediatePrefix.count))
+            } else {
+                continue
+            }
+            guard story.event(id)?.type == .choice else { continue }
+            if fired[id] == nil {
+                fired[id] = step
+                changed = true
+            }
+            if let index = waiting.firstIndex(of: id) {
+                waiting.remove(at: index)
+                changed = true
+            }
+        }
+        guard changed else { return }
+        state.choicePushStep = fired
+        state.choicePushWaiting = waiting
+        commit()
+    }
+
     /// Пора ли почтальону решить самому: следующая остановка уже наступила или прошло timeoutSteps.
+    /// 400 шагов считаются от более позднего из шага остановки и шага, когда пуш уже показан.
+    /// Пока заранее поставленный пуш ещё не показан и игра не на экране, эти 400 шагов не идут.
     private func shouldAutoResolve(after index: Int, step: Int) -> Bool {
         switch choiceMode {
         case .wait: return false
         case .auto: return true
         case .notifyThenAuto:
-            if currentStep >= step + choiceTimeoutSteps { return true }
+            let eventID: String? = {
+                if case .event(let event) = timeline[index].kind { return event.id }
+                return nil
+            }()
+            let fired = eventID.flatMap { state.choicePushStep?[$0] }
+            let waiting = eventID.map { (state.choicePushWaiting ?? []).contains($0) } ?? false
+            let clockOpen = promptsOnScreen || fired != nil || !waiting
+            let armed = max(step, fired ?? step)
+            if clockOpen, currentStep >= armed + choiceTimeoutSteps { return true }
             let next = timeline[(index + 1)...].first { !isDone($0) }
             return (next?.step ?? Int.max) <= currentStep
         }
@@ -385,6 +455,12 @@ final class ChapterEngine: ObservableObject {
                             log(LogEntry(step: event.step, text: fallback, kind: "scene", place: place, title: event.title))
                             beat(id: event.id, title: place, body: pushLine(event) ?? fallback)
                         }
+                        changed = true
+                        continue loop
+                    }
+                    if let picked = state.preAnswers?[event.id],
+                       let option = event.options?.first(where: { $0.id == picked }) {
+                        applyChoice(event, option, by: .player)
                         changed = true
                         continue loop
                     }
@@ -658,8 +734,16 @@ final class ChapterEngine: ObservableObject {
     func resolveChoice(_ eventID: String, option optionID: String, by chooser: Chooser = .player) -> String? {
         guard let event = story.event(eventID), event.type == .choice,
               !state.doneEvents.contains(eventID),
-              (event.step <= currentStep || state.pendingCards.contains { $0.id == eventID && $0.kind == .choice }),
               let option = event.options?.first(where: { $0.id == optionID }) else { return nil }
+        // Ещё не дошли: запоминаем ответ и применяем на остановке, вместо автовыбора.
+        if !(event.step <= currentStep || state.pendingCards.contains { $0.id == eventID && $0.kind == .choice }) {
+            var answers = state.preAnswers ?? [:]
+            answers[eventID] = option.id
+            state.preAnswers = answers
+            commit()
+            return nil
+        }
+        guard event.step <= currentStep || state.pendingCards.contains(where: { $0.id == eventID && $0.kind == .choice }) else { return nil }
         guard check(event.requires) else {
             state.pendingCards.removeAll { $0.id == eventID }
             commit()
@@ -680,6 +764,12 @@ final class ChapterEngine: ObservableObject {
         setChooser(event.id, chooser)
         state.doneEvents.insert(event.id)
         state.pendingCards.removeAll { $0.id == event.id }
+        var answers = state.preAnswers ?? [:]
+        answers.removeValue(forKey: event.id)
+        state.preAnswers = answers
+        var waiting = state.choicePushWaiting ?? []
+        waiting.removeAll { $0 == event.id }
+        state.choicePushWaiting = waiting
         let place = settlementName(event.settlement)
         log(LogEntry(step: event.step, text: option.result, kind: "choice", place: place,
                      title: event.title, by: chooser.rawValue))
