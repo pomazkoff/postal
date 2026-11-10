@@ -289,7 +289,7 @@ struct MapScreen: View {
     }
 
     private func openPostman() {
-        note = MapNote(title: L10n.text("app.name"), body: L10n.text("onboarding.card0.body"),
+        note = MapNote(title: L10n.text("app.title"), body: L10n.text("onboarding.card0.body"),
                        image: map?.postman.image)
     }
 
@@ -754,7 +754,7 @@ struct HeroNote: View {
                         .scaledToFit()
                         .frame(maxWidth: m.length(280), maxHeight: m.length(420))
                         .accessibilityHidden(true)
-                    Text(L10n.text("app.name"))
+                    Text(L10n.text("app.title"))
                         .font(Ink.title(m.length(52)))
                         .foregroundStyle(Ink.brown)
                         .accessibilityAddTraits(.isHeader)

@@ -1,6 +1,7 @@
 /* UI. English is the development language and the fallback for every non-Russian locale. */
 
 "app.name" = "Postman";
+"app.title" = "Postman";
 
 "onboarding.subtitle" = "a letter to the Valley";
 "onboarding.page" = "Page %lld of %lld";
