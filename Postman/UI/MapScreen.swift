@@ -1,5 +1,50 @@
 import SwiftUI
 
+/// Доля дороги, мельче которой пергамент не перерисовывается. Один шаг порог не двигает.
+enum MapRevealQuantizer {
+    static let step = 0.02
+    static func key(_ threshold: Double) -> Double {
+        if threshold >= 1.5 { return 2 }
+        return (threshold / step).rounded() * step
+    }
+}
+
+/// Один слот рендера. Новый запуск отменяет предыдущий, старый кадр не записывается.
+/// Вызывается только с главного актёра, из refresh.
+private final class MapRenderSlot {
+    private var token = 0
+    private var task: Task<UIImage?, Never>?
+
+    func start(_ render: @escaping @Sendable () -> UIImage?) -> (Int, Task<UIImage?, Never>) {
+        token += 1
+        let mine = token
+        task?.cancel()
+        let job = Task.detached(priority: .userInitiated) { () -> UIImage? in
+            guard !Task.isCancelled else { return nil }
+            let image = render()
+            guard !Task.isCancelled else { return nil }
+            return image
+        }
+        task = job
+        return (mine, job)
+    }
+
+    func accepts(_ mine: Int, _ job: Task<UIImage?, Never>) -> Bool {
+        mine == token && !job.isCancelled
+    }
+}
+
+/// Файл листа читается один раз. Новый UIImage на каждом кадре мигал бы текстурой.
+private enum MapSheetImages {
+    private static var files: [String: UIImage] = [:]
+    static func file(_ path: String) -> UIImage? {
+        if let hit = files[path] { return hit }
+        guard let image = UIImage(contentsOfFile: path) else { return nil }
+        files[path] = image
+        return image
+    }
+}
+
 /// Карта главы — вариант A «Пергамент»: бумажная долина во весь экран.
 /// Пройденное — цветной пластилин, непройденное — карандашный набросок за полосой облаков
 /// (граница считается по длине дороги от текущего прогресса). Поселения стоят на дороге по реальным
@@ -17,6 +62,9 @@ struct MapScreen: View {
     @State private var mountainPictureFor: Double = -1
     @State private var swampPicture: UIImage?
     @State private var swampPictureFor: Double = -1
+    @State private var valleySlot = MapRenderSlot()
+    @State private var mountainSlot = MapRenderSlot()
+    @State private var swampSlot = MapRenderSlot()
     @State private var zoom: CGFloat = 1
     @State private var pan: CGPoint = .zero
     @State private var pinchStart: (zoom: CGFloat, pan: CGPoint)?
@@ -99,9 +147,9 @@ struct MapScreen: View {
         }
         .transition(.opacity)
         .storyResetAlert(isPresented: $confirmReset)
-        .task(id: map?.revealThreshold(step: sheetStep) ?? 0) { await refreshReveal() }
-        .task(id: mountainRevealKey) { await refreshMountain() }
-        .task(id: swampRevealKey) { await refreshSwamp() }
+        .task(id: MapRevealQuantizer.key(map?.revealThreshold(step: sheetStep) ?? 0)) { await refreshReveal() }
+        .task(id: MapRevealQuantizer.key(mountainRevealKey)) { await refreshMountain() }
+        .task(id: MapRevealQuantizer.key(swampRevealKey)) { await refreshSwamp() }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
@@ -125,6 +173,7 @@ struct MapScreen: View {
                     Image(uiImage: color).resizable()
                 }
             }
+            .transaction { $0.animation = nil }
             .frame(width: map.size[0] * s, height: map.size[1] * s)
             .position(m.point(map.size[0] / 2, map.size[1] / 2))
 
@@ -333,9 +382,10 @@ struct MapScreen: View {
                                           nextID: next?.id, reachedStep: reached,
                                           includePostman: drawHero)
         let fallback = t0 <= 0 ? sheet.pencilPath : sheet.colorPath
-        let image = picture ?? UIImage(contentsOfFile: fallback)
+        let image = picture ?? MapSheetImages.file(fallback)
         if let image {
             Image(uiImage: image).resizable()
+                .transaction { $0.animation = nil }
                 .frame(width: sheet.size.width * s, height: sheet.size.height * s)
                 .mask(sheetFade(width: sheet.size.width * s, height: sheet.size.height * s, bottom: fadeBottom * s))
                 .position(m.point(sheet.size.width / 2, sheet.size.height / 2))
@@ -495,42 +545,62 @@ struct MapScreen: View {
     // MARK: Раскрытие
 
     @MainActor
+    private func publish(_ image: UIImage, key: Double, _ store: (UIImage, Double) -> Void) {
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { store(image, key) }
+    }
+
+    /// Старый рендер не затирает новый. Пустой результат не снимает уже показанный лист.
+    @MainActor
+    private func refresh(key: Double, shown: Double, slot: MapRenderSlot,
+                         render: @escaping @Sendable () -> UIImage?,
+                         store: @escaping (UIImage, Double) -> Void) async {
+        guard abs(key - shown) > 1e-9 else { return }
+        let (mine, job) = slot.start(render)
+        let image = await job.value
+        guard !Task.isCancelled, slot.accepts(mine, job), let image else { return }
+        publish(image, key: key, store)
+    }
+
+    @MainActor
     private func refreshReveal() async {
         guard let map else { return }
-        let t0 = map.revealThreshold(step: sheetStep)
-        guard abs(t0 - revealedFor) > 1e-4 else { return }
-        let image = await Task.detached(priority: .userInitiated) {
-            ParchmentReveal.render(map: map, threshold: t0)
-        }.value
-        revealed = image
-        revealedFor = t0
+        let key = MapRevealQuantizer.key(map.revealThreshold(step: sheetStep))
+        await refresh(key: key, shown: revealedFor, slot: valleySlot) {
+            ParchmentReveal.render(map: map, threshold: key)
+        } store: { image, key in
+            revealed = image
+            revealedFor = key
+        }
     }
 
     @MainActor
     private func refreshMountain() async {
         guard let map, let sheet = MapAtlas.make(valley: map).mountains else { return }
-        let t0 = mountainRevealKey
-        guard t0 >= 0, abs(t0 - mountainPictureFor) > 1e-4 else { return }
+        let key = MapRevealQuantizer.key(mountainRevealKey)
+        guard key >= 0 else { return }
         let color = URL(fileURLWithPath: sheet.colorPath)
         let pencil = URL(fileURLWithPath: sheet.pencilPath)
         let field = URL(fileURLWithPath: sheet.fieldPath)
         let scale = sheet.field.decodeScale
         let bias = sheet.field.decodeBias
         let soft = sheet.softFraction
-        let image = await Task.detached(priority: .userInitiated) {
+        await refresh(key: key, shown: mountainPictureFor, slot: mountainSlot) {
             ParchmentReveal.render(color: color, pencil: pencil, field: field,
                                    decodeScale: scale, decodeBias: bias,
-                                   softFraction: soft, threshold: t0)
-        }.value
-        mountainPicture = image
-        mountainPictureFor = t0
+                                   softFraction: soft, threshold: key)
+        } store: { image, key in
+            mountainPicture = image
+            mountainPictureFor = key
+        }
     }
 
     @MainActor
     private func refreshSwamp() async {
         guard let map, let sheet = MapAtlas.make(valley: map).swamps else { return }
-        let t0 = swampRevealKey
-        guard t0 >= 0, abs(t0 - swampPictureFor) > 1e-4 else { return }
+        let key = MapRevealQuantizer.key(swampRevealKey)
+        guard key >= 0 else { return }
         let color = URL(fileURLWithPath: sheet.colorPath)
         let pencil = URL(fileURLWithPath: sheet.pencilPath)
         let field = URL(fileURLWithPath: sheet.fieldPath)
@@ -541,18 +611,20 @@ struct MapScreen: View {
         let atlas = MapAtlas.make(valley: map)
         let mountainURL = atlas.mountains.map { URL(fileURLWithPath: $0.colorPath) }
         let lift = atlas.lift
-        let image: UIImage? = await Task.detached(priority: .userInitiated) { () -> UIImage? in
+        await refresh(key: key, shown: swampPictureFor, slot: swampSlot) {
+            guard !Task.isCancelled else { return nil }
             let revealed = ParchmentReveal.render(color: color, pencil: pencil, field: field,
                                                    decodeScale: scale, decodeBias: bias,
-                                                   softFraction: soft, threshold: t0)
-            guard let revealed else { return nil }
+                                                   softFraction: soft, threshold: key)
+            guard let revealed, !Task.isCancelled else { return nil }
             guard let mountainURL, let mountain = UIImage(contentsOfFile: mountainURL.path) else {
                 return revealed
             }
             return MarshSeam.apply(revealed, road: road, mountain: mountain, lift: lift)
-        }.value
-        swampPicture = image
-        swampPictureFor = t0
+        } store: { image, key in
+            swampPicture = image
+            swampPictureFor = key
+        }
     }
 
     // MARK: Жесты

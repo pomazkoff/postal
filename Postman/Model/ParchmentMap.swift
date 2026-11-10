@@ -327,8 +327,12 @@ enum ParchmentReveal {
         return (c, p, f)
     }()
 
+    private static var colorFile: UIImage?
     static func colorImage() -> UIImage? {
-        UIImage(contentsOfFile: WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map_color.jpg").path)
+        if let colorFile { return colorFile }
+        let image = UIImage(contentsOfFile: WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map_color.jpg").path)
+        colorFile = image
+        return image
     }
 
     /// Синхронно; звать не с главного потока.
