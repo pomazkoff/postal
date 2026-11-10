@@ -62,7 +62,7 @@ def boundary_coverage():
     pps = WORLD['game']['pixelsPerStep']
     boundary = 20000 * pps
     design_w = WORLD['game']['designWidth']
-    ch1, ch2 = WORLD['chapters']
+    ch1, ch2 = WORLD['chapters'][:2]
 
     def roads(chapter):
         spans = []
@@ -232,8 +232,12 @@ class WorldStripTests(unittest.TestCase):
         self.assertNotIn('chapter', camera)
 
     def test_future_chapters_have_no_special_case_camera_boundary(self):
-        chapters = WORLD['chapters'] + [dict(id=3, startStep=45000, lengthSteps=25000)]
-        self.assertEqual(resolve(45000, chapters=chapters), 2)
+        real = WORLD['chapters']
+        if any(c['startStep'] == 45000 for c in real):
+            self.assertEqual(resolve(45000), 2)
+        else:
+            chapters = real + [dict(id=3, startStep=45000, lengthSteps=25000)]
+            self.assertEqual(resolve(45000, chapters=chapters), 2)
         pps = WORLD['game']['pixelsPerStep']
         self.assertAlmostEqual((45000 * pps) - (44999 * pps), pps)
         sync = body(CORE, 'func syncEngine(total:')

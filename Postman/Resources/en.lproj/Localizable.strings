@@ -76,6 +76,20 @@
 "bag.act.2.l7" = "Carry it to the Throat";
 "bag.act.2.l8" = "Carry it to the Throat";
 "bag.act.2.note_gar" = "Leave it in the hut at the Collar";
+"bag.act.3.l1" = "Carry the clean envelope to the box on the Boardwalk";
+"bag.act.3.l4" = "To the Mire, for Vera";
+"bag.act.3.note_fedya" = "To the Mire, for Marya";
+"bag.act.3.l2" = "To the Peat Cut, for A.L.";
+"bag.act.3.l3" = "To the barge, a chance downstream";
+"bag.act.3.l5" = "To the Reeds, for Mitya";
+"bag.act.3.l7" = "To the Reeds, for Vera";
+"bag.act.3.l9" = "To the Settling Pool, for Vera";
+"bag.handoff.d_gat" = "Galya's letter went into the box on the Boardwalk, a chance downstream.";
+"bag.handoff.d_top" = "Mitya's letter and Fedya's note went into the hut at the Mire.";
+"bag.handoff.d_torf" = "Nina's letter went into the box at the Peat Cut, for A.L.";
+"bag.handoff.d_barge" = "The letter “from Tima” went into the box on the barge, a chance downstream.";
+"bag.handoff.d_reeds" = "The mail went into the box by the verst post.";
+"bag.handoff.d_otstoy" = "Nina's letter went into the box at the Settling Pool, a chance to the Valley, for Vera.";
 "bag.act.2.l9" = "Read";
 "bag.act.drop.2.e_khomut" = "Leave it in the hut at the Collar";
 "bag.act.drop.2.finale" = "Carry it to the Throat";
@@ -110,6 +124,7 @@
 "map.start" = "start";
 "map.region" = "Valley";
 "map.mountains" = "Mountains";
+"map.swamps" = "Marshes";
 "map.chapterDay" = "chapter %lld · day %lld";
 "map.valleyOnly" = "the valley sheet, up to the Saddle";
 "map.notDrawn" = "The mountains are not drawn on this sheet.";
@@ -165,6 +180,7 @@
 "notify.ahead.fallback" = "It's not far to the next stop. Fancy a walk?";
 "notify.daily.title" = "The postman is waiting";
 "notify.daily.body" = "The postman has not set out on the road today. A walk will move him along.";
+"notify.daily.swamp" = "By evening the fog on the boardwalks is thinner. Fancy a walk?";
 
 "engine.mode.notify" = "a push, then he decides";
 "engine.mode.auto" = "the postman decides";
@@ -278,6 +294,32 @@
 "history.main.bell.body" = "From the lee side the Belfry bell can be heard. The ringing is even and long, like a count. How many, and of whom, is not signed.";
 "history.main.gorge.title" = "The ravine";
 "history.main.gorge.body" = "The path leaves the ravine and goes down. Beyond it is raw clay and fog. What is there cannot be seen from the edge.";
+"history.main.clean.title" = "A clean envelope";
+"history.main.clean.body" = "Below the Throat the road has been washed out. In the clay lay an envelope with no stamp, and thin hooks inside. It belongs in the chance box on the Boardwalk, not back the way he came.";
+"history.main.goat.title" = "What the goat was called";
+"history.main.goat.body" = "Nina asks Timofey to write plainly what the goat was called. She tells him not to open the jar.";
+"history.main.ramka.title" = "Ramka";
+"history.main.ramka.body" = "The letter “from Tima” calls the goat Ramka and puts in a label, “Sprats in tomato”. The same question, a different answer.";
+"history.main.bearing.title" = "Louder toward the top";
+"history.main.bearing.body" = "On the Peat Cut post a note says: louder toward the top. The frame, if he is carrying it, hears the Valley louder than the Reach. Measuring does not make the road longer.";
+"history.main.mothers.title" = "In one piece";
+"history.main.mothers.body" = "The letter “from Galya” says she received it in one piece. The hooks Galya packed for Mitya are not inside.";
+"history.main.fiftyeight.title" = "Fifty-eight";
+"history.main.fiftyeight.body" = "Kuzma writes to Vera: the pole already reads fifty-eight, and the water is not falling.";
+"history.main.names.title" = "Four names";
+"history.main.names.body" = "Mitya made out a piece of the evening bell. Four names, and Us Galya among them. He does not know what they are.";
+"history.main.ether.title" = "A scrap of a song";
+"history.main.ether.body" = "A radio lies in the reeds. For a moment a song comes out of it, then only noise. Night is not required.";
+"history.main.third.title" = "The third nick";
+"history.main.third.body" = "Vera accepted the mark 58. It is the third nick. She puts the decision off until the fourth. She calls the hum at 7.3 the transformer.";
+"history.main.wall.title" = "A grey wall";
+"history.main.wall.body" = "A grey wall stands across the river in the Gullet. Up close it holds a box door, a rim, a thermos and a pass on a string. Nobody says what the wall is.";
+"history.main.zorka.title" = "Zorka";
+"history.main.zorka.body" = "Nina writes to Vera: the goat was called Zorka. She asks for the truth and does not accuse.";
+"history.main.signature.title" = "Ferapont";
+"history.main.signature.body" = "In the bundle with no annotation is a refusal sheet. The line reads: Somov Ferapont Ilyich, the Tubs. Nobody circled the signature.";
+"history.main.marsh.title" = "The Settling Pool";
+"history.main.marsh.body" = "The kettle on the last stake is still warm. Who was here is not said. Farther on, in a break in the fog, are the pipes of the town.";
 "menu.open.a11y" = "Menu";
 "menu.title" = "Menu";
 "menu.close" = "Onward";
@@ -320,7 +362,7 @@
 "menu.sound.note" = "Silence is part of the road. Steps are heard only while the postman is walking on screen.";
 
 "journey.continue" = "The postman's journey will continue";
-"journey.soon" = "Chapter 3 is coming soon";
+"journey.soon" = "Chapter 4 is coming soon";
 
 "firstmail.title" = "The first mail run";
 "firstmail.body" = "Nina's letter to Kuzma. The handoff is written at the Stilts, at step 2900 of chapter 1.";

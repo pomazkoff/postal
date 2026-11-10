@@ -15,6 +15,8 @@ struct MapScreen: View {
     @State private var revealedFor: Double = -1
     @State private var mountainPicture: UIImage?
     @State private var mountainPictureFor: Double = -1
+    @State private var swampPicture: UIImage?
+    @State private var swampPictureFor: Double = -1
     @State private var zoom: CGFloat = 1
     @State private var pan: CGPoint = .zero
     @State private var pinchStart: (zoom: CGFloat, pan: CGPoint)?
@@ -37,6 +39,10 @@ struct MapScreen: View {
         guard let map, let sheet = MapAtlas.make(valley: map).mountains else { return -1 }
         return sheet.revealThreshold(worldStep: game.chapter.startStep + step)
     }
+    private var swampRevealKey: Double {
+        guard let map, let sheet = MapAtlas.make(valley: map).swamps else { return -1 }
+        return sheet.revealThreshold(worldStep: game.chapter.startStep + step)
+    }
 
     var body: some View {
         FrameScreen(dim: 0.9) { m in
@@ -46,14 +52,22 @@ struct MapScreen: View {
                         let atlas = MapAtlas.make(valley: map)
                         let road = RoadGeometry(map.points)
                         let global = game.chapter.startStep + step
-                        let heroOnMountain = atlas.mountains != nil && global >= MountainPlaces.globalStart
+                        let heroOnSwamp = atlas.swamps != nil && global >= SwampPlaces.globalStart
+                        let heroOnMountain = !heroOnSwamp && atlas.mountains != nil && global >= MountainPlaces.globalStart
                         ZStack(alignment: .topLeading) {
                             // Долина снизу. Горы непрозрачным кадром сверху: в перекрытии нет смешения, иначе шов двоится.
-                            mapLayer(map, road: road, m: m, drawHero: !heroOnMountain)
-                                .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y))
+                            // Болота ещё выше: низ листа растворяется в вершинах, сами горы не прячутся.
+                            mapLayer(map, road: road, m: m, drawHero: !heroOnMountain && !heroOnSwamp)
+                                .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y + atlas.lift))
                             if let mountains = atlas.mountains {
                                 mountainLayer(mountains, global: global, m: m, drawHero: heroOnMountain,
                                               picture: mountainPicture, postman: map.postman)
+                                    .offset(y: m.length(atlas.lift))
+                            }
+                            if let swamps = atlas.swamps {
+                                mountainLayer(swamps, global: global, m: m, drawHero: heroOnSwamp,
+                                              picture: swampPicture, postman: map.postman,
+                                              fadeBottom: min(swamps.size.height, atlas.swampOverlap + 320))
                             }
                         }
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
@@ -75,7 +89,7 @@ struct MapScreen: View {
                         if let note {
                             mapNote(note, m: m)
                         }
-                        chrome(map, m: m, mountains: atlas.mountains != nil)
+                        chrome(map, m: m, mountains: atlas.mountains != nil, swamps: atlas.swamps != nil)
                     } else {
                         Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
@@ -88,6 +102,7 @@ struct MapScreen: View {
         .storyResetAlert(isPresented: $confirmReset)
         .task(id: map?.revealThreshold(step: sheetStep) ?? 0) { await refreshReveal() }
         .task(id: mountainRevealKey) { await refreshMountain() }
+        .task(id: swampRevealKey) { await refreshSwamp() }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
@@ -235,6 +250,12 @@ struct MapScreen: View {
         if let line = engine.story.arrivals?.first(where: { $0.settlement == placeID })?.text, !line.isEmpty {
             return line
         }
+        for chapter in [2, 3] where chapter != game.chapter.id {
+            if let line = StoryConfig.load(chapter: chapter).arrivals?.first(where: { $0.settlement == placeID })?.text,
+               !line.isEmpty {
+                return line
+            }
+        }
         guard game.chapter.id != 1 else { return nil }
         return StoryConfig.load(chapter: 1).arrivals?.first { $0.settlement == placeID }?.text
     }
@@ -297,7 +318,7 @@ struct MapScreen: View {
 
     @ViewBuilder
     private func mountainLayer(_ sheet: MountainSheet, global: Int, m: FrameMapper, drawHero: Bool,
-                               picture: UIImage?, postman: ParchmentMap.Sprite) -> some View {
+                               picture: UIImage?, postman: ParchmentMap.Sprite, fadeBottom: CGFloat = 0) -> some View {
         let s = m.scale
         let local = min(sheet.lengthSteps, max(0, global - sheet.globalStart))
         let onSheet = global >= sheet.globalStart
@@ -317,6 +338,7 @@ struct MapScreen: View {
         if let image {
             Image(uiImage: image).resizable()
                 .frame(width: sheet.size.width * s, height: sheet.size.height * s)
+                .mask(sheetFade(width: sheet.size.width * s, height: sheet.size.height * s, bottom: fadeBottom * s))
                 .position(m.point(sheet.size.width / 2, sheet.size.height / 2))
                 .allowsHitTesting(false)
         }
@@ -376,11 +398,31 @@ struct MapScreen: View {
         note = MapNote(title: place.name, body: body, image: reached ? place.icon : nil)
     }
 
+    private func sheetFade(width: CGFloat, height: CGFloat, bottom: CGFloat) -> some View {
+        // The painted parchment edge sits inside the overlap. A ramp that is still
+        // opaque there reads as a cut, so the picture is clear before the join.
+        let band = min(max(0, bottom), height)
+        let clear = min(band, max(0, height * 352 / 2532))
+        let ramp = max(0, band - clear)
+        return VStack(spacing: 0) {
+            Color.white.frame(width: width, height: max(0, height - band))
+            if ramp > 0 {
+                LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .bottom)
+                    .frame(width: width, height: ramp)
+            }
+            if clear > 0 {
+                Color.clear.frame(width: width, height: clear)
+            }
+        }
+        .frame(width: width, height: height, alignment: .top)
+    }
+
     @ViewBuilder
-    private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool) -> some View {
+    private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool, swamps: Bool) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
-            Text(mountains && !valleySheet ? L10n.text("map.mountains") : L10n.text("map.region"))
+            Text(swamps && game.chapter.id >= 3 ? L10n.text("map.swamps")
+                 : mountains && !valleySheet ? L10n.text("map.mountains") : L10n.text("map.region"))
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
                 .position(x: 310 * f, y: 150 * f)
@@ -483,6 +525,26 @@ struct MapScreen: View {
         }.value
         mountainPicture = image
         mountainPictureFor = t0
+    }
+
+    @MainActor
+    private func refreshSwamp() async {
+        guard let map, let sheet = MapAtlas.make(valley: map).swamps else { return }
+        let t0 = swampRevealKey
+        guard t0 >= 0, abs(t0 - swampPictureFor) > 1e-4 else { return }
+        let color = URL(fileURLWithPath: sheet.colorPath)
+        let pencil = URL(fileURLWithPath: sheet.pencilPath)
+        let field = URL(fileURLWithPath: sheet.fieldPath)
+        let scale = sheet.field.decodeScale
+        let bias = sheet.field.decodeBias
+        let soft = sheet.softFraction
+        let image = await Task.detached(priority: .userInitiated) {
+            ParchmentReveal.render(color: color, pencil: pencil, field: field,
+                                   decodeScale: scale, decodeBias: bias,
+                                   softFraction: soft, threshold: t0)
+        }.value
+        swampPicture = image
+        swampPictureFor = t0
     }
 
     // MARK: Жесты

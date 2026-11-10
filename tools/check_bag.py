@@ -35,6 +35,14 @@ DROPS = {
     (2, "l6"): [("finale", 25000)],
     (2, "l7"): [("finale", 25000)],
     (2, "l8"): [("finale", 25000)],
+    (3, "l1"): [("d_gat", 4000)],
+    (3, "l4"): [("d_top", 9000)],
+    (3, "note_fedya"): [("d_top", 9000)],
+    (3, "l2"): [("d_torf", 12500)],
+    (3, "l3"): [("d_barge", 16500)],
+    (3, "l5"): [("d_reeds", 20000)],
+    (3, "l7"): [("d_reeds", 20000)],
+    (3, "l9"): [("d_otstoy", 28000)],
 }
 HANDOFF = {key: drops[0][0] for key, drops in DROPS.items()}
 PICKUP = {
@@ -44,9 +52,12 @@ PICKUP = {
     (2, "l5"): "p_l5", (2, "l6"): "p_l6", (2, "l7"): "p_l7", (2, "l8"): "p_l8",
     (2, "l9"): "p_l9", (2, "note_gar"): "p_note_gar",
     (2, "animal_raven_scrap"): "e_animal_raven", (2, "animal_dog_horn"): "p_animal_dog_find",
+    (3, "l1"): "p_l1", (3, "l2"): "p_l2", (3, "l3"): "p_l3", (3, "l4"): "p_l4",
+    (3, "l5"): "p_l5", (3, "l6"): "p_l6", (3, "l7"): "p_l7", (3, "l8"): "p_l8",
+    (3, "l9"): "p_l9", (3, "l10"): "p_l10", (3, "note_fedya"): "e_fedya_help",
 }
 CARRIED = {"inBag", "inPocket"}
-READ_ON = {(1, "l7"), (2, "l9")}
+READ_ON = {(1, "l7"), (2, "l9"), (3, "l6"), (3, "l8"), (3, "l10")}
 
 
 def close_status(chapter, item):
@@ -240,6 +251,8 @@ for key in ["bag.mail", "bag.personal", "bag.more", "bag.look", "bag.took.all", 
             "bag.handoff.s_nii_drop", "bag.handoff.finale", "bag.handoff.1.finale", "bag.handoff.2.finale",
             "bag.handoff.e_khomut", "bag.handoff.p_l9",
             "bag.act.1.l1", "bag.act.1.l6", "bag.act.2.l1", "bag.act.2.note_gar",
+            "bag.act.3.l1", "bag.act.3.l4", "bag.act.3.note_fedya", "bag.act.3.l2",
+            "bag.act.3.l3", "bag.act.3.l5", "bag.act.3.l7", "bag.act.3.l9",
             "bag.act.drop.2.e_khomut", "bag.act.drop.2.finale",
             "bag.keep.animal_cat_stamp", "bag.keep.animal_raven_scrap", "bag.keep.animal_dog_horn"]:
     if f'"{key}"' not in ru or f'"{key}"' not in en:
@@ -274,11 +287,13 @@ for name, art in arts.items():
         fail(f"{name} does not use {art}")
 
 # Подбор всегда раньше сдачи. Шаги сверены с событиями глав, а не только со словарём выше.
+ch3 = (ROOT / "Postman/GameAssets/Data/chapter3_story.json").read_text(encoding="utf-8")
 story_docs = {
     1: json.loads(ch1),
     2: json.loads(ch2),
+    3: json.loads(ch3),
 }
-READ_IN_PLACE = {(1, "l7"), (2, "l9")}
+READ_IN_PLACE = {(1, "l7"), (2, "l9"), (3, "l6"), (3, "l8"), (3, "l10")}
 
 
 def is_mail(item):

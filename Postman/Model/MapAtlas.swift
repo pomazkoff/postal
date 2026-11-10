@@ -43,39 +43,83 @@ enum MountainPlaces {
 struct MapAtlas {
     let valley: ParchmentMap
     let mountains: MountainSheet?
+    let swamps: MountainSheet?
     /// Верхний левый угол листа Долины на общем холсте. Ноль, пока гор нет.
     let valleyOrigin: CGPoint
+    /// Сдвиг вниз, чтобы лист болот (его низ стыкуется с верхом гор) начинался с нуля.
+    let lift: CGFloat
+    /// Нижние 560 px листа болот полупрозрачны: шов с горами не читается, вершины остаются.
+    let swampOverlap: CGFloat
     let contentSize: CGSize
 
-    static func make(valley: ParchmentMap, mountains: MountainSheet? = MountainSheet.load()) -> MapAtlas {
+    static func make(valley: ParchmentMap, mountains: MountainSheet? = MountainSheet.load(),
+                     swamps: MountainSheet? = MountainSheet.loadSwamps()) -> MapAtlas {
         guard let mountains else {
-            return MapAtlas(valley: valley, mountains: nil, valleyOrigin: .zero,
+            return MapAtlas(valley: valley, mountains: nil, swamps: nil, valleyOrigin: .zero,
+                            lift: 0, swampOverlap: 0,
                             contentSize: CGSize(width: valley.size[0], height: valley.size[1]))
         }
         let origin = MapJoin.valleyOrigin
-        let height = origin.y + valley.size[1]
-        let width = max(valley.size[0], mountains.size.width)
-        return MapAtlas(valley: valley, mountains: mountains, valleyOrigin: origin,
+        var lift: CGFloat = 0
+        var overlap: CGFloat = 0
+        var swampSheet = swamps
+        if let swamps, let end = mountains.road.last {
+            let rawY = end.y - SwampJoin.point.y
+            lift = -rawY
+            overlap = swamps.size.height - (SwampJoin.point.y - end.y)
+            if overlap < 1 { swampSheet = nil; lift = 0; overlap = 0 }
+        } else {
+            swampSheet = nil
+        }
+        let height = origin.y + valley.size[1] + lift
+        let width = max(valley.size[0], max(mountains.size.width, swampSheet?.size.width ?? 0))
+        return MapAtlas(valley: valley, mountains: mountains, swamps: swampSheet, valleyOrigin: origin,
+                        lift: lift, swampOverlap: overlap,
                         contentSize: CGSize(width: width, height: height))
     }
 
     /// Глобальный шаг: `chapter.startStep + chapterSteps`.
     func point(globalStep: Int) -> CGPoint {
+        if let swamps, globalStep >= swamps.globalStart {
+            let local = min(swamps.lengthSteps, globalStep - swamps.globalStart)
+            let p = RoadGeometry(swamps.road).point(at: swamps.fraction(localStep: local))
+            return CGPoint(x: p.x, y: p.y + lift + swampOriginY)
+        }
         if let mountains, globalStep >= mountains.globalStart {
             let local = min(mountains.lengthSteps, globalStep - mountains.globalStart)
             let p = RoadGeometry(mountains.road).point(at: mountains.fraction(localStep: local))
-            return p
+            return CGPoint(x: p.x, y: p.y + lift)
         }
         let local = min(valley.lengthSteps, max(0, globalStep))
         let p = RoadGeometry(valley.points).point(at: valley.fraction(step: local))
-        return CGPoint(x: p.x + valleyOrigin.x, y: p.y + valleyOrigin.y)
+        return CGPoint(x: p.x + valleyOrigin.x, y: p.y + valleyOrigin.y + lift)
     }
+
+    /// Низ листа болот в координатах, где горы ещё стоят в нуле. Отрицательный.
+    private var swampOriginY: CGFloat { swamps == nil ? 0 : -lift }
 
     /// Лист Долины и так на весь кадр. К герою едем только когда сверху есть продолжение.
     func centersHero(viewSize: CGSize, scale: CGFloat) -> Bool {
-        guard mountains != nil else { return false }
+        guard mountains != nil || swamps != nil else { return false }
         return contentSize.height * scale > viewSize.height + 2
     }
+}
+
+enum SwampJoin {
+    static let point = CGPoint(x: 619.9, y: 2373.7)
+}
+
+enum SwampPlaces {
+    static let steps: [String: Int] = [
+        "gat": 4000,
+        "top": 9000,
+        "torfyanik": 12500,
+        "staraya_protoka": 16500,
+        "gorlo": 22500,
+        "otstoy": 30000,
+    ]
+    static let lengthSteps = 30000
+    static let globalStart = 45000
 }
 
 struct MountainSheet {
@@ -128,6 +172,45 @@ struct MountainSheet {
         let fieldURL = root.appendingPathComponent(raw.field.image)
         guard FileManager.default.fileExists(atPath: fieldURL.path) else { return nil }
         return make(raw, colorPath: colorURL.path, pencilPath: pencilURL.path, fieldPath: fieldURL.path)
+    }
+
+    static func loadSwamps(root: URL = WorldConfigLoader.assetsRoot) -> MountainSheet? {
+        let mapRoot = root.appendingPathComponent("UI/map")
+        let jsonURL = mapRoot.appendingPathComponent("swamps.json")
+        let colorURL = mapRoot.appendingPathComponent("swamps_color.jpg")
+        let pencilURL = mapRoot.appendingPathComponent("swamps_pencil.jpg")
+        guard FileManager.default.fileExists(atPath: jsonURL.path),
+              FileManager.default.fileExists(atPath: colorURL.path),
+              FileManager.default.fileExists(atPath: pencilURL.path) else { return nil }
+        let data = ContentLocalizer.data(at: jsonURL, kind: .map)
+        guard let raw = try? JSONDecoder().decode(File.self, from: data) else { return nil }
+        let fieldURL = root.appendingPathComponent(raw.field.image)
+        guard FileManager.default.fileExists(atPath: fieldURL.path) else { return nil }
+        guard raw.lengthSteps == SwampPlaces.lengthSteps,
+              raw.globalStart == SwampPlaces.globalStart,
+              raw.join.count == 2,
+              abs(raw.join[0] - SwampJoin.point.x) < 0.6,
+              abs(raw.join[1] - SwampJoin.point.y) < 0.6,
+              raw.road.count >= 2 else { return nil }
+        let road = raw.road.map { CGPoint(x: $0[0], y: $0[1]) }
+        guard let first = road.first,
+              hypot(first.x - SwampJoin.point.x, first.y - SwampJoin.point.y) < 1 else { return nil }
+        for place in raw.settlements {
+            guard let expected = SwampPlaces.steps[place.id], place.step == expected else { return nil }
+        }
+        return MountainSheet(size: CGSize(width: raw.size[0], height: raw.size[1]),
+                             lengthSteps: raw.lengthSteps,
+                             globalStart: raw.globalStart,
+                             road: road,
+                             roadLength: raw.roadLength,
+                             aheadPx: raw.aheadPx,
+                             softPx: raw.softPx,
+                             field: raw.field,
+                             fieldPath: fieldURL.path,
+                             puffs: raw.puffs,
+                             colorPath: colorURL.path,
+                             pencilPath: pencilURL.path,
+                             settlements: raw.settlements)
     }
 
     static func make(_ raw: File, colorPath: String, pencilPath: String, fieldPath: String) -> MountainSheet? {

@@ -302,7 +302,7 @@ story = {
         {"day": 4, "from": 22500, "to": 25000},
     ],
     "items": items, "events": events, "quests": quests, "residents": residents, "fates": fates,
-    "finaleTitle": "Глава 2 · Горы", "finaleSubtitle": "пройдена", "nextChapter": "Глава 3 «Болота» — скоро",
+    "finaleTitle": "Глава 2 · Горы", "finaleSubtitle": "пройдена", "nextChapter": "Глава 3 «Болота»",
     "trustSettlements": ["gar", "penki", "khomut"],
     "choicePolicy": {"mode": "notifyThenAuto", "timeoutSteps": 400},
     "arrivals": ARRIVALS,

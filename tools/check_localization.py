@@ -110,7 +110,7 @@ def story_check(chapter, doc):
     for a in doc.get("arrivals") or []:
         need(amap.get(a["settlement"]), f"story{chapter}.arrival.{a['settlement']}", a["text"])
 
-for n in (1, 2):
+for n in (1, 2, 3):
     story_check(n, load(DATA / f"chapter{n}_story.json"))
 
 world = load(DATA / "world.json")
@@ -222,7 +222,7 @@ def apply_like_swift(doc, spec, chapter):
                 fail(f"dangling {key} {ref[key]} in {ref['id']}")
     return out
 
-for n in (1, 2):
+for n in (1, 2, 3):
     doc = load(DATA / f"chapter{n}_story.json")
     apply_like_swift(doc, stories_en[str(n)], n)
     # known letter still Russian in the source file
@@ -231,6 +231,8 @@ for n in (1, 2):
         fail("chapter 1 Russian letter was rewritten")
     if n == 2 and "Мам здравствуй" not in raw:
         fail("chapter 2 Russian letter was rewritten")
+    if n == 3 and "Митюша, купила крючки" not in raw:
+        fail("chapter 3 Russian letter was rewritten")
 
 # UI catalogs
 def strings(path):

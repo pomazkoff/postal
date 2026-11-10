@@ -185,14 +185,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     /// Мягкое напоминание в 18:00, если сегодня ещё не ходили и игру не открывали.
-    func setDailyReminder(enabled: Bool) {
+    func setDailyReminder(enabled: Bool, chapterID: Int = 0) {
         if !enabled {
             center.removePendingNotificationRequests(withIdentifiers: [NoticePlan.dailyID])
             return
         }
         let content = UNMutableNotificationContent()
         content.title = L10n.text("notify.daily.title")
-        content.body = L10n.text("notify.daily.body")
+        content.body = L10n.text(chapterID == 3 ? "notify.daily.swamp" : "notify.daily.body")
         content.sound = nil
         content.threadIdentifier = Self.thread
         var parts = DateComponents()

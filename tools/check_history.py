@@ -31,8 +31,10 @@ if 'opened.contains("l5")' not in src:
     fail("Pimen's inner tape waits until the seal is opened")
 if "history.main.belfry.fortyone" not in src:
     fail("the number 41 is only the outside of the account")
-if "chapterID: 3" in src or "chapterID: 4" in src or "chapterID: 5" in src:
-    fail("chapters 3–5 are not part of the playable history")
+if "chapterID: 4" in src or "chapterID: 5" in src:
+    fail("chapters 4–5 are not part of the playable history")
+if "chapterID: 3" not in src:
+    fail("chapter 3 needs its own history beats")
 for banned in ("Агния", "Савелий", "хвостохранилищ", "включила К-2", "214 подпис"):
     if banned in src:
         fail(f"author secret leaked into the chronicle code: {banned}")

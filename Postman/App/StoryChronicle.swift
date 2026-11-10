@@ -49,7 +49,7 @@ enum HistoryReading {
 
 /// Основная линия по `docs/canon/story-bible.md` §§5 и 5б и по `docs/canon/ideas.md`
 /// (акт I: быт, адресаты, первые странные письма и замеченные противоречия).
-/// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни виновных, ни глав 3–5.
+/// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни того, кто включил К-2, ни глав 4–5.
 /// Каждый абзац ждёт своё событие и состояние сейва. Это не перебор doneEvents и не цитатник писем.
 enum StoryChronicle {
     struct Progress {
@@ -90,6 +90,19 @@ enum StoryChronicle {
         Beat(id: "lamp", chapterID: 2, step: 20000, eventID: "p_l9", residentID: "pimen", placeID: "krivulya"),
         Beat(id: "bell", chapterID: 2, step: 20050, eventID: "s_bell", residentID: "pimen", placeID: "krivulya"),
         Beat(id: "gorge", chapterID: 2, step: 25000, eventID: "finale", residentID: nil, placeID: "gorlovina"),
+        Beat(id: "clean", chapterID: 3, step: 40, eventID: "p_l1", residentID: nil, placeID: "gorlovina"),
+        Beat(id: "bearing", chapterID: 3, step: 13500, eventID: "e_bearing", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "ramka", chapterID: 3, step: 12600, eventID: "p_l3", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "goat", chapterID: 3, step: 9100, eventID: "p_l2", residentID: nil, placeID: "top"),
+        Beat(id: "mothers", chapterID: 3, step: 15500, eventID: "p_l5", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "fiftyeight", chapterID: 3, step: 16600, eventID: "p_l7", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "names", chapterID: 3, step: 16700, eventID: "p_l6", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "ether", chapterID: 3, step: 21000, eventID: "e_radio", residentID: nil, placeID: "kamyshi"),
+        Beat(id: "third", chapterID: 3, step: 22600, eventID: "p_l8", residentID: nil, placeID: "gorlo"),
+        Beat(id: "wall", chapterID: 3, step: 24000, eventID: "e_plug", residentID: nil, placeID: "gorlo"),
+        Beat(id: "zorka", chapterID: 3, step: 24100, eventID: "p_l9", residentID: nil, placeID: "gorlo"),
+        Beat(id: "signature", chapterID: 3, step: 29000, eventID: "p_l10", residentID: nil, placeID: "otstoy"),
+        Beat(id: "marsh", chapterID: 3, step: 30000, eventID: "finale", residentID: nil, placeID: "otstoy"),
     ]
 
     static func facts(world: WorldConfig, activeIndex: Int, activeSteps: Int,
@@ -141,6 +154,19 @@ enum StoryChronicle {
         case "lamp": return "history.main.lamp.title"
         case "bell": return "history.main.bell.title"
         case "gorge": return "history.main.gorge.title"
+        case "clean": return "history.main.clean.title"
+        case "goat": return "history.main.goat.title"
+        case "ramka": return "history.main.ramka.title"
+        case "bearing": return "history.main.bearing.title"
+        case "mothers": return "history.main.mothers.title"
+        case "fiftyeight": return "history.main.fiftyeight.title"
+        case "names": return "history.main.names.title"
+        case "ether": return "history.main.ether.title"
+        case "third": return "history.main.third.title"
+        case "wall": return "history.main.wall.title"
+        case "zorka": return "history.main.zorka.title"
+        case "signature": return "history.main.signature.title"
+        case "marsh": return "history.main.marsh.title"
         default: return "history.title"
         }
     }
@@ -229,6 +255,44 @@ enum StoryChronicle {
             return L10n.text("history.main.bell.body")
         case "gorge":
             return L10n.text("history.main.gorge.body")
+        case "clean":
+            guard carried("l1", here.items) else { return nil }
+            return L10n.text("history.main.clean.body")
+        case "goat":
+            guard carried("l2", here.items) else { return nil }
+            return L10n.text("history.main.goat.body")
+        case "ramka":
+            guard carried("l3", here.items) else { return nil }
+            return L10n.text("history.main.ramka.body")
+        case "bearing":
+            guard here.choices["e_bearing"] != nil else { return nil }
+            return L10n.text("history.main.bearing.body")
+        case "mothers":
+            guard carried("l5", here.items) else { return nil }
+            return L10n.text("history.main.mothers.body")
+        case "fiftyeight":
+            guard carried("l7", here.items) else { return nil }
+            return L10n.text("history.main.fiftyeight.body")
+        case "names":
+            guard carried("l6", here.items) else { return nil }
+            return L10n.text("history.main.names.body")
+        case "ether":
+            guard here.choices["e_radio"] != nil else { return nil }
+            return L10n.text("history.main.ether.body")
+        case "third":
+            guard carried("l8", here.items) else { return nil }
+            return L10n.text("history.main.third.body")
+        case "wall":
+            guard here.choices["e_plug"] != nil else { return nil }
+            return L10n.text("history.main.wall.body")
+        case "zorka":
+            guard carried("l9", here.items) else { return nil }
+            return L10n.text("history.main.zorka.body")
+        case "signature":
+            guard carried("l10", here.items) else { return nil }
+            return L10n.text("history.main.signature.body")
+        case "marsh":
+            return L10n.text("history.main.marsh.body")
         default:
             return nil
         }

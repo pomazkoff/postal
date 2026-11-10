@@ -85,6 +85,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private let worldBottomY: CGFloat = -1800
     private(set) var ambient: AmbientLayer?
     private(set) var weather: WeatherLayer?
+    /// Дневная пелена болот. Не меняет длину шага: вечером она просто реже.
+    private var marshVeil: SKSpriteNode?
     private var lastUpdateTime: TimeInterval = 0
     private var ambienceClock: TimeInterval = 0
     private var cullClock: TimeInterval = 0
@@ -138,6 +140,12 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
         // Погода (ясно/дождь/снег/туман) — поверх неба и планов, под тоном суток.
         weather = WeatherLayer(camera: cam, designSize: CGSize(width: W, height: H))
+        let veil = SKSpriteNode(color: UIColor(white: 0.86, alpha: 1), size: CGSize(width: W * 2, height: H * 2))
+        veil.zPosition = 880
+        veil.alpha = 0
+        veil.isHidden = true
+        cam.addChild(veil)
+        marshVeil = veil
 
         // Одна сцена/камера/фигура героя на весь мир. Главы — соседние сегменты, а не сцены.
         let actorLayer = SKNode()
@@ -729,6 +737,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         ambient?.update(dt: dt, now: Date(), cameraX: camX, cameraScale: camScale,
                         visibleSize: CGSize(width: visibleWidth, height: visibleHeight))
         weather?.update(dt: dt)
+        updateMarshVeil()
         updateCompanion(dt)
         updateNightFigures()
         updatePostmanVisibility()
@@ -738,6 +747,22 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             cullClock = 0
             cullLazyNodes()
         }
+    }
+
+    /// Вариант В: день и ночь одной длины. С 18:00 до 7:00 пелена реже, доски и подписи виднее.
+    private func updateMarshVeil() {
+        guard let veil = marshVeil else { return }
+        let step = Int(displayedStep.rounded(.down))
+        let chapter = config.chapters.last { $0.startStep <= step }
+        guard chapter?.id == 3 else {
+            veil.alpha = 0
+            veil.isHidden = true
+            return
+        }
+        let hour = Calendar.current.component(.hour, from: Date())
+        let thinner = hour >= 18 || hour < 7
+        veil.isHidden = false
+        veil.alpha = thinner ? 0.28 : 0.72
     }
 
     // MARK: Camera

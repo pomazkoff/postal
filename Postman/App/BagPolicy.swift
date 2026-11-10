@@ -52,6 +52,12 @@ enum BagPolicy {
                     Drop(event: "finale", step: 25000)]
         case (2, "l6"), (2, "l7"), (2, "l8"):
             return [Drop(event: "finale", step: 25000)]
+        case (3, "l1"): return [Drop(event: "d_gat", step: 4000)]
+        case (3, "l4"), (3, "note_fedya"): return [Drop(event: "d_top", step: 9000)]
+        case (3, "l2"): return [Drop(event: "d_torf", step: 12500)]
+        case (3, "l3"): return [Drop(event: "d_barge", step: 16500)]
+        case (3, "l5"), (3, "l7"): return [Drop(event: "d_reeds", step: 20000)]
+        case (3, "l9"): return [Drop(event: "d_otstoy", step: 28000)]
         default:
             return []
         }
@@ -85,6 +91,17 @@ enum BagPolicy {
         case (2, "note_gar"): return "p_note_gar"
         case (2, "animal_raven_scrap"): return "e_animal_raven"
         case (2, "animal_dog_horn"): return "p_animal_dog_find"
+        case (3, "l1"): return "p_l1"
+        case (3, "l2"): return "p_l2"
+        case (3, "l3"): return "p_l3"
+        case (3, "l4"): return "p_l4"
+        case (3, "l5"): return "p_l5"
+        case (3, "l6"): return "p_l6"
+        case (3, "l7"): return "p_l7"
+        case (3, "l8"): return "p_l8"
+        case (3, "l9"): return "p_l9"
+        case (3, "l10"): return "p_l10"
+        case (3, "note_fedya"): return "e_fedya_help"
         default: return nil
         }
     }

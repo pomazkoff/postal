@@ -381,7 +381,7 @@ final class AppCore {
         let minute = Calendar.current.component(.minute, from: now)
         let daily = NoticePlan.dailyShouldSchedule(remindersOn: true, walkedToday: steps.todaySteps > 0,
                                                    openedToday: ForegroundDay.openedToday(now), hour: hour, minute: minute)
-        notifier.setDailyReminder(enabled: daily)
+        notifier.setDailyReminder(enabled: daily, chapterID: chapter.id)
     }
 
     /// Неотвеченные выборы, которые игрок видел в приложении и ушёл — пуш с кнопками на локскрин.

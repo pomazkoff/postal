@@ -881,9 +881,9 @@ final class ChapterEngine: ObservableObject {
     }
 }
 
-/// Полноэкранная карточка конца главы 2. Не раньше финала и не на каждом запуске.
+/// Полноэкранная карточка конца главы 3. Не раньше финала и не на каждом запуске.
 enum JourneyCard {
     static func shouldShow(chapterID: Int, finished: Bool, hasPendingCard: Bool, seen: Bool) -> Bool {
-        chapterID == 2 && finished && !hasPendingCard && !seen
+        chapterID == 3 && finished && !hasPendingCard && !seen
     }
 }

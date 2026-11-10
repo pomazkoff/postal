@@ -17,18 +17,18 @@ def fail(msg):
 
 
 def should_show(chapter_id, finished, pending, seen):
-    return chapter_id == 2 and finished and not pending and not seen
+    return chapter_id == 3 and finished and not pending and not seen
 
 
-if should_show(2, True, False, False) is not True:
-    fail("a finished chapter 2 with nothing left to read must show the card")
-if should_show(2, True, True, False):
-    fail("the card must wait until the gorge card is dismissed")
-if should_show(2, False, False, False):
-    fail("chapter 2 must not show the card before the finale")
-if should_show(1, True, False, False):
-    fail("chapter 1 keeps its own ending")
-if should_show(2, True, False, True):
+if should_show(3, True, False, False) is not True:
+    fail("a finished chapter 3 with nothing left to read must show the card")
+if should_show(3, True, True, False):
+    fail("the card must wait until the finale card is dismissed")
+if should_show(3, False, False, False):
+    fail("chapter 3 must not show the card before the finale")
+if should_show(1, True, False, False) or should_show(2, True, False, False):
+    fail("chapters 1 and 2 continue on the road and do not show the coming-soon card")
+if should_show(3, True, False, True):
     fail("a seen card must not return on the next launch")
 
 story = (ROOT / "Postman/GameAssets/Data/chapter2_story.json").read_text(encoding="utf-8")
@@ -51,11 +51,11 @@ def value(text, key):
 
 if value(ru, "journey.continue") != "Путешествие почтальона продолжится":
     fail("Russian title is not the requested sentence")
-if value(ru, "journey.soon") != "Глава 3 скоро":
+if value(ru, "journey.soon") != "Глава 4 скоро":
     fail("Russian subtitle is not the requested sentence")
 if value(en, "journey.continue") != "The postman's journey will continue":
     fail("English title drifted")
-if value(en, "journey.soon") != "Chapter 3 is coming soon":
+if value(en, "journey.soon") != "Chapter 4 is coming soon":
     fail("English subtitle drifted")
 
 state = (ROOT / "Postman/Model/ChapterState.swift").read_text(encoding="utf-8")
