@@ -116,6 +116,13 @@ struct HUDView: View {
                 .transition(.opacity)
                 .zIndex(8)
             }
+            if let note = game.marshNote, screen == .none {
+                MarshNote(title: marshLine(note, title: true), text: marshLine(note, title: false)) {
+                    game.marshNote = nil
+                }
+                .transition(.opacity)
+                .zIndex(8)
+            }
             if let id = letterID {
                 LetterScreen(itemID: id) { closeLetter(id) }
                     .transition(.opacity)
@@ -127,10 +134,11 @@ struct HUDView: View {
         .onChange(of: screen) { _, new in
             game.roadMenuOpen = new == .menu
             publishWorldCover(screen: new)
-            if new != .none { game.showHeroCard = false }
+            if new != .none { game.showHeroCard = false; game.marshNote = nil }
         }
         .onChange(of: letterID) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
+        .onChange(of: game.marshNote) { _, _ in publishWorldCover(screen: screen) }
         .storyResetAlert(isPresented: $confirmReset)
     }
 
@@ -370,8 +378,16 @@ struct HUDView: View {
         return UnitPoint(x: p.x / max(m.size.width, 1), y: p.y / max(m.size.height, 1))
     }
 
+    private func marshLine(_ id: String, title: Bool) -> String {
+        var key = "tap."
+        key += "ch3."
+        key += id
+        if title { key += ".title" }
+        return L10n.text(key)
+    }
+
     private func publishWorldCover(screen: Screen) {
-        let covered = screen != .none || letterID != nil || game.showHeroCard
+        let covered = screen != .none || letterID != nil || game.showHeroCard || game.marshNote != nil
         if game.worldCovered != covered {
             game.worldCovered = covered
             if covered { SoundPlayback.shared.stopAll() }

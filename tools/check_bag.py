@@ -43,6 +43,12 @@ DROPS = {
     (3, "l5"): [("d_reeds", 20000)],
     (3, "l7"): [("d_reeds", 20000)],
     (3, "l9"): [("d_otstoy", 28000)],
+    (3, "find_edge"): [("d_gat", 4000)],
+    (3, "find_tag"): [("d_top", 9000)],
+    (3, "find_card"): [("d_top", 9000)],
+    (3, "find_pole"): [("d_torf", 12500)],
+    (3, "find_graph"): [("d_torf", 12500)],
+    (3, "find_pass"): [("d_barge", 16500)],
 }
 HANDOFF = {key: drops[0][0] for key, drops in DROPS.items()}
 PICKUP = {
@@ -55,6 +61,8 @@ PICKUP = {
     (3, "l1"): "p_l1", (3, "l2"): "p_l2", (3, "l3"): "p_l3", (3, "l4"): "p_l4",
     (3, "l5"): "p_l5", (3, "l6"): "p_l6", (3, "l7"): "p_l7", (3, "l8"): "p_l8",
     (3, "l9"): "p_l9", (3, "l10"): "p_l10", (3, "note_fedya"): "e_fedya_help",
+    (3, "find_edge"): "p_edge", (3, "find_tag"): "e_fedya_help", (3, "find_card"): "p_card",
+    (3, "find_pole"): "p_pole", (3, "find_graph"): "p_graph", (3, "find_pass"): "p_pass",
 }
 CARRIED = {"inBag", "inPocket"}
 READ_ON = {(1, "l7"), (2, "l9"), (3, "l6"), (3, "l8"), (3, "l10")}
@@ -253,6 +261,8 @@ for key in ["bag.mail", "bag.personal", "bag.more", "bag.look", "bag.took.all", 
             "bag.act.1.l1", "bag.act.1.l6", "bag.act.2.l1", "bag.act.2.note_gar",
             "bag.act.3.l1", "bag.act.3.l4", "bag.act.3.note_fedya", "bag.act.3.l2",
             "bag.act.3.l3", "bag.act.3.l5", "bag.act.3.l7", "bag.act.3.l9",
+            "bag.act.3.find_edge", "bag.act.3.find_tag", "bag.act.3.find_card",
+            "bag.act.3.find_pole", "bag.act.3.find_graph", "bag.act.3.find_pass",
             "bag.act.drop.2.e_khomut", "bag.act.drop.2.finale",
             "bag.keep.animal_cat_stamp", "bag.keep.animal_raven_scrap", "bag.keep.animal_dog_horn"]:
     if f'"{key}"' not in ru or f'"{key}"' not in en:
@@ -294,6 +304,11 @@ story_docs = {
     3: json.loads(ch3),
 }
 READ_IN_PLACE = {(1, "l7"), (2, "l9"), (3, "l6"), (3, "l8"), (3, "l10")}
+# Находки гл.3 отдаются один раз в ящике впереди. Это не почта и не возврат назад.
+GIFT = {
+    (3, "find_edge"), (3, "find_tag"), (3, "find_card"),
+    (3, "find_pole"), (3, "find_graph"), (3, "find_pass"),
+}
 
 
 def is_mail(item):
@@ -310,8 +325,15 @@ for chapter, doc in story_docs.items():
     for item in doc["items"]:
         key = (chapter, item["id"])
         if not is_mail(item):
-            if key in DROPS:
+            if key in DROPS and key not in GIFT:
                 fail(f"a find was given a delivery: {key}")
+            if key in GIFT:
+                pickup_step = steps.get(PICKUP.get(key), 0)
+                delivery_step = DROPS[key][0][1]
+                if pickup_step >= delivery_step:
+                    fail(f"{key} is picked up at {pickup_step}, which is not before delivery {delivery_step}")
+                if steps.get(DROPS[key][0][0]) != delivery_step:
+                    fail(f"{key} drop is not the story event")
             continue
         for event, step in DROPS.get(key, []):
             if steps.get(event) != step:

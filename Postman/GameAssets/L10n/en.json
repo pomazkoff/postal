@@ -1641,6 +1641,12 @@
           "place": "Personal things",
           "text": "The edge of a stamp from under the planks. No letters. The colour still holds."
         },
+        "find_tag": {
+          "to": "For the postman",
+          "from": "Old Fedya",
+          "place": "Personal things",
+          "text": "A chip stamped by the plant. From the lower store."
+        },
         "find_card": {
           "to": "For the postman",
           "from": "Hummocks",
@@ -1739,6 +1745,9 @@
           "lines": [
             {
               "text": "Galya's letter went into the box on the Boardwalk, “a chance downstream”."
+            },
+            {
+              "text": "The stamp edge was left in the same box, for old Fedya."
             }
           ],
           "push": [
@@ -1837,6 +1846,15 @@
             },
             {
               "text": "Fedya's note went “downstream, by a chance”, to Marya."
+            },
+            {
+              "text": "The stamped chip was left for Vera. She answers: the lower stamp, noted."
+            },
+            {
+              "text": "Somov's card was left for Pimen. He buried Ferapont in August. The apples were not picked."
+            },
+            {
+              "text": "Somov's card was left for Nina. Ferapont has been gone since August. She used to bring him a jar."
             }
           ],
           "push": [
@@ -1887,6 +1905,12 @@
           "lines": [
             {
               "text": "Nina's letter went into the box at the Peat Cut, “for A.L.”."
+            },
+            {
+              "text": "The pole with no nicks was left for Kuzma. Not his. Someone further down is measuring too."
+            },
+            {
+              "text": "Mitya was left the scrap: pilot, not his hand, someone had already measured."
             }
           ],
           "push": [
@@ -1962,6 +1986,9 @@
           "lines": [
             {
               "text": "The letter “from Tima” went into the box on the barge, “a chance downstream”."
+            },
+            {
+              "text": "The pass was left for old Fedya. The lower yard, an old pattern. He has not gone there since autumn."
             }
           ],
           "push": [
@@ -2031,6 +2058,7 @@
               "text": "A radio lies in the reeds. Listen?"
             }
           ],
+          "fallback": "The song had already broken off. The radio was touched earlier.",
           "options": {
             "listen": {
               "label": "Listen",

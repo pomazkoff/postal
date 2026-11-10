@@ -131,8 +131,46 @@ if abs(swamps["join"][0] - 619.9) > 0.2 or abs(swamps["join"][1] - 2373.7) > 0.2
     fail("the swamp join moved")
 atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
 screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
-if "loadSwamps" not in atlas or "swampOverlap" not in screen:
-    fail("the swamp sheet is not drawn with a bottom fade")
+if "loadSwamps" not in atlas or "MarshSeam.apply" not in screen:
+    fail("the swamp sheet is not joined onto the mountains")
+if "mountain:" not in atlas.split("enum MarshSeam", 1)[-1][:800]:
+    fail("the seam does not blend into the mountain picture")
+chapter_dir = ROOT / "Postman/GameAssets/Chapter3"
+for folder in ("road", "places", "underground", "foreground", "residents/fedya"):
+    path = chapter_dir / folder
+    if path.is_symlink():
+        fail(f"{folder} is still a link to another chapter")
+    if not path.is_dir():
+        fail(f"{folder} is not a chapter 3 folder")
+if chapter["assetsFolder"] != "Chapter3":
+    fail("chapter 3 does not load its own asset folder")
+expected_art = {
+    "road/road_main_alder.png": (2400, 680),
+    "places/bg_far_ridges_tile.png": (2636, 1236),
+    "places/bg_mid_fields_tile.png": (2636, 1040),
+    "underground/ug_neutral_tile.png": (1148, 415),
+}
+from PIL import Image
+for rel, size in expected_art.items():
+    path = chapter_dir / rel
+    if not path.exists():
+        continue
+    with Image.open(path) as im:
+        if im.size != size:
+            fail(f"{rel} is {im.size}, the strip expects {size}")
+taps = json.loads((ROOT / "Postman/GameAssets/Data/chapter3_taps.json").read_text(encoding="utf-8"))
+needed = {"frog1", "heron", "bubble1", "boat", "barge", "bell", "radio", "wall", "kettle", "barrier"}
+got = {tap["id"] for tap in taps}
+if not needed <= got:
+    fail(f"missing world taps {sorted(needed - got)}")
+scene_body = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
+if "marsh:" not in scene_body or "chapter3_taps.json" not in scene_body:
+    fail("marsh taps are not hit targets")
+fedya = chapter_dir / "residents/fedya/full.png"
+if fedya.exists():
+    with Image.open(fedya) as im:
+        if im.mode != "RGBA":
+            fail("Fedya's picture needs a transparent background")
 if "destinationIn" in screen:
     fail("the fade must not punch a hole with destinationIn")
 

@@ -27,16 +27,58 @@ def road_point(road, fraction):
     return pts[-1]
 
 
-def fade_bottom(image, band):
-    arr = np.array(image.convert("RGBA"))
-    h = arr.shape[0]
-    clear = min(band, int(round(h * 352 / 2532)))
-    start = max(0, h - band)
-    end = max(start, h - clear)
-    ramp = np.linspace(1, 0, max(1, end - start), dtype=np.float32)
-    arr[start:end, :, 3] = (arr[start:end, :, 3].astype(np.float32) * ramp[:, None]).astype(np.uint8)
-    arr[end:, :, 3] = 0
-    return Image.fromarray(arr)
+def seam(image, road, mountain, lift):
+    """Blend the marsh into the peaks. The road stays the swamp's own bright colour."""
+    arr = np.array(image.convert("RGBA")).astype(np.float32)
+    base = arr.copy()
+    mount = np.array(mountain.convert("RGBA")).astype(np.float32)
+    h, w = arr.shape[:2]
+    lift = int(lift)
+    # Сначала размыть собственный прямой край болот, потом влить горы с нуля на их верхе.
+    kernel = np.array([1, 2, 4, 6, 8, 10, 8, 6, 4, 2, 1], dtype=np.float32)
+    kernel /= kernel.sum()
+    pad = len(kernel) // 2
+    src = base.copy()
+    y_a, y_b = max(0, lift - 120), min(h, lift + 280)
+    slab = np.pad(base[y_a:y_b, :, :3].astype(np.float32), ((pad, pad), (0, 0), (0, 0)), mode="edge")
+    blurred = np.zeros_like(base[y_a:y_b, :, :3], dtype=np.float32)
+    for i, weight in enumerate(kernel):
+        blurred += slab[i:i + (y_b - y_a)] * weight
+    src[y_a:y_b, :, :3] = blurred
+    y0, y1 = lift, h - 1
+    for y in range(y0, h):
+        my = y - lift
+        if my < 0 or my >= mount.shape[0]:
+            continue
+        raw = (y - y0) / max(1, y1 - y0)
+        k = raw * raw * (3 - 2 * raw)
+        arr[y, :, :3] = src[y, :, :3] * (1 - k) + mount[my, :, :3] * k
+        arr[y, :, 3] = 255
+    arr[:y0] = src[:y0]
+    radius = 26
+    road_mask = np.zeros((h, w), dtype=bool)
+
+    def stamp(cx, cy):
+        x0, x1 = max(0, int(cx) - radius), min(w, int(cx) + radius + 1)
+        y0, y1 = max(0, int(cy) - radius), min(h, int(cy) + radius + 1)
+        if x0 >= x1 or y0 >= y1:
+            return
+        xs = np.arange(x0, x1)[None, :]
+        ys = np.arange(y0, y1)[:, None]
+        road_mask[y0:y1, x0:x1] |= (xs - cx) ** 2 + (ys - cy) ** 2 <= radius ** 2
+
+    prev = np.array(road[0], dtype=float)
+    for point in road[::3]:
+        point = np.array(point, dtype=float)
+        dist = float(np.hypot(*(point - prev)))
+        steps = max(1, int(dist / 8))
+        for s in range(steps + 1):
+            cx, cy = prev + (point - prev) * (s / steps)
+            stamp(cx, cy)
+        prev = point
+    # Дорога болот остаётся своим цветом. Ниже стыка уже виден путь гор: цвета на шве совпадают.
+    arr[road_mask] = base[road_mask]
+    return Image.fromarray(arr.astype(np.uint8))
 
 
 def main():
@@ -54,9 +96,7 @@ def main():
     end = mountains["road"][-1]
     lift = int(round(swamps["join"][1] - end[1]))
     overlap = swamp_im.height - lift
-    # The painted parchment edge sits at the top of the 560 px overlap, so the ramp
-    # starts higher. Otherwise that edge stays opaque and reads as a cut.
-    swamp_im = fade_bottom(swamp_im, overlap + 320)
+    swamp_im = seam(swamp_im, swamps["road"], mountain_im, lift)
     height = lift + mountain_im.height
     canvas_h = height
     sheet = Image.new("RGBA", (1170, canvas_h), (232, 220, 196, 255))
@@ -117,6 +157,29 @@ def main():
     d.text((70, 536), "Ступить в кочки", fill=(40, 28, 18), font=font)
     choice.save(OUT / "choice_fog.jpg", quality=85)
     print("cards written")
+    taps = json.loads((ROOT / "Postman/GameAssets/Data/chapter3_taps.json").read_text(encoding="utf-8"))
+    shown = ["frog1", "heron", "bubble1", "boat", "barge", "bell", "radio", "wall", "kettle", "barrier"]
+    sheet = Image.new("RGB", (1100, 980), (236, 224, 198))
+    d = ImageDraw.Draw(sheet)
+    d.text((36, 28), "OFFLINE taps · not a device · sprites beside the road", fill=(40, 28, 18), font=font)
+    for i, tid in enumerate(shown):
+        kind = next(t["sprite"].rsplit("/", 1)[-1] for t in taps if t["id"] == tid)
+        icon = Image.open(ROOT / "Postman/GameAssets" / f"Chapter3/taps/{kind}.png").convert("RGBA")
+        icon.thumbnail((150, 120))
+        col, row = i % 5, i // 5
+        x, y = 40 + col * 210, 120 + row * 400
+        sheet.paste(icon, (x, y), icon)
+        d.text((x, y + 140), tid, fill=(40, 28, 18), font=font)
+    sheet.save(OUT / "taps.jpg", quality=85)
+    gift = Image.new("RGB", (900, 700), (236, 224, 198))
+    d = ImageDraw.Draw(gift)
+    d.text((40, 36), "OFFLINE handoff · not a device", fill=(40, 28, 18), font=font)
+    d.text((40, 100), "Кромка марки", fill=(40, 28, 18), font=font)
+    d.multiline_text((40, 170), "Оставить в ящике на Гати\nдля деда Феди.\nЯщик ещё впереди.", fill=(40, 28, 18), font=font, spacing=10)
+    d.rounded_rectangle((40, 460, 860, 580), radius=16, fill=(90, 58, 36))
+    d.text((70, 500), "В ящик на Гати, для деда Феди", fill=(244, 232, 210), font=font)
+    gift.save(OUT / "gift_edge.jpg", quality=85)
+    print("taps and gift")
 
 
 if __name__ == "__main__":

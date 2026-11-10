@@ -32,6 +32,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var residentNodes: [String: SKSpriteNode] = [:]
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
+    /// Короткий тап по вещи на болотах: id из chapter3_taps.json.
+    var onMarshTap: ((String) -> Void)?
     var onPostmanTap: (() -> Void)?
     /// Видимый шаг героя: мировой шаг, только когда стопа ставится и он в кадре.
     var onFootfall: ((Double) -> Void)?
@@ -304,6 +306,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             actorLayer.addChild(marker)
         }
         // Заглушка только за ПОСЛЕДНЕЙ известной главой, не поверх следующей.
+        if chapter.id == 3 {
+            installMarshTaps(in: actorLayer, chapter: chapter)
+        }
         if index == config.chapters.count - 1, let after = chapter.rawClayAfterStep {
             let clay = SKSpriteNode(color: UIColor(red: 0.55, green: 0.47, blue: 0.38, alpha: 1),
                                     size: CGSize(width: W * 4, height: CGFloat(config.game.designHeight)))
@@ -311,6 +316,37 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             clay.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + after)) + 600, y: 0)
             clay.zPosition = 50
             actorLayer.addChild(clay)
+        }
+    }
+
+    private struct MarshTap: Decodable {
+        let id: String
+        let step: Int
+        let dx: Double
+        let sprite: String
+        let flag: String?
+    }
+
+    /// Вещи §10.3. Каждая — отдельная цель, не житель и не письмо.
+    private func installMarshTaps(in layer: SKNode, chapter: ChapterConfig) {
+        let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/chapter3_taps.json")
+        guard let data = try? Data(contentsOf: url),
+              let taps = try? JSONDecoder().decode([MarshTap].self, from: data) else { return }
+        for tap in taps {
+            let path = TextureStore.url(for: tap.sprite).path
+            guard FileManager.default.fileExists(atPath: path) else { continue }
+            let tex = TextureStore.shared.texture(tap.sprite)
+            let node = SKSpriteNode(texture: tex)
+            let h: CGFloat = 150
+            let w = tex.size().width > 0 ? h * tex.size().width / tex.size().height : h
+            node.size = CGSize(width: w, height: h)
+            node.anchorPoint = CGPoint(x: 0.5, y: 0)
+            node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + tap.step)) + CGFloat(tap.dx),
+                                    y: geo.roadY - 8)
+            node.zPosition = 60
+            node.name = "marsh:" + tap.id
+            node.isUserInteractionEnabled = false
+            layer.addChild(node)
         }
     }
 
@@ -992,11 +1028,26 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         return nil
     }
 
+    private func marshKey(at point: CGPoint) -> String? {
+        for hit in nodes(at: point) {
+            var candidate: SKNode? = hit
+            while let node = candidate, node !== self {
+                if let name = node.name, name.hasPrefix("marsh:"),
+                   !node.isHidden, node.alpha > 0.01, let parent = node.parent,
+                   node.contains(convert(point, to: parent)) {
+                    return String(name.dropFirst("marsh:".count))
+                }
+                candidate = node.parent
+            }
+        }
+        return nil
+    }
+
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer === residentTapRecognizer else { return true }
         guard isUserInteractionEnabled, let view else { return false }
         let point = convertPoint(fromView: touch.location(in: view))
-        return residentKey(at: point) != nil || hitsPostman(at: point)
+        return residentKey(at: point) != nil || marshKey(at: point) != nil || hitsPostman(at: point)
     }
 
     private func hitsPostman(at point: CGPoint) -> Bool {
@@ -1014,6 +1065,10 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     @objc private func handleResidentTap(_ g: UITapGestureRecognizer) {
         guard g.state == .ended, !isPanning, let view = g.view else { return }
         let point = convertPoint(fromView: g.location(in: view))
+        if let key = marshKey(at: point) {
+            onMarshTap?(key)
+            return
+        }
         if let key = residentKey(at: point) {
             let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
             guard parts.count == 2, let chapterID = Int(parts[0]) else { return }

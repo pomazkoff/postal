@@ -109,6 +109,117 @@ enum SwampJoin {
     static let point = CGPoint(x: 619.9, y: 2373.7)
 }
 
+/// Стык листа болот с горами. Край болот размывается в сами вершины,
+/// дорога остаётся цветом болот и не бледнеет.
+enum MarshSeam {
+    static func apply(_ image: UIImage, road: [CGPoint], mountain: UIImage, lift: CGFloat) -> UIImage {
+        guard let cg = image.cgImage, let mountainCG = mountain.cgImage, !road.isEmpty else { return image }
+        let w = cg.width, h = cg.height
+        let color = CGColorSpaceCreateDeviceRGB()
+        let info = CGImageAlphaInfo.premultipliedLast.rawValue
+        func buffer(_ source: CGImage, width: Int, height: Int) -> (CGContext, UnsafeMutablePointer<UInt8>)? {
+            guard let ctx = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8,
+                                      bytesPerRow: width * 4, space: color, bitmapInfo: info),
+                  let data = ctx.data else { return nil }
+            ctx.draw(source, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return (ctx, data.bindMemory(to: UInt8.self, capacity: width * height * 4))
+        }
+        guard let (ctx, pixels) = buffer(cg, width: w, height: h) else { return image }
+        let mw = mountainCG.width, mh = mountainCG.height
+        guard let (mountainCtx, mount) = buffer(mountainCG, width: mw, height: mh), mw == w else { return image }
+        _ = mountainCtx
+        let scaleY = CGFloat(h) / 2532
+        let liftY = Int((lift * scaleY).rounded())
+        var original = [UInt8](repeating: 0, count: w * h * 4)
+        for i in 0..<(w * h * 4) { original[i] = pixels[i] }
+        func index(_ x: Int, _ imageY: Int, _ width: Int, _ height: Int) -> Int {
+            ((height - 1 - imageY) * width + x) * 4
+        }
+        let y0 = max(0, liftY - 120)
+        let y1 = min(h, liftY + 280)
+        let kernel: [Float] = [1, 2, 4, 6, 8, 10, 8, 6, 4, 2, 1]
+        let weight = kernel.reduce(0, +)
+        if y1 > y0 {
+            var blurred = [UInt8](repeating: 0, count: (y1 - y0) * w * 4)
+            for y in y0..<y1 {
+                for x in 0..<w {
+                    var r: Float = 0, g: Float = 0, b: Float = 0
+                    for (i, k) in kernel.enumerated() {
+                        let sample = min(y1 - 1, max(y0, y + i - kernel.count / 2))
+                        let s = index(x, sample, w, h)
+                        r += Float(pixels[s]) * k
+                        g += Float(pixels[s + 1]) * k
+                        b += Float(pixels[s + 2]) * k
+                    }
+                    let o = ((y - y0) * w + x) * 4
+                    blurred[o] = UInt8(r / weight)
+                    blurred[o + 1] = UInt8(g / weight)
+                    blurred[o + 2] = UInt8(b / weight)
+                    blurred[o + 3] = 255
+                }
+            }
+            for y in y0..<y1 {
+                for x in 0..<w {
+                    let o = ((y - y0) * w + x) * 4
+                    let i = index(x, y, w, h)
+                    pixels[i] = blurred[o]
+                    pixels[i + 1] = blurred[o + 1]
+                    pixels[i + 2] = blurred[o + 2]
+                    pixels[i + 3] = 255
+                }
+            }
+        }
+        let blendEnd = max(liftY + 1, h - 1)
+        if liftY < h {
+            for y in liftY..<h {
+                let my = y - liftY
+                guard my >= 0, my < mh else { continue }
+                let raw = Float(y - liftY) / Float(max(1, blendEnd - liftY))
+                let k = raw * raw * (3 - 2 * raw)
+                for x in 0..<w {
+                    let i = index(x, y, w, h)
+                    let m = index(x, my, mw, mh)
+                    pixels[i] = UInt8(Float(pixels[i]) * (1 - k) + Float(mount[m]) * k)
+                    pixels[i + 1] = UInt8(Float(pixels[i + 1]) * (1 - k) + Float(mount[m + 1]) * k)
+                    pixels[i + 2] = UInt8(Float(pixels[i + 2]) * (1 - k) + Float(mount[m + 2]) * k)
+                    pixels[i + 3] = 255
+                }
+            }
+        }
+        let scaleX = CGFloat(w) / 1170
+        let points = road.map { CGPoint(x: $0.x * scaleX, y: $0.y * scaleY) }
+        let radius = Int((26 * scaleX).rounded())
+        func restore(_ center: CGPoint) {
+            let cx = Int(center.x.rounded()), cy = Int(center.y.rounded())
+            for dy in -radius...radius {
+                let reach = Int((Double(radius * radius - dy * dy)).squareRoot())
+                for dx in -reach...reach {
+                    let x = cx + dx, y = cy + dy
+                    guard x >= 0, y >= 0, x < w, y < h else { continue }
+                    let i = index(x, y, w, h)
+                    pixels[i] = original[i]
+                    pixels[i + 1] = original[i + 1]
+                    pixels[i + 2] = original[i + 2]
+                    pixels[i + 3] = original[i + 3]
+                }
+            }
+        }
+        var previous = points[0]
+        for point in points {
+            let span = max(abs(point.x - previous.x), abs(point.y - previous.y))
+            let steps = max(1, Int(span.rounded()))
+            for s in 0...steps {
+                let t = CGFloat(s) / CGFloat(steps)
+                restore(CGPoint(x: previous.x + (point.x - previous.x) * t,
+                                y: previous.y + (point.y - previous.y) * t))
+            }
+            previous = point
+        }
+        guard let out = ctx.makeImage() else { return image }
+        return UIImage(cgImage: out, scale: image.scale, orientation: image.imageOrientation)
+    }
+}
+
 enum SwampPlaces {
     static let steps: [String: Int] = [
         "gat": 4000,

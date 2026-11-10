@@ -110,6 +110,8 @@ ITEMS = {
     },
     "find_edge": {"to": "For the postman", "from": "Boardwalk", "place": "Personal things",
                   "text": "The edge of a stamp from under the planks. No letters. The colour still holds."},
+    "find_tag": {"to": "For the postman", "from": "Old Fedya", "place": "Personal things",
+                 "text": "A chip stamped by the plant. From the lower store."},
     "find_card": {"to": "For the postman", "from": "Hummocks", "place": "Personal things",
                   "text": "A memorial card. “Somov F.I.”. The ribbon on the stake has faded."},
     "find_pole": {"to": "For the postman", "from": "Mire", "place": "Personal things",
@@ -159,7 +161,10 @@ EVENTS = {
         },
     ),
     "p_edge": ev("An edge from a crack", lines=("The edge of a stamp sticks out of a crack in the boardwalk. There are no letters.",), push=("The Boardwalk. The edge of an envelope in a crack of the planks.",)),
-    "d_gat": ev("The box on the Boardwalk", "A tin box, “a chance”. Mail goes down from here, into the Valley.", lines=("Galya's letter went into the box on the Boardwalk, “a chance downstream”.",), push=("The Boardwalk. The chance box.",)),
+    "d_gat": ev("The box on the Boardwalk", "A tin box, “a chance”. Mail goes down from here, into the Valley.", lines=(
+        "Galya's letter went into the box on the Boardwalk, “a chance downstream”.",
+        "The stamp edge was left in the same box, for old Fedya.",
+    ), push=("The Boardwalk. The chance box.",)),
     "p_l4": ev(lines=("A chance from the Valley: Mitya to Vera. A drawing of the loop, and a wrapper.",), push=("The Boardwalk. Mitya's letter to Vera.",)),
     "p_frame": ev(lines=("A wire loop went into the personal things.",), push=("The Boardwalk. A loop for taking a bearing.",)),
     "e_fedya_help": ev(
@@ -182,11 +187,21 @@ EVENTS = {
             "keep": {"label": "Keep it", "result": "The card stays with the personal things. The refusal sheet can be set beside it later.", "auto": "The postman kept the card."},
         },
     ),
-    "d_top": ev("The hut at the Mire", "The hut is empty. In the box, notes: “for Vera” and “a chance downstream”.", lines=("Mitya's letter and Fedya's note went into the hut at the Mire.", "Fedya's note went “downstream, by a chance”, to Marya."), push=("The Mire. The hut. The chance box.",)),
+    "d_top": ev("The hut at the Mire", "The hut is empty. In the box, notes: “for Vera” and “a chance downstream”.", lines=(
+        "Mitya's letter and Fedya's note went into the hut at the Mire.",
+        "Fedya's note went “downstream, by a chance”, to Marya.",
+        "The stamped chip was left for Vera. She answers: the lower stamp, noted.",
+        "Somov's card was left for Pimen. He buried Ferapont in August. The apples were not picked.",
+        "Somov's card was left for Nina. Ferapont has been gone since August. She used to bring him a jar.",
+    ), push=("The Mire. The hut. The chance box.",)),
     "p_l2": ev(lines=("A chance from the Valley: Nina to Timofey. She asks what the goat was called.",), push=("The Mire. Nina's letter to Timofey.",)),
     "p_pole": ev(lines=("In the silt by the boardwalk, a pole with not a single nick.",), push=("The Mire. Someone else's pole in the silt.",)),
     "p_graph": ev(lines=("By the hut, a scrap of graph paper. “Pilot”. No figures.",), push=("The Mire. Someone else's scrap of graph paper.",)),
-    "d_torf": ev("The box at the Peat Cut", "A service box. A note: “for A.L.”.", lines=("Nina's letter went into the box at the Peat Cut, “for A.L.”.",), push=("The Peat Cut. The box for A.L.",)),
+    "d_torf": ev("The box at the Peat Cut", "A service box. A note: “for A.L.”.", lines=(
+        "Nina's letter went into the box at the Peat Cut, “for A.L.”.",
+        "The pole with no nicks was left for Kuzma. Not his. Someone further down is measuring too.",
+        "Mitya was left the scrap: pilot, not his hand, someone had already measured.",
+    ), push=("The Peat Cut. The box for A.L.",)),
     "p_l3": ev(lines=("A chance: “Tima” to Nina. He called the goat Ramka. A tin label.",), push=("The Peat Cut. A letter “from Tima” to Nina.",)),
     "p_pass": ev(lines=("In the peat, a pass on a string. An old pattern.",), push=("The Peat Cut. A pass in the peat.",)),
     "e_bearing": ev(
@@ -201,7 +216,10 @@ EVENTS = {
         },
     ),
     "p_l5": ev(lines=("A chance: “Galya” to Mitya. “Received in one piece”. There are no hooks.",), push=("The Old Channel. A letter “from Galya” to Mitya.",)),
-    "d_barge": ev("The box on the barge", "A “chance” box on the deck.", lines=("The letter “from Tima” went into the box on the barge, “a chance downstream”.",), push=("The Old Channel. The box on the barge.",)),
+    "d_barge": ev("The box on the barge", "A “chance” box on the deck.", lines=(
+        "The letter “from Tima” went into the box on the barge, “a chance downstream”.",
+        "The pass was left for old Fedya. The lower yard, an old pattern. He has not gone there since autumn.",
+    ), push=("The Old Channel. The box on the barge.",)),
     "p_l7": ev(lines=("Kuzma to Vera. On the chip, fifty-eight. Pitch.",), push=("The Old Channel. Kuzma to Vera: fifty-eight.",)),
     "p_l6": ev(lines=("Mitya to the postman. Four names from the bell. Us Galya among them.",), push=("The Old Channel. Mitya made out a piece of the bell.",)),
     "p_wet": ev(lines=("Under the barge, a wet envelope. The stamp says “N. Stvor”. No letters.",), push=("The Old Channel. The envelope under the barge cannot be read.",)),
@@ -209,6 +227,7 @@ EVENTS = {
     "e_radio": ev(
         "A radio in the reeds",
         "An abandoned radio lies on the path. Night is not required for this.",
+        fallback="The song had already broken off. The radio was touched earlier.",
         push=("A radio lies in the reeds. Listen?",),
         options={
             "listen": {"label": "Listen", "result": "The song broke off. After that, only noise.", "auto": "The postman listened. The song broke off."},

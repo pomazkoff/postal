@@ -66,8 +66,7 @@ struct MapScreen: View {
                             }
                             if let swamps = atlas.swamps {
                                 mountainLayer(swamps, global: global, m: m, drawHero: heroOnSwamp,
-                                              picture: swampPicture, postman: map.postman,
-                                              fadeBottom: min(swamps.size.height, atlas.swampOverlap + 320))
+                                              picture: swampPicture, postman: map.postman)
                             }
                         }
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
@@ -538,10 +537,19 @@ struct MapScreen: View {
         let scale = sheet.field.decodeScale
         let bias = sheet.field.decodeBias
         let soft = sheet.softFraction
+        let road = sheet.road
+        let atlas = MapAtlas.make(valley: map)
+        let mountainURL = atlas.mountains.map { URL(fileURLWithPath: $0.colorPath) }
+        let lift = atlas.lift
         let image = await Task.detached(priority: .userInitiated) {
-            ParchmentReveal.render(color: color, pencil: pencil, field: field,
-                                   decodeScale: scale, decodeBias: bias,
-                                   softFraction: soft, threshold: t0)
+            let revealed = ParchmentReveal.render(color: color, pencil: pencil, field: field,
+                                                   decodeScale: scale, decodeBias: bias,
+                                                   softFraction: soft, threshold: t0)
+            guard let revealed else { return nil }
+            guard let mountainURL, let mountain = UIImage(contentsOfFile: mountainURL.path) else {
+                return revealed
+            }
+            return MarshSeam.apply(revealed, road: road, mountain: mountain, lift: lift)
         }.value
         swampPicture = image
         swampPictureFor = t0
@@ -624,6 +632,43 @@ struct MapNote: Identifiable, Equatable {
 }
 
 /// Карточка почтальона в мире: то же описание, что на первой странице знакомства.
+struct MarshNote: View {
+    let title: String
+    let text: String
+    let onClose: () -> Void
+
+    var body: some View {
+        FrameScreen(dim: 0.45) { m in
+            ZStack {
+                Color.clear.contentShape(Rectangle()).onTapGesture(perform: onClose)
+                VStack(alignment: .leading, spacing: m.length(16)) {
+                    Text(title)
+                        .font(Ink.title(m.length(52)))
+                        .foregroundStyle(Ink.brown)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(text)
+                        .font(Ink.font("hand", size: m.length(36)))
+                        .foregroundStyle(Ink.pencil)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button(action: onClose) {
+                        Text(L10n.text("map.close"))
+                            .font(Ink.title(m.length(36)))
+                            .foregroundStyle(Ink.chalk)
+                            .frame(maxWidth: .infinity, minHeight: m.length(100))
+                            .background(RoundedRectangle(cornerRadius: m.length(12), style: .continuous).fill(Theme.teal))
+                    }
+                    .buttonStyle(PressStyle())
+                }
+                .padding(m.length(28))
+                .frame(width: m.length(860))
+                .background(
+                    RoundedRectangle(cornerRadius: m.length(22), style: .continuous).fill(Theme.paper)
+                )
+            }
+        }
+    }
+}
+
 struct HeroNote: View {
     let onClose: () -> Void
 

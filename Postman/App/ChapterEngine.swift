@@ -591,6 +591,7 @@ final class ChapterEngine: ObservableObject {
         guard !settled.contains(trigger) else { return }
         var moved: [String] = []
         for item in story.items where BagPolicy.drops(chapter: story.chapter, id: item.id).contains(where: { $0.event == trigger }) {
+            if story.chapter == 3, item.id == "find_card", state.flags.contains("somov_keep") { continue }
             let s = status(item.id)
             guard s == .inBag || s == .inPocket else { continue }
             state.items[item.id] = ItemStatus(rawValue: BagPolicy.closeStatus(chapter: story.chapter, id: item.id)) ?? .delivered
@@ -822,6 +823,13 @@ final class ChapterEngine: ObservableObject {
     var hasSeenJourneyCard: Bool { state.journeyCardSeen == true }
 
     /// Закрытие полноэкранной карточки главы 2. Прогресс, письма и шаги не трогает.
+    /// Тап по вещи, который ставит флаг до остановки. Выбор с тем же флагом тогда не дублируется.
+    func noteWorldFlag(_ flag: String) {
+        guard !state.flags.contains(flag) else { return }
+        state.flags.insert(flag)
+        commit()
+    }
+
     func markJourneyCardSeen() {
         guard state.journeyCardSeen != true else { return }
         state.journeyCardSeen = true

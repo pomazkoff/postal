@@ -103,6 +103,12 @@ enum StoryChronicle {
         Beat(id: "zorka", chapterID: 3, step: 24100, eventID: "p_l9", residentID: nil, placeID: "gorlo"),
         Beat(id: "signature", chapterID: 3, step: 29000, eventID: "p_l10", residentID: nil, placeID: "otstoy"),
         Beat(id: "marsh", chapterID: 3, step: 30000, eventID: "finale", residentID: nil, placeID: "otstoy"),
+        Beat(id: "edgegift", chapterID: 3, step: 4000, eventID: "d_gat", residentID: nil, placeID: "gat"),
+        Beat(id: "taggift", chapterID: 3, step: 9000, eventID: "d_top", residentID: nil, placeID: "top"),
+        Beat(id: "cardgift", chapterID: 3, step: 9001, eventID: "d_top", residentID: nil, placeID: "top"),
+        Beat(id: "polegift", chapterID: 3, step: 12500, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "graphgift", chapterID: 3, step: 12501, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "passgift", chapterID: 3, step: 16500, eventID: "d_barge", residentID: nil, placeID: "staraya_protoka"),
     ]
 
     static func facts(world: WorldConfig, activeIndex: Int, activeSteps: Int,
@@ -167,6 +173,12 @@ enum StoryChronicle {
         case "zorka": return "history.main.zorka.title"
         case "signature": return "history.main.signature.title"
         case "marsh": return "history.main.marsh.title"
+        case "edgegift": return "history.main.edgegift.title"
+        case "taggift": return "history.main.taggift.title"
+        case "cardgift": return "history.main.cardgift.title"
+        case "polegift": return "history.main.polegift.title"
+        case "graphgift": return "history.main.graphgift.title"
+        case "passgift": return "history.main.passgift.title"
         default: return "history.title"
         }
     }
@@ -293,6 +305,24 @@ enum StoryChronicle {
             return L10n.text("history.main.signature.body")
         case "marsh":
             return L10n.text("history.main.marsh.body")
+        case "edgegift":
+            guard here.items["find_edge"] == .delivered else { return nil }
+            return L10n.text("history.main.edgegift.body")
+        case "taggift":
+            guard here.items["find_tag"] == .delivered else { return nil }
+            return L10n.text("history.main.taggift.body")
+        case "cardgift":
+            guard here.items["find_card"] == .delivered else { return nil }
+            return L10n.text("history.main.cardgift.body")
+        case "polegift":
+            guard here.items["find_pole"] == .delivered else { return nil }
+            return L10n.text("history.main.polegift.body")
+        case "graphgift":
+            guard here.items["find_graph"] == .delivered else { return nil }
+            return L10n.text("history.main.graphgift.body")
+        case "passgift":
+            guard here.items["find_pass"] == .delivered else { return nil }
+            return L10n.text("history.main.passgift.body")
         default:
             return nil
         }

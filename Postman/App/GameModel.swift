@@ -22,6 +22,8 @@ final class GameModel: ObservableObject {
     @Published private(set) var postmanOffscreen: WorldScene.Offscreen?
     /// Карточка почтальона по тапу в мире. Не сейв.
     @Published var showHeroCard = false
+    /// Короткий отклик тапа по вещи болот. id из chapter3_taps.json.
+    @Published var marshNote: String?
     /// Меню открыто: мир и HUD под ним размыты, бумага меню остаётся резкой.
     @Published var roadMenuOpen = false
     /// Где остановилась прокрутка «Истории». Не сейв: живёт, пока открыта игра.
@@ -400,6 +402,7 @@ final class GameModel: ObservableObject {
         engine.resetStory()
         journal = nil
         showHeroCard = false
+        marshNote = nil
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false
@@ -428,6 +431,13 @@ final class GameModel: ObservableObject {
         }
         scene.onPostmanTap = { [weak self] in
             DispatchQueue.main.async { self?.showHeroCard = true }
+        }
+        scene.onMarshTap = { [weak self] id in
+            DispatchQueue.main.async {
+                guard let self, self.onboardingDone else { return }
+                if id == "radio" { self.engine.noteWorldFlag("ether_heard") }
+                self.marshNote = id
+            }
         }
         scene.onFootfall = { [weak self] step in
             guard let self else { return }

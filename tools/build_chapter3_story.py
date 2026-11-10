@@ -148,6 +148,10 @@ items = [
          settlement="gat", **{"from": "Гать"}, senderSettlement="gat",
          art="find_stamp", initial="onRoad", road=None,
          text="Кромка марки из-под настила. Букв нет, цвет ещё держится."),
+    item("find_tag", kind="form", takesSlot=False, to="Почтальону", place="Личные вещи",
+         settlement="gat", **{"from": "Дед Федя"}, senderSettlement="gat",
+         art="find_cloth", initial="leftBehind", road=None,
+         text="Щепка с клеймом комбината. С нижнего склада."),
     item("find_card", kind="form", takesSlot=False, to="Почтальону", place="Личные вещи",
          settlement="top", **{"from": "Кочки"}, senderSettlement="top",
          art="find_cloth", initial="onRoad", road=None,
@@ -218,7 +222,10 @@ events = [
     {"id": "d_gat", "step": 4000, "type": "scene", "settlement": "gat",
      "title": "Ящик на Гати",
      "text": "Жестяной ящик «оказия». Сюда уходит письмо вниз, в Долину.",
-     "lines": [line("", "Письмо Гали легло в ящик на Гати, «оказия вниз».", "inBag:l1")],
+     "lines": [
+         line("", "Письмо Гали легло в ящик на Гати, «оказия вниз».", "inBag:l1"),
+         line("", "Кромку марки оставили в том же ящике, деду Феде.", "inBag:find_edge"),
+     ],
      "push": [line("", "Гать. Ящик оказии.")]},
     {"id": "p_l4", "step": 4100, "type": "pickup", "settlement": "gat", "item": "l4",
      "lines": [line("", "Оказия из Долины: Митя Вере. Чертёж рамки и фантик.")],
@@ -232,7 +239,8 @@ events = [
            [{"id": "hand", "label": "Подать жердь",
              "result": "Короткая работа у настила. Федя суёт записку Марье: носки, если будет оказия.",
              "flags": ["fedya_helped"],
-             "effects": [{"item": "note_fedya", "status": "inBag"}],
+             "effects": [{"item": "note_fedya", "status": "inBag"},
+                         {"item": "find_tag", "status": "inBag"}],
              "auto": "Почтальон подал жердь."},
             {"id": "walk", "label": "Идти дальше",
              "result": "Федя всё равно суёт записку. «Ну иди. Только в ящик положи».",
@@ -254,6 +262,7 @@ events = [
              "flags": ["somov_nina"]},
             {"id": "keep", "label": "Оставить при себе",
              "result": "Карточка остаётся в личных вещах. Лист отказа потом можно будет с ней сличить.",
+             "flags": ["somov_keep"],
              "auto": "Почтальон оставил карточку при себе."}],
            "Карточка Сомова. Кому оставить?"),
     {"id": "d_top", "step": 9000, "type": "scene", "settlement": "top",
@@ -262,6 +271,9 @@ events = [
      "lines": [
          line("", "Письмо Мити и записка Феди легли в будку на Топи.", "inBag:l4"),
          line("", "Записка Феди ушла «оказией вниз», Марье.", "inBag:note_fedya"),
+         line("", "Бирку с клеймом оставили Вере. Она отвечает: клеймо нижнее, принято к сведению.", "inBag:find_tag"),
+         line("", "Карточку Сомова оставили для Пимена. Ферапонта отпевал в августе, яблоки ещё не сняли.", "inBag:find_card,flag:somov_pimen"),
+         line("", "Карточку Сомова оставили для Нины. Ферапонта с августа нет, она носила ему банку.", "inBag:find_card,flag:somov_nina"),
      ],
      "push": [line("", "Топь. Будка. Ящик оказии.")]},
     {"id": "p_l2", "step": 9100, "type": "pickup", "settlement": "top", "item": "l2",
@@ -276,7 +288,11 @@ events = [
     {"id": "d_torf", "step": 12500, "type": "scene", "settlement": "torfyanik",
      "title": "Ящик на Торфянике",
      "text": "Служебный ящик. Помета «для А.Л.».",
-     "lines": [line("", "Письмо Нины легло в ящик на Торфянике, «для А.Л.».", "inBag:l2")],
+     "lines": [
+         line("", "Письмо Нины легло в ящик на Торфянике, «для А.Л.».", "inBag:l2"),
+         line("", "Шест без зарубок оставили Кузьме. Не его. Ниже тоже меряют.", "inBag:find_pole"),
+         line("", "Мите оставили обрывок: пилот, рука не его, кто-то уже мерил.", "inBag:find_graph"),
+     ],
      "push": [line("", "Торфяник. Ящик для А.Л.")]},
     {"id": "p_l3", "step": 12600, "type": "pickup", "settlement": "torfyanik", "item": "l3",
      "lines": [line("", "Оказия: «Тима» Нине. Козу назвал Рамкой. Этикетка консервов.")],
@@ -308,7 +324,10 @@ events = [
     {"id": "d_barge", "step": 16500, "type": "scene", "settlement": "staraya_protoka",
      "title": "Ящик на барже",
      "text": "На палубе ящик «оказия».",
-     "lines": [line("", "Письмо «от Тимы» легло в ящик на барже, «оказия вниз».", "inBag:l3")],
+     "lines": [
+         line("", "Письмо «от Тимы» легло в ящик на барже, «оказия вниз».", "inBag:l3"),
+         line("", "Пропуск оставили деду Феде. Нижний двор, старый образец. Сам не ходил с осени.", "inBag:find_pass"),
+     ],
      "push": [line("", "Старая протока. Ящик на барже.")]},
     {"id": "p_l7", "step": 16600, "type": "pickup", "settlement": "staraya_protoka", "item": "l7",
      "lines": [line("", "Кузьма Вере. На щепке пятьдесят восемь. Смола.")],
@@ -370,6 +389,11 @@ events = [
      ],
      "push": [line("", "Отстой. Котелок тёплый. Дальше город в тумане.")]},
 ]
+
+for event in events:
+    if event["id"] == "e_radio":
+        event["requires"] = "!flag:ether_heard"
+        event["fallback"] = "Песня уже оборвалась. Приёмник трогали раньше."
 
 story = {
     "_comment": "Сгенерировано tools/build_chapter3_story.py. Письма дословно из docs/canon/letters-ch3.md. Сдача только впереди.",

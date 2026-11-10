@@ -58,6 +58,12 @@ enum BagPolicy {
         case (3, "l3"): return [Drop(event: "d_barge", step: 16500)]
         case (3, "l5"), (3, "l7"): return [Drop(event: "d_reeds", step: 20000)]
         case (3, "l9"): return [Drop(event: "d_otstoy", step: 28000)]
+        case (3, "find_edge"): return [Drop(event: "d_gat", step: 4000)]
+        case (3, "find_tag"): return [Drop(event: "d_top", step: 9000)]
+        case (3, "find_card"): return [Drop(event: "d_top", step: 9000)]
+        case (3, "find_pole"): return [Drop(event: "d_torf", step: 12500)]
+        case (3, "find_graph"): return [Drop(event: "d_torf", step: 12500)]
+        case (3, "find_pass"): return [Drop(event: "d_barge", step: 16500)]
         default:
             return []
         }
@@ -102,6 +108,12 @@ enum BagPolicy {
         case (3, "l9"): return "p_l9"
         case (3, "l10"): return "p_l10"
         case (3, "note_fedya"): return "e_fedya_help"
+        case (3, "find_edge"): return "p_edge"
+        case (3, "find_tag"): return "e_fedya_help"
+        case (3, "find_card"): return "p_card"
+        case (3, "find_pole"): return "p_pole"
+        case (3, "find_graph"): return "p_graph"
+        case (3, "find_pass"): return "p_pass"
         default: return nil
         }
     }
