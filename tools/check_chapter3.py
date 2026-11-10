@@ -174,6 +174,15 @@ expected_art = {
     "underground/ug_neutral_tile.png": (1148, 415),
 }
 from PIL import Image
+import numpy as np
+sw_color = Image.open(ROOT / "Postman/GameAssets/UI/map/swamps_color.jpg").convert("RGB")
+sw_pencil = Image.open(ROOT / "Postman/GameAssets/UI/map/swamps_pencil.jpg").convert("RGB")
+if sw_color.size != sw_pencil.size:
+    fail("the swamp pencil plate is a different size from the color")
+c = np.array(sw_color.resize((200, 400))).astype(np.int16)
+p = np.array(sw_pencil.resize((200, 400))).astype(np.int16)
+if abs(c - p).mean() < 40 or p.mean() < c.mean():
+    fail("closed swamps are not the light color haze used for the mountains")
 for rel, size in expected_art.items():
     path = chapter_dir / rel
     if not path.exists():
