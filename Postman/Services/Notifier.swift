@@ -106,6 +106,35 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    struct PendingNote: Identifiable {
+        let id: String
+        let title: String
+        let when: String
+    }
+
+    func pendingNotes() async -> [PendingNote] {
+        await withCheckedContinuation { continuation in
+            center.getPendingNotificationRequests { requests in
+                let notes = requests.map { request -> PendingNote in
+                    let when: String
+                    if let calendar = request.trigger as? UNCalendarNotificationTrigger,
+                       let date = calendar.nextTriggerDate() {
+                        when = date.formatted(date: .abbreviated, time: .shortened)
+                    } else if let interval = request.trigger as? UNTimeIntervalNotificationTrigger {
+                        when = "через \(Int(interval.timeInterval.rounded())) с"
+                    } else if request.trigger == nil {
+                        when = "сразу"
+                    } else {
+                        when = "запланировано"
+                    }
+                    let title = request.content.title.isEmpty ? request.identifier : request.content.title
+                    return PendingNote(id: request.identifier, title: title, when: when)
+                }
+                continuation.resume(returning: notes.sorted { $0.id < $1.id })
+            }
+        }
+    }
+
     func pendingIdentifiers() async -> Set<String> {
         await withCheckedContinuation { continuation in
             center.getPendingNotificationRequests { requests in

@@ -14,6 +14,7 @@ struct HUDView: View {
     @State private var showHistory = false
     @State private var letterID: String?
     @State private var confirmReset = false
+    @State private var showDeveloper = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private enum Panel: Equatable {
@@ -82,7 +83,8 @@ struct HUDView: View {
                         PocketWatchView(state: layout.expanded, mapper: m,
                                         today: game.steps.todaySteps, total: game.gameSteps,
                                         expanded: true, onTap: toggleWatch,
-                                        onLongPress: { confirmReset = true })
+                                        onLongPress: { confirmReset = true },
+                                        onDeveloperHold: openDeveloper)
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 0.45, anchor: anchor(layout.expanded, m)).combined(with: .opacity),
                                 removal: .opacity))
@@ -90,7 +92,8 @@ struct HUDView: View {
                         PocketWatchView(state: layout.collapsed, mapper: m,
                                         today: game.steps.todaySteps, total: game.gameSteps,
                                         expanded: false, onTap: toggleWatch,
-                                        onLongPress: { confirmReset = true })
+                                        onLongPress: { confirmReset = true },
+                                        onDeveloperHold: openDeveloper)
                             .transition(.opacity)
                     }
                 }
@@ -109,6 +112,10 @@ struct HUDView: View {
             #endif
 
             chapterOverlay
+            if showDeveloper {
+                DeveloperConsole(onClose: { showDeveloper = false })
+                    .zIndex(40)
+            }
             if game.showHeroCard, screen == .none {
                 HeroNote {
                     game.showHeroCard = false
@@ -392,6 +399,11 @@ struct HUDView: View {
             game.worldCovered = covered
             if covered { SoundPlayback.shared.stopAll() }
         }
+    }
+
+    private func openDeveloper() {
+        confirmReset = false
+        showDeveloper = true
     }
 
     private func toggleWatch() {

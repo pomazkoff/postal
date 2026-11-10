@@ -232,6 +232,15 @@ final class StepService: ObservableObject {
         Task { await refresh() }
     }
 
+    /// Поставить «всего» не ниже уже посчитанных шагов Здоровья. Лишнее пишется в debug-добавку.
+    func setDebugTotal(_ target: Int) {
+        let realTotal = max(0, totalSteps - store.debugExtraTotal)
+        let goal = max(0, target)
+        store.debugExtraTotal = max(0, goal - realTotal)
+        totalSteps = realTotal + store.debugExtraTotal
+        Task { await refresh() }
+    }
+
     func setMode(_ newMode: Mode) {
         guard newMode != mode else { return }
         if newMode == .healthKit && !HealthKitStepSource.isAvailable { return }

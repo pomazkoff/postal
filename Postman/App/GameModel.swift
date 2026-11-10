@@ -253,6 +253,27 @@ final class GameModel: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Служебный переход: форс главы и шага внутри неё. Счётчик Здоровья не переписывается.
+    func developerGo(chapterIndex index: Int, localStep: Int) {
+        let idx = max(0, min(world.chapters.count - 1, index))
+        let chapter = world.chapters[idx]
+        let local = max(0, min(chapter.lengthSteps, localStep))
+        progress.forceChapterIndex = idx
+        progress.forceChapterBaseSteps = steps.totalSteps - local
+        let core = AppCore.shared
+        if core.chapterIndex != idx {
+            core.switchToChapter(idx)
+        }
+        refreshChapterProgress()
+    }
+
+    var developerDay: Int {
+        guard let start = progress.gameStartDate else { return 1 }
+        let cal = Calendar.current
+        let days = cal.dateComponents([.day], from: cal.startOfDay(for: start), to: cal.startOfDay(for: Date())).day ?? 0
+        return max(1, days + 1)
+    }
+
     var nextSettlement: Settlement? {
         chapter.settlements.first { $0.step > chapterSteps }
     }

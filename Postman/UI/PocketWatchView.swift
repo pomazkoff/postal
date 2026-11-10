@@ -13,6 +13,8 @@ struct PocketWatchView: View {
     let onTap: () -> Void
     /// Скрытый жест: долгое нажатие (StoryReset.holdSeconds) — «Сбросить историю».
     var onLongPress: (() -> Void)? = nil
+    /// Удержание DeveloperHold.seconds на тех же часах. Короткое нажатие не забирает.
+    var onDeveloperHold: (() -> Void)? = nil
 
     private static let ink = Color(red: 34 / 255, green: 20 / 255, blue: 12 / 255)
     private static let labelInk = Color(red: 70 / 255, green: 40 / 255, blue: 22 / 255)
@@ -51,13 +53,12 @@ struct PocketWatchView: View {
                 number(spec: totalSpec, string: Format.steps(total))
             }
 
-            // зона тапа — только корпус часов
-            Color.clear
-                .contentShape(Rectangle())
+            // зона тапа — только корпус часов. 3 с — сброс, 10 с — консоль.
+            WatchHoldTarget(onTap: onTap,
+                            onShortHold: { onLongPress?() },
+                            onLongHold: { onDeveloperHold?() })
                 .frame(width: m.length(bodyRect[2]), height: m.length(bodyRect[3]))
                 .position(m.center(x: bodyRect[0], y: bodyRect[1], width: bodyRect[2], height: bodyRect[3]))
-                .onTapGesture(perform: onTap)
-                .onLongPressGesture(minimumDuration: StoryReset.holdSeconds) { onLongPress?() }
                 .accessibilityElement()
                 .accessibilityLabel(Text(accessibilityText))
                 .accessibilityHint(Text(hintText))
