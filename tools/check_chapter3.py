@@ -152,8 +152,14 @@ if layers["topColor"] != "#14505F" or layers["bottomColor"] != "#3C7873":
 barge = next(p for p in chapter["props"] if p["image"] == "places/place_staraya_protoka_main")
 if barge["height"] != 500 or barge["sink"] != 217 or barge["dx"] != -1045.5:
     fail(f"the barge is not beside the causeway: {barge['height']} {barge['sink']} {barge['dx']}")
-if any(p["layer"] == "underground" and p["image"] != "underground/ug_neutral_tile" for p in chapter["props"]):
-    fail("chapter 3 underground objects were added before their sprites arrived")
+if any(p["layer"] == "underground" and "ug_" not in p["image"] for p in chapter["props"]):
+    fail("a chapter 3 underground prop is not a swamp tile")
+modules = chapter["underground"]["modules"]
+if [m["step"] for m in modules] != [800, 2500, 4000, 6500, 9000, 11500, 14000, 16500, 18800, 20800, 22500, 24800, 26800, 28800]:
+    fail("chapter 3 underground modules are not the approved steps")
+for module in modules:
+    if not (chapter_dir / (module["image"] + ".png")).exists():
+        fail(f"missing underground module {module['image']}")
 expected_art = {
     "road/road_main_alder.png": (2400, 680),
     "places/bg_far_ridges_tile.png": (2636, 1236),

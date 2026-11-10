@@ -3118,7 +3118,78 @@
           415
         ],
         "minGapFraction": 0.3,
-        "modules": []
+        "modules": [
+          {
+            "image": "underground/ug_korni",
+            "step": 800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_omut",
+            "step": 2500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_zherdi",
+            "step": 4000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_puzyri",
+            "step": 6500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tina",
+            "step": 9000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_lyagushka",
+            "step": 11500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_nakhodki",
+            "step": 14000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_kladi",
+            "step": 16500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_ryba",
+            "step": 18800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_splet",
+            "step": 20800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_mokh",
+            "step": 22500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_podkova",
+            "step": 24800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_ilot",
+            "step": 26800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tonya",
+            "step": 28800,
+            "dx": 0.0
+          }
+        ]
       },
       "quests": [
         {

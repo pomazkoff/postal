@@ -71,6 +71,7 @@ def main():
     postman = postman.resize((max(1, int(ph * postman.size[0] / postman.size[1])), ph), Image.Resampling.LANCZOS)
     frames = [
         (49000, "world 49 000 · the Boardwalk"),
+        (54000, "world 54 000 · the Mire"),
         (61500, "world 61 500 · the Old Channel"),
         (67500, "world 67 500 · the Gullet"),
     ]
@@ -85,6 +86,25 @@ def main():
         ug = chapter["underground"]
         tile_h = ug["tilePixelSize"][1] * ug["scale"]
         tile_strip(canvas, ug["neutralTile"], ug["top"], tile_h, world["layers"]["undergroundParallax"], cam)
+        tile_w = ug["tilePixelSize"][0] * ug["scale"]
+        placed = sorted(
+            (world_x(chapter["startStep"] + m["step"]) + m["dx"] - tile_w / 2, m["image"])
+            for m in ug["modules"]
+        )
+        cursor = placed[0][0] if placed else 0
+        laid = []
+        for i, (left, image) in enumerate(placed):
+            if i and left - cursor < tile_w * ug["minGapFraction"]:
+                left = cursor
+            laid.append((left, image))
+            cursor = left + tile_w
+        for left, image in laid:
+            screen = screen_left(left, cam, 1, cam)
+            if screen > W or screen + tile_w < 0:
+                continue
+            module = Image.open(ASSETS / "Chapter3" / (image + ".png")).convert("RGBA")
+            module = module.resize((int(tile_w), int(tile_h)), Image.Resampling.LANCZOS)
+            paste(canvas, module, screen, ug["top"])
         order = {"far": 0, "mid": 1, "underground": 2, "main": 3, "foreground": 4}
         for prop in sorted(chapter["props"], key=lambda p: (order[p["layer"]], p.get("z", 0))):
             image = Image.open(ASSETS / "Chapter3" / (prop["image"] + ".png")).convert("RGBA")

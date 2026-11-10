@@ -183,9 +183,115 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         postman = node
 
+        installMarshSky()
         updateCameraAndLayers()
         cullLazyNodes()
         applyReadability()
+    }
+
+    private struct MarshDrift {
+        let node: SKSpriteNode
+        let speed: CGFloat
+        var base: CGFloat
+        let parallax: CGFloat
+    }
+
+    private var marshDrift: [MarshDrift] = []
+    private var marshSkyNodes: [SKNode] = []
+    private var marshBirdTextures: [SKTexture] = []
+    private var marshBirdLayer: SKNode?
+    private var marshBirdClock: Double = 6
+    private var marshSkyTime: Double = 0
+    private var marshSkySpan: CGFloat = 0
+
+    /// Небо главы 3 ждёт файлы в Chapter3/sky: cloud_*.png, fog_*.png, bird_*.png.
+    /// Пока папка пустая, ничего не рисуется. Облака и клочья тумана медленно плывут, птицы пересекают кадр.
+    private func installMarshSky() {
+        let dir = WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter3/sky", isDirectory: true)
+        let names = ((try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? [])
+            .filter { $0.lowercased().hasSuffix(".png") }
+            .sorted()
+        func stems(_ prefix: String) -> [String] {
+            names.filter { $0.lowercased().hasPrefix(prefix) }
+                .map { "Chapter3/sky/\(($0 as NSString).deletingPathExtension)" }
+        }
+        let clouds = stems("cloud")
+        let fogs = stems("fog")
+        let birds = stems("bird")
+        guard !clouds.isEmpty || !fogs.isEmpty || !birds.isEmpty else { return }
+        let span = CGFloat(config.game.designWidth) * 4
+        marshSkySpan = span
+        func plane(_ stems: [String], parallax: Double, speed: CGFloat, heights: ClosedRange<CGFloat>,
+                   yRange: ClosedRange<CGFloat>, alpha: CGFloat) {
+            guard !stems.isEmpty else { return }
+            let layer = SKNode()
+            layer.zPosition = parallax < 0.1 ? -720 : -680
+            addLayer(layer, parallax: parallax)
+            marshSkyNodes.append(layer)
+            let count = max(4, stems.count * 2)
+            for i in 0..<count {
+                let path = stems[i % stems.count]
+                guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { continue }
+                let tex = TextureStore.shared.texture(path)
+                let node = SKSpriteNode(texture: tex)
+                let h = heights.lowerBound + (heights.upperBound - heights.lowerBound) * CGFloat(i % 5) / 4
+                let aspect = tex.size().width / max(1, tex.size().height)
+                node.size = CGSize(width: h * aspect, height: h)
+                node.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+                node.alpha = alpha
+                node.position.y = yRange.lowerBound + (yRange.upperBound - yRange.lowerBound) * CGFloat((i * 3) % 5) / 4
+                if i % 2 == 0 { node.xScale = -1 }
+                layer.addChild(node)
+                marshDrift.append(MarshDrift(node: node, speed: speed * (0.7 + CGFloat(i % 3) * 0.2),
+                                             base: span * CGFloat(i) / CGFloat(count), parallax: CGFloat(parallax)))
+            }
+        }
+        let H = CGFloat(config.game.designHeight)
+        plane(clouds, parallax: 0.06, speed: 12, heights: 140...280, yRange: (H * 0.62)...(H * 0.86), alpha: 0.9)
+        plane(fogs, parallax: 0.12, speed: 6, heights: 80...140, yRange: (H * 0.48)...(H * 0.62), alpha: 0.4)
+        if !birds.isEmpty {
+            let layer = SKNode()
+            layer.zPosition = -660
+            addLayer(layer, parallax: 0.2)
+            marshBirdLayer = layer
+            marshSkyNodes.append(layer)
+            marshBirdTextures = birds.filter {
+                FileManager.default.fileExists(atPath: TextureStore.url(for: $0).path)
+            }.map { TextureStore.shared.texture($0) }
+        }
+    }
+
+    private func updateMarshSky(dt: TimeInterval) {
+        guard !marshSkyNodes.isEmpty || marshBirdLayer != nil else { return }
+        let inMarsh = config.chapters.last { Double($0.startStep) <= displayedStep }?.id == 3
+        for node in marshSkyNodes { node.isHidden = !inMarsh }
+        guard inMarsh else { return }
+        marshSkyTime += dt
+        let span = max(marshSkySpan, 1)
+        for item in marshDrift {
+            let base = item.base + item.speed * CGFloat(marshSkyTime)
+            let localCam = camX * item.parallax
+            let u = base - localCam + span / 2
+            let rel = u - span * floor(u / span) - span / 2
+            item.node.position.x = (localCam + rel).rounded()
+        }
+        guard let layer = marshBirdLayer, !marshBirdTextures.isEmpty else { return }
+        marshBirdClock -= dt
+        guard marshBirdClock <= 0 else { return }
+        marshBirdClock = 16
+        let tex = marshBirdTextures[Int(displayedStep) % marshBirdTextures.count]
+        let bird = SKSpriteNode(texture: tex)
+        let h: CGFloat = 48
+        let aspect = tex.size().width / max(1, tex.size().height)
+        bird.size = CGSize(width: h * aspect, height: h)
+        let k: CGFloat = 0.2
+        bird.position = CGPoint(x: camX * k - CGFloat(config.game.designWidth), y: CGFloat(config.game.designHeight) * 0.72)
+        layer.addChild(bird)
+        let travel = CGFloat(config.game.designWidth) * 2.4
+        bird.run(.sequence([
+            .moveBy(x: travel, y: 30, duration: 18),
+            .removeFromParent(),
+        ]))
     }
 
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
@@ -781,6 +887,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         weather?.update(dt: dt)
         updateMarshVeil()
         applyChapterSky()
+        updateMarshSky(dt: dt)
         updateCompanion(dt)
         updateNightFigures()
         updatePostmanVisibility()
