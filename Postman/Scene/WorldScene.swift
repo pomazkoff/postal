@@ -204,51 +204,60 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var marshSkyTime: Double = 0
     private var marshSkySpan: CGFloat = 0
 
-    /// Небо главы 3 ждёт файлы в Chapter3/sky: cloud_*.png, fog_*.png, bird_*.png.
-    /// Пока папка пустая, ничего не рисуется. Облака и клочья тумана медленно плывут, птицы пересекают кадр.
+    /// Небо главы 3: Chapter3/sky. Облака висят в открытой полосе над грядами,
+    /// клочья тумана — ниже, над полями. Птиц и puff пока нет: файл с префиксом bird_ подхватится сам.
     private func installMarshSky() {
-        let dir = WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter3/sky", isDirectory: true)
-        let names = ((try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? [])
-            .filter { $0.lowercased().hasSuffix(".png") }
-            .sorted()
-        func stems(_ prefix: String) -> [String] {
-            names.filter { $0.lowercased().hasPrefix(prefix) }
-                .map { "Chapter3/sky/\(($0 as NSString).deletingPathExtension)" }
-        }
-        let clouds = stems("cloud")
-        let fogs = stems("fog")
-        let birds = stems("bird")
-        guard !clouds.isEmpty || !fogs.isEmpty || !birds.isEmpty else { return }
-        let span = CGFloat(config.game.designWidth) * 4
-        marshSkySpan = span
-        func plane(_ stems: [String], parallax: Double, speed: CGFloat, heights: ClosedRange<CGFloat>,
-                   yRange: ClosedRange<CGFloat>, alpha: CGFloat) {
-            guard !stems.isEmpty else { return }
-            let layer = SKNode()
-            layer.zPosition = parallax < 0.1 ? -720 : -680
-            addLayer(layer, parallax: parallax)
-            marshSkyNodes.append(layer)
-            let count = max(4, stems.count * 2)
-            for i in 0..<count {
-                let path = stems[i % stems.count]
-                guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { continue }
-                let tex = TextureStore.shared.texture(path)
-                let node = SKSpriteNode(texture: tex)
-                let h = heights.lowerBound + (heights.upperBound - heights.lowerBound) * CGFloat(i % 5) / 4
-                let aspect = tex.size().width / max(1, tex.size().height)
-                node.size = CGSize(width: h * aspect, height: h)
-                node.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-                node.alpha = alpha
-                node.position.y = yRange.lowerBound + (yRange.upperBound - yRange.lowerBound) * CGFloat((i * 3) % 5) / 4
-                if i % 2 == 0 { node.xScale = -1 }
-                layer.addChild(node)
-                marshDrift.append(MarshDrift(node: node, speed: speed * (0.7 + CGFloat(i % 3) * 0.2),
-                                             base: span * CGFloat(i) / CGFloat(count), parallax: CGFloat(parallax)))
-            }
-        }
         let H = CGFloat(config.game.designHeight)
-        plane(clouds, parallax: 0.06, speed: 12, heights: 140...280, yRange: (H * 0.62)...(H * 0.86), alpha: 0.9)
-        plane(fogs, parallax: 0.12, speed: 6, heights: 80...140, yRange: (H * 0.48)...(H * 0.62), alpha: 0.4)
+        // y — низ сцены. fromTop: верёвка у верхнего края кадра. Иначе y — центр.
+        let pieces: [(file: String, height: CGFloat, y: CGFloat, parallax: CGFloat, speed: CGFloat,
+                      alpha: CGFloat, z: CGFloat, fromTop: Bool, flip: Bool)] = [
+            ("cloud_stratus", 120, H - 250, 0.04, 7, 1, -760, false, false),
+            ("cloud_moon", 520, H + 16, 0.07, 10, 1, -740, true, false),
+            ("cloud_torn", 250, H - 24, 0.06, 12, 1, -730, true, false),
+            ("fog_wisp", 96, H - 1120, 0.16, 6, 0.72, -450, false, false),
+            ("cloud_rain", 310, H - 12, 0.08, 9, 1, -735, true, false),
+            ("cloud_stratus", 88, H - 150, 0.05, 8, 1, -755, false, true),
+            ("cloud_moon", 390, H - 8, 0.07, 11, 1, -738, true, true),
+            ("fog_wisp", 112, H - 1200, 0.18, 5, 0.62, -450, false, true),
+            ("cloud_torn", 200, H - 70, 0.06, 13, 1, -728, true, true),
+            ("cloud_rain", 250, H - 40, 0.08, 10, 1, -732, true, true),
+            ("fog_wisp", 80, H - 1040, 0.15, 7, 0.7, -450, false, false),
+        ]
+        let span = CGFloat(config.game.designWidth) * 6
+        marshSkySpan = span
+        var layers: [CGFloat: SKNode] = [:]
+        for (i, piece) in pieces.enumerated() {
+            let path = "Chapter3/sky/\(piece.file)"
+            guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { continue }
+            let layer: SKNode
+            if let existing = layers[piece.z] {
+                layer = existing
+            } else {
+                let node = SKNode()
+                node.zPosition = piece.z
+                // Слой едет с камерой. Сдвиг каждого спрайта считается отдельно.
+                addLayer(node, parallax: 0)
+                marshSkyNodes.append(node)
+                layers[piece.z] = node
+                layer = node
+            }
+            let tex = TextureStore.shared.texture(path)
+            let node = SKSpriteNode(texture: tex)
+            let aspect = tex.size().width / max(1, tex.size().height)
+            node.size = CGSize(width: piece.height * aspect, height: piece.height)
+            node.anchorPoint = piece.fromTop ? CGPoint(x: 0.5, y: 1) : CGPoint(x: 0.5, y: 0.5)
+            node.alpha = piece.alpha
+            node.position.y = piece.y
+            if piece.flip { node.xScale = -1 }
+            layer.addChild(node)
+            marshDrift.append(MarshDrift(node: node, speed: piece.speed,
+                                         base: span * CGFloat(i) / CGFloat(pieces.count),
+                                         parallax: piece.parallax))
+        }
+        let birdNames = ((try? FileManager.default.contentsOfDirectory(
+            atPath: WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter3/sky", isDirectory: true).path
+        )) ?? []).filter { $0.lowercased().hasPrefix("bird") && $0.lowercased().hasSuffix(".png") }.sorted()
+        let birds = birdNames.map { "Chapter3/sky/\(($0 as NSString).deletingPathExtension)" }
         if !birds.isEmpty {
             let layer = SKNode()
             layer.zPosition = -660
@@ -273,7 +282,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             let localCam = camX * item.parallax
             let u = base - localCam + span / 2
             let rel = u - span * floor(u / span) - span / 2
-            item.node.position.x = (localCam + rel).rounded()
+            // Родитель уже едет с камерой (параллакс 0), поэтому здесь только сдвиг по экрану.
+            item.node.position.x = rel.rounded()
         }
         guard let layer = marshBirdLayer, !marshBirdTextures.isEmpty else { return }
         marshBirdClock -= dt

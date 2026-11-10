@@ -160,6 +160,13 @@ if [m["step"] for m in modules] != [800, 2500, 4000, 6500, 9000, 11500, 14000, 1
 for module in modules:
     if not (chapter_dir / (module["image"] + ".png")).exists():
         fail(f"missing underground module {module['image']}")
+if any("el_cloud_" in p["image"] for p in chapter["props"]):
+    fail("chapter 3 still repeats the hanging clay clouds")
+if sum(1 for p in chapter["props"] if p["image"] == "places/el_fog_bank") != 2:
+    fail("chapter 3 shore fog should stay as the two low banks")
+for name in ("cloud_stratus", "cloud_rain", "cloud_torn", "cloud_moon", "fog_wisp"):
+    if not (chapter_dir / "sky" / f"{name}.png").exists():
+        fail(f"missing sky sprite {name}")
 expected_art = {
     "road/road_main_alder.png": (2400, 680),
     "places/bg_far_ridges_tile.png": (2636, 1236),

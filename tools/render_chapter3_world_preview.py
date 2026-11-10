@@ -39,6 +39,45 @@ def paste(canvas, image, left, top):
     canvas.alpha_composite(image, (x, y))
 
 
+# Те же размеры, что installMarshSky: y от низа кадра. from_top — верёвка у верхнего края.
+SKY = [
+    ("cloud_stratus", 120, -250, 0.04, 1.0, False, False, "cloud"),
+    ("cloud_moon", 520, 16, 0.07, 1.0, True, False, "cloud"),
+    ("cloud_torn", 250, -24, 0.06, 1.0, True, False, "cloud"),
+    ("fog_wisp", 96, -1120, 0.16, 0.72, False, False, "fog"),
+    ("cloud_rain", 310, -12, 0.08, 1.0, True, False, "cloud"),
+    ("cloud_stratus", 88, -150, 0.05, 1.0, False, True, "cloud"),
+    ("cloud_moon", 390, -8, 0.07, 1.0, True, True, "cloud"),
+    ("fog_wisp", 112, -1200, 0.18, 0.62, False, True, "fog"),
+    ("cloud_torn", 200, -70, 0.06, 1.0, True, True, "cloud"),
+    ("cloud_rain", 250, -40, 0.08, 1.0, True, True, "cloud"),
+    ("fog_wisp", 80, -1040, 0.15, 0.7, False, False, "fog"),
+]
+SKY_SPAN = W * 6
+
+
+def draw_sky_decor(canvas, cam, kind):
+    import math
+    for i, (name, height, y_off, parallax, alpha, from_top, flip, group) in enumerate(SKY):
+        if group != kind:
+            continue
+        image = Image.open(ASSETS / "Chapter3/sky" / f"{name}.png").convert("RGBA")
+        width = height * image.size[0] / image.size[1]
+        scaled = image.resize((max(1, int(width)), max(1, int(height))), Image.Resampling.LANCZOS)
+        if flip:
+            scaled = scaled.transpose(Image.FLIP_LEFT_RIGHT)
+        if alpha < 1:
+            scaled.putalpha(scaled.getchannel("A").point(lambda v, a=alpha: int(v * a)))
+        base = SKY_SPAN * i / len(SKY)
+        u = base - cam * parallax + SKY_SPAN / 2
+        rel = u - SKY_SPAN * math.floor(u / SKY_SPAN) - SKY_SPAN / 2
+        left = W / 2 + rel - scaled.size[0] / 2
+        top = -y_off if from_top else -y_off - height / 2
+        if left > W or left + scaled.size[0] < 0:
+            continue
+        paste(canvas, scaled, left, top)
+
+
 def sky(canvas):
     top = tuple(int(chapter["sky"]["topColor"][i:i + 2], 16) for i in (1, 3, 5))
     bot = tuple(int(chapter["sky"]["bottomColor"][i:i + 2], 16) for i in (1, 3, 5))
@@ -81,7 +120,9 @@ def main():
         canvas = Image.new("RGBA", (W, H), (0, 0, 0, 255))
         sky(canvas)
         cam = camera_x(step)
+        draw_sky_decor(canvas, cam, "cloud")
         tile_strip(canvas, far["image"], far["top"], far["height"], far["parallax"], cam)
+        draw_sky_decor(canvas, cam, "fog")
         tile_strip(canvas, mid["image"], mid["top"], mid["height"], mid["parallax"], cam)
         ug = chapter["underground"]
         tile_h = ug["tilePixelSize"][1] * ug["scale"]
