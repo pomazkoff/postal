@@ -541,7 +541,7 @@ struct MapScreen: View {
         let atlas = MapAtlas.make(valley: map)
         let mountainURL = atlas.mountains.map { URL(fileURLWithPath: $0.colorPath) }
         let lift = atlas.lift
-        let image = await Task.detached(priority: .userInitiated) {
+        let image: UIImage? = await Task.detached(priority: .userInitiated) { () -> UIImage? in
             let revealed = ParchmentReveal.render(color: color, pencil: pencil, field: field,
                                                    decodeScale: scale, decodeBias: bias,
                                                    softFraction: soft, threshold: t0)
