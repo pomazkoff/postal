@@ -125,19 +125,48 @@ struct HistoryScrollView: View {
         }
     }
 
+    /// Житель ищется в сюжете этой главы, потом в первой, потом в остальных.
+    /// Фигура грузится из папки той главы, где он описан. ResidentLibrary сам
+    /// доберёт рисунок из Chapter1, если в папке главы его нет.
     private func residentImage(_ fact: HistoryFact) -> UIImage? {
         guard let id = fact.residentID else { return nil }
-        let story = StoryConfig.load(chapter: fact.chapterID)
-        guard let resident = story.residents.first(where: { $0.id == id }) else { return nil }
-        return ResidentLibrary.figure(for: resident, assetsFolder: fact.assetsFolder)?.image
+        let world = WorldConfigLoader.load()
+        for chapterID in chapterOrder(preferring: fact.chapterID, world: world) {
+            let story = StoryConfig.load(chapter: chapterID)
+            guard story.chapter == chapterID, let resident = story.residents.first(where: { $0.id == id }) else { continue }
+            let folder = world.chapters.first { $0.id == chapterID }?.assetsFolder ?? fact.assetsFolder
+            return ResidentLibrary.figure(for: resident, assetsFolder: folder)?.image
+        }
+        return nil
     }
 
     /// Узкий ящик не растягиваем на весь лист. Широкая картинка места показывается целиком.
+    /// Нет файла в папке этой главы — смотрим папки остальных глав. Узкий вырез своей главы
+    /// чужой картинкой не подменяем.
     private func widePlace(_ fact: HistoryFact) -> UIImage? {
-        guard let id = fact.placeID,
-              let image = JournalAssets.placeImage(id, chapterFolder: fact.assetsFolder),
-              image.size.height > 0,
-              image.size.width / image.size.height >= 0.7 else { return nil }
+        guard let id = fact.placeID else { return nil }
+        if let own = JournalAssets.placeImage(id, chapterFolder: fact.assetsFolder) {
+            return wideEnough(own)
+        }
+        let world = WorldConfigLoader.load()
+        for chapter in world.chapters where chapter.assetsFolder != fact.assetsFolder {
+            if let image = JournalAssets.placeImage(id, chapterFolder: chapter.assetsFolder) {
+                return wideEnough(image)
+            }
+        }
+        return nil
+    }
+
+    private func wideEnough(_ image: UIImage) -> UIImage? {
+        guard image.size.height > 0, image.size.width / image.size.height >= 0.7 else { return nil }
         return image
+    }
+
+    private func chapterOrder(preferring current: Int, world: WorldConfig) -> [Int] {
+        var order: [Int] = []
+        if world.chapters.contains(where: { $0.id == current }) { order.append(current) }
+        if current != 1, world.chapters.contains(where: { $0.id == 1 }) { order.append(1) }
+        for chapter in world.chapters where !order.contains(chapter.id) { order.append(chapter.id) }
+        return order
     }
 }

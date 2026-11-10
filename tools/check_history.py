@@ -44,6 +44,10 @@ if "scaledToFill" in view:
     fail("illustrations must not be cropped to fill")
 if "width / image.size.height >= 0.7" not in view:
     fail("a narrow place cutout must not fill the sheet")
+if "story.chapter == chapterID" not in view or "current != 1" not in view:
+    fail("a chapter 2 resident must be looked up in chapter 1 as well")
+if "chapter.assetsFolder != fact.assetsFolder" not in view:
+    fail("a missing place picture must be looked up in another chapter folder")
 if "historyAnchor" not in view:
     fail("closing the sheet should keep the scroll position")
 if "history.empty" not in view:
@@ -73,6 +77,23 @@ if "она получить не могла" in ru:
     fail("box 2 still says Nina could not receive her own letter")
 if "письмо Нины сыну всё ещё лежало" not in ru:
     fail("box 2 must say Nina's letter to her son was still in the bag")
+
+import json
+import re
+story2 = json.loads((ROOT / "Postman/GameAssets/Data/chapter2_story.json").read_text(encoding="utf-8"))
+settlements = {event["id"]: event["settlement"] for event in story2["events"]}
+beats = re.findall(
+    r'Beat\(id: "([^"]+)", chapterID: 2, step: \d+, eventID: "([^"]+)", residentID: ([^,]+), placeID: (?:"([^"]*)"|nil)\)',
+    src,
+)
+if len(beats) < 9:
+    fail(f"chapter 2 history beats were not all found ({len(beats)})")
+for beat_id, event_id, _resident, place_id in beats:
+    expected = settlements.get(event_id)
+    if not place_id:
+        fail(f"{beat_id} has no place, but {event_id} is at {expected}")
+    elif place_id != expected:
+        fail(f"{beat_id} uses {place_id}, but {event_id} happens at {expected}")
 
 # Зеркало фильтра: ноль, кусок главы 1, вход в главу 2 без её событий.
 def visible(done, step, reached, chapter_index, active):

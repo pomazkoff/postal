@@ -682,9 +682,14 @@ def figure(folder, resident_id):
     return None
 
 
-def place_image(folder, place_id):
+def place_path(folder, place_id):
     path = ASSETS / folder / "places" / f"place_{place_id}_main.png"
-    if not path.exists():
+    return path if path.exists() else None
+
+
+def place_image(folder, place_id):
+    path = place_path(folder, place_id)
+    if path is None:
         return None
     im = Image.open(path).convert("RGBA")
     if im.height <= 0 or im.width / im.height < 0.7:
@@ -693,6 +698,16 @@ def place_image(folder, place_id):
         s = 900 / im.width
         im = im.resize((900, max(1, int(im.height * s))), Image.Resampling.LANCZOS)
     return im
+
+
+def place_image_fallback(folder, place_id):
+    """Своя папка, если файл есть. Нет файла — другие главы. Узкий свой вырез не подменяется."""
+    if place_path(folder, place_id):
+        return place_image(folder, place_id)
+    for other in ("Chapter1", "Chapter2"):
+        if other != folder and place_path(other, place_id):
+            return place_image(other, place_id)
+    return None
 
 
 def history_column(facts, copy, russian):
@@ -723,8 +738,9 @@ def history_column(facts, copy, russian):
             draw.text((0, y), line, font=head, fill=BROWN)
             y += line_h(head, line) + 4
         y += 8
-        fig = figure(fact["folder"], fact["resident"]) if fact["resident"] else None
-        pic = place_image(fact["folder"], fact["place_id"])
+        figure_folder = fact.get("figure_folder", fact["folder"])
+        fig = figure(figure_folder, fact["resident"]) if fact["resident"] else None
+        pic = place_image_fallback(fact["folder"], fact["place_id"])
         if fig or pic:
             both = fig is not None and pic is not None
             row = []
@@ -1030,6 +1046,57 @@ def main():
         "Same partial progress. Author secrets stay out. Chapters 3–5 are not in this build.",
     ]).convert("RGB").save(OUT / "history_main_en.jpg", quality=88)
     short_phone_menu(scene, ru, quest_ru).convert("RGB").save(OUT / "menu_short_phone.jpg", quality=88)
+
+    # Горы: те же абзацы, что StoryChronicle, с фигурами из главы 1 и местами главы 2.
+    mountains = [
+        ("two", "p_l1", "nina", "sedlo", "history.main.two.title", "history.main.two.body"),
+        ("fuse", "p_l3", "mitya", "penki", "history.main.fuse.title", "history.main.fuse.body"),
+        ("roosters", "p_l4", "kuzma", "penki", "history.main.roosters.title", "history.main.roosters.body"),
+        ("thursday", "p_l5", "pimen", "penki", "history.main.thursday.title", "history.main.thursday.body"),
+        ("hum", "p_l6", "mitya", "repka", "history.main.hum.title", "history.main.hum.body"),
+        ("station", "p_l7", "nina", "repka", "history.main.station.title", "history.main.station.body"),
+        ("mark", "p_l8", "kuzma", "krivulya", "history.main.mark.title", "history.main.mark.body"),
+    ]
+    ch2_events = {event["id"]: event["settlement"] for event in stories_ru[2]["events"]}
+    ch2_pages = []
+    for pid, event_id, resident, place, title_key, body_key in mountains:
+        if ch2_events[event_id] != place:
+            fail(f"{pid} preview place {place} is not where {event_id} happens")
+        ch2_pages.append({
+            "id": pid, "chapter": "Горы", "heading": ru[title_key], "text": ru[body_key],
+            "resident": resident, "folder": "Chapter2", "figure_folder": "Chapter1", "place_id": place,
+        })
+    ch2_column, ch2_marks = history_column(ch2_pages, ru, True)
+    for page in ch2_pages:
+        if figure("Chapter1", page["resident"]) is None:
+            fail(f"{page['heading']} has no resident figure")
+    ch2_note = [
+        "OFFLINE preview · not a simulator frame · not Ilya's save",
+        "Chapter 2 history. Figures are the valley residents. Places follow the mountain letter stops.",
+    ]
+    ch2_dir = Path("/opt/cursor/artifacts/history-chapter2")
+    ch2_dir.mkdir(parents=True, exist_ok=True)
+    ch2_column.save(ch2_dir / "history_ch2_column.png")
+    # Окно листа короче колонки. Кадры сдвигаются, пока каждый заголовок не попадёт в лист.
+    view_h = 2200 - 112
+    shown = set()
+    focus_ids = []
+    cursor = 0
+    while len(shown) < len(ch2_pages) and len(focus_ids) < 6:
+        visible = [page["id"] for page in ch2_pages
+                   if cursor <= ch2_marks[page["id"]] < cursor + view_h - 80]
+        if not visible:
+            cursor = min(ch2_marks[page["id"]] for page in ch2_pages if page["id"] not in shown)
+            continue
+        focus_ids.append(visible[0])
+        shown.update(visible)
+        cursor = ch2_marks[visible[-1]] + 40
+    for index, focus in enumerate(focus_ids, start=1):
+        paint_history(scene, ch2_column, ch2_marks, focus, ru, ch2_note).convert("RGB").save(
+            ch2_dir / f"history_ch2_ru_{index}.jpg", quality=88)
+    missing = [ru[title] for pid, _e, _r, _p, title, _b in mountains if pid not in shown]
+    if missing:
+        fail(f"chapter 2 preview never shows: {missing}")
 
     for stale in ("menu_larger_sheet.jpg", "road_history_tag.jpg", "history_scroll.jpg",
                   "history_top_ru.jpg", "history_choice_ru.jpg", "history_choice_en.jpg",
