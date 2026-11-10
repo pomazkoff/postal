@@ -7,6 +7,9 @@ struct HistoryScrollView: View {
 
     @EnvironmentObject private var game: GameModel
     @State private var facts: [HistoryFact] = []
+    @State private var openPlan: HistoryReading.Open = .top
+    @State private var frames: [String: CGRect] = [:]
+    @State private var viewport: CGRect = .zero
 
     var body: some View {
         FrameScreen(dim: 0.62) { m in
@@ -18,9 +21,16 @@ struct HistoryScrollView: View {
         }
         .onAppear {
             facts = game.historyFacts()
+            openPlan = game.historyOpening(for: facts)
+            if case .entry(let id, .top) = openPlan { game.historyAnchor = id }
+            if case .top = openPlan { game.historyAnchor = nil }
+            game.noteHistoryOpened()
             SoundPlayback.shared.effect("ui_paper_open")
         }
-        .onDisappear { SoundPlayback.shared.effect("ui_paper_close") }
+        .onDisappear {
+            game.noteHistoryVisible(visibleFactIDs(), among: facts)
+            SoundPlayback.shared.effect("ui_paper_close")
+        }
     }
 
     /// На полном кадре лист остаётся 1040×2200 с верхом на 80. Короткий телефон сжимает его в видимую полосу.
@@ -45,37 +55,54 @@ struct HistoryScrollView: View {
                 .fill(Theme.paper)
                 .overlay(RoundedRectangle(cornerRadius: m.length(18), style: .continuous)
                     .stroke(Theme.paperEdge, lineWidth: max(1, m.length(3))))
-            ScrollView {
-                VStack(alignment: .leading, spacing: m.length(28)) {
-                    Text(L10n.text("history.title"))
-                        .font(Ink.title(m.length(64)))
-                        .foregroundStyle(Ink.brown)
-                        .accessibilityAddTraits(.isHeader)
-                    if facts.isEmpty {
-                        Text(L10n.text("history.empty"))
-                            .font(Ink.font("hand", size: m.length(44)))
-                            .foregroundStyle(Ink.pencil)
-                            .fixedSize(horizontal: false, vertical: true)
-                    } else {
-                        let chapters = facts.map(\.chapterTitle)
-                        ForEach(Array(facts.enumerated()), id: \.element.id) { index, fact in
-                            if index == 0 || chapters[index] != chapters[index - 1] {
-                                Text(fact.chapterTitle)
-                                    .font(Ink.title(m.length(40)))
-                                    .foregroundStyle(Ink.brown.opacity(0.8))
-                            }
-                            factBlock(fact, m: m)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: m.length(28)) {
+                        Text(L10n.text("history.title"))
+                            .font(Ink.title(m.length(64)))
+                            .foregroundStyle(Ink.brown)
+                            .accessibilityAddTraits(.isHeader)
+                        if facts.isEmpty {
+                            Text(L10n.text("history.empty"))
+                                .font(Ink.font("hand", size: m.length(44)))
+                                .foregroundStyle(Ink.pencil)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else {
+                            let chapters = facts.map(\.chapterTitle)
+                            ForEach(Array(facts.enumerated()), id: \.element.id) { index, fact in
+                                if index == 0 || chapters[index] != chapters[index - 1] {
+                                    Text(fact.chapterTitle)
+                                        .font(Ink.title(m.length(40)))
+                                        .foregroundStyle(Ink.brown.opacity(0.8))
+                                }
+                                VStack(alignment: .leading, spacing: 0) {
+                                    // Небольшой зазор над заголовком, когда абзац прижат к верху листа.
+                                    Color.clear.frame(height: m.length(12))
+                                    factBlock(fact, m: m)
+                                }
                                 .id(fact.id)
+                                .background(GeometryReader { geo in
+                                    Color.clear.preference(key: HistoryFramesKey.self,
+                                                           value: [fact.id: geo.frame(in: .global)])
+                                })
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, m.length(24))
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, m.length(24))
+                .scrollPosition(id: Binding(
+                    get: { game.historyAnchor },
+                    set: { game.historyAnchor = $0 }
+                ))
+                .background(GeometryReader { geo in
+                    Color.clear.preference(key: HistoryViewportKey.self, value: geo.frame(in: .global))
+                })
+                .onPreferenceChange(HistoryFramesKey.self) { frames = $0; rememberVisible() }
+                .onPreferenceChange(HistoryViewportKey.self) { viewport = $0; rememberVisible() }
+                .onAppear { DispatchQueue.main.async { placeScroll(proxy) } }
+                .onChange(of: openPlan) { _ in DispatchQueue.main.async { placeScroll(proxy) } }
             }
-            .scrollPosition(id: Binding(
-                get: { game.historyAnchor },
-                set: { game.historyAnchor = $0 }
-            ))
             .padding(.horizontal, m.length(48))
             .padding(.vertical, m.length(56))
         }
@@ -162,11 +189,52 @@ struct HistoryScrollView: View {
         return image
     }
 
+    private func placeScroll(_ proxy: ScrollViewProxy) {
+        switch openPlan {
+        case .top:
+            break
+        case .entry(let id, .top):
+            proxy.scrollTo(id, anchor: .top)
+        case .entry(let id, .bottom):
+            game.historyAnchor = id
+            proxy.scrollTo(id, anchor: .bottom)
+        }
+    }
+
+    private func visibleFactIDs() -> Set<String> {
+        guard viewport.height > 1 else { return [] }
+        var ids: Set<String> = []
+        for (id, frame) in frames where frame.intersects(viewport) {
+            ids.insert(id)
+        }
+        return ids
+    }
+
+    private func rememberVisible() {
+        let visible = visibleFactIDs()
+        guard !visible.isEmpty else { return }
+        game.noteHistoryVisible(visible, among: facts)
+    }
+
     private func chapterOrder(preferring current: Int, world: WorldConfig) -> [Int] {
         var order: [Int] = []
         if world.chapters.contains(where: { $0.id == current }) { order.append(current) }
         if current != 1, world.chapters.contains(where: { $0.id == 1 }) { order.append(1) }
         for chapter in world.chapters where !order.contains(chapter.id) { order.append(chapter.id) }
         return order
+    }
+}
+
+private struct HistoryFramesKey: PreferenceKey {
+    static var defaultValue: [String: CGRect] = [:]
+    static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
+    }
+}
+
+private struct HistoryViewportKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
     }
 }

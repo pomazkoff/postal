@@ -1098,6 +1098,18 @@ def main():
     if missing:
         fail(f"chapter 2 preview never shows: {missing}")
 
+    # Свиток открыт не сверху: долина уже прочитана, первый непрочитанный абзац гор — у верхнего края.
+    anchored = line_ru + ch2_pages
+    anchor_column, anchor_marks = history_column(anchored, ru, True)
+    if anchor_marks.get("two", 0) < 400:
+        fail("the unread mountain entry is not below the valley text")
+    open_dir = Path("/opt/cursor/artifacts/history-open")
+    open_dir.mkdir(parents=True, exist_ok=True)
+    paint_history(scene, anchor_column, anchor_marks, "two", ru, [
+        "OFFLINE preview · not a simulator frame · not a save",
+        "History opened on the first unread entry: «Два голоса». Valley lines above count as already seen.",
+    ]).convert("RGB").save(open_dir / "history_unseen_ch2_ru.jpg", quality=88)
+
     for stale in ("menu_larger_sheet.jpg", "road_history_tag.jpg", "history_scroll.jpg",
                   "history_top_ru.jpg", "history_choice_ru.jpg", "history_choice_en.jpg",
                   "history_chapter_ru.jpg", "history_chapter_en.jpg"):

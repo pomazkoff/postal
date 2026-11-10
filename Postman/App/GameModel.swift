@@ -79,6 +79,7 @@ final class GameModel: ObservableObject {
 
         if onboardingDone { steps.start() }
         pullFirstMailInbox()
+        migrateHistoryIfNeeded()
     }
 
     private var engineCancellables = Set<AnyCancellable>()
@@ -122,13 +123,55 @@ final class GameModel: ObservableObject {
             done: engine.state.doneEvents, choices: engine.state.choices,
             items: engine.state.items, opened: engine.state.opened,
             carried: engine.state.carried, reached: chapterSteps)
-        return StoryChronicle.facts(world: world, activeIndex: chapterIndex, activeSteps: chapterSteps,
+        return StoryChronicle.facts(world: world, activeIndex: chapterIndex, activeSteps: known.reached,
                                     active: known) { chapterID in
             guard let saved = ChapterStateStore(fileName: "chapter\(chapterID)_state.json").load() else { return nil }
             return StoryChronicle.Progress(done: saved.doneEvents, choices: saved.choices,
                                            items: saved.items, opened: saved.opened,
                                            carried: saved.carried, reached: Int.max)
         }
+    }
+
+    /// Один раз на сейв. Новая игра ничего не помечает. Старая — все абзацы, которые уже открыты, когда шаги известны.
+    private func migrateHistoryIfNeeded() {
+        guard !progress.historyMigrated else { return }
+        guard hasHistoryProgress() else {
+            progress.historyMigrated = true
+            return
+        }
+        guard steps.hasLoaded else { return }
+        let seeded = HistoryReading.migrate(hasProgress: true, factIDs: historyFacts().map(\.id))
+        progress.historySeen = progress.historySeen.union(seeded.seen)
+        if seeded.everOpened { progress.historyOpened = true }
+        progress.historyMigrated = true
+    }
+
+    private func hasHistoryProgress() -> Bool {
+        if progress.onboardingDone || progress.gameStartDate != nil || progress.displayedSteps > 0 { return true }
+        return world.chapters.contains {
+            ChapterStateStore(fileName: "chapter\($0.id)_state.json").load() != nil
+        }
+    }
+
+    /// Куда поставить лист. Старый сейв сначала помечает уже открытые абзацы прочитанными.
+    func historyOpening(for facts: [HistoryFact]) -> HistoryReading.Open {
+        migrateHistoryIfNeeded()
+        if !progress.historyMigrated {
+            // Шаги ещё не прочитаны, а сейв уже есть: не уезжать наверх.
+            if let last = facts.last { return .entry(last.id, .bottom) }
+            return .top
+        }
+        return HistoryReading.opening(ids: facts.map(\.id), seen: progress.historySeen,
+                                      everOpened: progress.historyOpened)
+    }
+
+    func noteHistoryOpened() {
+        progress.historyOpened = true
+    }
+
+    func noteHistoryVisible(_ visible: Set<String>, among facts: [HistoryFact]) {
+        let next = HistoryReading.absorb(ids: facts.map(\.id), seen: progress.historySeen, visible: visible)
+        if next != progress.historySeen { progress.historySeen = next }
     }
 
     /// Кого показать в меню. Чужие главы читаются с диска и не создают сейв.
@@ -360,6 +403,7 @@ final class GameModel: ObservableObject {
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false
+        historyAnchor = nil
         SoundPlayback.shared.forgetStories()
         installWorldStory(in: scene)
         scene.resetForNewStory()
@@ -468,6 +512,7 @@ final class GameModel: ObservableObject {
         chapterIndex = AppCore.shared.chapterIndex
         let inChapter = chapterSteps(total: total)
         scene.setTargetSteps(worldSteps(total: total))
+        migrateHistoryIfNeeded()
         if pendingReturnCheck {
             pendingReturnCheck = false
             if journal == nil {

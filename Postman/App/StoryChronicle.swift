@@ -14,6 +14,39 @@ struct HistoryFact: Identifiable, Equatable {
     let placeID: String?
 }
 
+/// Куда открыть свиток и какие абзацы уже прочитаны. Идентификаторы общие для глав 1 и 2.
+enum HistoryReading {
+    enum Pin: Equatable { case top, bottom }
+    enum Open: Equatable {
+        case top
+        case entry(String, Pin)
+    }
+
+    /// Первый раз — сверху. Потом — первый непрочитанный у верхнего края. Если нового нет — низ, последний абзац.
+    static func opening(ids: [String], seen: Set<String>, everOpened: Bool) -> Open {
+        guard everOpened else { return .top }
+        if let unseen = ids.first(where: { !seen.contains($0) }) { return .entry(unseen, .top) }
+        if let last = ids.last { return .entry(last, .bottom) }
+        return .top
+    }
+
+    /// Старый сейв без этой записи: всё, что уже открыто, считается прочитанным, чтобы не уехать наверх.
+    /// Новая игра — пустой список и свиток ещё ни разу не открывали.
+    static func migrate(hasProgress: Bool, factIDs: [String]) -> (seen: Set<String>, everOpened: Bool) {
+        if hasProgress { return (Set(factIDs), true) }
+        return ([], false)
+    }
+
+    /// Видимые абзацы и всё, что выше последнего видимого: это уже прошло по листу.
+    static func absorb(ids: [String], seen: Set<String>, visible: Set<String>) -> Set<String> {
+        let shown = ids.indices.filter { visible.contains(ids[$0]) }
+        guard let last = shown.last else { return seen }
+        var next = seen
+        for id in ids.prefix(last + 1) { next.insert(id) }
+        return next
+    }
+}
+
 /// Основная линия по `docs/canon/story-bible.md` §§5 и 5б и по `docs/canon/ideas.md`
 /// (акт I: быт, адресаты, первые странные письма и замеченные противоречия).
 /// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни виновных, ни глав 3–5.

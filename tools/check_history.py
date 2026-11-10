@@ -50,6 +50,24 @@ if "chapter.assetsFolder != fact.assetsFolder" not in view:
     fail("a missing place picture must be looked up in another chapter folder")
 if "historyAnchor" not in view:
     fail("closing the sheet should keep the scroll position")
+if "scrollTo(id, anchor: .top)" not in view or "scrollTo(id, anchor: .bottom)" not in view:
+    fail("an unseen entry opens at the top of the paper, and a finished scroll opens at the bottom")
+if "noteHistoryVisible" not in view:
+    fail("entries scrolled into view must be marked seen")
+reading = (ROOT / "Postman/App/StoryChronicle.swift").read_text(encoding="utf-8")
+progress = (ROOT / "Postman/Services/ProgressStore.swift").read_text(encoding="utf-8")
+model = (ROOT / "Postman/App/GameModel.swift").read_text(encoding="utf-8")
+for needle in ("static func opening", "static func migrate", "static func absorb"):
+    if needle not in reading:
+        fail(f"history reading is missing {needle}")
+for needle in ("historySeen", "historyOpened", "historyMigrated"):
+    if needle not in progress or needle not in model:
+        fail(f"history progress {needle} is not stored")
+reset = progress.split("func resetStory", 1)[1].split("func ", 1)[0]
+if "Key.historySeen" not in reset or "Key.historyOpened" not in reset:
+    fail("a new story must forget which history lines were read")
+if "Key.historyMigrated" in reset:
+    fail("resetting the story must not treat the new game as an old save")
 if "history.empty" not in view:
     fail("a new game needs an empty state")
 if "history.where" in view:
@@ -143,6 +161,52 @@ if arrow_bottom(2532, 102, 2470) >= 2470:
     fail("the home indicator must lift the close button")
 if arrow_bottom(2306, 0, 2470) > 2306 - 16:
     fail("a short phone must keep close inside the visible frame")
+
+def opening(ids, seen, ever_opened):
+    if not ever_opened:
+        return ("top", None)
+    for item in ids:
+        if item not in seen:
+            return ("unseen", item)
+    if ids:
+        return ("bottom", ids[-1])
+    return ("top", None)
+
+
+def migrate(has_progress, fact_ids):
+    if has_progress:
+        return set(fact_ids), True
+    return set(), False
+
+
+def absorb(ids, seen, visible):
+    shown = [i for i, item in enumerate(ids) if item in visible]
+    if not shown:
+        return set(seen)
+    nxt = set(seen)
+    nxt.update(ids[: shown[-1] + 1])
+    return nxt
+
+
+ids = ["1:road", "1:stilts", "2:two", "2:fuse"]
+if opening(ids, set(), False) != ("top", None):
+    fail("the first open stays at the top")
+if opening(ids, {"1:road", "1:stilts"}, True) != ("unseen", "2:two"):
+    fail("a later open starts at the first unread entry, across chapters")
+if opening(ids, set(ids), True) != ("bottom", "2:fuse"):
+    fail("when nothing is new the scroll opens at the last entry")
+if opening([], set(), True) != ("top", None):
+    fail("an empty history stays at the top")
+seen, opened = migrate(True, ids)
+if seen != set(ids) or not opened:
+    fail("an existing save marks every currently unlocked fact as read")
+seen, opened = migrate(False, ids)
+if seen or opened:
+    fail("a new game is not marked read")
+if absorb(ids, {"1:road"}, {"2:two"}) != {"1:road", "1:stilts", "2:two"}:
+    fail("scrolling to an entry marks it and everything above it")
+if absorb(ids, set(), set()) != set():
+    fail("nothing on screen does not mark the whole scroll")
 
 if FAILS:
     print(f"{len(FAILS)} history check(s) failed:")

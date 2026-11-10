@@ -16,6 +16,12 @@ final class ProgressStore {
         /// DEBUG/auto: nil = по шагам; 0/1 = форс главы.
         static let forceChapterIndex = "postman.forceChapterIndex"
         static let forceChapterBaseSteps = "postman.forceChapterBaseSteps"
+        /// Прочитанные абзацы свитка (HistoryFact.id), сразу для обеих глав.
+        static let historySeen = "postman.history.seen"
+        /// Свиток уже открывали. Нет ключа — первый раз, лист сверху.
+        static let historyOpened = "postman.history.opened"
+        /// Версия с прочитанным свитком уже применена к этому сейву.
+        static let historyMigrated = "postman.history.migrated"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -95,10 +101,31 @@ final class ProgressStore {
         }
     }
 
+    /// Абзацы, которые уже побывали на листе. Нет ключа у старого сейва — решает миграция.
+    var historySeen: Set<String> {
+        get { Set(defaults.stringArray(forKey: Key.historySeen) ?? []) }
+        set {
+            let next = newValue.sorted()
+            if defaults.stringArray(forKey: Key.historySeen) ?? [] != next {
+                defaults.set(next, forKey: Key.historySeen)
+            }
+        }
+    }
+
+    var historyOpened: Bool {
+        get { defaults.bool(forKey: Key.historyOpened) }
+        set { defaults.set(newValue, forKey: Key.historyOpened) }
+    }
+
+    var historyMigrated: Bool {
+        get { defaults.bool(forKey: Key.historyMigrated) }
+        set { defaults.set(newValue, forKey: Key.historyMigrated) }
+    }
+
     func resetAll() {
         for k in [Key.gameStartDate, Key.onboardingDone, Key.displayedSteps, Key.stepMode,
                   Key.debugExtraTotal, Key.debugExtraToday, Key.debugExtraDay, Key.exactStart, Key.forceChapterIndex,
-                  Key.forceChapterBaseSteps] {
+                  Key.forceChapterBaseSteps, Key.historySeen, Key.historyOpened, Key.historyMigrated] {
             defaults.removeObject(forKey: k)
         }
     }
@@ -108,7 +135,8 @@ final class ProgressStore {
     func resetStory(now: Date = Date()) {
         for k in [Key.onboardingDone, Key.displayedSteps,
                   Key.debugExtraTotal, Key.debugExtraToday, Key.debugExtraDay,
-                  Key.forceChapterIndex, Key.forceChapterBaseSteps] {
+                  Key.forceChapterIndex, Key.forceChapterBaseSteps,
+                  Key.historySeen, Key.historyOpened] {
             defaults.removeObject(forKey: k)
         }
         gameStartDate = now
