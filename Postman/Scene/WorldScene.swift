@@ -89,6 +89,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private(set) var weather: WeatherLayer?
     /// Дневная пелена болот. Не меняет длину шага: вечером она просто реже.
     private var marshVeil: SKSpriteNode?
+    private var skySprite: SKSpriteNode?
+    private var skyRoadFraction: CGFloat = 0
+    private var appliedSkyChapter: Int = -1
     private var lastUpdateTime: TimeInterval = 0
     private var ambienceClock: TimeInterval = 0
     private var cullClock: TimeInterval = 0
@@ -123,6 +126,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         addChild(cam)
         camera = cam
         let roadFraction = CGFloat(config.game.roadLineY / config.game.designHeight)
+        skyRoadFraction = roadFraction
         let sky = SKSpriteNode(texture: ProceduralTextures.sky(top: UIColor(hex: L.sky.topColor),
                                                               bottom: UIColor(hex: L.sky.bottomColor),
                                                               roadFraction: roadFraction))
@@ -130,6 +134,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         sky.position = .zero
         sky.zPosition = -1000
         cam.addChild(sky)
+        skySprite = sky
 
         // Живой мир (облака, птицы, звёзды, время суток) — если есть Data/ambient.json и атлас.
         if let ac = AmbientConfig.load() {
@@ -148,6 +153,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         veil.isHidden = true
         cam.addChild(veil)
         marshVeil = veil
+        applyChapterSky()
 
         // Одна сцена/камера/фигура героя на весь мир. Главы — соседние сегменты, а не сцены.
         let actorLayer = SKNode()
@@ -774,6 +780,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                         visibleSize: CGSize(width: visibleWidth, height: visibleHeight))
         weather?.update(dt: dt)
         updateMarshVeil()
+        applyChapterSky()
         updateCompanion(dt)
         updateNightFigures()
         updatePostmanVisibility()
@@ -799,6 +806,24 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let thinner = hour >= 18 || hour < 7
         veil.isHidden = false
         veil.alpha = thinner ? 0.28 : 0.72
+    }
+
+    /// Днём глава 3 красится своим небом. Долина и горы остаются на общем градиенте.
+    private func applyChapterSky() {
+        let chapter = config.chapters.last { Double($0.startStep) <= displayedStep }
+        let id = chapter?.id ?? 0
+        guard id != appliedSkyChapter else { return }
+        appliedSkyChapter = id
+        let top = chapter?.sky?.topColor ?? config.layers.sky.topColor
+        let bottom = chapter?.sky?.bottomColor ?? config.layers.sky.bottomColor
+        let topColor = UIColor(hex: top)
+        let bottomColor = UIColor(hex: bottom)
+        backgroundColor = topColor
+        if let ambient {
+            ambient.setBaseSky(top: topColor, bottom: bottomColor)
+        } else {
+            skySprite?.texture = ProceduralTextures.sky(top: topColor, bottom: bottomColor, roadFraction: skyRoadFraction)
+        }
     }
 
     // MARK: Camera

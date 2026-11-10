@@ -95,6 +95,8 @@ struct ChapterConfig: Decodable {
     let underground: UndergroundConfig
     let quests: [QuestConfig]
     let rawClayAfterStep: Int?
+    /// Дневное небо этой главы. Нет поля — общее небо из layers.sky.
+    let sky: SkyConfig?
 
     var endStep: Int { startStep + lengthSteps }
 }

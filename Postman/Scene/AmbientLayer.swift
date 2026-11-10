@@ -86,8 +86,8 @@ final class AmbientLayer {
     let config: AmbientConfig
     private let atlas: AmbientAtlas?
     private let sky: SKSpriteNode
-    private let baseTop: RGB
-    private let baseBottom: RGB
+    private var baseTop: RGB
+    private var baseBottom: RGB
     private let roadFraction: CGFloat
     private let designSize: CGSize
     private let tintNode: SKSpriteNode
@@ -186,6 +186,17 @@ final class AmbientLayer {
 
     /// Пересчитать небо сразу (после смены debugHourOffset).
     func refreshTimeOfDay() { skyClock = 100 }
+
+    /// Дневная основа неба. Ночные ключи ambient.json по-прежнему задают свой цвет.
+    func setBaseSky(top: UIColor, bottom: UIColor) {
+        let nextTop = RGB(top)
+        let nextBottom = RGB(bottom)
+        guard nextTop.distance(baseTop) > 0.002 || nextBottom.distance(baseBottom) > 0.002 else { return }
+        baseTop = nextTop
+        baseBottom = nextBottom
+        shownTop = RGB(r: -1, g: 0, b: 0)
+        skyClock = 100
+    }
 
     // MARK: Время суток
 

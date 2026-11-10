@@ -144,6 +144,16 @@ for folder in ("road", "places", "underground", "foreground", "residents/fedya")
         fail(f"{folder} is not a chapter 3 folder")
 if chapter["assetsFolder"] != "Chapter3":
     fail("chapter 3 does not load its own asset folder")
+if chapter.get("sky") != {"topColor": "#3D4A45", "bottomColor": "#6A6B52"}:
+    fail("chapter 3 daytime sky is not the swamp gradient")
+layers = json.loads((ROOT / "Postman/GameAssets/Data/world.json").read_text(encoding="utf-8"))["layers"]["sky"]
+if layers["topColor"] != "#14505F" or layers["bottomColor"] != "#3C7873":
+    fail("the shared sky used by the valley and the mountains changed")
+barge = next(p for p in chapter["props"] if p["image"] == "places/place_staraya_protoka_main")
+if barge["height"] != 500 or barge["sink"] != 217 or barge["dx"] != -1045.5:
+    fail(f"the barge is not beside the causeway: {barge['height']} {barge['sink']} {barge['dx']}")
+if any(p["layer"] == "underground" and p["image"] != "underground/ug_neutral_tile" for p in chapter["props"]):
+    fail("chapter 3 underground objects were added before their sprites arrived")
 expected_art = {
     "road/road_main_alder.png": (2400, 680),
     "places/bg_far_ridges_tile.png": (2636, 1236),
