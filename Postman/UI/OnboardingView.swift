@@ -118,28 +118,15 @@ struct OnboardingView: View {
     }
 
     private var header: some View {
-        VStack(spacing: 4) {
-            if AppLanguage.isRussian {
-                Text(L10n.text("app.title"))
-                    .font(Ink.title(28))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
-                    .foregroundStyle(Theme.paper)
-                    .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
-            } else {
-                Text(AppInfo.displayName)
-                    .font(Ink.title(36))
-                    .foregroundStyle(Theme.paper)
-                    .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
-                Text(L10n.text("onboarding.subtitle"))
-                    .font(Ink.label(15))
-                    .foregroundStyle(Theme.paper.opacity(0.75))
-                    .tracking(1.2)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityAddTraits(.isHeader)
+        Text(L10n.text("app.title"))
+            .font(Ink.title(28))
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
+            .minimumScaleFactor(0.7)
+            .foregroundStyle(Theme.paper)
+            .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
+            .frame(maxWidth: .infinity)
+            .accessibilityAddTraits(.isHeader)
     }
 
     /// Собственный пейджер: offset = -progress * width, DragGesture даёт непрерывный offset на iOS 17.

@@ -39,7 +39,7 @@ if "postBeat(beat)" not in deliver.split("return", 1)[-1]:
 post = notifier.split("func post(", 1)[1].split("func postTest", 1)[0]
 if "trigger: nil" not in post:
     fail("a stop that has already happened is an immediate local notification")
-if notifier.count("UNCalendarNotificationTrigger") != 1 or notifier.count("repeats: true") != 1:
+if notifier.count("UNCalendarNotificationTrigger(") != 1 or notifier.count("repeats: true") != 1:
     fail("only the daily walk reminder uses a repeating calendar trigger")
 if "UNTimeIntervalNotificationTrigger" not in notifier or "repeats: false" not in notifier:
     fail("upcoming stops must be one-shot time intervals")
