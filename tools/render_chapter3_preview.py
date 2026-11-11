@@ -27,53 +27,94 @@ def road_point(road, fraction):
     return pts[-1]
 
 
-def seam(image, road, mountain, lift):
-    """Fade the marsh into the peaks. The road stays the swamp's own colour."""
-    del mountain, lift
+def _ridge(row, hint, gold):
+    x0, x1 = max(1, hint - 80), min(len(row) - 2, hint + 80)
+    if x0 >= x1:
+        return hint, 18
+    r, g, b = row[:, 0], row[:, 1], row[:, 2]
+    score = (r - b) if gold else (r + g + b) / 3
+    window = score[x0:x1 + 1]
+    best = x0 + int(np.argmax(window))
+    base = float(window.mean())
+    peak = float(score[best])
+    thr = base + 0.45 * (peak - base)
+    left = best
+    while left > 1 and score[left] > thr:
+        left -= 1
+    right = best
+    while right < len(row) - 2 and score[right] > thr:
+        right += 1
+    return best, max(14, min(26, (right - left) // 2))
+
+
+def _x_at(line, y):
+    for a, b in zip(line, line[1:]):
+        span = b[1] - a[1]
+        if abs(span) < 0.01:
+            continue
+        t = (y - a[1]) / span
+        if 0 <= t <= 1:
+            return a[0] + (b[0] - a[0]) * t
+    return min(line, key=lambda p: abs(p[1] - y))[0]
+
+
+def seam(image, road, mountain, lift, mountain_road=None):
+    """Fade the marsh into the peaks and slide its road onto the mountain road."""
     arr = np.array(image.convert("RGBA")).astype(np.float32)
     base = arr.copy()
+    mount = np.array(mountain.convert("RGBA")).astype(np.float32)
     h, w = arr.shape[:2]
     fade = 420
     y0 = max(0, h - fade)
+    lift_y = int(round(lift * h / 2532))
+    if mountain_road is None:
+        mountain_road = road
     for y in range(y0, h):
+        design_y = y * 2532 / h
+        sw_x = _x_at(road, design_y) * w / 1170
+        mt_x = _x_at(mountain_road, design_y - lift) * w / 1170
         t = (y - y0) / max(1, fade - 1)
         s = t * t * (3 - 2 * t)
+        align_t = min(1.0, t / 0.55)
+        align = align_t * align_t * (3 - 2 * align_t)
+        dest = sw_x + (mt_x - sw_x) * align
+        half = 19 + (21 - 19) * align
+        road_px = int(np.clip(round(sw_x), 0, w - 1))
+        keep = 24
+        strip = np.stack([
+            arr[y, int(np.clip(road_px + dx, 0, w - 1))]
+            for dx in range(-keep, keep + 1)
+        ])
+        haze_x = int(np.clip(round(sw_x) - 48, 0, w - 1))
+        erase = int(round(half)) + 8
+        for dx in range(-erase, erase + 1):
+            x = int(round(sw_x)) + dx
+            if 0 <= x < w:
+                base[y, x] = base[y, haze_x]
         a = 1 - s
+        arr[y] = base[y]
         arr[y, :, :3] *= a
         arr[y, :, 3] = a * 255
-    radius = 26
-    road_mask = np.zeros((h, w), dtype=bool)
-
-    def stamp(cx, cy):
-        x0, x1 = max(0, int(cx) - radius), min(w, int(cx) + radius + 1)
-        y0, y1 = max(0, int(cy) - radius), min(h, int(cy) + radius + 1)
-        if x0 >= x1 or y0 >= y1:
-            return
-        xs = np.arange(x0, x1)[None, :]
-        ys = np.arange(y0, y1)[:, None]
-        road_mask[y0:y1, x0:x1] |= (xs - cx) ** 2 + (ys - cy) ** 2 <= radius ** 2
-
-    prev = np.array(road[0], dtype=float)
-    for point in road[::3]:
-        point = np.array(point, dtype=float)
-        dist = float(np.hypot(*(point - prev)))
-        steps = max(1, int(dist / 8))
-        for s in range(steps + 1):
-            cx, cy = prev + (point - prev) * (s / steps)
-            stamp(cx, cy)
-        prev = point
-    # Дорога держится дольше дымки и к низу полосы отдаёт путь гор.
-    if road_mask.any():
-        yy = np.arange(h)[:, None]
-        t = (yy - y0) / max(1, fade - 1)
-        road_t = np.clip((t - 0.35) / 0.65, 0, 1)
-        road_s = road_t * road_t * (3 - 2 * road_t)
-        road_a = np.where(yy < y0, 1.0, 1 - road_s).astype(np.float32)
-        painted = base.copy()
-        painted[:, :, :3] *= road_a[:, :, None]
-        painted[:, :, 3] = road_a[:, 0] * 255
-        arr[road_mask] = painted[road_mask]
-    return Image.fromarray(arr.astype(np.uint8))
+        my = y - lift_y
+        if my < 0 or my >= mount.shape[0]:
+            continue
+        edge = 3.0
+        reach = int(round(half + edge))
+        for dx in range(-reach, reach + 1):
+            x = int(round(dest)) + dx
+            if x < 0 or x >= w:
+                continue
+            along = dx / half if half else 0
+            sample_x = int(np.clip(round(mt_x + along * 21), 0, w - 1))
+            sample_y = int(np.clip(max(my, 401), 0, mount.shape[0] - 1))
+            src_dx = int(np.clip(round(along * 19), -keep, keep))
+            src = strip[src_dx + keep, :3]
+            mixed = src * (1 - s) + mount[sample_y, sample_x, :3] * s
+            dist = abs(dx)
+            edge_a = 1.0 if dist <= half else max(0.0, 1 - (dist - half) / edge)
+            arr[y, x, :3] = arr[y, x, :3] * (1 - edge_a) + mixed * edge_a
+            arr[y, x, 3] = arr[y, x, 3] * (1 - edge_a) + 255 * edge_a
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
 
 
 def main():
@@ -91,7 +132,7 @@ def main():
     end = mountains["road"][-1]
     lift = int(round(swamps["join"][1] - end[1]))
     overlap = swamp_im.height - lift
-    swamp_im = seam(swamp_im, swamps["road"], mountain_im, lift)
+    swamp_im = seam(swamp_im, swamps["road"], mountain_im, lift, mountains["road"])
     height = lift + mountain_im.height
     canvas_h = height
     sheet = Image.new("RGBA", (1170, canvas_h), (232, 220, 196, 255))

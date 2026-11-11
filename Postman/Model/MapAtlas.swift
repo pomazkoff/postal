@@ -111,13 +111,15 @@ enum SwampJoin {
     static let point = CGPoint(x: 619.9, y: 2373.7)
 }
 
-/// Стык листа болот с горами. Нижние ~130 pt кадра растворяются в вершины,
-/// дорога остаётся цветом болот и не бледнеет.
+/// Стык листа болот с горами. Низ листа растворяется в вершины.
+/// Дорога на шве сдвигается на ось пути гор, сужается до его ширины и меняет цвет,
+/// без круглой заглушки поверх.
 enum MarshSeam {
     /// 420 px кадра 2532 — около 140 pt на телефоне, внутри запрошенных 100–150.
     static let fadeDesignPx: CGFloat = 420
 
-    static func apply(_ image: UIImage, road: [CGPoint], mountain: UIImage, lift: CGFloat) -> UIImage {
+    static func apply(_ image: UIImage, road: [CGPoint], mountain: UIImage,
+                      mountainRoad: [CGPoint], lift: CGFloat) -> UIImage {
         guard let cg = image.cgImage, let mountainCG = mountain.cgImage, !road.isEmpty else { return image }
         let w = cg.width, h = cg.height
         let color = CGColorSpaceCreateDeviceRGB()
@@ -130,66 +132,111 @@ enum MarshSeam {
             return (ctx, data.bindMemory(to: UInt8.self, capacity: width * height * 4))
         }
         guard let (ctx, pixels) = buffer(cg, width: w, height: h) else { return image }
-        guard mountainCG.width == w else { return image }
-        let scaleY = CGFloat(h) / 2532
-        _ = lift
+        let mh = mountainCG.height
+        guard let (mountainCtx, mount) = buffer(mountainCG, width: w, height: mh), mountainCG.width == w else { return image }
+        _ = mountainCtx
         var original = [UInt8](repeating: 0, count: w * h * 4)
         for i in 0..<(w * h * 4) { original[i] = pixels[i] }
         func index(_ x: Int, _ imageY: Int, _ width: Int, _ height: Int) -> Int {
             ((height - 1 - imageY) * width + x) * 4
         }
-        // Прямой край листа — прямоугольник дымки. Низ растворяется, вершины под ним видны.
         let fadePx = max(1, Int((Self.fadeDesignPx * CGFloat(h) / 2532).rounded()))
         let yStart = max(0, h - fadePx)
+        let liftY = Int((lift * CGFloat(h) / 2532).rounded())
+        func smooth(_ t: Float) -> Float {
+            let c = min(1, max(0, t))
+            return c * c * (3 - 2 * c)
+        }
+        func xAt(_ line: [CGPoint], _ y: CGFloat) -> CGFloat {
+            guard let first = line.first else { return 620 }
+            var best = first
+            var bestD = abs(first.y - y)
+            for i in 0..<(line.count - 1) {
+                let a = line[i], b = line[i + 1]
+                let span = b.y - a.y
+                if abs(span) < 0.01 { continue }
+                let t = (y - a.y) / span
+                if t < 0 || t > 1 { continue }
+                return a.x + (b.x - a.x) * t
+            }
+            for p in line where abs(p.y - y) < bestD {
+                best = p
+                bestD = abs(p.y - y)
+            }
+            return best.x
+        }
+        let scaleX = CGFloat(w) / 1170
+        let scaleY = CGFloat(h) / 2532
         if yStart < h {
             for y in yStart..<h {
+                let designY = CGFloat(y) / scaleY
+                let swX = xAt(road, designY) * scaleX
+                let mtX = xAt(mountainRoad, designY - lift) * scaleX
                 let t = Float(y - yStart) / Float(max(1, fadePx - 1))
-                let s = t * t * (3 - 2 * t)
+                let s = smooth(t)
+                // Ось совмещается в первой половине полосы, цвет догоняет до самого края.
+                let align = smooth(min(1, t / 0.55))
+                let dest = swX + (mtX - swX) * CGFloat(align)
+                let half = 19 + (21 - 19) * CGFloat(align)
+                let roadPx = min(w - 1, max(0, Int(swX.rounded())))
+                let keep = 24
+                var strip = [UInt8](repeating: 0, count: (keep * 2 + 1) * 4)
+                for dx in -keep...keep {
+                    let x = min(w - 1, max(0, roadPx + dx))
+                    let i = index(x, y, w, h)
+                    let o = (dx + keep) * 4
+                    strip[o] = original[i]
+                    strip[o + 1] = original[i + 1]
+                    strip[o + 2] = original[i + 2]
+                    strip[o + 3] = original[i + 3]
+                }
+                // Старую, более широкую и левую дорогу затираем дымкой, потом кладём её пиксели на ось гор.
+                let hazeX = min(w - 1, max(0, Int(swX.rounded()) - 48))
+                let hi = index(hazeX, y, w, h)
+                let erase = keep
+                for dx in -erase...erase {
+                    let x = Int(swX.rounded()) + dx
+                    guard x >= 0, x < w else { continue }
+                    let i = index(x, y, w, h)
+                    original[i] = original[hi]
+                    original[i + 1] = original[hi + 1]
+                    original[i + 2] = original[hi + 2]
+                    original[i + 3] = original[hi + 3]
+                }
                 let a = 1 - s
                 let ab = UInt8((a * 255).rounded())
                 for x in 0..<w {
                     let i = index(x, y, w, h)
-                    pixels[i] = UInt8((Float(pixels[i]) * a).rounded())
-                    pixels[i + 1] = UInt8((Float(pixels[i + 1]) * a).rounded())
-                    pixels[i + 2] = UInt8((Float(pixels[i + 2]) * a).rounded())
-                    pixels[i + 3] = ab
-                }
-            }
-        }
-        let scaleX = CGFloat(w) / 1170
-        let points = road.map { CGPoint(x: $0.x * scaleX, y: $0.y * scaleY) }
-        let radius = Int((26 * scaleX).rounded())
-        // Дорога держится дольше дымки и в конце полосы отдаёт цвет пути на горах.
-        func restore(_ center: CGPoint) {
-            let cx = Int(center.x.rounded()), cy = Int(center.y.rounded())
-            for dy in -radius...radius {
-                let reach = Int((Double(radius * radius - dy * dy)).squareRoot())
-                for dx in -reach...reach {
-                    let x = cx + dx, y = cy + dy
-                    guard x >= 0, y >= 0, x < w, y < h else { continue }
-                    let i = index(x, y, w, h)
-                    let t = Float(y - yStart) / Float(max(1, fadePx - 1))
-                    let roadT = min(1, max(0, (t - 0.35) / 0.65))
-                    let roadS = roadT * roadT * (3 - 2 * roadT)
-                    let a = y < yStart ? 1 : 1 - roadS
-                    let ab = UInt8((a * 255).rounded())
                     pixels[i] = UInt8((Float(original[i]) * a).rounded())
                     pixels[i + 1] = UInt8((Float(original[i + 1]) * a).rounded())
                     pixels[i + 2] = UInt8((Float(original[i + 2]) * a).rounded())
                     pixels[i + 3] = ab
                 }
+                let my = y - liftY
+                guard my >= 0, my < mh else { continue }
+                let edge: CGFloat = 3
+                let reach = Int((half + edge).rounded())
+                for dx in -reach...reach {
+                    let x = Int(dest.rounded()) + dx
+                    guard x >= 0, x < w else { continue }
+                    let along = half > 0.5 ? CGFloat(dx) / half : 0
+                    let sampleX = min(w - 1, max(0, Int((mtX + along * 21).rounded())))
+                    let sampleY = min(mh - 1, max(0, max(my, 401)))
+                    let mi = index(sampleX, sampleY, w, mh)
+                    let srcDx = max(-keep, min(keep, Int((along * 19).rounded())))
+                    let so = (srcDx + keep) * 4
+                    let dist = abs(CGFloat(dx))
+                    let edgeA = dist <= half ? Float(1) : Float(max(0, 1 - (dist - half) / edge))
+                    let i = index(x, y, w, h)
+                    for c in 0..<3 {
+                        let mixed = Float(strip[so + c]) * (1 - s) + Float(mount[mi + c]) * s
+                        let under = Float(pixels[i + c])
+                        pixels[i + c] = UInt8(min(255, (under * (1 - edgeA) + mixed * edgeA).rounded()))
+                    }
+                    let underA = Float(pixels[i + 3])
+                    pixels[i + 3] = UInt8(min(255, (underA * (1 - edgeA) + 255 * edgeA).rounded()))
+                }
             }
-        }
-        var previous = points[0]
-        for point in points {
-            let span = max(abs(point.x - previous.x), abs(point.y - previous.y))
-            let steps = max(1, Int(span.rounded()))
-            for s in 0...steps {
-                let t = CGFloat(s) / CGFloat(steps)
-                restore(CGPoint(x: previous.x + (point.x - previous.x) * t,
-                                y: previous.y + (point.y - previous.y) * t))
-            }
-            previous = point
         }
         guard let out = ctx.makeImage() else { return image }
         return UIImage(cgImage: out, scale: image.scale, orientation: image.imageOrientation)

@@ -614,6 +614,7 @@ struct MapScreen: View {
         let road = sheet.road
         let atlas = MapAtlas.make(valley: map)
         let mountainURL = atlas.mountains.map { URL(fileURLWithPath: $0.colorPath) }
+        let mountainRoad = atlas.mountains?.road ?? []
         let lift = atlas.lift
         await refresh(key: key, shown: swampPictureFor, slot: swampSlot) {
             guard !Task.isCancelled else { return nil }
@@ -624,7 +625,8 @@ struct MapScreen: View {
             guard let mountainURL, let mountain = UIImage(contentsOfFile: mountainURL.path) else {
                 return revealed
             }
-            return MarshSeam.apply(revealed, road: road, mountain: mountain, lift: lift)
+            return MarshSeam.apply(revealed, road: road, mountain: mountain,
+                                   mountainRoad: mountainRoad, lift: lift)
         } store: { image, key in
             swampPicture = image
             swampPictureFor = key
