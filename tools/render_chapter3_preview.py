@@ -28,33 +28,19 @@ def road_point(road, fraction):
 
 
 def seam(image, road, mountain, lift):
-    """Blend the marsh into the peaks. The road stays the swamp's own bright colour."""
+    """Fade the marsh into the peaks. The road stays the swamp's own colour."""
+    del mountain, lift
     arr = np.array(image.convert("RGBA")).astype(np.float32)
     base = arr.copy()
-    mount = np.array(mountain.convert("RGBA")).astype(np.float32)
     h, w = arr.shape[:2]
-    lift = int(lift)
-    # Сначала размыть собственный прямой край болот, потом влить горы с нуля на их верхе.
-    kernel = np.array([1, 2, 4, 6, 8, 10, 8, 6, 4, 2, 1], dtype=np.float32)
-    kernel /= kernel.sum()
-    pad = len(kernel) // 2
-    src = base.copy()
-    y_a, y_b = max(0, lift - 120), min(h, lift + 280)
-    slab = np.pad(base[y_a:y_b, :, :3].astype(np.float32), ((pad, pad), (0, 0), (0, 0)), mode="edge")
-    blurred = np.zeros_like(base[y_a:y_b, :, :3], dtype=np.float32)
-    for i, weight in enumerate(kernel):
-        blurred += slab[i:i + (y_b - y_a)] * weight
-    src[y_a:y_b, :, :3] = blurred
-    y0, y1 = lift, h - 1
+    fade = 420
+    y0 = max(0, h - fade)
     for y in range(y0, h):
-        my = y - lift
-        if my < 0 or my >= mount.shape[0]:
-            continue
-        raw = (y - y0) / max(1, y1 - y0)
-        k = raw * raw * (3 - 2 * raw)
-        arr[y, :, :3] = src[y, :, :3] * (1 - k) + mount[my, :, :3] * k
-        arr[y, :, 3] = 255
-    arr[:y0] = src[:y0]
+        t = (y - y0) / max(1, fade - 1)
+        s = t * t * (3 - 2 * t)
+        a = 1 - s
+        arr[y, :, :3] *= a
+        arr[y, :, 3] = a * 255
     radius = 26
     road_mask = np.zeros((h, w), dtype=bool)
 
@@ -76,8 +62,17 @@ def seam(image, road, mountain, lift):
             cx, cy = prev + (point - prev) * (s / steps)
             stamp(cx, cy)
         prev = point
-    # Дорога болот остаётся своим цветом. Ниже стыка уже виден путь гор: цвета на шве совпадают.
-    arr[road_mask] = base[road_mask]
+    # Дорога держится дольше дымки и к низу полосы отдаёт путь гор.
+    if road_mask.any():
+        yy = np.arange(h)[:, None]
+        t = (yy - y0) / max(1, fade - 1)
+        road_t = np.clip((t - 0.35) / 0.65, 0, 1)
+        road_s = road_t * road_t * (3 - 2 * road_t)
+        road_a = np.where(yy < y0, 1.0, 1 - road_s).astype(np.float32)
+        painted = base.copy()
+        painted[:, :, :3] *= road_a[:, :, None]
+        painted[:, :, 3] = road_a[:, 0] * 255
+        arr[road_mask] = painted[road_mask]
     return Image.fromarray(arr.astype(np.uint8))
 
 

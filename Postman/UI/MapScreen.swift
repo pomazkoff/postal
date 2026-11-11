@@ -115,8 +115,10 @@ struct MapScreen: View {
                                     .offset(y: m.length(atlas.lift))
                             }
                             if let swamps = atlas.swamps {
+                                // Пока шов не готов, тот же мягкий низ, чтобы сырой лист не резал вершины.
                                 mountainLayer(swamps, global: global, m: m, drawHero: heroOnSwamp,
-                                              picture: swampPicture, postman: map.postman)
+                                              picture: swampPicture, postman: map.postman,
+                                              fadeBottom: swampPicture == nil ? MarshSeam.fadeDesignPx : 0)
                             }
                         }
                         .frame(width: atlas.contentSize.width * m.scale,
@@ -456,19 +458,13 @@ struct MapScreen: View {
     }
 
     private func sheetFade(width: CGFloat, height: CGFloat, bottom: CGFloat) -> some View {
-        // The painted parchment edge sits inside the overlap. A ramp that is still
-        // opaque there reads as a cut, so the picture is clear before the join.
+        // Весь низ — один плавный спад. Прозрачная полка ниже рампы читается как рез.
         let band = min(max(0, bottom), height)
-        let clear = min(band, max(0, height * 352 / 2532))
-        let ramp = max(0, band - clear)
         return VStack(spacing: 0) {
             Color.white.frame(width: width, height: max(0, height - band))
-            if ramp > 0 {
+            if band > 0 {
                 LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .bottom)
-                    .frame(width: width, height: ramp)
-            }
-            if clear > 0 {
-                Color.clear.frame(width: width, height: clear)
+                    .frame(width: width, height: band)
             }
         }
         .frame(width: width, height: height, alignment: .top)

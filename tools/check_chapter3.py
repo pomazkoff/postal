@@ -132,8 +132,10 @@ atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
 screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
 if "loadSwamps" not in atlas or "MarshSeam.apply" not in screen:
     fail("the swamp sheet is not joined onto the mountains")
-if "mountain:" not in atlas.split("enum MarshSeam", 1)[-1][:800]:
+if "mountain:" not in atlas.split("enum MarshSeam", 1)[-1][:900]:
     fail("the seam does not blend into the mountain picture")
+if "fadeDesignPx" not in atlas or "420" not in atlas.split("fadeDesignPx", 1)[-1][:80]:
+    fail("the swamp sheet does not fade into the peaks")
 chapter_dir = ROOT / "Postman/GameAssets/Chapter3"
 for folder in ("road", "places", "underground", "foreground", "residents/fedya"):
     path = chapter_dir / folder
