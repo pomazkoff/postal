@@ -225,6 +225,11 @@ final class GameModel: ObservableObject {
 
     var chapter: ChapterConfig { world.chapters[chapterIndex] }
 
+    private func forcedChapter() -> ChapterConfig? {
+        guard let idx = progress.forceChapterIndex, world.chapters.indices.contains(idx) else { return nil }
+        return world.chapters[idx]
+    }
+
     /// Всего шагов в игре с учётом лимита 150 000.
     var gameSteps: Int { min(steps.totalSteps, world.game.totalSteps) }
 
@@ -238,10 +243,12 @@ final class GameModel: ObservableObject {
         return max(0, min(chapter.lengthSteps, min(total, world.game.totalSteps) - chapter.startStep))
     }
 
-    /// Форс сдвигает лишь виртуальную позицию на ленте, а не реальный счётчик шагов.
+    /// Форс двигает ленту даже если индекс бирки ещё не догнал главу.
+    /// Иначе прыжок ставит камеру на сырой total и она уезжает в предыдущую главу.
     private func worldSteps(total: Int) -> Int {
-        if progress.forceChapterIndex == chapterIndex {
-            return chapter.startStep + chapterSteps(total: total)
+        if let forced = forcedChapter(), let base = progress.forceChapterBaseSteps {
+            let local = max(0, min(forced.lengthSteps, total - base))
+            return forced.startStep + local
         }
         return max(0, min(total, world.game.totalSteps))
     }
@@ -253,18 +260,32 @@ final class GameModel: ObservableObject {
         objectWillChange.send()
     }
 
-    /// Служебный переход: форс главы и шага внутри неё. Счётчик Здоровья не переписывается.
+    /// Служебный переход туда же, куда игрок пришёл бы ногами.
+    /// Если счётчик Здоровья ещё не дошёл — добираем debug-шагами и снимаем форс,
+    /// чтобы глава, бирка, сюжет и лента сошлись на одном мировом шаге.
+    /// Если шагов Здоровья уже больше — форс держит виртуальную точку, не уменьшая счётчик.
     func developerGo(chapterIndex index: Int, localStep: Int) {
         let idx = max(0, min(world.chapters.count - 1, index))
-        let chapter = world.chapters[idx]
-        let local = max(0, min(chapter.lengthSteps, localStep))
-        progress.forceChapterIndex = idx
-        progress.forceChapterBaseSteps = steps.totalSteps - local
+        let target = world.chapters[idx]
+        let local = max(0, min(target.lengthSteps, localStep))
+        let worldStep = target.startStep + local
+        let real = max(0, steps.totalSteps - progress.debugExtraTotal)
+        if real > worldStep {
+            progress.forceChapterIndex = idx
+            progress.forceChapterBaseSteps = steps.totalSteps - local
+        } else {
+            progress.forceChapterIndex = nil
+            progress.forceChapterBaseSteps = nil
+            steps.setDebugTotal(worldStep)
+        }
         let core = AppCore.shared
         if core.chapterIndex != idx {
             core.switchToChapter(idx)
         }
-        refreshChapterProgress()
+        core.syncEngine(total: steps.totalSteps)
+        chapterIndex = progress.forceChapterIndex ?? core.chapterIndex
+        scene.jumpToSteps(worldSteps(total: steps.totalSteps))
+        objectWillChange.send()
     }
 
     var developerDay: Int {

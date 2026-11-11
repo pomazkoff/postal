@@ -39,6 +39,8 @@ struct TelegramView: View {
 struct DistanceTagView: View {
     let settlement: Settlement?
     let stepsLeft: Int?
+    /// Последнее место текущей главы, когда дальше идти некуда. Не Седло первой главы.
+    var donePlace: String = ""
     let rect: HUDLayout.Rect
     let m: FrameMapper
 
@@ -53,7 +55,7 @@ struct DistanceTagView: View {
             line1 = Format.steps(stepsLeft)
             line2 = L10n.format("distance.to", settlement.nameGenitive)
         } else {
-            line1 = L10n.text("distance.done.place")
+            line1 = donePlace.isEmpty ? L10n.text("distance.done.place") : donePlace
             line2 = "\(Format.chapters(1)) \(L10n.text("distance.done.tail"))"
         }
         return TagArt(line1: line1, line2: line2, k: k, scale: scale, size1: 60, size2: 40)

@@ -95,7 +95,7 @@ struct MapScreen: View {
     var body: some View {
         FrameScreen(dim: 0.9) { m in
             GeometryReader { geo in
-                ZStack {
+                ZStack(alignment: .topLeading) {
                     if let map {
                         let atlas = MapAtlas.make(valley: map)
                         let road = RoadGeometry(map.points)
@@ -105,6 +105,8 @@ struct MapScreen: View {
                         ZStack(alignment: .topLeading) {
                             // Долина снизу. Горы непрозрачным кадром сверху: в перекрытии нет смешения, иначе шов двоится.
                             // Болота ещё выше: низ листа растворяется в вершинах, сами горы не прячутся.
+                            // Рамка — весь холст, не экран: иначе верх болот оказывается за пределами
+                            // зоны жеста и до него не доскроллить.
                             mapLayer(map, road: road, m: m, drawHero: !heroOnMountain && !heroOnSwamp)
                                 .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y + atlas.lift))
                             if let mountains = atlas.mountains {
@@ -117,7 +119,9 @@ struct MapScreen: View {
                                               picture: swampPicture, postman: map.postman)
                             }
                         }
-                        .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
+                        .frame(width: atlas.contentSize.width * m.scale,
+                               height: atlas.contentSize.height * m.scale,
+                               alignment: .topLeading)
                         .scaleEffect(zoom, anchor: .topLeading)
                         .offset(x: pan.x, y: pan.y)
                         .contentShape(Rectangle())

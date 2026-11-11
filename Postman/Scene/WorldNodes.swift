@@ -141,6 +141,13 @@ final class SettlementMarkerNode: SKNode {
         label.zPosition = 1
         board.addChild(label)
         addChild(board)
+        let period = Double.random(in: 3.4...4.4)
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let sway = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            n.zRotation = CGFloat(sin(a) * 1.3 * Double.pi / 180)
+        }
+        board.run(.repeatForever(sway), withKey: "sway")
     }
 
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) не используется") }

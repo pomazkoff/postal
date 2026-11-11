@@ -87,8 +87,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private let worldBottomY: CGFloat = -1800
     private(set) var ambient: AmbientLayer?
     private(set) var weather: WeatherLayer?
-    /// Дневная пелена болот. Не меняет длину шага: вечером она просто реже.
-    private var marshVeil: SKSpriteNode?
     private var skySprite: SKSpriteNode?
     private var skyRoadFraction: CGFloat = 0
     private var appliedSkyChapter: Int = -1
@@ -146,13 +144,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
 
         // Погода (ясно/дождь/снег/туман) — поверх неба и планов, под тоном суток.
+        // Полный белый слой на камеру здесь не вешается: он мыл весь кадр, включая
+        // жителей и разрез, и не снимался, когда камеру уводили назад в горы.
         weather = WeatherLayer(camera: cam, designSize: CGSize(width: W, height: H))
-        let veil = SKSpriteNode(color: UIColor(white: 0.86, alpha: 1), size: CGSize(width: W * 2, height: H * 2))
-        veil.zPosition = 880
-        veil.alpha = 0
-        veil.isHidden = true
-        cam.addChild(veil)
-        marshVeil = veil
         applyChapterSky()
 
         // Одна сцена/камера/фигура героя на весь мир. Главы — соседние сегменты, а не сцены.
@@ -203,6 +197,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var marshBirdClock: Double = 6
     private var marshSkyTime: Double = 0
     private var marshSkySpan: CGFloat = 0
+    private var shimmerTime: Double = 0
 
     /// Небо главы 3: Chapter3/sky. Облака висят в открытой полосе над грядами,
     /// клочья тумана — ниже, над полями. Птиц и puff пока нет: файл с префиксом bird_ подхватится сам.
@@ -272,7 +267,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private func updateMarshSky(dt: TimeInterval) {
         guard !marshSkyNodes.isEmpty || marshBirdLayer != nil else { return }
-        let inMarsh = config.chapters.last { Double($0.startStep) <= displayedStep }?.id == 3
+        // Небо болот привязано к камере. Пока почтальон в главе 3, взгляд назад
+        // в горы не должен тащить за собой луну и клочья тумана.
+        let inMarsh = chapter(containing: stepUnderCamera)?.id == 3
         for node in marshSkyNodes { node.isHidden = !inMarsh }
         guard inMarsh else { return }
         marshSkyTime += dt
@@ -413,6 +410,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                               pixelSize: CGSize(width: p.pixelSize[0], height: p.pixelSize[1]),
                               seed: p.step &* 31 &+ Int(p.dx))
         }
+        if chapter.id == 3 {
+            addMarshReeds(to: mainLayer, chapter: chapter)
+        }
 
         // Общая станция на границе двух глав получает только одну подпись.
         for settlement in chapter.settlements {
@@ -508,6 +508,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             s.anchorPoint = .zero
             s.size = CGSize(width: width + 1, height: tileH)
             s.position = CGPoint(x: left, y: bottomY)
+            if chapter.id == 3 { s.shader = MarshSurface.shader }
             layer.addChild(s)
         }
 
@@ -538,6 +539,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             node.anchorPoint = .zero
             node.position = CGPoint(x: left, y: bottomY)
             node.zPosition = 1
+            if chapter.id == 3 { node.shader = MarshSurface.shader }
             layer.addChild(node)
             lazyNodes.append((node, layer))
             cursor = left + tileW
@@ -696,21 +698,13 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                 let unit = drawH / h * idle.figureUnitsPerFramePx
                 node.size = CGSize(width: idle.frameSize.width * unit, height: idle.frameSize.height * unit)
                 node.anchorPoint = idle.anchor
-                // Покадровое дыхание из листа убрано: в кадрах листа зашит сдвиг тела 1–3 px от кадра
-                // к кадру (фазовая корреляция по листам) — это и было дрожание жителей. Статичный кадр +
-                // плавное дыхание scaleY от стоп (якорь на линии земли), 60 fps.
-                let period = Double.random(in: 3.0...3.8)
-                let phase = Double.random(in: 0...(2 * Double.pi))
-                let breath = SKAction.customAction(withDuration: period, actionBlock: { n, t in
-                    let a = 2 * Double.pi * Double(t) / period + phase
-                    n.yScale = CGFloat(1 + 0.006 * sin(a))
-                })
-                node.run(.repeatForever(breath), withKey: "breath")
+                // Покадровый лист не крутим: в кадрах зашит сдвиг тела на 1–3 px, и житель дрожал.
             } else {
                 node.size = CGSize(width: drawH * w / h, height: drawH)
                 node.anchorPoint = CGPoint(x: 0.5, y: 1 - r.groundFraction)
             }
             node.position = CGPoint(x: geo.x(forStep: Double(r.step)) + r.dx, y: geo.roadY - 4)
+            breathe(node)
             node.zPosition = 80
             node.name = "resident:" + prefix + r.id
             // Касания распознаёт SKView; узел не перехватывает touches у панорамы.
@@ -728,6 +722,41 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         updateRoadItems()
         applyReadability()
+    }
+
+    /// Дыхание от стоп: и у листа idle, и у одиночного full.png (Федя и глава без листа).
+    /// Покадровый spritesheet не крутим — там зашит дрожащий сдвиг тела.
+    private func breathe(_ node: SKNode) {
+        let period = Double.random(in: 3.1...3.9)
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let base = node.position.y
+        let action = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            let s = sin(a)
+            n.yScale = CGFloat(1 + 0.012 * s)
+            n.position.y = base + CGFloat(2.4 * s)
+        }
+        node.run(.repeatForever(action), withKey: "breath")
+    }
+
+    /// Камыши главы 3 отдельными спрайтами: в картинке места они нарисованы мёртво.
+    private func addMarshReeds(to layer: SKNode, chapter: ChapterConfig) {
+        let image = "taps/reeds"
+        let path = image.inChapter(chapter)
+        guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { return }
+        let steps = [1200, 3600, 6200, 9800, 12800, 16400, 19800, 23200, 26800]
+        for (i, step) in steps.enumerated() {
+            let h: CGFloat = i % 2 == 0 ? 230 : 180
+            let node = LazySpriteNode(imagePath: path, size: CGSize(width: h * 0.7, height: h))
+            node.anchorPoint = .zero
+            let dx: CGFloat = i % 2 == 0 ? -460 : 260
+            node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + step)) + dx, y: geo.roadY - 20)
+            node.zPosition = 8
+            layer.addChild(node)
+            lazyNodes.append((node, layer))
+            ambient?.decorate(prop: node, image: image,
+                              pixelSize: CGSize(width: 175, height: 250), seed: step &* 17)
+        }
     }
 
     /// Короткая реакция на самом спрайте, без смены текстуры/покадрового spritesheet.
@@ -895,7 +924,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         ambient?.update(dt: dt, now: Date(), cameraX: camX, cameraScale: camScale,
                         visibleSize: CGSize(width: visibleWidth, height: visibleHeight))
         weather?.update(dt: dt)
-        updateMarshVeil()
+        shimmerTime += dt
+        MarshSurface.time.floatValue = Float(shimmerTime)
         applyChapterSky()
         updateMarshSky(dt: dt)
         updateCompanion(dt)
@@ -909,25 +939,18 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
     }
 
-    /// Вариант В: день и ночь одной длины. С 18:00 до 7:00 пелена реже, доски и подписи виднее.
-    private func updateMarshVeil() {
-        guard let veil = marshVeil else { return }
-        let step = Int(displayedStep.rounded(.down))
-        let chapter = config.chapters.last { $0.startStep <= step }
-        guard chapter?.id == 3 else {
-            veil.alpha = 0
-            veil.isHidden = true
-            return
-        }
-        let hour = Calendar.current.component(.hour, from: Date())
-        let thinner = hour >= 18 || hour < 7
-        veil.isHidden = false
-        veil.alpha = thinner ? 0.28 : 0.72
+    /// Шаг под центром камеры, не шаг почтальона. Взгляд назад не перекрашивает небо.
+    private var stepUnderCamera: Double {
+        geo.step(forX: camX - geo.cameraLead)
+    }
+
+    private func chapter(containing step: Double) -> ChapterConfig? {
+        config.chapters.last { Double($0.startStep) <= step }
     }
 
     /// Днём глава 3 красится своим небом. Долина и горы остаются на общем градиенте.
     private func applyChapterSky() {
-        let chapter = config.chapters.last { Double($0.startStep) <= displayedStep }
+        let chapter = chapter(containing: stepUnderCamera)
         let id = chapter?.id ?? 0
         guard id != appliedSkyChapter else { return }
         appliedSkyChapter = id
@@ -1287,6 +1310,26 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let mine: [UIGestureRecognizer?] = [panRecognizer, pinchRecognizer]
         return mine.contains { $0 === gestureRecognizer } && mine.contains { $0 === otherGestureRecognizer }
     }
+}
+
+/// Лёгкий блик по верхней кромке разреза болот. Не вуаль на камеру: только пиксели тайла.
+enum MarshSurface {
+    static let time = SKUniform(name: "u_time", float: 0)
+    static let shader: SKShader = {
+        let src = """
+        void main() {
+            vec4 c = texture2D(u_texture, v_tex_coord);
+            float y = v_tex_coord.y;
+            float band = smoothstep(0.62, 0.74, y) * (1.0 - smoothstep(0.74, 0.86, y));
+            float wave = sin(v_tex_coord.x * 46.0 + u_time * 1.2);
+            c.rgb += vec3(0.025, 0.04, 0.03) * wave * band;
+            gl_FragColor = c * v_color_mix;
+        }
+        """
+        let sh = SKShader(source: src)
+        sh.uniforms = [time]
+        return sh
+    }()
 }
 
 private extension String {

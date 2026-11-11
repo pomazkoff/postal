@@ -371,6 +371,7 @@ struct HUDView: View {
         let tg = watchExpanded ? layout.telegram.expanded : layout.telegram.collapsed
         return ZStack(alignment: .topLeading) {
             DistanceTagView(settlement: game.nextSettlement, stepsLeft: game.stepsToNextSettlement,
+                            donePlace: game.chapter.settlements.last?.name ?? game.chapter.title,
                             rect: tag, m: m)
             if let quest = engine.questText {
                 TelegramView(text: quest, rect: tg, m: m)

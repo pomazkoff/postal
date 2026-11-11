@@ -106,15 +106,14 @@ for item_id in ("l6", "l8", "l10"):
     if f'(3, "{item_id}")' in policy.split("func drops", 1)[1].split("func handoff", 1)[0]:
         fail(f"{item_id} was given a drop")
 
-# Variant В: one length. Fog is a veil, not a second road.
+# Туман болот — клочья в глубине кадра, не белая вуаль на всю камеру.
 scene = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
-if "thinner ? 0.28 : 0.72" not in scene:
-    fail("the marsh veil is not thinner from 18:00 to 07:00")
-if "hour >= 18 || hour < 7" not in scene:
-    fail("the evening window is not 18:00–07:00")
-veil = scene.split("func updateMarshVeil", 1)[1].split("func ", 1)[0]
-if "displayedStep" in veil and ("*=" in veil or "night" in veil.lower()):
-    fail("the marsh veil changes the step")
+if "marshVeil" in scene or "updateMarshVeil" in scene:
+    fail("the full-screen marsh veil is still in the walking scene")
+if "UIColor(white: 0.86" in scene:
+    fail("the walking scene still paints a milky full-screen veil")
+if "stepUnderCamera" not in scene:
+    fail("marsh sky still follows the postman instead of the camera")
 if story["choicePolicy"]["timeoutSteps"] != 400:
     fail("choices do not resolve after 400 steps")
 for choice in ("e_gati_fog", "e_fedya_help", "e_bearing", "e_radio", "e_plug"):

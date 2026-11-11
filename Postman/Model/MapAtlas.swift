@@ -71,6 +71,8 @@ struct MapAtlas {
         } else {
             swampSheet = nil
         }
+        // Верх холста — y=0, верх листа болот. Низ — низ Долины после сдвига lift.
+        // Высота без lift обрезает прокрутку ровно по верху гор.
         let height = origin.y + valley.size[1] + lift
         let width = max(valley.size[0], max(mountains.size.width, swampSheet?.size.width ?? 0))
         return MapAtlas(valley: valley, mountains: mountains, swamps: swampSheet, valleyOrigin: origin,
