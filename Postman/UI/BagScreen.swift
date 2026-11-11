@@ -210,29 +210,34 @@ struct BagScreen: View {
         .frame(width: m.length(1170), height: m.length(height))
     }
 
+    /// Бирка полки. Не ViewBuilder: присваивание внутри него Xcode читает как вью.
+    private func slotCopy(item: StoryConfig.Item, handedIn: Bool, handoff: String?) -> (line1: String, line2: String, fade: Double) {
+        let personal = BagPolicy.role(id: item.id, kind: item.kind) == .personal
+        let line1 = personal ? L10n.text(keepKey(item.id)) : item.to
+        let line2: String
+        if personal && handedIn {
+            line2 = L10n.text(BagPolicy.handoffCaptionKey(handoff ?? ""))
+        } else if personal {
+            line2 = L10n.text("bag.look")
+        } else {
+            line2 = L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id, playerStep: engine.currentStep))
+        }
+        return (line1, line2, handedIn ? 0.62 : 1.0)
+    }
+
     @ViewBuilder
     private func itemSlot(_ item: StoryConfig.Item?, empty: String?, handedIn: Bool, handoff: String?,
                           cx: Double, base: Double, tag: CGPoint, angle: Double, m: FrameMapper) -> some View {
         if let item {
-            let personal = BagPolicy.role(id: item.id, kind: item.kind) == .personal
-            let line1 = personal ? L10n.text(keepKey(item.id)) : item.to
-            let line2: String
-            if personal && handedIn {
-                line2 = L10n.text(BagPolicy.handoffCaptionKey(handoff ?? ""))
-            } else if personal {
-                line2 = L10n.text("bag.look")
-            } else {
-                line2 = L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id, playerStep: engine.currentStep))
-            }
-            let fade = handedIn ? 0.62 : 1.0
+            let copy = slotCopy(item: item, handedIn: handedIn, handoff: handoff)
             place(item.art, m: m, anchor: "bottom", at: CGPoint(x: cx, y: base), scale: itemScale(item.art), rotation: angle * 0.4) {
                 onRead(item.id)
             }
-            .opacity(fade)
-            tagButton(line1: line1, line2: line2, at: tag, angle: angle, m: m) { onRead(item.id) }
-                .opacity(fade)
+            .opacity(copy.fade)
+            tagButton(line1: copy.line1, line2: copy.line2, at: tag, angle: angle, m: m) { onRead(item.id) }
+                .opacity(copy.fade)
             place("nail", m: m, at: tag, scale: 0.85)
-                .opacity(fade)
+                .opacity(copy.fade)
         } else if let empty {
             tagButton(line1: empty, line2: "", at: tag, angle: angle, m: m, action: nil)
             place("nail", m: m, at: tag, scale: 0.85)
