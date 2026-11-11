@@ -139,9 +139,6 @@ struct MapScreen: View {
                                                   y: geo.size.height / 2 - m.point(feet.x, feet.y).y),
                                           zoom: 1, m: m, size: geo.size, content: atlas.contentSize)
                         }
-                        if let note {
-                            mapNote(note, m: m)
-                        }
                         chrome(map, m: m, mountains: atlas.mountains != nil, swamps: atlas.swamps != nil)
                     } else {
                         Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
@@ -153,6 +150,15 @@ struct MapScreen: View {
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
                 .coordinateSpace(name: "mapClip")
                 .clipped()
+                // Карточка места — на стекле, не в холсте. Холст выше экрана и прижат
+                // к верху: центр холста уже за нижним краем, и карточка там обрезалась,
+                // оставляя только затемнение.
+                .overlay {
+                    if let note {
+                        mapNote(note, m: m)
+                            .frame(width: geo.size.width, height: geo.size.height)
+                    }
+                }
             }
         }
         .transition(.opacity)
@@ -318,6 +324,7 @@ struct MapScreen: View {
         return StoryConfig.load(chapter: 1).arrivals?.first { $0.settlement == placeID }?.text
     }
 
+    /// Затемнение и бумага по центру того кадра, который ей задали снаружи (экран).
     private func mapNote(_ note: MapNote, m: FrameMapper) -> some View {
         ZStack {
             Color.black.opacity(0.28)

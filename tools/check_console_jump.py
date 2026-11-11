@@ -77,6 +77,23 @@ if "alignment: .topLeading" not in screen.split(".clipped()", 1)[0].split("geo.s
     fail("the tall map canvas is centered in the screen and the swamp sheet sits above it")
 if 'coordinateSpace: .named("mapClip")' not in screen:
     fail("the map drag is in the moving canvas, so the sheet flies")
+body = screen.split("var body: some View", 1)[1].split("private func mapLayer", 1)[0]
+clip_at = body.find(".clipped()")
+note_at = body.find("mapNote(note")
+if clip_at < 0 or note_at < 0:
+    fail("the map note or the clip is missing")
+elif note_at < clip_at:
+    fail("the place card is inside the tall clipped stack, so it centers below the glass")
+else:
+    between = body[clip_at:note_at]
+    if ".overlay" not in between:
+        fail("the place card is not drawn over the clipped screen")
+    framed = body[note_at:note_at + 280]
+    if "geo.size.width" not in framed or "geo.size.height" not in framed:
+        fail("the place card is not framed to the screen")
+note_fn = screen.split("private func mapNote", 1)[-1].split("private func tag", 1)[0]
+if "ZStack" not in note_fn or ".offset(" in note_fn.split("ZStack", 1)[-1][:500]:
+    fail("the place card is no longer centered in its own screen frame")
 atlas = read("Postman/Model/MapAtlas.swift")
 if "origin.y + valley.size[1] + lift" not in atlas:
     fail("map content height no longer includes the lift that makes room for the swamps")
