@@ -72,6 +72,11 @@ for prefix in ("taps/reeds", "road/mid_hill_firs", "places/el_buried_horn", "pla
 screen = read("Postman/UI/MapScreen.swift")
 if "atlas.contentSize.height * m.scale" not in screen:
     fail("the map gesture frame is still the screen, so the swamp sheet is outside the drag")
+if "alignment: .topLeading" not in screen.split(".clipped()", 1)[0].split("geo.size.height")[-1] and \
+        'frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)' not in screen:
+    fail("the tall map canvas is centered in the screen and the swamp sheet sits above it")
+if 'coordinateSpace: .named("mapClip")' not in screen:
+    fail("the map drag is in the moving canvas, so the sheet flies")
 atlas = read("Postman/Model/MapAtlas.swift")
 if "origin.y + valley.size[1] + lift" not in atlas:
     fail("map content height no longer includes the lift that makes room for the swamps")

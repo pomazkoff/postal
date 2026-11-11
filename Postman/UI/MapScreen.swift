@@ -145,7 +145,11 @@ struct MapScreen: View {
                         Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
                 }
-                .frame(width: geo.size.width, height: geo.size.height)
+                // Выравнивание по верху обязательно. Холст выше экрана, и .frame
+                // по умолчанию центрирует его: болота уезжают за верх, а под листом
+                // остаётся пустая бирюза. Жест считается в этом кадре, не в сдвинутом холсте.
+                .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
+                .coordinateSpace(name: "mapClip")
                 .clipped()
             }
         }
@@ -644,7 +648,7 @@ struct MapScreen: View {
     }
 
     private func panGesture(m: FrameMapper, size: CGSize, content: CGSize) -> some Gesture {
-        DragGesture(minimumDistance: 14)
+        DragGesture(minimumDistance: 14, coordinateSpace: .named("mapClip"))
             .onChanged { v in
                 guard pinchStart == nil else { dragStart = nil; return }
                 if dragStart == nil { dragStart = (pan, v.translation) }
