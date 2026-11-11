@@ -43,6 +43,13 @@
 "bag.personal.empty" = "Находок пока нет.";
 "bag.look" = "Рассмотреть";
 "bag.keep.other" = "Находка";
+"bag.handed.d_gat" = "Сдано в ящик на Гати";
+"bag.handed.d_top" = "Сдано в будку на Топи";
+"bag.handed.d_torf" = "Сдано в ящик на Торфянике";
+"bag.handed.d_barge" = "Сдано в ящик на барже";
+"bag.handed.d_reeds" = "Сдано в ящик в Камышах";
+"bag.handed.d_otstoy" = "Сдано в ящик на Отстое";
+"bag.handed.other" = "Сдано";
 "bag.keep.animal_cat_stamp" = "Латунный штемпель";
 "bag.keep.animal_raven_scrap" = "Клочок ткани";
 "bag.keep.animal_dog_horn" = "Ржавый рупор";

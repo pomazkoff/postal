@@ -19,7 +19,14 @@ struct LetterScreen: View {
         let caption: String?
     }
 
-    var item: StoryConfig.Item? { engine.story.item(itemID) }
+    /// Своя глава первая. Улика из прошлой главы лежит в её сюжете, не в текущем.
+    var item: StoryConfig.Item? {
+        if let own = engine.story.item(itemID) { return own }
+        for chapter in [3, 2, 1] where chapter != engine.story.chapter {
+            if let found = StoryConfig.load(chapter: chapter).item(itemID) { return found }
+        }
+        return nil
+    }
 
     private var pages: [Page] {
         guard let item else { return [] }

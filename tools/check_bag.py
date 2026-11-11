@@ -383,6 +383,99 @@ if ahead(2, "note_gar", 12000) != ("finale", 25000):
 if ahead(2, "l1", 50) != ("s_nii_drop", 400):
     fail("Timofey's letter lost the box that is still ahead of the Saddle")
 
+# Полка находок: все главы, новее выше. Сданное остаётся. Почта не переезжает.
+PERSONAL = {
+    1: ["animal_cat_stamp"],
+    2: ["animal_raven_scrap", "animal_dog_horn"],
+    3: ["frame", "find_edge", "find_tag", "find_card", "find_pole", "find_graph", "find_pass", "find_wet"],
+}
+HANDOFF_EVENT = {
+    "find_edge": "d_gat", "find_tag": "d_top", "find_card": "d_top",
+    "find_pole": "d_torf", "find_graph": "d_torf", "find_pass": "d_barge",
+}
+
+
+def on_shelf(chapter, item, status):
+    if item not in PERSONAL[chapter]:
+        return False
+    return status in ("inBag", "inPocket", "delivered")
+
+
+def collect(chapters):
+    """chapters: list of (chapter, {id: status}) newest first."""
+    out = []
+    for chapter, statuses in chapters:
+        row = []
+        for item in PERSONAL[chapter]:
+            status = statuses.get(item, "onRoad")
+            if not on_shelf(chapter, item, status):
+                continue
+            row.append((item, status == "delivered", HANDOFF_EVENT.get(item) if status == "delivered" else None))
+        if row:
+            out.append((chapter, row))
+    return out
+
+
+# Илья, только что в болотах (шаг 0 главы 3). В сейве гор — рупор и ткань.
+# Старая полка смотрит только в живую главу и в «ещё с собой»: она пустая.
+# Новая оставляет эти две улики и не рисует находки болот, которых ещё нет.
+ch2_found = {"animal_raven_scrap": "inPocket", "animal_dog_horn": "inPocket", "l1": "delivered"}
+ch3_fresh = {item: "onRoad" for item in PERSONAL[3]}
+ch3_fresh["find_tag"] = "leftBehind"
+old_active = [(item, status) for item, status in ch3_fresh.items() if status in ("inBag", "inPocket")]
+if old_active:
+    fail(f"a fresh chapter 3 save already carries finds: {old_active}")
+ilya = collect([(3, ch3_fresh), (2, ch2_found), (1, {"animal_cat_stamp": "onRoad"})])
+if ilya != [(2, [("animal_raven_scrap", False, None), ("animal_dog_horn", False, None)])]:
+    fail(f"arriving in the marshes lost the horn and the cloth, or invented finds: {ilya}")
+
+# Прыжок консоли в конец болот. Подборы пройдены, ящики тоже: сданное не исчезает.
+# Рамка и мокрый конверт без ящика остаются «с собой». Почта l1 не на этой полке.
+ch3_jumped = {
+    "frame": "inPocket",
+    "find_edge": "delivered",
+    "find_tag": "delivered",
+    "find_card": "delivered",
+    "find_pole": "delivered",
+    "find_graph": "delivered",
+    "find_pass": "delivered",
+    "find_wet": "inPocket",
+    "l1": "delivered",
+}
+jumped = collect([(3, ch3_jumped), (2, ch2_found), (1, {})])
+expect_ch3 = [
+    ("frame", False, None),
+    ("find_edge", True, "d_gat"),
+    ("find_tag", True, "d_top"),
+    ("find_card", True, "d_top"),
+    ("find_pole", True, "d_torf"),
+    ("find_graph", True, "d_torf"),
+    ("find_pass", True, "d_barge"),
+    ("find_wet", False, None),
+]
+if jumped != [(3, expect_ch3), (2, [("animal_raven_scrap", False, None), ("animal_dog_horn", False, None)])]:
+    fail(f"a jump past the boxes dropped finds or the earlier chapters: {jumped}")
+if any(item == "l1" for chapter, rows in jumped for item, _, _ in rows):
+    fail("mail landed on the personal shelf")
+
+model = (ROOT / "Postman/App/GameModel.swift").read_text(encoding="utf-8")
+if "func keptFinds" not in model or "world.chapters.reversed()" not in model:
+    fail("the shelf is not every chapter, newest first")
+if "engine !== AppCore.shared.engine" not in model:
+    fail("a chapter flip can leave the bag on the previous engine")
+if "grantPassedFinds" not in engine:
+    fail("a jump past a find pickup can still skip it")
+if "onPersonalShelf" not in src or "personalHandedIn" not in src:
+    fail("handed-in finds are still dropped from the shelf rules")
+if "0.62" not in view or "handoffCaptionKey" not in view:
+    fail("a handed-in find is not faded and tagged")
+if "StoryConfig.load(chapter: chapter).item(itemID)" not in (ROOT / "Postman/UI/LetterScreen.swift").read_text(encoding="utf-8"):
+    fail("a find from an earlier chapter cannot be read")
+for key in ("bag.handed.d_gat", "bag.handed.d_top", "bag.handed.d_torf",
+            "bag.handed.d_barge", "bag.handed.d_reeds", "bag.handed.d_otstoy", "bag.handed.other"):
+    if f'"{key}"' not in ru or f'"{key}"' not in en or f'"{key}"' not in src:
+        fail(f"missing handoff caption {key}")
+
 if FAILS:
     print(f"{len(FAILS)} bag check(s) failed:")
     for item in FAILS:

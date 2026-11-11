@@ -484,6 +484,9 @@ final class ChapterEngine: ObservableObject {
                 changed = true
             }
         }
+        let beforeGrant = state.items
+        grantPassedFinds()
+        if state.items != beforeGrant { changed = true }
         let beforeSweep = state.items
         sweepPassedMail()
         if state.items != beforeSweep { changed = true }
@@ -605,6 +608,48 @@ final class ChapterEngine: ObservableObject {
         log(LogEntry(step: event?.step ?? currentStep,
                      text: L10n.text(BagPolicy.passedNoteTextKey(chapter: story.chapter, trigger: trigger)),
                      kind: "handoff", place: place, title: L10n.text("bag.handoff.title")))
+    }
+
+    /// Прыжок консоли проходит пачку остановок одним вызовом. Подбор находки,
+    /// который из‑за выбора выше по ленте не успел сработать, всё равно кладёт вещь в карман.
+    /// Почту не трогает. Отказ игрока (выбрал вариант без вещи) не переигрывается.
+    private func grantPassedFinds() {
+        for item in story.items where BagPolicy.role(id: item.id, kind: item.kind) == .personal {
+            let now = status(item.id)
+            guard now == .onRoad || now == .leftBehind || now == .atPost else { continue }
+            guard let step = personalDiscoveryStep(item.id), currentStep >= step else { continue }
+            state.items[item.id] = item.takesSlot ? .inBag : .inPocket
+            state.carried.insert(item.id)
+        }
+    }
+
+    /// Шаг, на котором находка уже должна быть в кармане. Подбор — по своему шагу.
+    /// Награда за выбор — только если почтальон уже решил бы сам (следующая остановка позади
+    /// или вышли 400 шагов) и игрок не отказался.
+    private func personalDiscoveryStep(_ id: String) -> Int? {
+        let pickups = orderedEvents.compactMap { event -> Int? in
+            guard event.type == .pickup, event.item == id else { return nil }
+            return event.step
+        }
+        if let step = pickups.min() { return step }
+        for event in orderedEvents where event.type == .choice {
+            guard event.options?.contains(where: { grantsFind($0, id) }) == true else { continue }
+            if let chosen = state.choices[event.id] {
+                let option = event.options?.first { $0.id == chosen }
+                return option.map { grantsFind($0, id) } == true ? event.step : nil
+            }
+            let fallback = event.options?.first { $0.id == event.default } ?? event.options?.first
+            guard fallback.map({ grantsFind($0, id) }) == true else { continue }
+            let laterReached = timeline.contains { $0.step > event.step && $0.step <= currentStep }
+            if laterReached || currentStep >= event.step + choiceTimeoutSteps { return event.step }
+        }
+        return nil
+    }
+
+    private func grantsFind(_ option: StoryConfig.Option, _ id: String) -> Bool {
+        option.effects?.contains {
+            $0.item == id && ($0.status == .inBag || $0.status == .inPocket)
+        } == true
     }
 
     /// Письмо, у которого не осталось точки впереди, не лежит в сумке. Сдача пишется один раз.

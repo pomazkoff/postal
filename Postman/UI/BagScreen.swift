@@ -7,6 +7,7 @@ struct BagScreen: View {
     enum Mode { case sort, view }
 
     @EnvironmentObject var engine: ChapterEngine
+    @EnvironmentObject var game: GameModel
     let mode: Mode
     let onRead: (String) -> Void
     let onClose: () -> Void
@@ -66,8 +67,7 @@ struct BagScreen: View {
                 VStack(spacing: 0) {
                     group(L10n.text("bag.mail"), items: engine.mailItems, empty: L10n.text("bag.mail.empty"),
                           headerOnLeft: true, m: m)
-                    group(L10n.text("bag.personal"), items: engine.personalItems, empty: L10n.text("bag.personal.empty"),
-                          headerOnLeft: false, m: m)
+                    personalShelves(m)
                 }
                 .frame(maxWidth: .infinity)
                 .background(
@@ -115,6 +115,38 @@ struct BagScreen: View {
         .accessibilityLabel(L10n.text("bag.more"))
     }
 
+    /// Личные вещи — одна коллекция на все главы. Новее глава выше. Сданное не снимается с полки.
+    private func personalShelves(_ m: FrameMapper) -> some View {
+        let groups = game.keptFinds()
+        return VStack(spacing: 0) {
+            sectionTag(L10n.text("bag.personal"), onLeft: false, m: m)
+            if groups.isEmpty {
+                shelf(nil, nil, empty: L10n.text("bag.personal.empty"), handed: (false, false), m: m)
+            } else {
+                ForEach(groups) { chapter in
+                    chapterShelves(chapter, m: m)
+                }
+            }
+        }
+    }
+
+    private func chapterShelves(_ chapter: GameModel.KeptChapter, m: FrameMapper) -> some View {
+        let pairs = stride(from: 0, to: chapter.finds.count, by: 2).map { index -> (GameModel.KeptFind?, GameModel.KeptFind?) in
+            let right = index + 1 < chapter.finds.count ? chapter.finds[index + 1] : nil
+            return (chapter.finds[index], right)
+        }
+        return VStack(spacing: 0) {
+            sectionTag(chapter.title, onLeft: true, m: m)
+            ForEach(Array(pairs.enumerated()), id: \.offset) { _, pair in
+                shelf(pair.0?.item, pair.1?.item,
+                      empty: nil,
+                      handed: (pair.0?.handedIn == true, pair.1?.handedIn == true),
+                      handoff: (pair.0?.handoffEvent, pair.1?.handoffEvent),
+                      m: m)
+            }
+        }
+    }
+
     private func group(_ title: String, items: [StoryConfig.Item], empty: String, headerOnLeft: Bool, m: FrameMapper) -> some View {
         let pairs = stride(from: 0, to: max(items.count, 1), by: 2).map { index -> (StoryConfig.Item?, StoryConfig.Item?) in
             if items.isEmpty { return (nil, nil) }
@@ -124,7 +156,7 @@ struct BagScreen: View {
         return VStack(spacing: 0) {
             sectionTag(title, onLeft: headerOnLeft, m: m)
             ForEach(Array(pairs.enumerated()), id: \.offset) { _, pair in
-                shelf(pair.0, pair.1, empty: items.isEmpty ? empty : nil, m: m)
+                shelf(pair.0, pair.1, empty: items.isEmpty ? empty : nil, handed: (false, false), m: m)
             }
         }
     }
@@ -159,7 +191,8 @@ struct BagScreen: View {
         .accessibilityHidden(true)
     }
 
-    private func shelf(_ left: StoryConfig.Item?, _ right: StoryConfig.Item?, empty: String?, m: FrameMapper) -> some View {
+    private func shelf(_ left: StoryConfig.Item?, _ right: StoryConfig.Item?, empty: String?,
+                       handed: (Bool, Bool), handoff: (String?, String?) = (nil, nil), m: FrameMapper) -> some View {
         let height = 310.0
         let shelfY = 8.0
         let baseY = shelfY + 22
@@ -167,25 +200,39 @@ struct BagScreen: View {
         return ZStack(alignment: .topLeading) {
             Color.clear
             place("shelf", m: m, anchor: "origin", at: CGPoint(x: 2, y: shelfY), scale: 0.82)
-            itemSlot(left, empty: empty, cx: 290, base: baseY, tag: CGPoint(x: 175, y: tagY), angle: -4, m: m)
+            itemSlot(left, empty: empty, handedIn: handed.0, handoff: handoff.0,
+                     cx: 290, base: baseY, tag: CGPoint(x: 175, y: tagY), angle: -4, m: m)
             if empty == nil {
-                itemSlot(right, empty: nil, cx: 890, base: baseY, tag: CGPoint(x: 790, y: tagY), angle: 3, m: m)
+                itemSlot(right, empty: nil, handedIn: handed.1, handoff: handoff.1,
+                         cx: 890, base: baseY, tag: CGPoint(x: 790, y: tagY), angle: 3, m: m)
             }
         }
         .frame(width: m.length(1170), height: m.length(height))
     }
 
     @ViewBuilder
-    private func itemSlot(_ item: StoryConfig.Item?, empty: String?, cx: Double, base: Double, tag: CGPoint, angle: Double, m: FrameMapper) -> some View {
+    private func itemSlot(_ item: StoryConfig.Item?, empty: String?, handedIn: Bool, handoff: String?,
+                          cx: Double, base: Double, tag: CGPoint, angle: Double, m: FrameMapper) -> some View {
         if let item {
             let personal = BagPolicy.role(id: item.id, kind: item.kind) == .personal
             let line1 = personal ? L10n.text(keepKey(item.id)) : item.to
-            let line2 = personal ? L10n.text("bag.look") : L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id, playerStep: engine.currentStep))
+            let line2: String
+            if personal && handedIn {
+                line2 = L10n.text(BagPolicy.handoffCaptionKey(handoff ?? ""))
+            } else if personal {
+                line2 = L10n.text("bag.look")
+            } else {
+                line2 = L10n.text(BagPolicy.actionKey(chapter: engine.story.chapter, id: item.id, playerStep: engine.currentStep))
+            }
+            let fade = handedIn ? 0.62 : 1.0
             place(item.art, m: m, anchor: "bottom", at: CGPoint(x: cx, y: base), scale: itemScale(item.art), rotation: angle * 0.4) {
                 onRead(item.id)
             }
+            .opacity(fade)
             tagButton(line1: line1, line2: line2, at: tag, angle: angle, m: m) { onRead(item.id) }
+                .opacity(fade)
             place("nail", m: m, at: tag, scale: 0.85)
+                .opacity(fade)
         } else if let empty {
             tagButton(line1: empty, line2: "", at: tag, angle: angle, m: m, action: nil)
             place("nail", m: m, at: tag, scale: 0.85)

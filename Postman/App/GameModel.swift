@@ -209,6 +209,48 @@ final class GameModel: ObservableObject {
         return people
     }
 
+    /// Находка на полке «Личные вещи». Сданная остаётся, только бирка другая.
+    struct KeptFind: Identifiable {
+        let chapter: Int
+        let item: StoryConfig.Item
+        let handedIn: Bool
+        let handoffEvent: String?
+        var id: String { "\(chapter)/\(item.id)" }
+    }
+
+    struct KeptChapter: Identifiable {
+        let id: Int
+        let title: String
+        let finds: [KeptFind]
+    }
+
+    /// Все найденные улики, новее глава — выше. Живая глава читается из движка, не с диска.
+    func keptFinds() -> [KeptChapter] {
+        var groups: [KeptChapter] = []
+        for chapter in world.chapters.reversed() {
+            let story = chapter.id == engine.story.chapter
+                ? engine.story : StoryConfig.load(chapter: chapter.id)
+            let saved: [String: ItemStatus]
+            if chapter.id == engine.story.chapter {
+                saved = engine.state.items
+            } else {
+                saved = ChapterStateStore(fileName: "chapter\(chapter.id)_state.json").load()?.items ?? [:]
+            }
+            var finds: [KeptFind] = []
+            for item in story.items {
+                let raw = (saved[item.id] ?? item.initial).rawValue
+                guard BagPolicy.onPersonalShelf(id: item.id, kind: item.kind, status: raw) else { continue }
+                let handed = BagPolicy.personalHandedIn(status: raw)
+                let event = handed ? BagPolicy.drops(chapter: chapter.id, id: item.id).first?.event : nil
+                finds.append(KeptFind(chapter: chapter.id, item: item, handedIn: handed, handoffEvent: event))
+            }
+            if !finds.isEmpty {
+                groups.append(KeptChapter(id: chapter.id, title: chapter.title, finds: finds))
+            }
+        }
+        return groups
+    }
+
     /// Сюжет меняется, но единая сцена, камера и жители предыдущих глав остаются на месте.
     private func handleChapterChanged(_ idx: Int) {
         endResidentVisit()
@@ -562,7 +604,12 @@ final class GameModel: ObservableObject {
         }
         AppCore.shared.syncEngine(total: total)
         // После sync глава могла смениться — берём актуальные шаги главы.
+        // Движок тоже: иначе бирка уже «Болота», а сумка всё ещё пишет файл гор.
         chapterIndex = AppCore.shared.chapterIndex
+        if engine !== AppCore.shared.engine {
+            engine = AppCore.shared.engine
+            bindEngine(engine)
+        }
         let inChapter = chapterSteps(total: total)
         scene.setTargetSteps(worldSteps(total: total))
         migrateHistoryIfNeeded()

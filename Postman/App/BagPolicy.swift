@@ -207,4 +207,29 @@ enum BagPolicy {
     }
 
     static func isClosed(_ status: String) -> Bool { closed.contains(status) }
+
+    /// Находка уже у почтальона или уже сдана. Дорога и «не брали» на полку не попадают.
+    static func onPersonalShelf(id: String, kind: String, status: String) -> Bool {
+        guard role(id: id, kind: kind) == .personal else { return false }
+        switch status {
+        case "inBag", "inPocket", "delivered": return true
+        default: return false
+        }
+    }
+
+    /// Сдано в ящик. Почта этим путём на полку находок не возвращается.
+    static func personalHandedIn(status: String) -> Bool { status == "delivered" }
+
+    /// Бирка сдачи. Неизвестная точка — короткое «сдано».
+    static func handoffCaptionKey(_ event: String) -> String {
+        switch event {
+        case "d_gat": return "bag.handed.d_gat"
+        case "d_top": return "bag.handed.d_top"
+        case "d_torf": return "bag.handed.d_torf"
+        case "d_barge": return "bag.handed.d_barge"
+        case "d_reeds": return "bag.handed.d_reeds"
+        case "d_otstoy": return "bag.handed.d_otstoy"
+        default: return "bag.handed.other"
+        }
+    }
 }
