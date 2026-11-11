@@ -526,7 +526,8 @@ final class GameModel: ObservableObject {
         for r in story.residents where r.step <= chapter.lengthSteps {
             guard let fig = ResidentLibrary.figure(for: r, assetsFolder: chapter.assetsFolder) else { continue }
             residents.append(.init(id: r.id, step: chapter.startStep + r.step, dx: CGFloat(r.dx), height: CGFloat(r.height),
-                                   image: fig.image, groundFraction: fig.groundFraction, idle: fig.idle))
+                                   image: fig.image, groundFraction: fig.groundFraction, idle: fig.idle,
+                                   sink: r.sink.map { CGFloat($0) }))
         }
         scene.installStory(roadItems: road, residents: residents, chapterID: chapter.id)
     }

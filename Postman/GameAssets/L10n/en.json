@@ -333,6 +333,34 @@
         "A goat from the Radioshadow Institute. She sleeps in the antenna.",
         "A nick in her ear. Vera knows her by it."
       ]
+    },
+    "nyura": {
+      "title": "Aunt Nyura",
+      "lines": [
+        "Take the cranberry off the hummock. Off the water it takes you faster.",
+        "Leave the ribbon. It is not yours."
+      ]
+    },
+    "semyon": {
+      "title": "Semyon",
+      "lines": [
+        "The shift left. Here are the stacks. I am drying them.",
+        "They wrote on the post. I turn peat, not papers."
+      ]
+    },
+    "grisha": {
+      "title": "Uncle Grisha",
+      "lines": [
+        "They put the boat up on trestles at the Boardwalk. Right. It is damp for her here.",
+        "No going on down. The channel is choked. What kind of ferry is that."
+      ]
+    },
+    "petka": {
+      "title": "Petka",
+      "lines": [
+        "The fish walks higher up. I go after her. She goes away from me.",
+        "The receiver shouts, then it hisses. I already took the lid off."
+      ]
     }
   },
   "stories": {
@@ -2168,7 +2196,11 @@
         "finale|": "To the Settling Pool"
       },
       "residents": {
-        "fedya": "Old Fedya"
+        "fedya": "Old Fedya",
+        "nyura": "Aunt Nyura",
+        "semyon": "Semyon",
+        "grisha": "Uncle Grisha",
+        "petka": "Petka"
       },
       "fates": {
         "gat|inBag:l1": "The clean envelope is still in the bag. Its place is the box on the Boardwalk.",

@@ -221,6 +221,73 @@ if ch2["nextChapter"] != "Глава 3 «Болота»":
 if story["nextChapter"] != "Глава 4 «Город молчания» — скоро":
     fail("chapter 3 does not point at chapter 4")
 
+# Жители и сценки. Левый край = центр (dx истории) − ширина/2.
+# Ширина = height * pixelW / pixelH. У этих спрайтов pixelH == height, ширина = pixelW.
+expected_people = {
+    "nyura": {"step": 7000, "height": 365, "sink": 0, "left": 160, "pixels": (174, 365)},
+    "semyon": {"step": 12500, "height": 430, "sink": 0, "left": 200, "pixels": (102, 430)},
+    "grisha": {"step": 16500, "height": 325, "sink": 13, "left": -270, "pixels": (189, 325)},
+    "petka": {"step": 20500, "height": 270, "sink": 0, "left": 140, "pixels": (114, 270)},
+}
+by_id = {r["id"]: r for r in story["residents"]}
+if set(expected_people) - set(by_id):
+    fail(f"missing swamp residents {sorted(set(expected_people) - set(by_id))}")
+for rid, want in expected_people.items():
+    got = by_id[rid]
+    width = want["pixels"][0]
+    left = got["dx"] - width / 2
+    if got["step"] != want["step"] or got["height"] != want["height"] or got.get("sink") != want["sink"]:
+        fail(f"{rid} placement drifted: {got['step']} {got['height']} sink {got.get('sink')}")
+    if abs(left - want["left"]) > 0.6:
+        fail(f"{rid} left edge is {left}, the sheet wants {want['left']}")
+    path = chapter_dir / "residents" / rid / "full.png"
+    if not path.exists():
+        fail(f"missing resident art {path.name} for {rid}")
+        continue
+    with Image.open(path) as im:
+        if im.size != want["pixels"] or im.mode != "RGBA":
+            fail(f"{rid} art is {im.size} {im.mode}, expected {want['pixels']} RGBA")
+# Одобренный dx 80 оставлял ящик Гриши на гати, справа от кормы.
+if by_id["grisha"]["dx"] > -100:
+    fail("Grisha is still beside the causeway, not on the barge deck")
+barge_right = barge["dx"] + barge["height"] * barge["pixelSize"][0] / barge["pixelSize"][1]
+grisha_left = by_id["grisha"]["dx"] - expected_people["grisha"]["pixels"][0] / 2
+grisha_right = grisha_left + expected_people["grisha"]["pixels"][0]
+if grisha_left < barge["dx"] or grisha_right > barge_right + 8:
+    fail(f"Grisha's crate is not on the hull: {grisha_left:.1f}..{grisha_right:.1f}, hull ends {barge_right:.1f}")
+for forbidden in (22500, 30000):
+    if any(r["step"] == forbidden and r["id"] != "fedya" for r in story["residents"]):
+        fail(f"a person stands at step {forbidden}; Горло and Отстой stay empty of people")
+life = [p for p in chapter["props"] if p["image"].startswith("ambient/")]
+if len(life) != 12:
+    fail(f"expected 12 swamp life props, got {len(life)}")
+scene_src = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
+referenced = set(re.findall(r"ambient/[a-z0-9_]+", scene_src))
+referenced.update(p["image"] for p in life)
+for image in sorted(referenced):
+    path = chapter_dir / f"{image}.png"
+    if not path.exists():
+        fail(f"missing life art {image}")
+        continue
+    with Image.open(path) as im:
+        if im.mode != "RGBA":
+            fail(f"{image} is not RGBA")
+for prop in life:
+    path = chapter_dir / f"{prop['image']}.png"
+    if not path.exists():
+        continue
+    with Image.open(path) as im:
+        if list(im.size) != prop["pixelSize"]:
+            fail(f"{prop['image']} is {im.size}, world.json says {prop['pixelSize']}")
+# Цапля у протоки с z 9 лежит под непрозрачной баржей и не видна.
+protoka_heron = [p for p in life if p["image"] == "ambient/heron_stand" and p["step"] == 16500]
+if not protoka_heron or protoka_heron[0]["z"] <= barge["z"]:
+    fail("the channel heron is behind the opaque barge")
+if "swayLiving" not in scene_src or "hopFrog" not in scene_src or "herdHeron" not in scene_src:
+    fail("swamp life is placed but not animated")
+if '"nyura"' not in (ROOT / "Postman/GameAssets/Data/resident_lore.json").read_text(encoding="utf-8"):
+    fail("the new residents have no tap line")
+
 if FAILS:
     print(f"{len(FAILS)} chapter 3 check(s) failed:")
     for item in FAILS:

@@ -267,7 +267,13 @@ STORY = {
         "d_reeds|": "To the Reeds",
         "finale|": "To the Settling Pool",
     },
-    "residents": {"fedya": "Old Fedya"},
+    "residents": {
+        "fedya": "Old Fedya",
+        "nyura": "Aunt Nyura",
+        "semyon": "Semyon",
+        "grisha": "Uncle Grisha",
+        "petka": "Petka",
+    },
     "fates": {
         "gat|inBag:l1": "The clean envelope is still in the bag. Its place is the box on the Boardwalk.",
         "gat|delivered:l1": "Galya's letter was left on the Boardwalk, a chance downstream.",

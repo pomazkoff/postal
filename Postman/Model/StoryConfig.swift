@@ -130,6 +130,8 @@ struct StoryConfig: Decodable {
         let step: Int
         let dx: Double
         let height: Double
+        /// На сколько опустить низ спрайта ниже линии дороги. Нет поля — как у Феди, на 4 px.
+        let sink: Double? = nil
     }
 
     struct Fate: Decodable {

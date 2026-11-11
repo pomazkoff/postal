@@ -3016,6 +3016,126 @@
             1272,
             469
           ]
+        },
+        {
+          "image": "ambient/dragonflies",
+          "layer": "main",
+          "step": 2500,
+          "dx": -40,
+          "height": 140,
+          "sink": -220,
+          "z": 8,
+          "pixelSize": [183, 160]
+        },
+        {
+          "image": "ambient/boat_trestles",
+          "layer": "main",
+          "step": 4000,
+          "dx": 280,
+          "height": 180,
+          "sink": 8,
+          "z": 11,
+          "pixelSize": [340, 137]
+        },
+        {
+          "image": "ambient/smoke_chimney",
+          "layer": "main",
+          "step": 4000,
+          "dx": -200,
+          "height": 220,
+          "sink": -520,
+          "z": 14,
+          "pixelSize": [70, 220]
+        },
+        {
+          "image": "ambient/frog",
+          "layer": "main",
+          "step": 7000,
+          "dx": -80,
+          "height": 70,
+          "sink": 10,
+          "z": 11,
+          "pixelSize": [79, 70]
+        },
+        {
+          "image": "ambient/heron_stand",
+          "layer": "main",
+          "step": 9000,
+          "dx": 260,
+          "height": 280,
+          "sink": 20,
+          "z": 11,
+          "pixelSize": [230, 320]
+        },
+        {
+          "image": "ambient/smoke_peat",
+          "layer": "main",
+          "step": 12500,
+          "dx": -280,
+          "height": 90,
+          "sink": -40,
+          "z": 11,
+          "pixelSize": [280, 48]
+        },
+        {
+          "image": "ambient/heron_stand",
+          "layer": "main",
+          "step": 16500,
+          "dx": -520,
+          "height": 260,
+          "sink": 40,
+          "z": 12,
+          "pixelSize": [230, 320]
+        },
+        {
+          "image": "ambient/punt",
+          "layer": "main",
+          "step": 16500,
+          "dx": 420,
+          "height": 110,
+          "sink": 70,
+          "z": 8,
+          "pixelSize": [380, 106]
+        },
+        {
+          "image": "ambient/ducks",
+          "layer": "main",
+          "step": 20000,
+          "dx": 300,
+          "height": 70,
+          "sink": 24,
+          "z": 10,
+          "pixelSize": [280, 73]
+        },
+        {
+          "image": "ambient/frog",
+          "layer": "main",
+          "step": 20500,
+          "dx": -40,
+          "height": 70,
+          "sink": 12,
+          "z": 11,
+          "pixelSize": [79, 70]
+        },
+        {
+          "image": "ambient/mist_low",
+          "layer": "main",
+          "step": 22500,
+          "dx": -200,
+          "height": 160,
+          "sink": -40,
+          "z": 15,
+          "pixelSize": [800, 72]
+        },
+        {
+          "image": "ambient/boat_moored",
+          "layer": "main",
+          "step": 30000,
+          "dx": 280,
+          "height": 130,
+          "sink": 20,
+          "z": 11,
+          "pixelSize": [340, 101]
         }
       ],
       "underground": {
