@@ -245,8 +245,12 @@ if "requestAuthorization" in active_fn:
     fail("returning to the app must not request notification permission again")
 if "refreshAuthorizationStatus" not in active_fn:
     fail("returning to the app must refresh the real notification status")
-if "askPermission: true" not in active_fn:
-    fail("location on resume must stay")
+if "askPermission: false" not in active_fn or "askPermission: true" in active_fn:
+    fail("returning to the app must refresh the weather without asking for location again")
+if "openSystemSettings" not in game or "UIApplication.openSettingsURLString" not in game:
+    fail("a denial of steps or location needs a Settings button")
+if "showAccessNote" not in game:
+    fail("a denial must leave a note on the open game")
 delegate = (ROOT / "Postman/App/AppDelegate.swift").read_text(encoding="utf-8")
 if "requestAuthorization" in delegate:
     fail("startup must not request notification permission")

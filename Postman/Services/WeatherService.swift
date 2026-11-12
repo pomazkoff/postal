@@ -36,6 +36,10 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
     private let defaults = UserDefaults.standard
     private var manager: CLLocationManager?
     private var fetching = false
+    /// Один системный вопрос за запуск. Повтор при каждом возврате в игру не зовём.
+    private var askedThisLaunch = false
+    /// Отказ или ограничение. Не зовётся, пока статус ещё не выбран.
+    var onDenied: (() -> Void)?
 
     private enum Key {
         static let code = "postman.weather.code"
@@ -79,9 +83,14 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
         }
         switch m.authorizationStatus {
         case .notDetermined:
-            if askPermission { m.requestWhenInUseAuthorization() }
+            if askPermission && !askedThisLaunch {
+                askedThisLaunch = true
+                m.requestWhenInUseAuthorization()
+            }
         case .authorizedWhenInUse, .authorizedAlways:
             if !cacheFresh && !fetching { m.requestLocation() }
+        case .denied, .restricted:
+            onDenied?()
         default:
             break
         }
@@ -93,6 +102,8 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
         switch manager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             if !cacheFresh && !fetching { manager.requestLocation() }
+        case .denied, .restricted:
+            onDenied?()
         default:
             break
         }

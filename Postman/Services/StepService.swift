@@ -71,6 +71,13 @@ final class StepService: ObservableObject {
         }
     }
 
+    /// Системный отказ на шаги. Повторно окно не поднимает.
+    func accessDenied() async -> Bool {
+        if pedometer.accessDenied { return true }
+        guard mode == .healthKit else { return false }
+        return await health.readDenied()
+    }
+
     // MARK: Lifecycle
 
     /// Запустить обновления (вызывать после онбординга и при возврате в приложение).

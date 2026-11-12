@@ -24,6 +24,8 @@ final class GameModel: ObservableObject {
     @Published var showHeroCard = false
     /// Короткий отклик тапа по вещи болот. id из chapter3_taps.json.
     @Published var marshNote: String?
+    /// Отказ в шагах или месте. Игра уже открыта. Закрытие запоминается, вопрос не повторяем.
+    @Published var showAccessNote = false
     /// Меню открыто: мир и HUD под ним размыты, бумага меню остаётся резкой.
     @Published var roadMenuOpen = false
     /// Где остановилась прокрутка «Истории». Не сейв: живёт, пока открыта игра.
@@ -79,6 +81,9 @@ final class GameModel: ObservableObject {
             self?.handleLocalizationChanged()
         }
 
+        WeatherService.shared.onDenied = { [weak self] in
+            Task { @MainActor in self?.noteAccessDenied() }
+        }
         if onboardingDone { steps.start() }
         pullFirstMailInbox()
         migrateHistoryIfNeeded()
@@ -361,8 +366,25 @@ final class GameModel: ObservableObject {
         onboardingDone = true
         steps.start()
         AppCore.shared.startBackgroundObservation()
-        // Геопозиция для погоды — после онбординга, отдельным вопросом (грубая точность).
+        // Геолокация — один раз, после карточек. Отказ не держит игру.
         WeatherService.shared.start(askPermission: true)
+        if await steps.accessDenied() { noteAccessDenied() }
+    }
+
+    /// Заметка про отказ. Повторно не всплывает, системный диалог отсюда не зовётся.
+    func noteAccessDenied() {
+        guard onboardingDone, !progress.accessNoteDismissed else { return }
+        showAccessNote = true
+    }
+
+    func dismissAccessNote() {
+        showAccessNote = false
+        progress.accessNoteDismissed = true
+    }
+
+    func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 
     func appBecameActive() {
@@ -370,7 +392,7 @@ final class GameModel: ObservableObject {
         pendingReturnCheck = true
         engine.liveViewing = false
         steps.start()
-        WeatherService.shared.start(askPermission: true)
+        WeatherService.shared.start(askPermission: false)
         ForegroundDay.noteOpened()
         AppCore.shared.noteBecameActive()
         Task { await AppCore.shared.notifier.refreshAuthorizationStatus() }
@@ -487,6 +509,7 @@ final class GameModel: ObservableObject {
         journal = nil
         showHeroCard = false
         marshNote = nil
+        showAccessNote = false
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false

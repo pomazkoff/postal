@@ -16,15 +16,19 @@
 "onboarding.card3.title" = "Come back and read";
 "onboarding.card3.body" = "The journal holds cards about places and people, showing what happened while you were away. Sometimes, at a fork, you choose which way the story will go.";
 "onboarding.card4.title" = "So he walks with you";
-"onboarding.card4.body" = "The game needs your step count from Health, and notifications when he stops. Steps are only read, never written. The weather follows yours: the system may ask for location; without it, the weather is seasonal.";
+"onboarding.card4.body" = "Steps are read from Health and never written there. A quiet notice can arrive when he stops. The weather can follow yours: the system asks for location. Without it, the weather is seasonal.";
 "onboarding.card4.body.fake" = "HealthKit is unavailable in the simulator — steps are added with the “+500” button. On a device the game asks to read steps and to send notifications; location for the weather is optional, and you can refuse.";
 "onboarding.perm.steps.fake" = "Steps: test mode";
 "onboarding.perm.steps" = "Steps from Health";
 "onboarding.perm.notes" = "Notifications at the stops";
 "onboarding.perm.location" = "Location for the weather — optional";
 "onboarding.start" = "Start";
-"onboarding.start.permissions" = "Allow and start";
-"onboarding.start.hint" = "Asks for steps, notifications, and location if it is needed";
+"onboarding.start.permissions" = "Continue";
+"onboarding.start.hint" = "The phone may then ask about steps, notifications, and location";
+"access.denied.title" = "Steps and weather";
+"access.denied.body" = "The postman still walks without Health or location. Steps are not counted on their own then, and the weather stays seasonal. Both are switched on in the phone's Settings.";
+"access.denied.settings" = "Open Settings";
+"access.denied.close" = "Continue";
 
 "bag.go" = "Onward";
 "bag.close" = "Close";

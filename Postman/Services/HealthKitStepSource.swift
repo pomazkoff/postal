@@ -21,6 +21,18 @@ final class HealthKitStepSource {
         try await store.requestAuthorization(toShare: [], read: [stepType])
     }
 
+    /// Отказ на чтение шагов. Обычный пустой ответ — не отказ.
+    func readDenied() async -> Bool {
+        do {
+            _ = try await steps(from: Date().addingTimeInterval(-60), to: Date())
+            return false
+        } catch {
+            let ns = error as NSError
+            guard ns.domain == HKError.errorDomain else { return false }
+            return ns.code == HKError.Code.errorAuthorizationDenied.rawValue
+        }
+    }
+
     /// Было ли уже показано окно разрешений (а не «дан ли доступ»).
     func authorizationRequestStatus() async -> HKAuthorizationRequestStatus {
         await withCheckedContinuation { cont in

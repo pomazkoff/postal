@@ -22,6 +22,8 @@ final class ProgressStore {
         static let historyOpened = "postman.history.opened"
         /// Версия с прочитанным свитком уже применена к этому сейву.
         static let historyMigrated = "postman.history.migrated"
+        /// Заметку «шаги и погода выключены» уже закрыли. Системный вопрос снова не ставим.
+        static let accessNoteDismissed = "postman.accessNoteDismissed"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -122,10 +124,17 @@ final class ProgressStore {
         set { defaults.set(newValue, forKey: Key.historyMigrated) }
     }
 
+    /// Игрок закрыл заметку про отказ в шагах или месте. Новый вопрос системе не задаём.
+    var accessNoteDismissed: Bool {
+        get { defaults.bool(forKey: Key.accessNoteDismissed) }
+        set { defaults.set(newValue, forKey: Key.accessNoteDismissed) }
+    }
+
     func resetAll() {
         for k in [Key.gameStartDate, Key.onboardingDone, Key.displayedSteps, Key.stepMode,
                   Key.debugExtraTotal, Key.debugExtraToday, Key.debugExtraDay, Key.exactStart, Key.forceChapterIndex,
-                  Key.forceChapterBaseSteps, Key.historySeen, Key.historyOpened, Key.historyMigrated] {
+                  Key.forceChapterBaseSteps, Key.historySeen, Key.historyOpened, Key.historyMigrated,
+                  Key.accessNoteDismissed] {
             defaults.removeObject(forKey: k)
         }
     }
@@ -136,7 +145,7 @@ final class ProgressStore {
         for k in [Key.onboardingDone, Key.displayedSteps,
                   Key.debugExtraTotal, Key.debugExtraToday, Key.debugExtraDay,
                   Key.forceChapterIndex, Key.forceChapterBaseSteps,
-                  Key.historySeen, Key.historyOpened] {
+                  Key.historySeen, Key.historyOpened, Key.accessNoteDismissed] {
             defaults.removeObject(forKey: k)
         }
         gameStartDate = now

@@ -8,6 +8,12 @@ final class PedometerStepSource {
 
     private let pedometer = CMPedometer()
 
+    /// Системный отказ. Повторного окна отсюда нет.
+    var accessDenied: Bool {
+        let status = CMPedometer.authorizationStatus()
+        return status == .denied || status == .restricted
+    }
+
     /// Первый запрос показывает системное окно «Движение и фитнес», если его ещё не было.
     func requestAccess() async {
         guard Self.isAvailable else { return }

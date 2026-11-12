@@ -130,6 +130,11 @@ struct HUDView: View {
                 .transition(.opacity)
                 .zIndex(8)
             }
+            if game.showAccessNote, screen == .none {
+                AccessNote(onSettings: game.openSystemSettings, onClose: game.dismissAccessNote)
+                    .transition(.opacity)
+                    .zIndex(8)
+            }
             if let id = letterID {
                 LetterScreen(itemID: id) { closeLetter(id) }
                     .transition(.opacity)
@@ -146,6 +151,7 @@ struct HUDView: View {
         .onChange(of: letterID) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.marshNote) { _, _ in publishWorldCover(screen: screen) }
+        .onChange(of: game.showAccessNote) { _, _ in publishWorldCover(screen: screen) }
         .storyResetAlert(isPresented: $confirmReset)
     }
 
@@ -395,7 +401,7 @@ struct HUDView: View {
     }
 
     private func publishWorldCover(screen: Screen) {
-        let covered = screen != .none || letterID != nil || game.showHeroCard || game.marshNote != nil
+        let covered = screen != .none || letterID != nil || game.showHeroCard || game.marshNote != nil || game.showAccessNote
         if game.worldCovered != covered {
             game.worldCovered = covered
             if covered { SoundPlayback.shared.stopAll() }
@@ -410,6 +416,52 @@ struct HUDView: View {
     private func toggleWatch() {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
             watchExpanded.toggle()
+        }
+    }
+}
+
+/// После отказа в шагах или месте. Игра под бумагой уже идёт. Системный вопрос отсюда не зовётся.
+struct AccessNote: View {
+    let onSettings: () -> Void
+    let onClose: () -> Void
+
+    var body: some View {
+        FrameScreen(dim: 0.45) { m in
+            ZStack {
+                Color.clear.contentShape(Rectangle()).onTapGesture(perform: onClose)
+                VStack(alignment: .leading, spacing: m.length(16)) {
+                    Text(L10n.text("access.denied.title"))
+                        .font(Ink.title(m.length(52)))
+                        .foregroundStyle(Ink.brown)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(L10n.text("access.denied.body"))
+                        .font(Ink.font("hand", size: m.length(36)))
+                        .foregroundStyle(Ink.pencil)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button(action: onSettings) {
+                        Text(L10n.text("access.denied.settings"))
+                            .font(Ink.title(m.length(36)))
+                            .foregroundStyle(Ink.chalk)
+                            .frame(maxWidth: .infinity, minHeight: m.length(100))
+                            .background(RoundedRectangle(cornerRadius: m.length(12), style: .continuous).fill(Theme.teal))
+                    }
+                    .buttonStyle(PressStyle())
+                    Button(action: onClose) {
+                        Text(L10n.text("access.denied.close"))
+                            .font(Ink.title(m.length(36)))
+                            .foregroundStyle(Ink.brown)
+                            .frame(maxWidth: .infinity, minHeight: m.length(88))
+                    }
+                    .buttonStyle(PressStyle())
+                }
+                .padding(m.length(28))
+                .frame(width: m.length(860))
+                .background(
+                    RoundedRectangle(cornerRadius: m.length(22), style: .continuous)
+                        .fill(Theme.paper)
+                        .overlay(RoundedRectangle(cornerRadius: m.length(22), style: .continuous).stroke(Theme.paperEdge, lineWidth: max(1, m.length(3))))
+                )
+            }
         }
     }
 }
