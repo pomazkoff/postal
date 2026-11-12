@@ -9,10 +9,28 @@ final class HealthKitStepSource {
 
     static var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
+    /// Телефон заблокирован: база «Здоровья» недоступна, это не ноль шагов.
+    static func isProtectedData(_ error: Error) -> Bool {
+        let ns = error as NSError
+        return ns.domain == HKError.errorDomain && ns.code == HKError.Code.errorDatabaseInaccessible.rawValue
+    }
+
     /// Показывает системный диалог (один раз). HealthKit НЕ сообщает, дал ли пользователь
     /// доступ на чтение: при отказе запросы просто возвращают 0.
     func requestAuthorization() async throws {
         try await store.requestAuthorization(toShare: [], read: [stepType])
+    }
+
+    /// Отказ на чтение шагов. Обычный пустой ответ — не отказ.
+    func readDenied() async -> Bool {
+        do {
+            _ = try await steps(from: Date().addingTimeInterval(-60), to: Date())
+            return false
+        } catch {
+            let ns = error as NSError
+            guard ns.domain == HKError.errorDomain else { return false }
+            return ns.code == HKError.Code.errorAuthorizationDenied.rawValue
+        }
     }
 
     /// Было ли уже показано окно разрешений (а не «дан ли доступ»).

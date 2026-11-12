@@ -1,11 +1,12 @@
 import Foundation
 import Combine
 import SpriteKit
+import UIKit
 
 /// Связывает шаги, сохранённый прогресс, данные мира и сцену.
 @MainActor
 final class GameModel: ObservableObject {
-    let world: WorldConfig
+    private(set) var world: WorldConfig
     let rig: RigConfig
     let progress: ProgressStore
     let steps: StepService
@@ -19,6 +20,20 @@ final class GameModel: ObservableObject {
     @Published var onboardingDone: Bool
     /// Почтальон за краем экрана (камеру увели панорамой) — показать кнопку «к почтальону».
     @Published private(set) var postmanOffscreen: WorldScene.Offscreen?
+    /// Карточка почтальона по тапу в мире. Не сейв.
+    @Published var showHeroCard = false
+    /// Короткий отклик тапа по вещи болот. id из chapter3_taps.json.
+    @Published var marshNote: String?
+    /// Отказ в шагах или месте. Игра уже открыта. Закрытие запоминается, вопрос не повторяем.
+    @Published var showAccessNote = false
+    /// Меню открыто: мир и HUD под ним размыты, бумага меню остаётся резкой.
+    @Published var roadMenuOpen = false
+    /// Где остановилась прокрутка «Истории». Не сейв: живёт, пока открыта игра.
+    @Published var historyAnchor: String?
+    /// Поверх мира лист, меню или карточка: шаги и окружение замолкают.
+    @Published var worldCovered = false
+    /// Карточка «Первый почтовый рейс». Не сейв и не сдвиг сюжета.
+    @Published var firstMailPending = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
@@ -62,8 +77,16 @@ final class GameModel: ObservableObject {
         core.onChapterChanged = { [weak self] idx in
             self?.handleChapterChanged(idx)
         }
+        core.onLocalizationChanged = { [weak self] in
+            self?.handleLocalizationChanged()
+        }
 
+        WeatherService.shared.onDenied = { [weak self] in
+            Task { @MainActor in self?.noteAccessDenied() }
+        }
         if onboardingDone { steps.start() }
+        pullFirstMailInbox()
+        migrateHistoryIfNeeded()
     }
 
     private var engineCancellables = Set<AnyCancellable>()
@@ -79,6 +102,158 @@ final class GameModel: ObservableObject {
             .removeDuplicates()
             .sink { [weak self] left in self?.scene.setRoadItemLeftBehind(left, chapterID: chapterID) }
             .store(in: &engineCancellables)
+    }
+
+    /// Строки мира и сюжета заново. Сейв, шаги и сцена на месте; таблички только переписываются.
+    private func handleLocalizationChanged() {
+        world = AppCore.shared.world
+        engine = AppCore.shared.engine
+        bindEngine(engine)
+        ResidentLore.invalidate()
+        ParchmentMap.invalidate()
+        PluralCatalog.invalidate()
+        if _sceneStorage != nil {
+            scene.retitleSettlements(world)
+        }
+        objectWillChange.send()
+    }
+
+    func setLanguage(_ choice: LanguageChoice) {
+        guard choice != AppLanguage.choice else { return }
+        AppLanguage.choice = choice
+        AppCore.shared.reloadLocalization()
+    }
+
+    /// Уже рассказанное. Чтение чужих глав с диска ничего не записывает.
+    func historyFacts() -> [HistoryFact] {
+        let known = StoryChronicle.Progress(
+            done: engine.state.doneEvents, choices: engine.state.choices,
+            items: engine.state.items, opened: engine.state.opened,
+            carried: engine.state.carried, reached: chapterSteps)
+        return StoryChronicle.facts(world: world, activeIndex: chapterIndex, activeSteps: known.reached,
+                                    active: known) { chapterID in
+            guard let saved = ChapterStateStore(fileName: "chapter\(chapterID)_state.json").load() else { return nil }
+            return StoryChronicle.Progress(done: saved.doneEvents, choices: saved.choices,
+                                           items: saved.items, opened: saved.opened,
+                                           carried: saved.carried, reached: Int.max)
+        }
+    }
+
+    /// Один раз на сейв. Новая игра ничего не помечает. Старая — все абзацы, которые уже открыты, когда шаги известны.
+    private func migrateHistoryIfNeeded() {
+        guard !progress.historyMigrated else { return }
+        guard hasHistoryProgress() else {
+            progress.historyMigrated = true
+            return
+        }
+        guard steps.hasLoaded else { return }
+        let seeded = HistoryReading.migrate(hasProgress: true, factIDs: historyFacts().map(\.id))
+        progress.historySeen = progress.historySeen.union(seeded.seen)
+        if seeded.everOpened { progress.historyOpened = true }
+        progress.historyMigrated = true
+    }
+
+    private func hasHistoryProgress() -> Bool {
+        if progress.onboardingDone || progress.gameStartDate != nil || progress.displayedSteps > 0 { return true }
+        return world.chapters.contains {
+            ChapterStateStore(fileName: "chapter\($0.id)_state.json").load() != nil
+        }
+    }
+
+    /// Куда поставить лист. Старый сейв сначала помечает уже открытые абзацы прочитанными.
+    func historyOpening(for facts: [HistoryFact]) -> HistoryReading.Open {
+        migrateHistoryIfNeeded()
+        if !progress.historyMigrated {
+            // Шаги ещё не прочитаны, а сейв уже есть: не уезжать наверх.
+            if let last = facts.last { return .entry(last.id, .bottom) }
+            return .top
+        }
+        return HistoryReading.opening(ids: facts.map(\.id), seen: progress.historySeen,
+                                      everOpened: progress.historyOpened)
+    }
+
+    func noteHistoryOpened() {
+        progress.historyOpened = true
+    }
+
+    func noteHistoryVisible(_ visible: Set<String>, among facts: [HistoryFact]) {
+        let next = HistoryReading.absorb(ids: facts.map(\.id), seen: progress.historySeen, visible: visible)
+        if next != progress.historySeen { progress.historySeen = next }
+    }
+
+    /// Кого показать в меню. Чужие главы читаются с диска и не создают сейв.
+    func menuPeople() -> [MenuPerson] {
+        var people: [MenuPerson] = []
+        var seen = Set<String>()
+        for (index, chapter) in world.chapters.enumerated() {
+            let story = index == chapterIndex ? engine.story : StoryConfig.load(chapter: chapter.id)
+            let done: Set<String>
+            if index == chapterIndex {
+                done = engine.state.doneEvents
+            } else {
+                done = ChapterStateStore(fileName: "chapter\(chapter.id)_state.json").load()?.doneEvents ?? []
+            }
+            let reached = MetPeople.reached(index: index, active: chapterIndex,
+                                            activeSteps: chapterSteps, length: chapter.lengthSteps)
+            let events = story.events.map {
+                MetPeople.EventRef(id: $0.id, resident: $0.resident, companion: $0.companion?.id)
+            }
+            let residents = story.residents.map { (id: $0.id, step: $0.step) }
+            for id in MetPeople.ids(events: events, done: done, residents: residents, reached: reached) {
+                guard seen.insert(id).inserted else { continue }
+                let resident = story.residents.first { $0.id == id }
+                let lore = ResidentLore.entry(for: id, fallbackTitle: resident?.name ?? "")
+                let name = resident?.name ?? lore.title
+                guard !name.isEmpty else { continue }
+                let figureResident = resident ?? StoryConfig.Resident(
+                    id: id, name: name, aliases: [], step: 0, dx: 0, height: 200)
+                let image = ResidentLibrary.figure(for: figureResident, assetsFolder: chapter.assetsFolder)?.image
+                people.append(MenuPerson(id: id, name: name, text: lore.text, image: image))
+            }
+        }
+        return people
+    }
+
+    /// Находка на полке «Личные вещи». Сданная остаётся, только бирка другая.
+    struct KeptFind: Identifiable {
+        let chapter: Int
+        let item: StoryConfig.Item
+        let handedIn: Bool
+        let handoffEvent: String?
+        var id: String { "\(chapter)/\(item.id)" }
+    }
+
+    struct KeptChapter: Identifiable {
+        let id: Int
+        let title: String
+        let finds: [KeptFind]
+    }
+
+    /// Все найденные улики, новее глава — выше. Живая глава читается из движка, не с диска.
+    func keptFinds() -> [KeptChapter] {
+        var groups: [KeptChapter] = []
+        for chapter in world.chapters.reversed() {
+            let story = chapter.id == engine.story.chapter
+                ? engine.story : StoryConfig.load(chapter: chapter.id)
+            let saved: [String: ItemStatus]
+            if chapter.id == engine.story.chapter {
+                saved = engine.state.items
+            } else {
+                saved = ChapterStateStore(fileName: "chapter\(chapter.id)_state.json").load()?.items ?? [:]
+            }
+            var finds: [KeptFind] = []
+            for item in story.items {
+                let raw = (saved[item.id] ?? item.initial).rawValue
+                guard BagPolicy.onPersonalShelf(id: item.id, kind: item.kind, status: raw) else { continue }
+                let handed = BagPolicy.personalHandedIn(status: raw)
+                let event = handed ? BagPolicy.drops(chapter: chapter.id, id: item.id).first?.event : nil
+                finds.append(KeptFind(chapter: chapter.id, item: item, handedIn: handed, handoffEvent: event))
+            }
+            if !finds.isEmpty {
+                groups.append(KeptChapter(id: chapter.id, title: chapter.title, finds: finds))
+            }
+        }
+        return groups
     }
 
     /// Сюжет меняется, но единая сцена, камера и жители предыдущих глав остаются на месте.
@@ -97,6 +272,11 @@ final class GameModel: ObservableObject {
 
     var chapter: ChapterConfig { world.chapters[chapterIndex] }
 
+    private func forcedChapter() -> ChapterConfig? {
+        guard let idx = progress.forceChapterIndex, world.chapters.indices.contains(idx) else { return nil }
+        return world.chapters[idx]
+    }
+
     /// Всего шагов в игре с учётом лимита 150 000.
     var gameSteps: Int { min(steps.totalSteps, world.game.totalSteps) }
 
@@ -110,10 +290,12 @@ final class GameModel: ObservableObject {
         return max(0, min(chapter.lengthSteps, min(total, world.game.totalSteps) - chapter.startStep))
     }
 
-    /// Форс сдвигает лишь виртуальную позицию на ленте, а не реальный счётчик шагов.
+    /// Форс двигает ленту даже если индекс бирки ещё не догнал главу.
+    /// Иначе прыжок ставит камеру на сырой total и она уезжает в предыдущую главу.
     private func worldSteps(total: Int) -> Int {
-        if progress.forceChapterIndex == chapterIndex {
-            return chapter.startStep + chapterSteps(total: total)
+        if let forced = forcedChapter(), let base = progress.forceChapterBaseSteps {
+            let local = max(0, min(forced.lengthSteps, total - base))
+            return forced.startStep + local
         }
         return max(0, min(total, world.game.totalSteps))
     }
@@ -123,6 +305,41 @@ final class GameModel: ObservableObject {
         AppCore.shared.syncEngine(total: steps.totalSteps)
         scene.jumpToSteps(worldSteps(total: steps.totalSteps))
         objectWillChange.send()
+    }
+
+    /// Служебный переход туда же, куда игрок пришёл бы ногами.
+    /// Если счётчик Здоровья ещё не дошёл — добираем debug-шагами и снимаем форс,
+    /// чтобы глава, бирка, сюжет и лента сошлись на одном мировом шаге.
+    /// Если шагов Здоровья уже больше — форс держит виртуальную точку, не уменьшая счётчик.
+    func developerGo(chapterIndex index: Int, localStep: Int) {
+        let idx = max(0, min(world.chapters.count - 1, index))
+        let target = world.chapters[idx]
+        let local = max(0, min(target.lengthSteps, localStep))
+        let worldStep = target.startStep + local
+        let real = max(0, steps.totalSteps - progress.debugExtraTotal)
+        if real > worldStep {
+            progress.forceChapterIndex = idx
+            progress.forceChapterBaseSteps = steps.totalSteps - local
+        } else {
+            progress.forceChapterIndex = nil
+            progress.forceChapterBaseSteps = nil
+            steps.setDebugTotal(worldStep)
+        }
+        let core = AppCore.shared
+        if core.chapterIndex != idx {
+            core.switchToChapter(idx)
+        }
+        core.syncEngine(total: steps.totalSteps)
+        chapterIndex = progress.forceChapterIndex ?? core.chapterIndex
+        scene.jumpToSteps(worldSteps(total: steps.totalSteps))
+        objectWillChange.send()
+    }
+
+    var developerDay: Int {
+        guard let start = progress.gameStartDate else { return 1 }
+        let cal = Calendar.current
+        let days = cal.dateComponents([.day], from: cal.startOfDay(for: start), to: cal.startOfDay(for: Date())).day ?? 0
+        return max(1, days + 1)
     }
 
     var nextSettlement: Settlement? {
@@ -141,15 +358,33 @@ final class GameModel: ObservableObject {
 
     func completeOnboarding() async {
         await steps.requestAuthorization()
-        // История идёт и без игрока — о каждой остановке сообщаем локальным пушем.
+        // Явная финальная кнопка онбординга. Повторно со старта и при возврате в игру не спрашиваем:
+        // там только чтение статуса. Если iOS ещё не спрашивали, включение в меню спросит само.
         _ = await AppCore.shared.notifier.requestAuthorization()
         if progress.gameStartDate == nil { progress.gameStartDate = Date() }
         progress.onboardingDone = true
         onboardingDone = true
         steps.start()
         AppCore.shared.startBackgroundObservation()
-        // Геопозиция для погоды — после онбординга, отдельным вопросом (грубая точность).
+        // Геолокация — один раз, после карточек. Отказ не держит игру.
         WeatherService.shared.start(askPermission: true)
+        if await steps.accessDenied() { noteAccessDenied() }
+    }
+
+    /// Заметка про отказ. Повторно не всплывает, системный диалог отсюда не зовётся.
+    func noteAccessDenied() {
+        guard onboardingDone, !progress.accessNoteDismissed else { return }
+        showAccessNote = true
+    }
+
+    func dismissAccessNote() {
+        showAccessNote = false
+        progress.accessNoteDismissed = true
+    }
+
+    func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 
     func appBecameActive() {
@@ -157,16 +392,51 @@ final class GameModel: ObservableObject {
         pendingReturnCheck = true
         engine.liveViewing = false
         steps.start()
-        WeatherService.shared.start(askPermission: true)
+        WeatherService.shared.start(askPermission: false)
+        ForegroundDay.noteOpened()
+        AppCore.shared.noteBecameActive()
+        Task { await AppCore.shared.notifier.refreshAuthorizationStatus() }
     }
 
     func appWentToBackground() {
         residentVisitRequestID = nil
         progress.displayedSteps = scene.displayedStep
         engine.liveViewing = false
+        SoundPlayback.shared.stopAll()
         if steps.hasLoaded && journal == nil { engine.markSeen(chapterSteps) }
+        // Таймер экрана гаснет. Фоновый наблюдатель HealthKit этим не снимается.
         steps.stop()
         AppCore.shared.appDidEnterBackground()
+    }
+
+    /// Верный адрес только поднимает карточку. Шаги, сумка, камера и диалоги не трогаются.
+    func receiveFirstMail(_ url: URL) {
+        guard FirstMailLink.route(from: url) else { return }
+        firstMailPending = true
+    }
+
+    func pullFirstMailInbox() {
+        guard FirstMailInbox.pending else { return }
+        FirstMailInbox.pending = false
+        firstMailPending = true
+    }
+
+    func dismissFirstMail() {
+        firstMailPending = false
+    }
+
+    /// Чтение l1. Активная глава 1 — её движок. Иначе файл главы 1, без записи.
+    func firstMailReading() -> FirstMailReading {
+        if chapter.id == 1 {
+            return FirstMailReading.classify(status: engine.status("l1"),
+                                             deliveryDone: engine.state.doneEvents.contains("d_l1"))
+        }
+        guard let saved = ChapterStateStore(fileName: "chapter1_state.json").load() else {
+            return .unreachable
+        }
+        let status = saved.items["l1"] ?? .atPost
+        return FirstMailReading.classify(status: status,
+                                         deliveryDone: saved.doneEvents.contains("d_l1"))
     }
 
     /// Кнопка «к почтальону»: камера плавно возвращается и снова следит за героем.
@@ -176,6 +446,11 @@ final class GameModel: ObservableObject {
 
     private func visitResident(chapterID: Int, residentID: String) {
         guard onboardingDone, let chapter = world.chapters.first(where: { $0.id == chapterID }) else { return }
+        SoundPlayback.shared.animalTap(
+            residentID: residentID,
+            appActive: UIApplication.shared.applicationState == .active,
+            worldVisible: !worldCovered && !roadMenuOpen && journal == nil && residentVisit == nil
+        )
         endResidentVisit()
         let requestID = UUID()
         residentVisitRequestID = requestID
@@ -232,14 +507,24 @@ final class GameModel: ObservableObject {
         core.switchToChapter(0) // syncEngine до hasLoaded не переключает главу — делаем явно.
         engine.resetStory()
         journal = nil
+        showHeroCard = false
+        marshNote = nil
+        showAccessNote = false
         endResidentVisit()
         pendingReturnCheck = true
         onboardingDone = false
+        historyAnchor = nil
+        SoundPlayback.shared.forgetStories()
         installWorldStory(in: scene)
         scene.resetForNewStory()
     }
 
     // MARK: Private
+
+    /// Шаги и погода звучат, когда виден мир, а не журнал, меню или карточка.
+    private var worldIsAudible: Bool {
+        onboardingDone && !worldCovered && !roadMenuOpen && journal == nil && residentVisit == nil
+    }
 
     private func makeScene() -> WorldScene {
         let initial = progress.forceChapterIndex != nil
@@ -250,6 +535,31 @@ final class GameModel: ObservableObject {
         }
         scene.onResidentTap = { [weak self] chapterID, residentID in
             DispatchQueue.main.async { self?.visitResident(chapterID: chapterID, residentID: residentID) }
+        }
+        scene.onPostmanTap = { [weak self] in
+            DispatchQueue.main.async { self?.showHeroCard = true }
+        }
+        scene.onMarshTap = { [weak self] id in
+            DispatchQueue.main.async {
+                guard let self, self.onboardingDone else { return }
+                if id == "radio" { self.engine.noteWorldFlag("ether_heard") }
+                self.marshNote = id
+            }
+        }
+        scene.onFootfall = { [weak self] step in
+            guard let self else { return }
+            SoundPlayback.shared.footfall(worldStep: step,
+                                          appActive: UIApplication.shared.applicationState == .active,
+                                          heroVisible: true,
+                                          worldAudible: self.worldIsAudible)
+        }
+        scene.onFlock = { [weak self] in
+            guard let self else { return }
+            SoundPlayback.shared.flock(worldStep: self.scene.displayedStep, audible: self.worldIsAudible)
+        }
+        scene.onAmbienceTick = { [weak self] step in
+            guard let self else { return }
+            SoundPlayback.shared.tick(worldStep: step, audible: self.worldIsAudible)
         }
         installWorldStory(in: scene)
         installCompanions(in: scene)
@@ -281,7 +591,8 @@ final class GameModel: ObservableObject {
         for r in story.residents where r.step <= chapter.lengthSteps {
             guard let fig = ResidentLibrary.figure(for: r, assetsFolder: chapter.assetsFolder) else { continue }
             residents.append(.init(id: r.id, step: chapter.startStep + r.step, dx: CGFloat(r.dx), height: CGFloat(r.height),
-                                   image: fig.image, groundFraction: fig.groundFraction, idle: fig.idle))
+                                   image: fig.image, groundFraction: fig.groundFraction, idle: fig.idle,
+                                   sink: r.sink.map { CGFloat($0) }))
         }
         scene.installStory(roadItems: road, residents: residents, chapterID: chapter.id)
     }
@@ -316,9 +627,15 @@ final class GameModel: ObservableObject {
         }
         AppCore.shared.syncEngine(total: total)
         // После sync глава могла смениться — берём актуальные шаги главы.
+        // Движок тоже: иначе бирка уже «Болота», а сумка всё ещё пишет файл гор.
         chapterIndex = AppCore.shared.chapterIndex
+        if engine !== AppCore.shared.engine {
+            engine = AppCore.shared.engine
+            bindEngine(engine)
+        }
         let inChapter = chapterSteps(total: total)
         scene.setTargetSteps(worldSteps(total: total))
+        migrateHistoryIfNeeded()
         if pendingReturnCheck {
             pendingReturnCheck = false
             if journal == nil {

@@ -86,8 +86,8 @@ final class AmbientLayer {
     let config: AmbientConfig
     private let atlas: AmbientAtlas?
     private let sky: SKSpriteNode
-    private let baseTop: RGB
-    private let baseBottom: RGB
+    private var baseTop: RGB
+    private var baseBottom: RGB
     private let roadFraction: CGFloat
     private let designSize: CGSize
     private let tintNode: SKSpriteNode
@@ -111,6 +111,8 @@ final class AmbientLayer {
     private let cloudSpan: CGFloat
 
     private var birdsLayer: SKNode?
+    /// Стая появилась на экране. Звук сюда не входит.
+    var onFlock: (() -> Void)?
     private var birdTimer: Double = 6
     private var tick: Double = 0
     private var skyClock: Double = 0
@@ -184,6 +186,17 @@ final class AmbientLayer {
 
     /// Пересчитать небо сразу (после смены debugHourOffset).
     func refreshTimeOfDay() { skyClock = 100 }
+
+    /// Дневная основа неба. Ночные ключи ambient.json по-прежнему задают свой цвет.
+    func setBaseSky(top: UIColor, bottom: UIColor) {
+        let nextTop = RGB(top)
+        let nextBottom = RGB(bottom)
+        guard nextTop.distance(baseTop) > 0.002 || nextBottom.distance(baseBottom) > 0.002 else { return }
+        baseTop = nextTop
+        baseBottom = nextBottom
+        shownTop = RGB(r: -1, g: 0, b: 0)
+        skyClock = 100
+    }
 
     // MARK: Время суток
 
@@ -365,6 +378,7 @@ final class AmbientLayer {
             bird.run(.sequence([.wait(forDuration: Double.random(in: 0...0.4)), flap]))
             bird.run(.sequence([fly, .removeFromParent()]))
         }
+        onFlock?()
     }
 
     // MARK: Декор пропсов (дым, качание, колокол)

@@ -16,6 +16,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var tiledStrips: [(node: TiledStripNode, parallax: CGFloat, kind: LayerKind)] = []
     private var chapterCrops: [(node: SKCropNode, range: ClosedRange<CGFloat>)] = []
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
+    /// Живые сценки болот. Мало, паузятся за кадром, текстуры не выгружаются.
+    private var lifeNodes: [SKNode] = []
     private var postman: PostmanRigNode!
     private var actorLayerRef: SKNode?
 
@@ -32,6 +34,14 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var residentNodes: [String: SKSpriteNode] = [:]
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
+    /// Короткий тап по вещи на болотах: id из chapter3_taps.json.
+    var onMarshTap: ((String) -> Void)?
+    var onPostmanTap: (() -> Void)?
+    /// Видимый шаг героя: мировой шаг, только когда стопа ставится и он в кадре.
+    var onFootfall: ((Double) -> Void)?
+    /// Стая пролетела. Звук решает вызывающий, здесь только факт.
+    var onFlock: (() -> Void)?
+    var onAmbienceTick: ((Double) -> Void)?
 
     // Спутник (коза Рамка): идёт рядом с почтальоном, пока companionProvider(шаг) возвращает его id.
     /// Какой спутник должен идти рядом на этом шаге главы (nil — никто). Задаёт GameModel.
@@ -79,7 +89,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private let worldBottomY: CGFloat = -1800
     private(set) var ambient: AmbientLayer?
     private(set) var weather: WeatherLayer?
+    private var skySprite: SKSpriteNode?
+    private var skyRoadFraction: CGFloat = 0
+    private var appliedSkyChapter: Int = -1
     private var lastUpdateTime: TimeInterval = 0
+    private var ambienceClock: TimeInterval = 0
     private var cullClock: TimeInterval = 0
 
     init(config: WorldConfig, rig: RigConfig, initialStep: Double) {
@@ -112,6 +126,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         addChild(cam)
         camera = cam
         let roadFraction = CGFloat(config.game.roadLineY / config.game.designHeight)
+        skyRoadFraction = roadFraction
         let sky = SKSpriteNode(texture: ProceduralTextures.sky(top: UIColor(hex: L.sky.topColor),
                                                               bottom: UIColor(hex: L.sky.bottomColor),
                                                               roadFraction: roadFraction))
@@ -119,6 +134,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         sky.position = .zero
         sky.zPosition = -1000
         cam.addChild(sky)
+        skySprite = sky
 
         // Живой мир (облака, птицы, звёзды, время суток) — если есть Data/ambient.json и атлас.
         if let ac = AmbientConfig.load() {
@@ -126,10 +142,14 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                                    baseTop: UIColor(hex: L.sky.topColor), baseBottom: UIColor(hex: L.sky.bottomColor),
                                    roadFraction: roadFraction, maxCameraScale: maxCamScale,
                                    addLayer: { [unowned self] node, k in self.addLayer(node, parallax: k) })
+            ambient?.onFlock = { [weak self] in self?.onFlock?() }
         }
 
         // Погода (ясно/дождь/снег/туман) — поверх неба и планов, под тоном суток.
+        // Полный белый слой на камеру здесь не вешается: он мыл весь кадр, включая
+        // жителей и разрез, и не снимался, когда камеру уводили назад в горы.
         weather = WeatherLayer(camera: cam, designSize: CGSize(width: W, height: H))
+        applyChapterSky()
 
         // Одна сцена/камера/фигура героя на весь мир. Главы — соседние сегменты, а не сцены.
         let actorLayer = SKNode()
@@ -139,7 +159,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         for (index, chapter) in config.chapters.enumerated() {
             buildChapter(chapter, index: index, actorLayer: actorLayer)
         }
-
         // Почтальон
         let pc = config.game.postman
         let node = PostmanRigNode(rig: rig,
@@ -154,17 +173,140 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         shadow.position = CGPoint(x: 0, y: CGFloat(pc.feetBelowRoad) * 0.5)
         node.addChild(shadow)
         actorLayer.addChild(node)
+        node.onFootfall = { [weak self] in
+            guard let self, self.postmanOffscreen == nil else { return }
+            self.onFootfall?(self.displayedStep)
+        }
         postman = node
 
+        installMarshSky()
         updateCameraAndLayers()
         cullLazyNodes()
         applyReadability()
     }
 
+    private struct MarshDrift {
+        let node: SKSpriteNode
+        let speed: CGFloat
+        var base: CGFloat
+        let parallax: CGFloat
+    }
+
+    private var marshDrift: [MarshDrift] = []
+    private var marshSkyNodes: [SKNode] = []
+    private var marshBirdTextures: [SKTexture] = []
+    private var marshBirdLayer: SKNode?
+    private var marshBirdClock: Double = 6
+    private var marshSkyTime: Double = 0
+    private var marshSkySpan: CGFloat = 0
+    private var shimmerTime: Double = 0
+
+    /// Небо главы 3: Chapter3/sky. Облака висят в открытой полосе над грядами,
+    /// клочья тумана — ниже, над полями. Птиц и puff пока нет: файл с префиксом bird_ подхватится сам.
+    private func installMarshSky() {
+        let H = CGFloat(config.game.designHeight)
+        // y — низ сцены. fromTop: верёвка у верхнего края кадра. Иначе y — центр.
+        let pieces: [(file: String, height: CGFloat, y: CGFloat, parallax: CGFloat, speed: CGFloat,
+                      alpha: CGFloat, z: CGFloat, fromTop: Bool, flip: Bool)] = [
+            ("cloud_stratus", 120, H - 250, 0.04, 7, 1, -760, false, false),
+            ("cloud_moon", 520, H + 16, 0.07, 10, 1, -740, true, false),
+            ("cloud_torn", 250, H - 24, 0.06, 12, 1, -730, true, false),
+            ("fog_wisp", 96, H - 1120, 0.16, 6, 0.72, -450, false, false),
+            ("cloud_rain", 310, H - 12, 0.08, 9, 1, -735, true, false),
+            ("cloud_stratus", 88, H - 150, 0.05, 8, 1, -755, false, true),
+            ("cloud_moon", 390, H - 8, 0.07, 11, 1, -738, true, true),
+            ("fog_wisp", 112, H - 1200, 0.18, 5, 0.62, -450, false, true),
+            ("cloud_torn", 200, H - 70, 0.06, 13, 1, -728, true, true),
+            ("cloud_rain", 250, H - 40, 0.08, 10, 1, -732, true, true),
+            ("fog_wisp", 80, H - 1040, 0.15, 7, 0.7, -450, false, false),
+        ]
+        let span = CGFloat(config.game.designWidth) * 6
+        marshSkySpan = span
+        var layers: [CGFloat: SKNode] = [:]
+        for (i, piece) in pieces.enumerated() {
+            let path = "Chapter3/sky/\(piece.file)"
+            guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { continue }
+            let layer: SKNode
+            if let existing = layers[piece.z] {
+                layer = existing
+            } else {
+                let node = SKNode()
+                node.zPosition = piece.z
+                // Слой едет с камерой. Сдвиг каждого спрайта считается отдельно.
+                addLayer(node, parallax: 0)
+                marshSkyNodes.append(node)
+                layers[piece.z] = node
+                layer = node
+            }
+            let tex = TextureStore.shared.texture(path)
+            let node = SKSpriteNode(texture: tex)
+            let aspect = tex.size().width / max(1, tex.size().height)
+            node.size = CGSize(width: piece.height * aspect, height: piece.height)
+            node.anchorPoint = piece.fromTop ? CGPoint(x: 0.5, y: 1) : CGPoint(x: 0.5, y: 0.5)
+            node.alpha = piece.alpha
+            node.position.y = piece.y
+            if piece.flip { node.xScale = -1 }
+            layer.addChild(node)
+            marshDrift.append(MarshDrift(node: node, speed: piece.speed,
+                                         base: span * CGFloat(i) / CGFloat(pieces.count),
+                                         parallax: piece.parallax))
+        }
+        let birdNames = ((try? FileManager.default.contentsOfDirectory(
+            atPath: WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter3/sky", isDirectory: true).path
+        )) ?? []).filter { $0.lowercased().hasPrefix("bird") && $0.lowercased().hasSuffix(".png") }.sorted()
+        let birds = birdNames.map { "Chapter3/sky/\(($0 as NSString).deletingPathExtension)" }
+        if !birds.isEmpty {
+            let layer = SKNode()
+            layer.zPosition = -660
+            addLayer(layer, parallax: 0.2)
+            marshBirdLayer = layer
+            marshSkyNodes.append(layer)
+            marshBirdTextures = birds.filter {
+                FileManager.default.fileExists(atPath: TextureStore.url(for: $0).path)
+            }.map { TextureStore.shared.texture($0) }
+        }
+    }
+
+    private func updateMarshSky(dt: TimeInterval) {
+        guard !marshSkyNodes.isEmpty || marshBirdLayer != nil else { return }
+        // Небо болот привязано к камере. Пока почтальон в главе 3, взгляд назад
+        // в горы не должен тащить за собой луну и клочья тумана.
+        let inMarsh = chapter(containing: stepUnderCamera)?.id == 3
+        for node in marshSkyNodes { node.isHidden = !inMarsh }
+        guard inMarsh else { return }
+        marshSkyTime += dt
+        let span = max(marshSkySpan, 1)
+        for item in marshDrift {
+            let base = item.base + item.speed * CGFloat(marshSkyTime)
+            let localCam = camX * item.parallax
+            let u = base - localCam + span / 2
+            let rel = u - span * floor(u / span) - span / 2
+            // Родитель уже едет с камерой (параллакс 0), поэтому здесь только сдвиг по экрану.
+            item.node.position.x = rel.rounded()
+        }
+        guard let layer = marshBirdLayer, !marshBirdTextures.isEmpty else { return }
+        marshBirdClock -= dt
+        guard marshBirdClock <= 0 else { return }
+        marshBirdClock = 16
+        let tex = marshBirdTextures[Int(displayedStep) % marshBirdTextures.count]
+        let bird = SKSpriteNode(texture: tex)
+        let h: CGFloat = 48
+        let aspect = tex.size().width / max(1, tex.size().height)
+        bird.size = CGSize(width: h * aspect, height: h)
+        let k: CGFloat = 0.2
+        bird.position = CGPoint(x: camX * k - CGFloat(config.game.designWidth), y: CGFloat(config.game.designHeight) * 0.72)
+        layer.addChild(bird)
+        let travel = CGFloat(config.game.designWidth) * 2.4
+        bird.run(.sequence([
+            .moveBy(x: travel, y: 30, duration: 18),
+            .removeFromParent(),
+        ]))
+    }
+
     private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
-    /// Маска закреплена в мировых координатах; параллакс двигается ВНУТРИ неё.
-    /// Поэтому граница главы не уплывает за камерой, а предыдущие главы остаются позади.
+    /// Маска сплошная и ровно по границе главы. Альфа тайлов здесь не трогается:
+    /// на Release 17746c5 она открывала пустую заливку вместо соседней земли.
     private func croppedLayer(chapter: ChapterConfig, index: Int, z: CGFloat, parallax: Double) -> SKNode {
         let margin = CGFloat(config.game.designWidth) * 4
         let left = index == 0 ? -margin : geo.x(forStep: Double(chapter.startStep))
@@ -173,7 +315,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             : geo.x(forStep: Double(chapter.endStep)) + margin
         let crop = SKCropNode()
         crop.zPosition = z
-        let mask = SKSpriteNode(color: .white, size: CGSize(width: right - left, height: 16000))
+        let mask = SKSpriteNode(color: .white, size: CGSize(width: max(1, right - left), height: 16000))
         mask.anchorPoint = .zero
         mask.position = CGPoint(x: left, y: worldBottomY - 4000)
         crop.maskNode = mask
@@ -244,6 +386,20 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             }
             let h = CGFloat(p.height)
             let w = h * CGFloat(p.pixelSize[0] / max(1, p.pixelSize[1]))
+            let worldLeft = geo.x(forStep: Double(chapter.startStep + p.step)) + CGFloat(p.dx)
+            let camAtStep = geo.cameraX(forStep: Double(chapter.startStep + p.step))
+            let localLeft = worldLeft - camAtStep * CGFloat(1 - k)
+            if chapter.id == 3, p.image.hasPrefix("ambient/"),
+               let life = marshLifeNode(prop: p, chapter: chapter, size: CGSize(width: w, height: h)) {
+                life.position = CGPoint(x: localLeft, y: geo.roadY - CGFloat(p.sink ?? 0))
+                life.zPosition = CGFloat(p.z ?? 0)
+                pinLifeBottom(life)
+                animateMarshLife(life, image: p.image, chapter: chapter,
+                                 pixelHeight: CGFloat(p.pixelSize[1]))
+                target.addChild(life)
+                lifeNodes.append(life)
+                continue
+            }
             var imagePath = p.image.inChapter(chapter)
             if let alt = ambient?.substituteImage(for: p.image)?.inChapter(chapter),
                FileManager.default.fileExists(atPath: TextureStore.url(for: alt).path) {
@@ -257,11 +413,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                 node.gradeLayer = p.layer
                 node.gradeFactor = Readability.hazeFactor(for: p.layer)
             }
-            // Мировой X левого края: центр героя на шаге + dx; для слоёв с k≠1 — так, чтобы
-            // пропс стоял на этом месте экрана, когда камера следит за героем на этом шаге.
-            let worldLeft = geo.x(forStep: Double(chapter.startStep + p.step)) + CGFloat(p.dx)
-            let camAtStep = geo.cameraX(forStep: Double(chapter.startStep + p.step))
-            let localLeft = worldLeft - camAtStep * CGFloat(1 - k)
             node.position = CGPoint(x: localLeft, y: geo.roadY - CGFloat(p.sink ?? 0))
             node.zPosition = CGFloat(p.z ?? 0)
             target.addChild(node)
@@ -269,6 +420,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             ambient?.decorate(prop: node, image: p.image,
                               pixelSize: CGSize(width: p.pixelSize[0], height: p.pixelSize[1]),
                               seed: p.step &* 31 &+ Int(p.dx))
+        }
+        if chapter.id == 3 {
+            addMarshReeds(to: mainLayer, chapter: chapter)
         }
 
         // Общая станция на границе двух глав получает только одну подпись.
@@ -279,11 +433,15 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             }
             guard !duplicate else { continue }
             let marker = SettlementMarkerNode(title: settlement.name)
+            marker.name = "settle.\(chapter.id).\(settlement.id)"
             marker.position = CGPoint(x: geo.x(forStep: Double(globalStep)), y: geo.roadY)
             marker.zPosition = 10
             actorLayer.addChild(marker)
         }
         // Заглушка только за ПОСЛЕДНЕЙ известной главой, не поверх следующей.
+        if chapter.id == 3 {
+            installMarshTaps(in: actorLayer, chapter: chapter)
+        }
         if index == config.chapters.count - 1, let after = chapter.rawClayAfterStep {
             let clay = SKSpriteNode(color: UIColor(red: 0.55, green: 0.47, blue: 0.38, alpha: 1),
                                     size: CGSize(width: W * 4, height: CGFloat(config.game.designHeight)))
@@ -291,6 +449,48 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             clay.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + after)) + 600, y: 0)
             clay.zPosition = 50
             actorLayer.addChild(clay)
+        }
+    }
+
+    private struct MarshTap: Decodable {
+        let id: String
+        let step: Int
+        let dx: Double
+        let sprite: String
+        let flag: String?
+    }
+
+    /// Вещи §10.3. Каждая — отдельная цель, не житель и не письмо.
+    private func installMarshTaps(in layer: SKNode, chapter: ChapterConfig) {
+        let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/chapter3_taps.json")
+        guard let data = try? Data(contentsOf: url),
+              let taps = try? JSONDecoder().decode([MarshTap].self, from: data) else { return }
+        for tap in taps {
+            let path = TextureStore.url(for: tap.sprite).path
+            guard FileManager.default.fileExists(atPath: path) else { continue }
+            let tex = TextureStore.shared.texture(tap.sprite)
+            let node = SKSpriteNode(texture: tex)
+            let h: CGFloat = 150
+            let w = tex.size().width > 0 ? h * tex.size().width / tex.size().height : h
+            node.size = CGSize(width: w, height: h)
+            node.anchorPoint = CGPoint(x: 0.5, y: 0)
+            node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + tap.step)) + CGFloat(tap.dx),
+                                    y: geo.roadY - 8)
+            node.zPosition = 60
+            node.name = "marsh:" + tap.id
+            node.isUserInteractionEnabled = false
+            layer.addChild(node)
+        }
+    }
+
+    /// Подписи поселений после смены языка. Геометрия дороги и стык глав не трогаются.
+    func retitleSettlements(_ config: WorldConfig) {
+        for chapter in config.chapters {
+            for settlement in chapter.settlements {
+                let name = "settle.\(chapter.id).\(settlement.id)"
+                guard let node = childNode(withName: "//\(name)") as? SettlementMarkerNode else { continue }
+                node.setTitle(settlement.name)
+            }
         }
     }
 
@@ -319,6 +519,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             s.anchorPoint = .zero
             s.size = CGSize(width: width + 1, height: tileH)
             s.position = CGPoint(x: left, y: bottomY)
+            if chapter.id == 3 { s.shader = MarshSurface.shader }
             layer.addChild(s)
         }
 
@@ -349,6 +550,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             node.anchorPoint = .zero
             node.position = CGPoint(x: left, y: bottomY)
             node.zPosition = 1
+            if chapter.id == 3 { node.shader = MarshSurface.shader }
             layer.addChild(node)
             lazyNodes.append((node, layer))
             cursor = left + tileW
@@ -412,6 +614,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let image: UIImage
         let groundFraction: CGFloat
         var idle: ResidentLibrary.Idle? = nil
+        /// Низ спрайта ниже линии дороги. nil — прежние 4 px (Федя и главы 1–2).
+        var sink: CGFloat? = nil
     }
 
     /// Зарегистрировать фигуру спутника (картинка смотрит влево, как у жителей).
@@ -507,21 +711,15 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                 let unit = drawH / h * idle.figureUnitsPerFramePx
                 node.size = CGSize(width: idle.frameSize.width * unit, height: idle.frameSize.height * unit)
                 node.anchorPoint = idle.anchor
-                // Покадровое дыхание из листа убрано: в кадрах листа зашит сдвиг тела 1–3 px от кадра
-                // к кадру (фазовая корреляция по листам) — это и было дрожание жителей. Статичный кадр +
-                // плавное дыхание scaleY от стоп (якорь на линии земли), 60 fps.
-                let period = Double.random(in: 3.0...3.8)
-                let phase = Double.random(in: 0...(2 * Double.pi))
-                let breath = SKAction.customAction(withDuration: period, actionBlock: { n, t in
-                    let a = 2 * Double.pi * Double(t) / period + phase
-                    n.yScale = CGFloat(1 + 0.006 * sin(a))
-                })
-                node.run(.repeatForever(breath), withKey: "breath")
+                // Покадровый лист не крутим: в кадрах зашит сдвиг тела на 1–3 px, и житель дрожал.
             } else {
                 node.size = CGSize(width: drawH * w / h, height: drawH)
                 node.anchorPoint = CGPoint(x: 0.5, y: 1 - r.groundFraction)
             }
-            node.position = CGPoint(x: geo.x(forStep: Double(r.step)) + r.dx, y: geo.roadY - 4)
+            node.position = CGPoint(x: geo.x(forStep: Double(r.step)) + r.dx,
+                                    y: geo.roadY - (r.sink ?? 4))
+            breathe(node)
+            swayLiving(node, id: r.id)
             node.zPosition = 80
             node.name = "resident:" + prefix + r.id
             // Касания распознаёт SKView; узел не перехватывает touches у панорамы.
@@ -539,6 +737,69 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         updateRoadItems()
         applyReadability()
+    }
+
+    /// Дыхание от стоп: и у листа idle, и у одиночного full.png (Федя и глава без листа).
+    /// Покадровый spritesheet не крутим — там зашит дрожащий сдвиг тела.
+    private func breathe(_ node: SKNode) {
+        let period = Double.random(in: 3.1...3.9)
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let base = node.position.y
+        let action = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            let s = sin(a)
+            n.yScale = CGFloat(1 + 0.012 * s)
+            n.position.y = base + CGFloat(2.4 * s)
+        }
+        node.run(.repeatForever(action), withKey: "breath")
+    }
+
+    /// Лёгкое покачивание full.png. Лист idle не трогаем: в кадрах уже есть сдвиг тела.
+    /// Федя остаётся только на дыхании. У Петьки период короче — так дрожит удочка.
+    private func swayLiving(_ node: SKNode, id: String) {
+        let amp: Double
+        let period: Double
+        switch id {
+        case "nyura": amp = 0.7; period = 5.4
+        case "semyon": amp = 0.45; period = 4.8
+        case "grisha": amp = 0.3; period = 6.2
+        case "petka": amp = 0.85; period = 2.6
+        default: return
+        }
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let sway = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            n.zRotation = CGFloat(sin(a) * amp * Double.pi / 180)
+        }
+        node.run(.repeatForever(sway), withKey: "sway")
+        guard id == "semyon" else { return }
+        let shift = SKAction.sequence([
+            .wait(forDuration: 7.5),
+            .moveBy(x: 5, y: 0, duration: 0.35),
+            .wait(forDuration: 0.45),
+            .moveBy(x: -5, y: 0, duration: 0.35),
+        ])
+        node.run(.repeatForever(shift), withKey: "step")
+    }
+
+    /// Камыши главы 3 отдельными спрайтами: в картинке места они нарисованы мёртво.
+    private func addMarshReeds(to layer: SKNode, chapter: ChapterConfig) {
+        let image = "taps/reeds"
+        let path = image.inChapter(chapter)
+        guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { return }
+        let steps = [1200, 3600, 6200, 9800, 12800, 16400, 19800, 23200, 26800]
+        for (i, step) in steps.enumerated() {
+            let h: CGFloat = i % 2 == 0 ? 230 : 180
+            let node = LazySpriteNode(imagePath: path, size: CGSize(width: h * 0.7, height: h))
+            node.anchorPoint = .zero
+            let dx: CGFloat = i % 2 == 0 ? -460 : 260
+            node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + step)) + dx, y: geo.roadY - 20)
+            node.zPosition = 8
+            layer.addChild(node)
+            lazyNodes.append((node, layer))
+            ambient?.decorate(prop: node, image: image,
+                              pixelSize: CGSize(width: 175, height: 250), seed: step &* 17)
+        }
     }
 
     /// Короткая реакция на самом спрайте, без смены текстуры/покадрового spritesheet.
@@ -582,8 +843,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     private var nightShaderOn = false
 
-    /// Вечер/ночь: герои получают лишь часть тёмного тона + яркость/насыщенность/тёплый фонарь.
-    /// Днём (тон белый) шейдер снят — картинка как раньше. Учитывает DEBUG-переключатель читаемости.
+    /// Вечер/ночь: отдельный шейдер только если nightFigureGain > 1.
+    /// Сейчас герой темнеет общим тоном, как дома и земля. Днём шейдер снят.
     private func updateNightFigures() {
         let tint = ambient?.currentTint ?? RGB(r: 1, g: 1, b: 1)
         let n = Readability.enabled ? Readability.updateNight(tint: tint) : 0
@@ -694,6 +955,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         }
         postman.position.x = geo.x(forStep: displayedStep)
         postman.update(deltaTime: dt)
+        ambienceClock += dt
+        if ambienceClock >= 1 {
+            ambienceClock = 0
+            onAmbienceTick?(displayedStep)
+        }
         updateRoadItems()
 
         stepCamera(dt)
@@ -701,6 +967,10 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         ambient?.update(dt: dt, now: Date(), cameraX: camX, cameraScale: camScale,
                         visibleSize: CGSize(width: visibleWidth, height: visibleHeight))
         weather?.update(dt: dt)
+        shimmerTime += dt
+        MarshSurface.time.floatValue = Float(shimmerTime)
+        applyChapterSky()
+        updateMarshSky(dt: dt)
         updateCompanion(dt)
         updateNightFigures()
         updatePostmanVisibility()
@@ -709,6 +979,33 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         if cullClock > 0.25 {
             cullClock = 0
             cullLazyNodes()
+        }
+    }
+
+    /// Шаг под центром камеры, не шаг почтальона. Взгляд назад не перекрашивает небо.
+    private var stepUnderCamera: Double {
+        geo.step(forX: camX - geo.cameraLead)
+    }
+
+    private func chapter(containing step: Double) -> ChapterConfig? {
+        config.chapters.last { Double($0.startStep) <= step }
+    }
+
+    /// Днём глава 3 красится своим небом. Долина и горы остаются на общем градиенте.
+    private func applyChapterSky() {
+        let chapter = chapter(containing: stepUnderCamera)
+        let id = chapter?.id ?? 0
+        guard id != appliedSkyChapter else { return }
+        appliedSkyChapter = id
+        let top = chapter?.sky?.topColor ?? config.layers.sky.topColor
+        let bottom = chapter?.sky?.bottomColor ?? config.layers.sky.bottomColor
+        let topColor = UIColor(hex: top)
+        let bottomColor = UIColor(hex: bottom)
+        backgroundColor = topColor
+        if let ambient {
+            ambient.setBaseSky(top: topColor, bottom: bottomColor)
+        } else {
+            skySprite?.texture = ProceduralTextures.sky(top: topColor, bottom: bottomColor, roadFraction: skyRoadFraction)
         }
     }
 
@@ -884,6 +1181,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             let dist = max(0, max(f.minX - cx, cx - f.maxX))
             node.isPaused = dist > half + 120
         }
+        for node in lifeNodes {
+            let f = node.frame
+            let dist = max(0, max(f.minX - cx, cx - f.maxX))
+            node.isPaused = dist > half + 120
+        }
     }
 
     // MARK: Gestures (панорама с инерцией + пинч-зум)
@@ -939,18 +1241,56 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         return nil
     }
 
+    private func marshKey(at point: CGPoint) -> String? {
+        for hit in nodes(at: point) {
+            var candidate: SKNode? = hit
+            while let node = candidate, node !== self {
+                if let name = node.name, name.hasPrefix("marsh:"),
+                   !node.isHidden, node.alpha > 0.01, let parent = node.parent,
+                   node.contains(convert(point, to: parent)) {
+                    return String(name.dropFirst("marsh:".count))
+                }
+                candidate = node.parent
+            }
+        }
+        return nil
+    }
+
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer === residentTapRecognizer else { return true }
         guard isUserInteractionEnabled, let view else { return false }
-        return residentKey(at: convertPoint(fromView: touch.location(in: view))) != nil
+        let point = convertPoint(fromView: touch.location(in: view))
+        return residentKey(at: point) != nil || marshKey(at: point) != nil || hitsPostman(at: point)
+    }
+
+    private func hitsPostman(at point: CGPoint) -> Bool {
+        guard let postman, !postman.isHidden, postman.alpha > 0.01 else { return false }
+        for hit in nodes(at: point) {
+            var node: SKNode? = hit
+            while let current = node {
+                if current === postman { return true }
+                node = current.parent
+            }
+        }
+        return false
     }
 
     @objc private func handleResidentTap(_ g: UITapGestureRecognizer) {
-        guard g.state == .ended, !isPanning, let view = g.view,
-              let key = residentKey(at: convertPoint(fromView: g.location(in: view))) else { return }
-        let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
-        guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
-        onResidentTap?(chapterID, parts[1])
+        guard g.state == .ended, !isPanning, let view = g.view else { return }
+        let point = convertPoint(fromView: g.location(in: view))
+        if let key = marshKey(at: point) {
+            onMarshTap?(key)
+            return
+        }
+        if let key = residentKey(at: point) {
+            let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
+            guard parts.count == 2, let chapterID = Int(parts[0]) else { return }
+            onResidentTap?(chapterID, parts[1])
+            return
+        }
+        guard hitsPostman(at: point) else { return }
+        postman.playNod(reduceMotion: UIAccessibility.isReduceMotionEnabled)
+        onPostmanTap?()
     }
 
     @objc private func handlePan(_ g: UIPanGestureRecognizer) {
@@ -1018,6 +1358,265 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let mine: [UIGestureRecognizer?] = [panRecognizer, pinchRecognizer]
         return mine.contains { $0 === gestureRecognizer } && mine.contains { $0 === otherGestureRecognizer }
     }
+}
+
+// MARK: - Живые сценки болот
+
+extension WorldScene {
+    /// Спрайт с якорем в левом нижнем углу. Нет файла — сценку не ставим.
+    fileprivate func marshLifeNode(prop: PropConfig, chapter: ChapterConfig, size: CGSize) -> SKSpriteNode? {
+        let path = prop.image.inChapter(chapter)
+        guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { return nil }
+        let node = SKSpriteNode(texture: TextureStore.shared.texture(path))
+        node.size = size
+        node.anchorPoint = .zero
+        node.name = "life:\(prop.image):\(prop.step)"
+        return node
+    }
+
+    /// После постановки левым нижним углом переносим якорь в низ по центру, картинку не сдвигая.
+    fileprivate func pinLifeBottom(_ node: SKSpriteNode) {
+        let dx = (0.5 - node.anchorPoint.x) * node.size.width
+        node.anchorPoint = CGPoint(x: 0.5, y: 0)
+        node.position.x += dx
+    }
+
+    fileprivate func animateMarshLife(_ node: SKSpriteNode, image: String,
+                                     chapter: ChapterConfig, pixelHeight: CGFloat) {
+        let scale = node.size.height / max(1, pixelHeight)
+        func frame(_ name: String) -> String { name.inChapter(chapter) }
+        switch image {
+        case "ambient/dragonflies":
+            swapLife(node, frames: [frame("ambient/dragonflies"), frame("ambient/dragonflies_b")],
+                     scale: scale, hold: 0.32)
+            flitDragonflies(on: node, part: frame("ambient/dragonfly_one"))
+        case "ambient/boat_trestles":
+            rockLife(node, degrees: 1.15, period: 3.4)
+        case "ambient/smoke_chimney":
+            swapLife(node, frames: [frame("ambient/smoke_chimney"), frame("ambient/smoke_chimney_b")],
+                     scale: scale, hold: 0.85)
+            pulseLife(node, low: 0.62, high: 1, period: 2.4)
+            emitPuffs(on: node, frames: [frame("ambient/smoke_puff_a"), frame("ambient/smoke_puff_b")],
+                      every: 1.7, rise: 80...140, height: 26, at: 0.92)
+        case "ambient/frog":
+            hopFrog(node, scale: scale, chapter: chapter)
+        case "ambient/heron_stand":
+            herdHeron(node, scale: scale, chapter: chapter, flies: true)
+        case "ambient/smoke_peat":
+            driftLife(node, distance: 18, period: 7.5, alphaLow: 0.45, alphaHigh: 0.9)
+            emitPuffs(on: node, frames: [frame("ambient/smoke_puff_b"), frame("ambient/smoke_puff_a")],
+                      every: 2.8, rise: 8...22, height: 16, at: 0.55)
+        case "ambient/punt":
+            driftLife(node, distance: 34, period: 11, alphaLow: 1, alphaHigh: 1)
+            rockLife(node, degrees: 1.4, period: 5.5)
+        case "ambient/ducks":
+            diveDucks(node, scale: scale, chapter: chapter)
+        case "ambient/mist_low":
+            driftLife(node, distance: 48, period: 16, alphaLow: 0.38, alphaHigh: 0.82)
+        case "ambient/boat_moored":
+            rockLife(node, degrees: 0.8, period: 4.8)
+        default:
+            break
+        }
+    }
+
+    private func showLife(_ node: SKSpriteNode, path: String, scale: CGFloat) {
+        let tex = TextureStore.shared.texture(path)
+        let s = tex.size()
+        guard s.height > 1 else { return }
+        node.texture = tex
+        node.size = CGSize(width: s.width * scale, height: s.height * scale)
+    }
+
+    private func swapLife(_ node: SKSpriteNode, frames: [String], scale: CGFloat, hold: Double) {
+        guard frames.count > 1 else { return }
+        var steps: [SKAction] = []
+        for path in frames {
+            steps.append(.run { [weak self, weak node] in
+                guard let self, let node else { return }
+                self.showLife(node, path: path, scale: scale)
+            })
+            steps.append(.wait(forDuration: hold))
+        }
+        node.run(.repeatForever(.sequence(steps)), withKey: "frames")
+    }
+
+    private func rockLife(_ node: SKSpriteNode, degrees: Double, period: Double) {
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let rock = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            n.zRotation = CGFloat(sin(a) * degrees * Double.pi / 180)
+        }
+        node.run(.repeatForever(rock), withKey: "rock")
+    }
+
+    private func pulseLife(_ node: SKSpriteNode, low: CGFloat, high: CGFloat, period: Double) {
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let pulse = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            n.alpha = low + (high - low) * CGFloat(0.5 + 0.5 * sin(a))
+        }
+        node.run(.repeatForever(pulse), withKey: "pulse")
+    }
+
+    /// Синус по X от домашней точки. Альфа не трогается, если low == high.
+    private func driftLife(_ node: SKSpriteNode, distance: CGFloat, period: Double,
+                           alphaLow: CGFloat, alphaHigh: CGFloat) {
+        let homeX = node.position.x
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let drift = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            let s = sin(a)
+            n.position.x = homeX + distance * CGFloat(s)
+            if alphaLow != alphaHigh {
+                n.alpha = alphaLow + (alphaHigh - alphaLow) * CGFloat(0.5 + 0.5 * s)
+            }
+        }
+        node.run(.repeatForever(drift), withKey: "drift")
+    }
+
+    private func flitDragonflies(on node: SKSpriteNode, part: String) {
+        let tex = TextureStore.shared.texture(part)
+        let aspect = tex.size().width / max(1, tex.size().height)
+        for i in 0..<3 {
+            let one = SKSpriteNode(texture: tex)
+            let h: CGFloat = 20
+            one.size = CGSize(width: h * aspect, height: h)
+            one.position = CGPoint(x: CGFloat(i - 1) * 26, y: node.size.height * 0.62)
+            one.zPosition = 1
+            node.addChild(one)
+            let home = one.position
+            let phase = Double(i) * 2.2
+            let period = 0.9 + Double(i) * 0.28
+            let flap = SKAction.customAction(withDuration: period) { n, t in
+                let a = 2 * Double.pi * Double(t) / period + phase
+                n.position = CGPoint(x: home.x + CGFloat(sin(a) * 24),
+                                     y: home.y + CGFloat(cos(a * 1.4) * 12))
+                n.zRotation = CGFloat(sin(a) * 0.45)
+            }
+            one.run(.repeatForever(flap), withKey: "flit")
+        }
+    }
+
+    private func emitPuffs(on node: SKSpriteNode, frames: [String], every: Double,
+                           rise: ClosedRange<CGFloat>, height: CGFloat, at: CGFloat) {
+        let spawn = SKAction.run { [weak node] in
+            guard let node, node.children.count < 4, let path = frames.randomElement() else { return }
+            let tex = TextureStore.shared.texture(path)
+            let puff = SKSpriteNode(texture: tex)
+            let aspect = tex.size().width / max(1, tex.size().height)
+            puff.size = CGSize(width: height * aspect, height: height)
+            puff.alpha = 0
+            puff.setScale(0.65)
+            puff.position = CGPoint(x: 0, y: node.size.height * at)
+            puff.zPosition = 2
+            node.addChild(puff)
+            let up = CGFloat.random(in: rise)
+            let drift = CGFloat.random(in: -16...22)
+            puff.run(.sequence([
+                .group([
+                    .fadeAlpha(to: 0.75, duration: 0.3),
+                    .moveBy(x: drift, y: up, duration: 2.4),
+                    .scale(to: 1.2, duration: 2.4),
+                ]),
+                .fadeOut(withDuration: 0.45),
+                .removeFromParent(),
+            ]))
+        }
+        node.run(.repeatForever(.sequence([spawn, .wait(forDuration: every)])), withKey: "puffs")
+    }
+
+    private func hopFrog(_ node: SKSpriteNode, scale: CGFloat, chapter: ChapterConfig) {
+        func show(_ name: String) -> SKAction {
+            let path = name.inChapter(chapter)
+            return .run { [weak self, weak node] in
+                guard let self, let node else { return }
+                self.showLife(node, path: path, scale: scale)
+            }
+        }
+        let sit = SKAction.sequence([
+            show("ambient/frog"), .wait(forDuration: 1.8),
+            show("ambient/frog_throat"), .wait(forDuration: 0.55),
+            show("ambient/frog"), .wait(forDuration: 1.4),
+        ])
+        let hop = SKAction.sequence([
+            show("ambient/frog_jump"),
+            .moveBy(x: 16, y: 22, duration: 0.26),
+            .moveBy(x: -16, y: -22, duration: 0.2),
+            show("ambient/frog"),
+            .wait(forDuration: 0.35),
+        ])
+        node.run(.repeatForever(.sequence([.repeat(sit, count: 2), hop])), withKey: "hop")
+    }
+
+    private func herdHeron(_ node: SKSpriteNode, scale: CGFloat, chapter: ChapterConfig, flies: Bool) {
+        func show(_ name: String) -> SKAction {
+            let path = name.inChapter(chapter)
+            return .run { [weak self, weak node] in
+                guard let self, let node else { return }
+                self.showLife(node, path: path, scale: scale)
+            }
+        }
+        let preen = SKAction.sequence([
+            show("ambient/heron_stand"), .wait(forDuration: 3.6),
+            show("ambient/heron_preen"), .wait(forDuration: 2.1),
+        ])
+        guard flies else {
+            node.run(.repeatForever(preen), withKey: "heron")
+            return
+        }
+        let fly = SKAction.sequence([
+            show("ambient/heron_fly"),
+            .moveBy(x: 10, y: 78, duration: 0.45),
+            show("ambient/heron_fly_b"),
+            .wait(forDuration: 0.35),
+            .moveBy(x: -10, y: -78, duration: 0.4),
+            show("ambient/heron_stand"),
+            .wait(forDuration: 0.3),
+        ])
+        node.run(.repeatForever(.sequence([.repeat(preen, count: 3), fly])), withKey: "heron")
+    }
+
+    private func diveDucks(_ node: SKSpriteNode, scale: CGFloat, chapter: ChapterConfig) {
+        func show(_ name: String) -> SKAction {
+            let path = name.inChapter(chapter)
+            return .run { [weak self, weak node] in
+                guard let self, let node else { return }
+                self.showLife(node, path: path, scale: scale)
+            }
+        }
+        let homeX = node.position.x
+        let bob = SKAction.customAction(withDuration: 5.5) { n, t in
+            let a = 2 * Double.pi * Double(t) / 5.5
+            n.position.x = homeX + CGFloat(sin(a) * 14)
+        }
+        node.run(.repeatForever(bob), withKey: "bob")
+        let dive = SKAction.sequence([
+            show("ambient/ducks"), .wait(forDuration: 4.2),
+            show("ambient/ducks_dive"), .wait(forDuration: 0.7),
+        ])
+        node.run(.repeatForever(dive), withKey: "dive")
+    }
+}
+
+/// Лёгкий блик по верхней кромке разреза болот. Не вуаль на камеру: только пиксели тайла.
+enum MarshSurface {
+    static let time = SKUniform(name: "u_time", float: 0)
+    static let shader: SKShader = {
+        let src = """
+        void main() {
+            vec4 c = texture2D(u_texture, v_tex_coord);
+            float y = v_tex_coord.y;
+            float band = smoothstep(0.62, 0.74, y) * (1.0 - smoothstep(0.74, 0.86, y));
+            float wave = sin(v_tex_coord.x * 46.0 + u_time * 1.2);
+            c.rgb += vec3(0.025, 0.04, 0.03) * wave * band;
+            gl_FragColor = c * v_color_mix;
+        }
+        """
+        let sh = SKShader(source: src)
+        sh.uniforms = [time]
+        return sh
+    }()
 }
 
 private extension String {

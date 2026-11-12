@@ -1,0 +1,48 @@
+{
+  "note": "Transliteration and place-names used in the English overlay. Russian source strings are unchanged. Ids are unchanged.",
+  "people": {
+    "Кузьма Ерофеевич / Ерофеич Ус": "Kuzma Yerofeyevich / Yerofeich Us",
+    "Митя (Дмитрий) Ус": "Mitya (Dmitry) Us",
+    "Нина Аркадьевна Колобова": "Nina Arkadyevna Kolobova",
+    "Тимофей / Тимоша / Тима": "Timofey / Timosha / Tima",
+    "Отец Пимен": "Father Pimen",
+    "Вера Игнатьевна Пасечник": "Vera Ignatyevna Pasechnik",
+    "А.Л.": "A.L. (letters are signed A.L.; the id agnia is not shown)",
+    "Брат Нил": "Brother Nil",
+    "Ксения": "Ksenia",
+    "Лида / Лидка": "Lida / Lidka",
+    "Рамка": "Ramka",
+    "Матрёна": "Matryona",
+    "Фёдор": "Fyodor",
+    "Аня": "Anya",
+    "Колобов Тимофей Григорьевич": "Timofey Kolobov Grigoryevich"
+  },
+  "places": {
+    "Долина": "Valley",
+    "Горы": "Mountains",
+    "Болота": "the Marshes",
+    "Почта / Почта на Развилке": "Post Office / Post Office at the Fork",
+    "Сваи": "Stilts",
+    "Звонарня": "Belfry",
+    "Кадушки": "Tubs",
+    "Лавка": "the Shop",
+    "НИИ «Радиотень»": "Radioshadow Institute (short: Institute)",
+    "Седло / Ящик на Седле": "Saddle / Box at the Saddle",
+    "Ольховка": "Olkhovka",
+    "Ольшаник": "Olshanik",
+    "Гарь / Кордон «Гарь»": "Burn / Burn Cordon",
+    "Пеньки / Лесосека «Пеньки»": "Stumps / Stumps logging site",
+    "Хомут / Перевал «Хомут»": "Collar / Collar Pass",
+    "Репка / Радиореле «Репка»": "Turnip / Turnip Relay",
+    "Кривуля / Прижим «Кривуля»": "Crook / Crook Pinch",
+    "Горло / Горловина / Яр «Горловина»": "the Throat / Throat Ravine",
+    "Ельник «Лапы»": "the Paws fir wood",
+    "Н. СТВОР": "N. STVOR (postmark, transliterated)"
+  },
+  "voices": {
+    "ТЧК": "STOP",
+    "Приём": "Over",
+    "антена": "antena (Mitya's spelling kept)",
+    "Х Н.": "X N."
+  }
+}

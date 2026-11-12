@@ -5,7 +5,7 @@ name: Postman
 options:
   deploymentTarget:
     iOS: "17.0"
-  developmentLanguage: ru
+  developmentLanguage: en
   xcodeVersion: "15.0"
   createIntermediateGroups: true
   groupSortPosition: top
@@ -51,10 +51,11 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: Postman/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: "$(APP_DISPLAY_NAME)"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.games
-        INFOPLIST_KEY_NSHealthShareUsageDescription: "Почтальон идёт, когда идёте вы: игра читает количество шагов из приложения «Здоровье», чтобы двигать героя по дороге. Данные не покидают устройство."
-        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Игра ничего не записывает в «Здоровье»."
-        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Примерное место нужно только для погоды в Долине: если у вас дождь или снег, он пойдёт и у почтальона. Точные координаты не используются и никуда не сохраняются."
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "The postman walks when you do. The game reads your step count from Health so it can move him along the road. The data stays on this device."
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "The game does not write anything to Health."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "A rough location is only for the weather in the Valley: if it is raining or snowing where you are, it rains or snows on the postman too. Precise coordinates are not used and are not stored."
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

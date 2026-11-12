@@ -1,0 +1,330 @@
+import Foundation
+
+/// Абзац уже узнанной основной истории. Текст — связный пересказ, не письмо и не журнал.
+struct HistoryFact: Identifiable, Equatable {
+    let id: String
+    let worldStep: Int
+    let chapterID: Int
+    let chapterTitle: String
+    let place: String
+    let heading: String
+    let text: String
+    let residentID: String?
+    let assetsFolder: String
+    let placeID: String?
+}
+
+/// Куда открыть свиток и какие абзацы уже прочитаны. Идентификаторы общие для глав 1 и 2.
+enum HistoryReading {
+    enum Pin: Equatable { case top, bottom }
+    enum Open: Equatable {
+        case top
+        case entry(String, Pin)
+    }
+
+    /// Первый раз — сверху. Потом — первый непрочитанный у верхнего края. Если нового нет — низ, последний абзац.
+    static func opening(ids: [String], seen: Set<String>, everOpened: Bool) -> Open {
+        guard everOpened else { return .top }
+        if let unseen = ids.first(where: { !seen.contains($0) }) { return .entry(unseen, .top) }
+        if let last = ids.last { return .entry(last, .bottom) }
+        return .top
+    }
+
+    /// Старый сейв без этой записи: всё, что уже открыто, считается прочитанным, чтобы не уехать наверх.
+    /// Новая игра — пустой список и свиток ещё ни разу не открывали.
+    static func migrate(hasProgress: Bool, factIDs: [String]) -> (seen: Set<String>, everOpened: Bool) {
+        if hasProgress { return (Set(factIDs), true) }
+        return ([], false)
+    }
+
+    /// Видимые абзацы и всё, что выше последнего видимого: это уже прошло по листу.
+    static func absorb(ids: [String], seen: Set<String>, visible: Set<String>) -> Set<String> {
+        let shown = ids.indices.filter { visible.contains(ids[$0]) }
+        guard let last = shown.last else { return seen }
+        var next = seen
+        for id in ids.prefix(last + 1) { next.insert(id) }
+        return next
+    }
+}
+
+/// Основная линия по `docs/canon/story-bible.md` §§5 и 5б и по `docs/canon/ideas.md`
+/// (акт I: быт, адресаты, первые странные письма и замеченные противоречия).
+/// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни того, кто включил К-2, ни глав 4–5.
+/// Каждый абзац ждёт своё событие и состояние сейва. Это не перебор doneEvents и не цитатник писем.
+enum StoryChronicle {
+    struct Progress {
+        var done: Set<String> = []
+        var choices: [String: String] = [:]
+        var items: [String: ItemStatus] = [:]
+        var opened: Set<String> = []
+        var carried: Set<String> = []
+        var reached: Int = 0
+    }
+
+    private struct Beat {
+        let id: String
+        let chapterID: Int
+        let step: Int
+        let eventID: String
+        let residentID: String?
+        let placeID: String?
+    }
+
+    /// Порядок — порядок узнавания на ленте, не порядок всех событий.
+    private static let beats: [Beat] = [
+        Beat(id: "road", chapterID: 1, step: 0, eventID: "sort", residentID: nil, placeID: "pochta"),
+        Beat(id: "stilts", chapterID: 1, step: 2900, eventID: "d_l1", residentID: "kuzma", placeID: "svai"),
+        Beat(id: "belfry", chapterID: 1, step: 6000, eventID: "d_l2", residentID: "pimen", placeID: "zvonarnya"),
+        Beat(id: "ask", chapterID: 1, step: 8900, eventID: "s_nina", residentID: "nina", placeID: "kadushki"),
+        Beat(id: "strange", chapterID: 1, step: 9100, eventID: "d_l6", residentID: "nina", placeID: "kadushki"),
+        Beat(id: "nii", chapterID: 1, step: 13200, eventID: "d_vera", residentID: "vera", placeID: "nii"),
+        Beat(id: "wind", chapterID: 1, step: 15500, eventID: "e_wind", residentID: nil, placeID: "sedlo"),
+        Beat(id: "saddle", chapterID: 1, step: 20000, eventID: "finale", residentID: nil, placeID: "sedlo"),
+        Beat(id: "two", chapterID: 2, step: 50, eventID: "p_l1", residentID: "nina", placeID: "sedlo"),
+        Beat(id: "fuse", chapterID: 2, step: 7200, eventID: "p_l3", residentID: "mitya", placeID: "penki"),
+        Beat(id: "roosters", chapterID: 2, step: 7400, eventID: "p_l4", residentID: "kuzma", placeID: "penki"),
+        Beat(id: "thursday", chapterID: 2, step: 7600, eventID: "p_l5", residentID: "pimen", placeID: "penki"),
+        Beat(id: "hum", chapterID: 2, step: 14000, eventID: "p_l6", residentID: "mitya", placeID: "repka"),
+        Beat(id: "station", chapterID: 2, step: 14200, eventID: "p_l7", residentID: "nina", placeID: "repka"),
+        Beat(id: "mark", chapterID: 2, step: 16800, eventID: "p_l8", residentID: "kuzma", placeID: "krivulya"),
+        Beat(id: "lamp", chapterID: 2, step: 20000, eventID: "p_l9", residentID: "pimen", placeID: "krivulya"),
+        Beat(id: "bell", chapterID: 2, step: 20050, eventID: "s_bell", residentID: "pimen", placeID: "krivulya"),
+        Beat(id: "gorge", chapterID: 2, step: 25000, eventID: "finale", residentID: nil, placeID: "gorlovina"),
+        Beat(id: "clean", chapterID: 3, step: 40, eventID: "p_l1", residentID: nil, placeID: "gorlovina"),
+        Beat(id: "bearing", chapterID: 3, step: 13500, eventID: "e_bearing", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "ramka", chapterID: 3, step: 12600, eventID: "p_l3", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "goat", chapterID: 3, step: 9100, eventID: "p_l2", residentID: nil, placeID: "top"),
+        Beat(id: "mothers", chapterID: 3, step: 15500, eventID: "p_l5", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "fiftyeight", chapterID: 3, step: 16600, eventID: "p_l7", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "names", chapterID: 3, step: 16700, eventID: "p_l6", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "ether", chapterID: 3, step: 21000, eventID: "e_radio", residentID: nil, placeID: "kamyshi"),
+        Beat(id: "third", chapterID: 3, step: 22600, eventID: "p_l8", residentID: nil, placeID: "gorlo"),
+        Beat(id: "wall", chapterID: 3, step: 24000, eventID: "e_plug", residentID: nil, placeID: "gorlo"),
+        Beat(id: "zorka", chapterID: 3, step: 24100, eventID: "p_l9", residentID: nil, placeID: "gorlo"),
+        Beat(id: "signature", chapterID: 3, step: 29000, eventID: "p_l10", residentID: nil, placeID: "otstoy"),
+        Beat(id: "marsh", chapterID: 3, step: 30000, eventID: "finale", residentID: nil, placeID: "otstoy"),
+        Beat(id: "edgegift", chapterID: 3, step: 4000, eventID: "d_gat", residentID: nil, placeID: "gat"),
+        Beat(id: "taggift", chapterID: 3, step: 9000, eventID: "d_top", residentID: nil, placeID: "top"),
+        Beat(id: "cardgift", chapterID: 3, step: 9001, eventID: "d_top", residentID: nil, placeID: "top"),
+        Beat(id: "polegift", chapterID: 3, step: 12500, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "graphgift", chapterID: 3, step: 12501, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
+        Beat(id: "passgift", chapterID: 3, step: 16500, eventID: "d_barge", residentID: nil, placeID: "staraya_protoka"),
+    ]
+
+    static func facts(world: WorldConfig, activeIndex: Int, activeSteps: Int,
+                      active: Progress, saved: (Int) -> Progress?) -> [HistoryFact] {
+        var pages: [HistoryFact] = []
+        for (index, chapter) in world.chapters.enumerated() where index <= activeIndex {
+            let progress = index == activeIndex ? active : (saved(chapter.id) ?? Progress())
+            let reached = MetPeople.reached(index: index, active: activeIndex,
+                                            activeSteps: activeSteps, length: chapter.lengthSteps)
+            let gate = min(progress.reached, reached)
+            let valleyID = world.chapters.first?.id ?? chapter.id
+            let valley = chapter.id == valleyID ? progress : (saved(valleyID) ?? Progress())
+            for beat in beats where beat.chapterID == chapter.id && beat.step <= gate && progress.done.contains(beat.eventID) {
+                guard let text = prose(beat.id, here: progress, valley: valley), !text.isEmpty else { continue }
+                let place = chapter.settlements.first { $0.id == beat.placeID }?.name ?? ""
+                pages.append(HistoryFact(
+                    id: "\(chapter.id):\(beat.id)",
+                    worldStep: chapter.startStep + beat.step,
+                    chapterID: chapter.id,
+                    chapterTitle: chapter.title,
+                    place: place,
+                    heading: L10n.text(titleKey(beat.id)),
+                    text: text,
+                    residentID: beat.residentID,
+                    assetsFolder: chapter.assetsFolder,
+                    placeID: beat.placeID))
+            }
+        }
+        return pages.sorted { ($0.worldStep, $0.id) < ($1.worldStep, $1.id) }
+    }
+
+    private static func titleKey(_ id: String) -> String {
+        switch id {
+        case "road": return "history.main.road.title"
+        case "stilts": return "history.main.stilts.title"
+        case "belfry": return "history.main.belfry.title"
+        case "ask": return "history.main.ask.title"
+        case "strange": return "history.main.strange.title"
+        case "nii": return "history.main.nii.title"
+        case "wind": return "history.main.wind.title"
+        case "saddle": return "history.main.saddle.title"
+        case "two": return "history.main.two.title"
+        case "fuse": return "history.main.fuse.title"
+        case "roosters": return "history.main.roosters.title"
+        case "thursday": return "history.main.thursday.title"
+        case "hum": return "history.main.hum.title"
+        case "station": return "history.main.station.title"
+        case "mark": return "history.main.mark.title"
+        case "lamp": return "history.main.lamp.title"
+        case "bell": return "history.main.bell.title"
+        case "gorge": return "history.main.gorge.title"
+        case "clean": return "history.main.clean.title"
+        case "goat": return "history.main.goat.title"
+        case "ramka": return "history.main.ramka.title"
+        case "bearing": return "history.main.bearing.title"
+        case "mothers": return "history.main.mothers.title"
+        case "fiftyeight": return "history.main.fiftyeight.title"
+        case "names": return "history.main.names.title"
+        case "ether": return "history.main.ether.title"
+        case "third": return "history.main.third.title"
+        case "wall": return "history.main.wall.title"
+        case "zorka": return "history.main.zorka.title"
+        case "signature": return "history.main.signature.title"
+        case "marsh": return "history.main.marsh.title"
+        case "edgegift": return "history.main.edgegift.title"
+        case "taggift": return "history.main.taggift.title"
+        case "cardgift": return "history.main.cardgift.title"
+        case "polegift": return "history.main.polegift.title"
+        case "graphgift": return "history.main.graphgift.title"
+        case "passgift": return "history.main.passgift.title"
+        default: return "history.title"
+        }
+    }
+
+    /// Письмо уже было в руках: унесено, вручено, прочитано или ещё лежит в сумке.
+    private static func carried(_ id: String, _ items: [String: ItemStatus]) -> Bool {
+        switch items[id] {
+        case .inBag, .inPocket, .delivered, .sent, .read, .lostWind: return true
+        default: return false
+        }
+    }
+
+    private static func prose(_ id: String, here: Progress, valley: Progress) -> String? {
+        switch id {
+        case "road":
+            var lines = [L10n.text("history.main.road.out")]
+            if carried("l3", here.items) { lines.append(L10n.text("history.main.road.nina")) }
+            if carried("l2", here.items) { lines.append(L10n.text("history.main.road.mitya")) }
+            if here.items["l4"] == .inPocket || carried("l4", here.items) {
+                lines.append(L10n.text("history.main.road.vera"))
+            }
+            return lines.joined(separator: " ")
+        case "stilts":
+            guard here.items["l1"] == .delivered else { return nil }
+            return L10n.text("history.main.stilts.body")
+        case "belfry":
+            guard here.items["l2"] == .delivered else { return nil }
+            var lines = [L10n.text("history.main.belfry.body")]
+            if carried("l5", here.items) {
+                lines.append(L10n.text("history.main.belfry.fortyone"))
+            }
+            if here.opened.contains("l5") {
+                lines.append(L10n.text("history.main.belfry.opened"))
+            }
+            return lines.joined(separator: " ")
+        case "ask":
+            if here.items["l3"] == .inBag { return L10n.text("history.main.ask.bag") }
+            if here.items["l3"] == .atPost { return L10n.text("history.main.ask.post") }
+            return L10n.text("history.main.ask.body")
+        case "strange":
+            guard here.items["l6"] == .delivered else { return nil }
+            return L10n.text("history.main.strange.body")
+        case "nii":
+            guard here.items["batteries"] == .delivered else { return nil }
+            return L10n.text("history.main.nii.body")
+        case "wind":
+            guard let picked = here.choices["e_wind"] else { return nil }
+            if picked == "let" { return L10n.text("history.main.wind.let") }
+            if picked == "chase" { return L10n.text("history.main.wind.chase") }
+            return nil
+        case "saddle":
+            var lines: [String] = []
+            if here.items["l3"] == .sent { lines.append(L10n.text("history.main.saddle.sent")) }
+            if here.items["l7"] == .read { lines.append(L10n.text("history.main.saddle.ksenia")) }
+            return lines.isEmpty ? nil : lines.joined(separator: " ")
+        case "two":
+            guard valley.items["l6"] == .delivered, carried("l1", here.items) else { return nil }
+            return L10n.text("history.main.two.body")
+        case "fuse":
+            guard carried("l3", here.items) else { return nil }
+            return L10n.text("history.main.fuse.body")
+        case "roosters":
+            guard carried("l4", here.items) else { return nil }
+            return L10n.text("history.main.roosters.body")
+        case "thursday":
+            guard carried("l5", here.items) else { return nil }
+            return L10n.text("history.main.thursday.body")
+        case "hum":
+            guard carried("l6", here.items) else { return nil }
+            return L10n.text("history.main.hum.body")
+        case "station":
+            guard carried("l7", here.items) else { return nil }
+            if carried("l1", here.items) { return L10n.text("history.main.station.body") }
+            if valley.items["l6"] == .delivered { return L10n.text("history.main.station.box") }
+            return L10n.text("history.main.station.only")
+        case "mark":
+            guard carried("l8", here.items) else { return nil }
+            return L10n.text("history.main.mark.body")
+        case "lamp":
+            guard carried("l9", here.items) else { return nil }
+            if here.done.contains("p_l4") {
+                return L10n.text("history.main.lamp.compared")
+            }
+            return L10n.text("history.main.lamp.body")
+        case "bell":
+            return L10n.text("history.main.bell.body")
+        case "gorge":
+            return L10n.text("history.main.gorge.body")
+        case "clean":
+            guard carried("l1", here.items) else { return nil }
+            return L10n.text("history.main.clean.body")
+        case "goat":
+            guard carried("l2", here.items) else { return nil }
+            return L10n.text("history.main.goat.body")
+        case "ramka":
+            guard carried("l3", here.items) else { return nil }
+            return L10n.text("history.main.ramka.body")
+        case "bearing":
+            guard here.choices["e_bearing"] != nil else { return nil }
+            return L10n.text("history.main.bearing.body")
+        case "mothers":
+            guard carried("l5", here.items) else { return nil }
+            return L10n.text("history.main.mothers.body")
+        case "fiftyeight":
+            guard carried("l7", here.items) else { return nil }
+            return L10n.text("history.main.fiftyeight.body")
+        case "names":
+            guard carried("l6", here.items) else { return nil }
+            return L10n.text("history.main.names.body")
+        case "ether":
+            guard here.choices["e_radio"] != nil else { return nil }
+            return L10n.text("history.main.ether.body")
+        case "third":
+            guard carried("l8", here.items) else { return nil }
+            return L10n.text("history.main.third.body")
+        case "wall":
+            guard here.choices["e_plug"] != nil else { return nil }
+            return L10n.text("history.main.wall.body")
+        case "zorka":
+            guard carried("l9", here.items) else { return nil }
+            return L10n.text("history.main.zorka.body")
+        case "signature":
+            guard carried("l10", here.items) else { return nil }
+            return L10n.text("history.main.signature.body")
+        case "marsh":
+            return L10n.text("history.main.marsh.body")
+        case "edgegift":
+            guard here.items["find_edge"] == .delivered else { return nil }
+            return L10n.text("history.main.edgegift.body")
+        case "taggift":
+            guard here.items["find_tag"] == .delivered else { return nil }
+            return L10n.text("history.main.taggift.body")
+        case "cardgift":
+            guard here.items["find_card"] == .delivered else { return nil }
+            return L10n.text("history.main.cardgift.body")
+        case "polegift":
+            guard here.items["find_pole"] == .delivered else { return nil }
+            return L10n.text("history.main.polegift.body")
+        case "graphgift":
+            guard here.items["find_graph"] == .delivered else { return nil }
+            return L10n.text("history.main.graphgift.body")
+        case "passgift":
+            guard here.items["find_pass"] == .delivered else { return nil }
+            return L10n.text("history.main.passgift.body")
+        default:
+            return nil
+        }
+    }
+}

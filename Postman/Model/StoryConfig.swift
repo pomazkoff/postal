@@ -130,6 +130,8 @@ struct StoryConfig: Decodable {
         let step: Int
         let dx: Double
         let height: Double
+        /// На сколько опустить низ спрайта ниже линии дороги. Нет поля — как у Феди, на 4 px.
+        let sink: Double? = nil
     }
 
     struct Fate: Decodable {
@@ -178,7 +180,7 @@ struct StoryConfig: Decodable {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/\(name)")
         if FileManager.default.fileExists(atPath: url.path) {
             do {
-                return try JSONDecoder().decode(StoryConfig.self, from: Data(contentsOf: url))
+                return try JSONDecoder().decode(StoryConfig.self, from: ContentLocalizer.data(at: url, kind: .story))
             } catch {
                 fatalError("Не удалось загрузить \(name): \(error)")
             }
@@ -198,20 +200,25 @@ struct ResidentLore: Decodable {
 
     var text: String { lines.joined(separator: "\n") }
 
-    private static let entries: [String: ResidentLore] = {
+    private static var cached: [String: ResidentLore]?
+
+    private static func loadEntries() -> [String: ResidentLore] {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/resident_lore.json")
         do {
-            return try JSONDecoder().decode([String: ResidentLore].self, from: Data(contentsOf: url))
+            return try JSONDecoder().decode([String: ResidentLore].self, from: ContentLocalizer.data(at: url, kind: .lore))
         } catch {
             #if DEBUG
             print("ResidentLore: не удалось загрузить resident_lore.json: \(error)")
             #endif
             return [:]
         }
-    }()
+    }
+
+    static func invalidate() { cached = nil }
 
     static func entry(for id: String, fallbackTitle: String) -> ResidentLore {
-        entries[id] ?? ResidentLore(title: fallbackTitle, lines: ["Пока без подробностей."])
+        if cached == nil { cached = loadEntries() }
+        return cached?[id] ?? ResidentLore(title: fallbackTitle, lines: [L10n.text("lore.empty")])
     }
 }
 

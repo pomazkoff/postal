@@ -1,7 +1,8 @@
 // Главные настройки приложения — меняются здесь, в одном месте (и для .xcodeproj, и для XcodeGen).
 
-// Название под иконкой (CFBundleDisplayName). Рабочее название игры.
-APP_DISPLAY_NAME = Почтальон
+// Название под иконкой, если локаль не русская (development region = en).
+// Русское «Почтальон» — в ru.lproj/InfoPlist.strings.
+APP_DISPLAY_NAME = Postman
 
 // Уникальный идентификатор. Для подписи своей командой замените на свой, напр. ru.<вашедомен>.postman
 PRODUCT_BUNDLE_IDENTIFIER = games.mazkof.postman

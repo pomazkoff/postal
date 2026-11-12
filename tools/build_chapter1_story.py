@@ -59,7 +59,7 @@ items = [
     {"id": "l4", "kind": "form", "takesSlot": False, "to": "Почтальону", "place": "от Веры · НИИ", "settlement": "nii",
      "from": "Вера", "senderSettlement": "nii", "art": "form", "stick": "stick_plain", "initial": "inPocket",
      "reader": {"paper": "sheet_form", "font": "draft", "envelope": None, "address": [],
-                "attachment": None, "attachmentCaption": "в кармане, места в сумке не занимает"},
+                "attachment": None, "attachmentCaption": "сдать Вере в руки, в ящик НИИ не опускать"},
      "text": L[4][0]},
     {"id": "batteries", "kind": "parcel", "takesSlot": True, "to": "Вере", "place": "НИИ · 12 шт.", "settlement": "nii",
      "from": "Лавка", "senderSettlement": "kadushki", "art": "parcel", "stick": "stick_parcel", "initial": "onRoad",
@@ -164,7 +164,7 @@ events = [
 ]
 
 quests = [
-    {"telegram": "Разобрать почту: что взять в сумку", "event": "sort"},
+    {"telegram": "Вся почта уже в сумке", "event": "sort"},
     {"telegram": "Отнести письмо Нины Кузьме в Сваи", "event": "d_l1", "if": "inBag:l1"},
     {"telegram": "Отнести письмо Мити отцу Пимену в Звонарню", "event": "d_l2", "if": "inBag:l2"},
     {"telegram": "Зайти в Звонарню к отцу Пимену", "event": "p_l5"},
@@ -266,7 +266,7 @@ story = {
     "choicePolicy": {"mode": "notifyThenAuto", "timeoutSteps": 400},
     "arrivals": ARRIVALS,
     "sortDefault": ["l1", "l2", "l3"],
-    "sortAuto": "Почтальон сам сгрёб с полки всё, что влезло в сумку.",
+    "sortAuto": "Почтальон берёт всю почту. На бирке написано, куда нести каждое письмо.",
 }
 import sys as _sys
 _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

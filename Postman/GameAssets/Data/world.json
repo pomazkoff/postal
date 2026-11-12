@@ -2600,6 +2600,653 @@
         }
       ],
       "rawClayAfterStep": 25000
+    },
+    {
+      "id": 3,
+      "title": "Болота",
+      "startStep": 45000,
+      "lengthSteps": 30000,
+      "assetsFolder": "Chapter3",
+      "settlements": [
+        {
+          "id": "gorlovina",
+          "name": "Горловина",
+          "nameGenitive": "Горловины",
+          "fullName": "Яр «Горловина»",
+          "step": 0
+        },
+        {
+          "id": "gat",
+          "name": "Гать",
+          "nameGenitive": "Гати",
+          "fullName": "Гать",
+          "step": 4000
+        },
+        {
+          "id": "top",
+          "name": "Топь",
+          "nameGenitive": "Топи",
+          "fullName": "Топь",
+          "step": 9000
+        },
+        {
+          "id": "torfyanik",
+          "name": "Торфяник",
+          "nameGenitive": "Торфяника",
+          "fullName": "Торфяник",
+          "step": 12500
+        },
+        {
+          "id": "staraya_protoka",
+          "name": "Старая протока",
+          "nameGenitive": "Старой протоки",
+          "fullName": "Старая протока",
+          "step": 16500
+        },
+        {
+          "id": "kamyshi",
+          "name": "Камыши",
+          "nameGenitive": "Камышей",
+          "fullName": "Камыши",
+          "step": 20000
+        },
+        {
+          "id": "gorlo",
+          "name": "Горло",
+          "nameGenitive": "Горла",
+          "fullName": "Ущелье «Горло»",
+          "step": 22500
+        },
+        {
+          "id": "otstoy",
+          "name": "Отстой",
+          "nameGenitive": "Отстоя",
+          "fullName": "Пристань «Отстой»",
+          "step": 30000
+        }
+      ],
+      "props": [
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 0,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 2000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 4000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 6000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 8000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 10000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 12000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 14000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 16000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 18000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 20000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 22000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 24000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 26000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_main_alder",
+          "layer": "main",
+          "step": 28000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "places/place_gorlovina_main",
+          "layer": "main",
+          "step": 0,
+          "dx": -580.8,
+          "height": 1000,
+          "sink": 40,
+          "z": 6,
+          "pixelSize": [
+            800,
+            933
+          ]
+        },
+        {
+          "image": "places/place_tumanny_spusk_main",
+          "layer": "main",
+          "step": 2500,
+          "dx": -787.0,
+          "height": 720,
+          "sink": 40,
+          "z": 5,
+          "pixelSize": [
+            975,
+            574
+          ]
+        },
+        {
+          "image": "places/place_gat_main",
+          "layer": "main",
+          "step": 4000,
+          "dx": -827.1,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            868,
+            760
+          ]
+        },
+        {
+          "image": "places/place_kochki_main",
+          "layer": "main",
+          "step": 7000,
+          "dx": -781.6,
+          "height": 760,
+          "sink": 40,
+          "z": 6,
+          "pixelSize": [
+            1075,
+            674
+          ]
+        },
+        {
+          "image": "places/place_top_main",
+          "layer": "main",
+          "step": 9000,
+          "dx": -551.0,
+          "height": 1200,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            582,
+            930
+          ]
+        },
+        {
+          "image": "places/place_torfyanik_main",
+          "layer": "main",
+          "step": 12500,
+          "dx": -900.1,
+          "height": 860,
+          "sink": 40,
+          "z": 8,
+          "pixelSize": [
+            1104,
+            677
+          ]
+        },
+        {
+          "image": "places/place_staraya_protoka_main",
+          "layer": "main",
+          "step": 16500,
+          "dx": -1045.5,
+          "height": 500,
+          "sink": 217,
+          "z": 10,
+          "pixelSize": [
+            851,
+            442
+          ]
+        },
+        {
+          "image": "places/place_kamyshi_main",
+          "layer": "main",
+          "step": 20000,
+          "dx": -555.2,
+          "height": 1380,
+          "sink": 40,
+          "z": 9,
+          "pixelSize": [
+            704,
+            1139
+          ]
+        },
+        {
+          "image": "places/place_gorlo_main",
+          "layer": "main",
+          "step": 22500,
+          "dx": -824.0,
+          "height": 760,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            1070,
+            627
+          ]
+        },
+        {
+          "image": "places/place_otstoy_main",
+          "layer": "main",
+          "step": 30000,
+          "dx": -739.9,
+          "height": 1180,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            630,
+            687
+          ]
+        },
+        {
+          "image": "places/el_fog_bank",
+          "layer": "far",
+          "step": 4000,
+          "dx": -200,
+          "height": 200,
+          "sink": -480,
+          "z": 3,
+          "pixelSize": [
+            1272,
+            469
+          ]
+        },
+        {
+          "image": "places/el_fog_bank",
+          "layer": "far",
+          "step": 16500,
+          "dx": -80,
+          "height": 190,
+          "sink": -500,
+          "z": 3,
+          "pixelSize": [
+            1272,
+            469
+          ]
+        },
+        {
+          "image": "ambient/dragonflies",
+          "layer": "main",
+          "step": 2500,
+          "dx": -40,
+          "height": 140,
+          "sink": -220,
+          "z": 8,
+          "pixelSize": [183, 160]
+        },
+        {
+          "image": "ambient/boat_trestles",
+          "layer": "main",
+          "step": 4000,
+          "dx": 280,
+          "height": 180,
+          "sink": 8,
+          "z": 11,
+          "pixelSize": [340, 137]
+        },
+        {
+          "image": "ambient/smoke_chimney",
+          "layer": "main",
+          "step": 4000,
+          "dx": -200,
+          "height": 220,
+          "sink": -520,
+          "z": 14,
+          "pixelSize": [70, 220]
+        },
+        {
+          "image": "ambient/frog",
+          "layer": "main",
+          "step": 7000,
+          "dx": -80,
+          "height": 70,
+          "sink": 10,
+          "z": 11,
+          "pixelSize": [79, 70]
+        },
+        {
+          "image": "ambient/heron_stand",
+          "layer": "main",
+          "step": 9000,
+          "dx": 260,
+          "height": 280,
+          "sink": 20,
+          "z": 11,
+          "pixelSize": [230, 320]
+        },
+        {
+          "image": "ambient/smoke_peat",
+          "layer": "main",
+          "step": 12500,
+          "dx": -280,
+          "height": 90,
+          "sink": -40,
+          "z": 11,
+          "pixelSize": [280, 48]
+        },
+        {
+          "image": "ambient/heron_stand",
+          "layer": "main",
+          "step": 16500,
+          "dx": -520,
+          "height": 260,
+          "sink": 40,
+          "z": 12,
+          "pixelSize": [230, 320]
+        },
+        {
+          "image": "ambient/punt",
+          "layer": "main",
+          "step": 16500,
+          "dx": 420,
+          "height": 110,
+          "sink": 70,
+          "z": 8,
+          "pixelSize": [380, 106]
+        },
+        {
+          "image": "ambient/ducks",
+          "layer": "main",
+          "step": 20000,
+          "dx": 300,
+          "height": 70,
+          "sink": 24,
+          "z": 10,
+          "pixelSize": [280, 73]
+        },
+        {
+          "image": "ambient/frog",
+          "layer": "main",
+          "step": 20500,
+          "dx": -40,
+          "height": 70,
+          "sink": 12,
+          "z": 11,
+          "pixelSize": [79, 70]
+        },
+        {
+          "image": "ambient/mist_low",
+          "layer": "main",
+          "step": 22500,
+          "dx": -200,
+          "height": 160,
+          "sink": -40,
+          "z": 15,
+          "pixelSize": [800, 72]
+        },
+        {
+          "image": "ambient/boat_moored",
+          "layer": "main",
+          "step": 30000,
+          "dx": 280,
+          "height": 130,
+          "sink": 20,
+          "z": 11,
+          "pixelSize": [340, 101]
+        }
+      ],
+      "underground": {
+        "neutralTile": "underground/ug_neutral_tile",
+        "top": 1700,
+        "scale": 2.0,
+        "tilePixelSize": [
+          1148,
+          415
+        ],
+        "minGapFraction": 0.3,
+        "modules": [
+          {
+            "image": "underground/ug_korni",
+            "step": 800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_omut",
+            "step": 2500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_zherdi",
+            "step": 4000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_puzyri",
+            "step": 6500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tina",
+            "step": 9000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_lyagushka",
+            "step": 11500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_nakhodki",
+            "step": 14000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_kladi",
+            "step": 16500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_ryba",
+            "step": 18800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_splet",
+            "step": 20800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_mokh",
+            "step": 22500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_podkova",
+            "step": 24800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_ilot",
+            "step": 26800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tonya",
+            "step": 28800,
+            "dx": 0.0
+          }
+        ]
+      },
+      "quests": [
+        {
+          "untilStep": 4000,
+          "telegram": "Отнести чистый конверт в ящик на Гати",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 9000,
+          "telegram": "До Топи",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 20000,
+          "telegram": "До Камышей",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 30000,
+          "telegram": "К Отстою",
+          "lettersInBag": 0
+        }
+      ],
+      "rawClayAfterStep": 30000,
+      "sky": {
+        "topColor": "#3D4A45",
+        "bottomColor": "#6A6B52"
+      }
     }
   ]
 }

@@ -1,0 +1,74 @@
+{
+  "purpose": "Canonical animals on the road in chapters 1 and 2. The six cues are in this folder as animal_<cue>_1.wav and animal_<cue>_2.wav. No new species, no voices, no music.",
+  "format": "PCM WAV mono 44100 Hz 16 bit. One-shot, a single gesture, silence at both ends. Two variants each. Do not loop.",
+  "play_rule": "Once, when the player taps that figure, or when its story card is on screen and the player is watching. Never during the catch-up journal, never in the background, never as an idle loop.",
+  "animals": [
+    {
+      "cue": "animal_rooster",
+      "resident_id": "rooster",
+      "name_ru": "Петух",
+      "chapter": 1,
+      "step": 2800,
+      "where": "Сваи, у мостков",
+      "event": "e_animal_rooster",
+      "sound": "one short crow"
+    },
+    {
+      "cue": "animal_cat",
+      "resident_id": "cat_barrel",
+      "name_ru": "Кошка у Лавки",
+      "chapter": 1,
+      "step": 9350,
+      "where": "Кадушки",
+      "event": "e_animal_cat",
+      "sound": "one short mew"
+    },
+    {
+      "cue": "animal_goat_kid",
+      "resident_id": "goat_kid",
+      "name_ru": "Козлёнок",
+      "chapter": 1,
+      "step": 12920,
+      "where": "НИИ, у антенны",
+      "event": "e_animal_goat_kid",
+      "also": "walks along from step 13201 to 13701 only if the player fed him",
+      "sound": "one kid bleat"
+    },
+    {
+      "cue": "animal_goat",
+      "resident_ids": ["ramka", "matrena"],
+      "names_ru": ["Рамка", "Коза Матрёна"],
+      "chapter": 1,
+      "sound": "one adult goat bleat, shared. Ramka is the nicked-ear goat who may follow from step 4500 to 13200. Matrena stands at step 13320 and is the older, wider goat. Same species, one cue, not two animals invented apart.",
+      "events": ["e_ramka", "e_animal_matrena", "e_animal_matrena_jealous"]
+    },
+    {
+      "cue": "animal_raven",
+      "resident_id": "raven_saddle",
+      "name_ru": "Ворон",
+      "chapter": 2,
+      "step": 300,
+      "where": "Седло",
+      "event": "e_animal_raven",
+      "sound": "one croak"
+    },
+    {
+      "cue": "animal_dog",
+      "resident_id": "dog_penki",
+      "name_ru": "Пёс Пеньки",
+      "chapter": 2,
+      "step": 6550,
+      "where": "Пеньки",
+      "event": "e_animal_dog",
+      "sound": "one bark"
+    }
+  ],
+  "do_not_generate": [
+    "Any animal that is not in the animals list.",
+    "A separate voice or bleat species for Matrena. She uses animal_goat with Ramka.",
+    "A.L. (agnia): step 99999, she is not on the road and cannot be tapped.",
+    "Human residents have no speech and no animal sound: kuzma, mitya, pimen, nina, vera, nil, monk_old, monk_frail, lab_anya, lab_fedor, lesnik, sawyer, brigadir, penki_worker, repka_tech, krivulya_local.",
+    "Bees, wolves, owls, horses, or any other species. Hives are scenery.",
+    "Music, dialogue, fog noise, a looping bell, a looping animal idle."
+  ]
+}

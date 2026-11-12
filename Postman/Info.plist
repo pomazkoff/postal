@@ -4,6 +4,8 @@
 <!-- Частичный Info.plist: Xcode сливает его с ключами INFOPLIST_KEY_* (GENERATE_INFOPLIST_FILE = YES).
      Фон: BGAppRefreshTask (запасной путь к HealthKit background delivery). -->
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -11,6 +13,17 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).refresh</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>games.mazkof.postman.first-mail</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mazkofpostman</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
