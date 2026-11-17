@@ -232,12 +232,14 @@ final class AppCore {
         guard !tasksRegistered else { return }
         tasksRegistered = true
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.refreshTaskID, using: .main) { @Sendable task in
-            task.expirationHandler = { task.setTaskCompleted(success: false) }
+            // Задачу iOS закрываем ровно один раз: либо по истечении времени, либо по готовности.
+            let done = BackgroundTaskOnce(task)
+            task.expirationHandler = { done.complete(success: false) }
             Task { @MainActor in
                 let core = AppCore.shared
                 core.scheduleRefresh()
                 await core.backgroundRefresh()
-                task.setTaskCompleted(success: true)
+                done.complete(success: true)
             }
         }
     }
@@ -440,5 +442,22 @@ private final class BackgroundWake: @unchecked Sendable {
         lock.unlock()
         completion?()
         if id != .invalid { app.endBackgroundTask(id) }
+    }
+}
+
+/// BGTask.setTaskCompleted — один раз, даже если expirationHandler и обычный финиш сошлись.
+private final class BackgroundTaskOnce: @unchecked Sendable {
+    private let lock = NSLock()
+    private var done = false
+    private let task: BGTask
+
+    init(_ task: BGTask) { self.task = task }
+
+    func complete(success: Bool) {
+        lock.lock()
+        guard !done else { lock.unlock(); return }
+        done = true
+        lock.unlock()
+        task.setTaskCompleted(success: success)
     }
 }
