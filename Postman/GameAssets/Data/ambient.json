@@ -7,14 +7,14 @@
       "hour": 0,
       "skyTop": "#07131F",
       "skyBottom": "#15304A",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     },
     {
       "hour": 4.5,
       "skyTop": "#07131F",
       "skyBottom": "#1A3350",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     },
     {
@@ -52,14 +52,14 @@
       "hour": 20,
       "skyTop": "#142540",
       "skyBottom": "#6A4E6E",
-      "tint": "#9A8FB0",
+      "tint": "#D2CDDB",
       "stars": 0.6
     },
     {
       "hour": 21.5,
       "skyTop": "#07131F",
       "skyBottom": "#15304A",
-      "tint": "#8090B8",
+      "tint": "#C6CDDF",
       "stars": 1
     }
   ],
@@ -310,6 +310,94 @@
       "period": [
         4.0,
         5.4
+      ]
+    },
+    {
+      "match": "road/prop_signpost",
+      "amp": 0.45,
+      "period": [
+        3.6,
+        4.8
+      ]
+    },
+    {
+      "match": "road/prop_milepost",
+      "amp": 0.35,
+      "period": [
+        4.0,
+        5.2
+      ]
+    },
+    {
+      "match": "road/prop_roadsign",
+      "amp": 0.4,
+      "period": [
+        3.8,
+        5.0
+      ]
+    },
+    {
+      "match": "road/mid_hill_firs",
+      "amp": 0.7,
+      "period": [
+        4.2,
+        5.6
+      ]
+    },
+    {
+      "match": "road/far_ridge_firs",
+      "amp": 0.45,
+      "period": [
+        4.8,
+        6.2
+      ]
+    },
+    {
+      "match": "places/el_sedlo_firs",
+      "amp": 0.65,
+      "period": [
+        4.0,
+        5.4
+      ]
+    },
+    {
+      "match": "places/el_buried_horn",
+      "amp": 0.3,
+      "period": [
+        3.6,
+        4.8
+      ]
+    },
+    {
+      "match": "places/el_fog_bank",
+      "amp": 0.55,
+      "period": [
+        5.0,
+        6.4
+      ]
+    },
+    {
+      "match": "places/el_svai_fish_rope",
+      "amp": 0.9,
+      "period": [
+        3.2,
+        4.2
+      ]
+    },
+    {
+      "match": "places/el_pochta_pole",
+      "amp": 0.4,
+      "period": [
+        4.0,
+        5.2
+      ]
+    },
+    {
+      "match": "taps/reeds",
+      "amp": 2.4,
+      "period": [
+        3.0,
+        4.2
       ]
     }
   ],

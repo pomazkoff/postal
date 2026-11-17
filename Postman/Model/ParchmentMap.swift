@@ -54,14 +54,38 @@ struct ParchmentMap: Decodable {
     let compass: Sprite
     let chrome: [[Double]]
 
-    static let shared: ParchmentMap? = {
+    private static var cached: ParchmentMap?
+    private static var loaded = false
+
+    static var shared: ParchmentMap? {
+        if !loaded {
+            loaded = true
+            cached = load()
+        }
+        return cached
+    }
+
+    static func invalidate() {
+        loaded = false
+        cached = nil
+    }
+
+    private static func load() -> ParchmentMap? {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map.json")
-        guard let data = try? Data(contentsOf: url) else { return nil }
+        let data = ContentLocalizer.data(at: url, kind: .map)
+        guard !data.isEmpty else { return nil }
         return try? JSONDecoder().decode(ParchmentMap.self, from: data)
-    }()
+    }
 
     var points: [CGPoint] { road.map { CGPoint(x: $0[0], y: $0[1]) } }
     var chromeRects: [CGRect] { chrome.map { CGRect(x: $0[0], y: $0[1], width: $0[2] - $0[0], height: $0[3] - $0[1]) } }
+
+    /// Единственный пергамент — Долина, Почта→Седло, `lengthSteps` этой карты.
+    /// Шаги второй главы на эту дорогу не кладутся: гор на листе нет.
+    func sheetStep(chapterID: Int, chapterSteps: Int) -> Int {
+        if chapterID == 1 { return min(max(0, chapterSteps), lengthSteps) }
+        return lengthSteps
+    }
 
     func fraction(step: Int) -> Double {
         guard lengthSteps > 0 else { return 0 }
@@ -214,6 +238,81 @@ enum ParchmentLayout {
         }
         return result
     }
+
+    /// Бирки листа без экранной рамки. Рамка «Долина» / «Закрыть» сидит поверх телефона, не на пергаменте.
+    static func layout(places: [ParchmentMap.Place], postman: CGSize, postmanFeet: CGPoint,
+                       frame: CGSize, nextID: String?, reachedStep: Int, includePostman: Bool) -> Result {
+        let ts = tagSize
+        var obstacles = places.map { $0.iconRect.insetBy(dx: $0.w * 0.12, dy: $0.h * 0.1) }
+        if includePostman {
+            obstacles.append(CGRect(x: postmanFeet.x - postman.width * 0.4, y: postmanFeet.y - postman.height,
+                                    width: postman.width * 0.8, height: postman.height))
+        }
+        let bounds = CGRect(origin: .zero, size: frame).insetBy(dx: 12, dy: 12)
+        func rect(_ c: CGPoint) -> CGRect {
+            CGRect(x: c.x - ts.width / 2, y: c.y - ts.height / 2, width: ts.width, height: ts.height)
+        }
+        func cost(_ c: CGPoint) -> CGFloat {
+            let r = rect(c)
+            var s: CGFloat = 0
+            for o in obstacles {
+                let i = r.intersection(o)
+                if !i.isNull { s += i.width * i.height }
+            }
+            let inside = r.intersection(bounds)
+            s += (r.width * r.height - (inside.isNull ? 0 : inside.width * inside.height)) * 4
+            return s
+        }
+        func pick(_ candidates: [CGPoint]) -> CGPoint {
+            var best = candidates[0], bestCost = CGFloat.greatestFiniteMagnitude
+            for (i, c) in candidates.enumerated() {
+                let v = cost(c) + CGFloat(i) * 0.5
+                if v < bestCost { best = c; bestCost = v }
+                if v < 1 { break }
+            }
+            obstacles.append(rect(best).insetBy(dx: -6, dy: -6))
+            return best
+        }
+        var result = Result()
+        if includePostman {
+            let p = postmanFeet
+            let dx = postman.width * 0.4 + ts.width / 2 + 8
+            result.postmanTag = pick([
+                CGPoint(x: p.x - dx - 70, y: p.y - postman.height * 0.72),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.45),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.45),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.05),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.05),
+                CGPoint(x: p.x - dx, y: p.y - postman.height * 0.85),
+                CGPoint(x: p.x + dx, y: p.y - postman.height * 0.85),
+                CGPoint(x: p.x, y: p.y + ts.height / 2 + 10),
+                CGPoint(x: p.x, y: p.y - postman.height - ts.height / 2 - 6),
+            ])
+        }
+        let order = places.sorted { a, b in
+            func rank(_ s: ParchmentMap.Place) -> Int {
+                if s.id == nextID { return 0 }
+                return s.step <= reachedStep ? 1 : 2
+            }
+            return (rank(a), a.step) < (rank(b), b.step)
+        }
+        for s in order {
+            let r = s.iconRect
+            let side: CGFloat = r.midX > frame.width / 2 ? 1 : -1
+            let below = r.maxY + ts.height / 2 - 4
+            result.tags[s.id] = pick([
+                CGPoint(x: r.midX - side * 10, y: below),
+                CGPoint(x: r.midX + side * (r.width / 2 + ts.width / 2 - 10), y: r.midY + r.height * 0.15),
+                CGPoint(x: r.midX - side * (r.width / 2 + ts.width / 2 - 10), y: r.midY + r.height * 0.15),
+                CGPoint(x: r.midX, y: r.minY - ts.height / 2 + 6),
+                CGPoint(x: r.midX + side * 60, y: below + ts.height * 0.7),
+                CGPoint(x: r.midX - side * 60, y: below + ts.height * 0.7),
+                CGPoint(x: r.midX + side * (r.width / 2 + ts.width / 2 - 10), y: r.minY + 10),
+                CGPoint(x: r.midX - side * (r.width / 2 + ts.width / 2 - 10), y: r.minY + 10),
+            ])
+        }
+        return result
+    }
 }
 
 /// Открытая часть карты: цвет vs карандаш по маске длины дуги (CoreImage, без шейдеров).
@@ -228,8 +327,12 @@ enum ParchmentReveal {
         return (c, p, f)
     }()
 
+    private static var colorFile: UIImage?
     static func colorImage() -> UIImage? {
-        UIImage(contentsOfFile: WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map_color.jpg").path)
+        if let colorFile { return colorFile }
+        let image = UIImage(contentsOfFile: WorldConfigLoader.assetsRoot.appendingPathComponent("UI/map/map_color.jpg").path)
+        colorFile = image
+        return image
     }
 
     /// Синхронно; звать не с главного потока.
@@ -259,6 +362,45 @@ enum ParchmentReveal {
         let blend = CIFilter.blendWithMask()
         blend.inputImage = images.color
         blend.backgroundImage = images.pencil
+        blend.maskImage = clamp.outputImage
+        guard let out = blend.outputImage,
+              let cg = context.createCGImage(out, from: extent, format: .RGBA8,
+                                             colorSpace: CGColorSpace(name: CGColorSpace.sRGB)) else { return nil }
+        return UIImage(cgImage: cg)
+    }
+
+    /// Тот же переход цвета в карандаш, для листа с собственными файлами.
+    static func render(color colorURL: URL, pencil pencilURL: URL, field fieldURL: URL,
+                       decodeScale: Double, decodeBias: Double,
+                       softFraction: Double, threshold t0: Double) -> UIImage? {
+        guard let color = CIImage(contentsOf: colorURL, options: raw),
+              let pencil = CIImage(contentsOf: pencilURL, options: raw),
+              let fieldImage = CIImage(contentsOf: fieldURL, options: raw) else { return nil }
+        let extent = color.extent
+        if t0 > 1.5 {
+            return UIImage(contentsOfFile: colorURL.path)
+        }
+        let fe = fieldImage.extent
+        let field = fieldImage.clampedToExtent()
+            .transformed(by: CGAffineTransform(scaleX: extent.width / fe.width, y: extent.height / fe.height))
+            .cropped(to: extent)
+        let soft = max(1e-4, softFraction)
+        let a = CGFloat(-decodeScale / soft)
+        let b = CGFloat((t0 + soft - decodeBias) / soft)
+        let matrix = CIFilter.colorMatrix()
+        matrix.inputImage = field
+        matrix.rVector = CIVector(x: a, y: 0, z: 0, w: 0)
+        matrix.gVector = CIVector(x: a, y: 0, z: 0, w: 0)
+        matrix.bVector = CIVector(x: a, y: 0, z: 0, w: 0)
+        matrix.aVector = CIVector(x: 0, y: 0, z: 0, w: 0)
+        matrix.biasVector = CIVector(x: b, y: b, z: b, w: 1)
+        let clamp = CIFilter.colorClamp()
+        clamp.inputImage = matrix.outputImage
+        clamp.minComponents = CIVector(x: 0, y: 0, z: 0, w: 0)
+        clamp.maxComponents = CIVector(x: 1, y: 1, z: 1, w: 1)
+        let blend = CIFilter.blendWithMask()
+        blend.inputImage = color
+        blend.backgroundImage = pencil
         blend.maskImage = clamp.outputImage
         guard let out = blend.outputImage,
               let cg = context.createCGImage(out, from: extent, format: .RGBA8,

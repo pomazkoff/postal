@@ -7,10 +7,10 @@ enum Weather: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .clear: return "ясно"
-        case .rain: return "дождь"
-        case .snow: return "снег"
-        case .fog: return "туман"
+        case .clear: return L10n.text("weather.clear")
+        case .rain: return L10n.text("weather.rain")
+        case .snow: return L10n.text("weather.snow")
+        case .fog: return L10n.text("weather.fog")
         }
     }
 
@@ -36,6 +36,10 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
     private let defaults = UserDefaults.standard
     private var manager: CLLocationManager?
     private var fetching = false
+    /// Один системный вопрос за запуск. Повтор при каждом возврате в игру не зовём.
+    private var askedThisLaunch = false
+    /// Отказ или ограничение. Не зовётся, пока статус ещё не выбран.
+    var onDenied: (() -> Void)?
 
     private enum Key {
         static let code = "postman.weather.code"
@@ -51,7 +55,7 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
     }
 
     /// Источник для отладки: «сеть», «сезон».
-    var sourceTitle: String { cachedReal != nil ? "Open-Meteo" : "по сезону" }
+    var sourceTitle: String { cachedReal != nil ? "Open-Meteo" : L10n.text("weather.source.season") }
 
     private var cachedReal: Weather? {
         guard let d = defaults.object(forKey: Key.date) as? Date,
@@ -79,9 +83,14 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
         }
         switch m.authorizationStatus {
         case .notDetermined:
-            if askPermission { m.requestWhenInUseAuthorization() }
+            if askPermission && !askedThisLaunch {
+                askedThisLaunch = true
+                m.requestWhenInUseAuthorization()
+            }
         case .authorizedWhenInUse, .authorizedAlways:
             if !cacheFresh && !fetching { m.requestLocation() }
+        case .denied, .restricted:
+            onDenied?()
         default:
             break
         }
@@ -93,6 +102,8 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
         switch manager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             if !cacheFresh && !fetching { manager.requestLocation() }
+        case .denied, .restricted:
+            onDenied?()
         default:
             break
         }

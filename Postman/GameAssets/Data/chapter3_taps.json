@@ -1,0 +1,261 @@
+[
+  {
+    "id": "poles",
+    "step": 1800,
+    "dx": -220,
+    "sprite": "Chapter3/taps/poles"
+  },
+  {
+    "id": "lime",
+    "step": 2200,
+    "dx": 200,
+    "sprite": "Chapter3/taps/lime"
+  },
+  {
+    "id": "cable",
+    "step": 3000,
+    "dx": -180,
+    "sprite": "Chapter3/taps/cable"
+  },
+  {
+    "id": "nails",
+    "step": 4200,
+    "dx": 210,
+    "sprite": "Chapter3/taps/nails"
+  },
+  {
+    "id": "boat",
+    "step": 4500,
+    "dx": -260,
+    "sprite": "Chapter3/taps/boat"
+  },
+  {
+    "id": "smoke",
+    "step": 4700,
+    "dx": 40,
+    "sprite": "Chapter3/taps/smoke"
+  },
+  {
+    "id": "stack",
+    "step": 5200,
+    "dx": 240,
+    "sprite": "Chapter3/taps/poles"
+  },
+  {
+    "id": "frog1",
+    "step": 6000,
+    "dx": -200,
+    "sprite": "Chapter3/taps/frog"
+  },
+  {
+    "id": "bubble1",
+    "step": 6500,
+    "dx": 190,
+    "sprite": "Chapter3/taps/bubble"
+  },
+  {
+    "id": "hummock",
+    "step": 7000,
+    "dx": -160,
+    "sprite": "Chapter3/taps/hummock"
+  },
+  {
+    "id": "boots",
+    "step": 7400,
+    "dx": 220,
+    "sprite": "Chapter3/taps/boots"
+  },
+  {
+    "id": "stake",
+    "step": 7600,
+    "dx": -40,
+    "sprite": "Chapter3/taps/stake"
+  },
+  {
+    "id": "ripples",
+    "step": 9500,
+    "dx": 180,
+    "sprite": "Chapter3/taps/ripples"
+  },
+  {
+    "id": "duckweed",
+    "step": 10000,
+    "dx": -200,
+    "sprite": "Chapter3/taps/duckweed"
+  },
+  {
+    "id": "pole",
+    "step": 10200,
+    "dx": 160,
+    "sprite": "Chapter3/taps/pole"
+  },
+  {
+    "id": "hut",
+    "step": 11000,
+    "dx": -240,
+    "sprite": "Chapter3/taps/hut"
+  },
+  {
+    "id": "frog2",
+    "step": 11800,
+    "dx": 200,
+    "sprite": "Chapter3/taps/frog"
+  },
+  {
+    "id": "bubble2",
+    "step": 12200,
+    "dx": -180,
+    "sprite": "Chapter3/taps/bubble"
+  },
+  {
+    "id": "tally",
+    "step": 13000,
+    "dx": 210,
+    "sprite": "Chapter3/taps/tally"
+  },
+  {
+    "id": "peat",
+    "step": 13200,
+    "dx": -220,
+    "sprite": "Chapter3/taps/peat"
+  },
+  {
+    "id": "dryer",
+    "step": 13600,
+    "dx": 180,
+    "sprite": "Chapter3/taps/dryer"
+  },
+  {
+    "id": "duty",
+    "step": 13800,
+    "dx": -160,
+    "sprite": "Chapter3/taps/duty"
+  },
+  {
+    "id": "louder",
+    "step": 14000,
+    "dx": 60,
+    "sprite": "Chapter3/taps/note"
+  },
+  {
+    "id": "barge",
+    "step": 15800,
+    "dx": -280,
+    "sprite": "Chapter3/taps/barge"
+  },
+  {
+    "id": "bell",
+    "step": 15950,
+    "dx": -80,
+    "sprite": "Chapter3/taps/bell"
+  },
+  {
+    "id": "spawn",
+    "step": 16200,
+    "dx": 200,
+    "sprite": "Chapter3/taps/spawn"
+  },
+  {
+    "id": "heron",
+    "step": 17200,
+    "dx": 240,
+    "sprite": "Chapter3/taps/heron"
+  },
+  {
+    "id": "frog3",
+    "step": 18800,
+    "dx": -200,
+    "sprite": "Chapter3/taps/frog"
+  },
+  {
+    "id": "reeds",
+    "step": 19200,
+    "dx": 180,
+    "sprite": "Chapter3/taps/reeds"
+  },
+  {
+    "id": "verst",
+    "step": 19800,
+    "dx": -60,
+    "sprite": "Chapter3/taps/verst"
+  },
+  {
+    "id": "bubble3",
+    "step": 20600,
+    "dx": 200,
+    "sprite": "Chapter3/taps/bubble"
+  },
+  {
+    "id": "radio",
+    "step": 20800,
+    "dx": -160,
+    "sprite": "Chapter3/taps/radio",
+    "flag": "ether_heard"
+  },
+  {
+    "id": "wall",
+    "step": 23200,
+    "dx": 40,
+    "sprite": "Chapter3/taps/wall"
+  },
+  {
+    "id": "door",
+    "step": 23600,
+    "dx": -80,
+    "sprite": "Chapter3/taps/door"
+  },
+  {
+    "id": "rim",
+    "step": 23720,
+    "dx": 120,
+    "sprite": "Chapter3/taps/rim"
+  },
+  {
+    "id": "thermos",
+    "step": 23840,
+    "dx": -140,
+    "sprite": "Chapter3/taps/thermos"
+  },
+  {
+    "id": "passwall",
+    "step": 23960,
+    "dx": 160,
+    "sprite": "Chapter3/taps/pass"
+  },
+  {
+    "id": "pole2",
+    "step": 24200,
+    "dx": -200,
+    "sprite": "Chapter3/taps/pole"
+  },
+  {
+    "id": "lids",
+    "step": 28600,
+    "dx": 200,
+    "sprite": "Chapter3/taps/lids"
+  },
+  {
+    "id": "kettle",
+    "step": 29200,
+    "dx": -180,
+    "sprite": "Chapter3/taps/kettle"
+  },
+  {
+    "id": "cordon",
+    "step": 29400,
+    "dx": 160,
+    "sprite": "Chapter3/taps/cordon"
+  },
+  {
+    "id": "barrier",
+    "step": 29700,
+    "dx": 0,
+    "sprite": "Chapter3/taps/barrier"
+  },
+  {
+    "id": "pipes",
+    "step": 29900,
+    "dx": 220,
+    "sprite": "Chapter3/taps/pipes"
+  }
+]

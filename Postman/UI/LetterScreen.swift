@@ -19,7 +19,14 @@ struct LetterScreen: View {
         let caption: String?
     }
 
-    var item: StoryConfig.Item? { engine.story.item(itemID) }
+    /// Своя глава первая. Улика из прошлой главы лежит в её сюжете, не в текущем.
+    var item: StoryConfig.Item? {
+        if let own = engine.story.item(itemID) { return own }
+        for chapter in [3, 2, 1] where chapter != engine.story.chapter {
+            if let found = StoryConfig.load(chapter: chapter).item(itemID) { return found }
+        }
+        return nil
+    }
 
     private var pages: [Page] {
         guard let item else { return [] }
@@ -28,9 +35,9 @@ struct LetterScreen: View {
         }
         if let outside = item.outside {
             var list = [Page(paper: "sheet_form", font: "tape", text: outside, tape: true,
-                             caption: "снаружи, под бечёвкой")]
+                             caption: L10n.text("letter.outside"))]
             if engine.isOpened(item.id) {
-                list.append(Page(paper: "sheet_telegram", font: "tape", text: item.text, tape: true, caption: "внутри"))
+                list.append(Page(paper: "sheet_telegram", font: "tape", text: item.text, tape: true, caption: L10n.text("letter.inside")))
             }
             return list
         }
@@ -38,7 +45,7 @@ struct LetterScreen: View {
         var list = [Page(paper: r.paper == "sheet_telegram" && note != nil ? "sheet" : r.paper,
                          font: r.font, text: item.text, tape: r.font == "tape", caption: nil)]
         if let note {
-            list.append(Page(paper: "sheet_telegram", font: "violet", text: note, tape: false, caption: "записка в ящике"))
+            list.append(Page(paper: "sheet_telegram", font: "violet", text: note, tape: false, caption: L10n.text("letter.note")))
         }
         return list
     }
@@ -66,15 +73,17 @@ struct LetterScreen: View {
                 }
             }
         }
-        .confirmationDialog("Вскрыть письмо «лично»?", isPresented: $confirmOpen, titleVisibility: .visible) {
-            Button("Вскрыть", role: .destructive) {
+        .confirmationDialog(L10n.text("letter.open.title"), isPresented: $confirmOpen, titleVisibility: .visible) {
+            Button(L10n.text("letter.open"), role: .destructive) {
                 engine.open(itemID)
                 withAnimation(.easeInOut(duration: 0.3)) { page = 1 }
             }
-            Button("Не трогать", role: .cancel) {}
+            Button(L10n.text("letter.leave"), role: .cancel) {}
         } message: {
-            Text("Печать — оттиск пальца в воске. Если вскрыть и заклеить, отпечатков станет два.")
+            Text(L10n.text("letter.open.message"))
         }
+        .onAppear { SoundPlayback.shared.effect("mail_unfold") }
+        .onChange(of: page) { _, _ in SoundPlayback.shared.effect("mail_unfold") }
     }
 
     // MARK: Лист
@@ -83,10 +92,12 @@ struct LetterScreen: View {
         let e = UIArt.entry(p.paper)
         let k = m.scale
         let center = CGPoint(x: 585, y: 857.5)
+        let baked = BakedArt.caption(for: p.paper)
+        let heading = [p.caption, baked].compactMap { $0 }.joined(separator: "\n")
         return PaperArt(name: p.paper, k: k) { size in
             VStack(alignment: .leading, spacing: 0) {
-                if let c = p.caption {
-                    Text(c)
+                if !heading.isEmpty {
+                    Text(heading)
                         .font(Ink.label(m.length(30)))
                         .foregroundStyle(Ink.brown.opacity(0.6))
                         .padding(.bottom, m.length(14))
@@ -104,7 +115,7 @@ struct LetterScreen: View {
                     }
                 }
                 if count > 1 {
-                    Text(page + 1 < count ? "дальше →" : "← в начало")
+                    Text(page + 1 < count ? L10n.text("letter.next") : L10n.text("letter.start"))
                         .font(Ink.label(m.length(30)))
                         .foregroundStyle(Ink.brown.opacity(0.55))
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -181,13 +192,16 @@ struct LetterScreen: View {
     @ViewBuilder
     private func caption(_ item: StoryConfig.Item, m: FrameMapper) -> some View {
         if let c = item.reader?.attachmentCaption {
-            Text(c)
+            let baked = BakedArt.caption(for: item.reader?.attachment)
+            let shown = baked.map { c + "\n" + $0 } ?? c
+            Text(shown)
                 .font(Ink.label(m.length(32)))
                 .foregroundStyle(Ink.chalk.opacity(0.85))
                 .multilineTextAlignment(.center)
                 .frame(width: m.length(620))
                 .position(m.point(item.reader?.attachment == nil ? 760 : 585, item.reader?.attachment == nil ? 1860 : 2190))
                 .allowsHitTesting(false)
+                .accessibilityLabel(shown)
         }
     }
 
@@ -197,7 +211,7 @@ struct LetterScreen: View {
         let k = m.scale
         let at = CGPoint(x: 140, y: 2300)
         return ZStack {
-            TagArt(line1: "вскрыть", line2: "печать", k: k, small: true)
+            TagArt(line1: L10n.text("letter.seal.line1"), line2: L10n.text("letter.seal.line2"), k: k, small: true)
                 .contentShape(Rectangle())
                 .onTapGesture { confirmOpen = true }
                 .pinned(size: CGSize(width: e.width * k, height: e.height * k),
@@ -206,7 +220,7 @@ struct LetterScreen: View {
             PlacedArt(name: "nail", m: m, at: at)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Вскрыть печать")
+        .accessibilityLabel(L10n.text("letter.seal.a11y"))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { confirmOpen = true }
     }
@@ -217,7 +231,7 @@ struct LetterScreen: View {
         let center = CGPoint(x: 905, y: 2420 - b.height / 2)
         return Button(action: onClose) {
             ArtView(name: "btn_bag", k: m.scale) { e, f in
-                Text("в сумку")
+                Text(L10n.text("letter.bag"))
                     .font(Ink.label(34 * f))
                     .foregroundStyle(Ink.chalk)
                     .shadow(color: .black.opacity(0.5), radius: 0, x: 0, y: 1.5 * f)
@@ -229,7 +243,7 @@ struct LetterScreen: View {
         .pinned(size: CGSize(width: e.width * m.scale, height: e.height * m.scale),
                 anchor: CGPoint(x: e.bodyCenter.x * m.scale, y: e.bodyCenter.y * m.scale),
                 at: m.point(center.x, center.y))
-        .accessibilityLabel("Убрать в сумку")
+        .accessibilityLabel(L10n.text("letter.bag.a11y"))
     }
 }
 

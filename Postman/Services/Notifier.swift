@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import UserNotifications
 
-/// Локальные пуши остановок сюжета (одна строка, по-русски). Выбор — пуш с двумя кнопками
+/// Локальные уведомления остановок сюжета (одна строка на языке игры). Выбор — пуш с двумя кнопками
 /// (категория "choice.<id события>", действия "opt.<id варианта>"); ответ уходит в AppCore.
 /// Пуши ставятся сразу (trigger nil): время остановки заранее неизвестно — события считаются
 /// при фоновом пробуждении (HealthKit / BGAppRefresh).
@@ -13,8 +13,30 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     private var center: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
+    /// nil, пока настройки iOS ни разу не читали. Чтение не показывает запрос.
+    private(set) var knownAuth: ReminderSwitch.Auth?
+
+    /// Системный запрос. Его вызывают финальная кнопка онбординга и включение напоминаний
+    /// в меню, пока iOS ещё не спрашивали. После ответа системы повторный вызов диалог не
+    /// показывает. Старт и возврат в игру этот метод не вызывают.
     func requestAuthorization() async -> Bool {
-        (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        await refreshAuthorizationStatus()
+        return granted
+    }
+
+    /// Прочитать разрешение, не спрашивая его.
+    func refreshAuthorizationStatus() async {
+        knownAuth = Self.auth(await center.notificationSettings().authorizationStatus)
+    }
+
+    static func auth(_ status: UNAuthorizationStatus) -> ReminderSwitch.Auth {
+        switch status {
+        case .notDetermined: return .notDetermined
+        case .denied: return .denied
+        case .authorized, .provisional, .ephemeral: return .allowed
+        @unknown default: return .denied
+        }
     }
 
     /// Категории с кнопками для каждого выбора главы (регистрировать при запуске).
@@ -24,7 +46,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let def = event.default ?? event.options?.first?.id
             let actions = (event.options ?? []).prefix(2).map {
                 UNNotificationAction(identifier: Self.optionPrefix + $0.id,
-                                     title: $0.id == def ? "\($0.label) (если промолчишь — так)" : $0.label,
+                                     title: $0.id == def ? L10n.format("notify.ifQuiet", $0.label) : $0.label,
                                      options: [])
             }
             categories.insert(UNNotificationCategory(identifier: Self.choicePrefix + event.id,
@@ -33,17 +55,32 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         center.setNotificationCategories(categories)
     }
 
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        let status = await center.notificationSettings().authorizationStatus
+        knownAuth = Self.auth(status)
+        return status
+    }
+
+    /// Только ожидающие местные уведомления этой игры. Показанные и бейдж не трогаем,
+    /// системное разрешение не меняем. Уже отправленные остановки остаются в postedBeatIDs,
+    /// поэтому повторное включение их не дублирует.
+    func cancelPending() {
+        center.removeAllPendingNotificationRequests()
+    }
+
     func post(title: String, body: String, id: String, choiceEventID: String?) {
+        guard ReminderPreference.allowsPosting(known: knownAuth) else { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = .default
+        // Пачка остановок при догоне не звенит на каждую. Баннер остаётся, системный звук — нет.
+        content.sound = nil
         content.threadIdentifier = Self.thread
         if let choiceEventID {
             content.categoryIdentifier = Self.choicePrefix + choiceEventID
             content.userInfo = ["event": choiceEventID]
         }
-        let request = UNNotificationRequest(identifier: "beat." + id, content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: NoticePlan.immediatePrefix + id, content: content, trigger: nil)
         center.add(request) { error in
             #if DEBUG
             if let error { print("Notifier: \(error.localizedDescription)") }
@@ -53,9 +90,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     /// DEBUG: проверить, что разрешение и баннер реально работают (видно и при открытой игре).
     func postTest() {
+        guard ReminderPreference.allowsPosting(known: knownAuth) else { return }
         let content = UNMutableNotificationContent()
-        content.title = "Почтальон"
-        content.body = "Тестовый пуш. Если видишь это — уведомления доходят."
+        content.title = L10n.text("notify.test.title")
+        content.body = L10n.text("notify.test.body")
         content.sound = .default
         content.threadIdentifier = Self.thread
         content.userInfo = ["test": true]
@@ -68,9 +106,140 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    struct PendingNote: Identifiable {
+        let id: String
+        let title: String
+        let when: String
+    }
+
+    func pendingNotes() async -> [PendingNote] {
+        await withCheckedContinuation { continuation in
+            center.getPendingNotificationRequests { requests in
+                let notes = requests.map { request -> PendingNote in
+                    let when: String
+                    if let calendar = request.trigger as? UNCalendarNotificationTrigger,
+                       let date = calendar.nextTriggerDate() {
+                        when = date.formatted(date: .abbreviated, time: .shortened)
+                    } else if let interval = request.trigger as? UNTimeIntervalNotificationTrigger {
+                        when = "через \(Int(interval.timeInterval.rounded())) с"
+                    } else if request.trigger == nil {
+                        when = "сразу"
+                    } else {
+                        when = "запланировано"
+                    }
+                    let title = request.content.title.isEmpty ? request.identifier : request.content.title
+                    return PendingNote(id: request.identifier, title: title, when: when)
+                }
+                continuation.resume(returning: notes.sorted { $0.id < $1.id })
+            }
+        }
+    }
+
+    func pendingIdentifiers() async -> Set<String> {
+        await withCheckedContinuation { continuation in
+            center.getPendingNotificationRequests { requests in
+                continuation.resume(returning: Set(requests.map(\.identifier)))
+            }
+        }
+    }
+
+    func deliveredIdentifiers() async -> Set<String> {
+        await withCheckedContinuation { continuation in
+            center.getDeliveredNotifications { notes in
+                continuation.resume(returning: Set(notes.map(\.request.identifier)))
+            }
+        }
+    }
+
+    /// Ближайшие остановки, до которых ещё идти. Тот же идентификатор заменяется, лишние снимаются.
+    /// Обычная остановка зовёт пройтись. Выбор ставит свои кнопки и свой текст.
+    /// `retain` — уже поставленный пуш выбора, который ещё не отвечен: его не снимаем как устаревший.
+    func replaceAhead(_ items: [NoticePlan.Item], retain: Set<String> = []) {
+        let keeping = Set(items.map(\.identifier)).union(retain)
+        center.getPendingNotificationRequests { [weak self] pending in
+            guard let self else { return }
+            let stale = NoticePlan.staleIdentifiers(pending: pending.map(\.identifier), keeping: keeping)
+            if !stale.isEmpty {
+                self.center.removePendingNotificationRequests(withIdentifiers: stale)
+            }
+        }
+        center.getDeliveredNotifications { [weak self] delivered in
+            guard let self else { return }
+            let stale = NoticePlan.staleIdentifiers(pending: delivered.map(\.request.identifier), keeping: keeping)
+            if !stale.isEmpty {
+                self.center.removeDeliveredNotifications(withIdentifiers: stale)
+            }
+        }
+        for item in items {
+            let content = UNMutableNotificationContent()
+            if let choice = item.choice {
+                content.title = choice.title
+                content.body = choice.body.isEmpty ? choice.title : choice.body
+                content.categoryIdentifier = Self.choicePrefix + choice.eventID
+                content.userInfo = ["event": choice.eventID]
+            } else {
+                content.title = L10n.text("notify.ahead.title")
+                content.body = item.genitive.isEmpty
+                    ? L10n.text("notify.ahead.fallback")
+                    : L10n.format("notify.ahead.body", item.genitive)
+            }
+            content.sound = nil
+            content.threadIdentifier = Self.thread
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: item.after, repeats: false)
+            let request = UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger)
+            center.add(request) { error in
+                #if DEBUG
+                if let error { print("Notifier ahead: \(error.localizedDescription)") }
+                #endif
+            }
+        }
+    }
+
+    func cancelAhead(id: String) {
+        let identifier = NoticePlan.aheadPrefix + id
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+        center.removeDeliveredNotifications(withIdentifiers: [identifier])
+    }
+
+    func cancelAheadAndDaily() {
+        center.getPendingNotificationRequests { [weak self] pending in
+            guard let self else { return }
+            let ids = pending.map(\.identifier).filter {
+                $0.hasPrefix(NoticePlan.aheadPrefix) || $0 == NoticePlan.dailyID
+            }
+            if !ids.isEmpty {
+                self.center.removePendingNotificationRequests(withIdentifiers: ids)
+            }
+        }
+    }
+
+    /// Мягкое напоминание в 18:00, если сегодня ещё не ходили и игру не открывали.
+    func setDailyReminder(enabled: Bool, chapterID: Int = 0) {
+        if !enabled {
+            center.removePendingNotificationRequests(withIdentifiers: [NoticePlan.dailyID])
+            return
+        }
+        let content = UNMutableNotificationContent()
+        content.title = L10n.text("notify.daily.title")
+        content.body = L10n.text(chapterID == 3 ? "notify.daily.swamp" : "notify.daily.body")
+        content.sound = nil
+        content.threadIdentifier = Self.thread
+        var parts = DateComponents()
+        parts.hour = NoticePlan.dailyHour
+        parts.minute = 0
+        let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: true)
+        let request = UNNotificationRequest(identifier: NoticePlan.dailyID, content: content, trigger: trigger)
+        center.add(request) { error in
+            #if DEBUG
+            if let error { print("Notifier daily: \(error.localizedDescription)") }
+            #endif
+        }
+    }
+
     /// Пуш выбора больше не актуален (ответили в приложении / почтальон решил сам).
     func withdraw(id: String) {
-        center.removeDeliveredNotifications(withIdentifiers: ["beat." + id])
+        center.removeDeliveredNotifications(withIdentifiers: [NoticePlan.immediatePrefix + id])
+        cancelAhead(id: id)
     }
 
     /// Сброс истории: убрать и показанные, и запланированные пуши, обнулить бейдж.

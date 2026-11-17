@@ -1,0 +1,2224 @@
+{
+  "world": {
+    "chapters": {
+      "1": {
+        "title": "Valley",
+        "settlements": {
+          "pochta": {
+            "name": "Post Office",
+            "nameGenitive": "the Post Office",
+            "fullName": "Post Office at the Fork"
+          },
+          "svai": {
+            "name": "Stilts",
+            "nameGenitive": "the Stilts",
+            "fullName": "Stilts"
+          },
+          "zvonarnya": {
+            "name": "Belfry",
+            "nameGenitive": "the Belfry",
+            "fullName": "Belfry"
+          },
+          "kadushki": {
+            "name": "Tubs",
+            "nameGenitive": "the Tubs",
+            "fullName": "Tubs"
+          },
+          "nii": {
+            "name": "Institute",
+            "nameGenitive": "the Institute",
+            "fullName": "Radioshadow Institute"
+          },
+          "sedlo": {
+            "name": "Saddle",
+            "nameGenitive": "the Saddle",
+            "fullName": "Box at the Saddle"
+          }
+        },
+        "quests": {
+          "2900": "Take Nina's letter to Kuzma at the Stilts",
+          "6000": "Take Mitya's letter to Pimen at the Belfry",
+          "9100": "Reach the Tubs and look in box no. 2",
+          "9300": "Pick up 12 batteries at the Shop for Vera",
+          "13200": "Take the batteries and Pimen's letter to Vera at the Institute",
+          "20000": "Carry Nina's letter to the box at the Saddle"
+        }
+      },
+      "2": {
+        "title": "Mountains",
+        "settlements": {
+          "sedlo": {
+            "name": "Saddle",
+            "nameGenitive": "the Saddle",
+            "fullName": "Box at the Saddle"
+          },
+          "gar": {
+            "name": "Burn",
+            "nameGenitive": "the Burn",
+            "fullName": "Burn Cordon"
+          },
+          "penki": {
+            "name": "Stumps",
+            "nameGenitive": "the Stumps",
+            "fullName": "Stumps logging site"
+          },
+          "khomut": {
+            "name": "Collar",
+            "nameGenitive": "the Collar",
+            "fullName": "Collar Pass"
+          },
+          "repka": {
+            "name": "Turnip",
+            "nameGenitive": "the Turnip",
+            "fullName": "Turnip Relay"
+          },
+          "krivulya": {
+            "name": "Crook",
+            "nameGenitive": "the Crook",
+            "fullName": "Crook Pinch"
+          },
+          "gorlovina": {
+            "name": "Throat",
+            "nameGenitive": "the Throat",
+            "fullName": "Throat Ravine"
+          }
+        },
+        "quests": {
+          "7500": "To the Stumps",
+          "12500": "Collar Pass — keep the pace",
+          "16500": "To Turnip",
+          "25000": "To the Throat"
+        }
+      },
+      "3": {
+        "title": "Marshes",
+        "settlements": {
+          "gorlovina": {
+            "name": "Throat",
+            "nameGenitive": "the Throat",
+            "fullName": "Ravine “the Throat”"
+          },
+          "gat": {
+            "name": "Boardwalk",
+            "nameGenitive": "the Boardwalk",
+            "fullName": "Boardwalk"
+          },
+          "top": {
+            "name": "Mire",
+            "nameGenitive": "the Mire",
+            "fullName": "Mire"
+          },
+          "torfyanik": {
+            "name": "Peat Cut",
+            "nameGenitive": "the Peat Cut",
+            "fullName": "Peat Cut"
+          },
+          "staraya_protoka": {
+            "name": "Old Channel",
+            "nameGenitive": "the Old Channel",
+            "fullName": "Old Channel"
+          },
+          "kamyshi": {
+            "name": "Reeds",
+            "nameGenitive": "the Reeds",
+            "fullName": "Reeds"
+          },
+          "gorlo": {
+            "name": "Gullet",
+            "nameGenitive": "the Gullet",
+            "fullName": "Gorge “the Gullet”"
+          },
+          "otstoy": {
+            "name": "Settling Pool",
+            "nameGenitive": "the Settling Pool",
+            "fullName": "Landing “the Settling Pool”"
+          }
+        },
+        "quests": {
+          "4000": "Carry the clean envelope to the box on the Boardwalk",
+          "9000": "To the Mire",
+          "20000": "To the Reeds",
+          "30000": "To the Settling Pool"
+        }
+      }
+    }
+  },
+  "map": {
+    "settlements": {
+      "pochta": "Post Office",
+      "svai": "Stilts",
+      "zvonarnya": "Belfry",
+      "kadushki": "Tubs",
+      "nii": "Institute",
+      "sedlo": "Saddle",
+      "gar": "Burn",
+      "penki": "Stumps",
+      "khomut": "Collar",
+      "repka": "Turnip",
+      "krivulya": "Crook",
+      "gorlovina": "Throat",
+      "gat": "Boardwalk",
+      "top": "Mire",
+      "torfyanik": "Peat Cut",
+      "staraya_protoka": "Old Channel",
+      "gorlo": "Gullet",
+      "otstoy": "Settling Pool"
+    }
+  },
+  "lore": {
+    "kuzma": {
+      "title": "Kuzma Yerofeyevich Us",
+      "lines": [
+        "Elder of the Stilts. A fisherman. Mitya's grandfather.",
+        "Kuzma writes short letters on fish wrapping, about bream and water, asking for the jar back."
+      ]
+    },
+    "mitya": {
+      "title": "Mitya Us",
+      "lines": [
+        "Eleven. Lives with his grandfather Kuzma at the Stilts.",
+        "He's building a receiver and wants to pick up at least one voice. His letters have diagrams in the margins. Over."
+      ]
+    },
+    "pimen": {
+      "title": "Father Pimen",
+      "lines": [
+        "Bell-ringer of the Belfry. He used to be a telegraph operator.",
+        "He writes on scraps of telegraph tape and uses STOP instead of a full stop. The habit has stayed with him."
+      ]
+    },
+    "nina": {
+      "title": "Nina Arkadyevna Kolobova",
+      "lines": [
+        "Lives at the Tubs. Waiting for her son Timofey.",
+        "Nina dictates letters to Mitya about cucumbers and socks, and she asks, “Are you eating something hot?” Off the road, she feeds you first."
+      ]
+    },
+    "vera": {
+      "title": "Vera Ignatyevna Pasechnik",
+      "lines": [
+        "Lives at the Radioshadow Institute. People bring her things to fix.",
+        "She writes point by point with a TM pencil and mentions the goats at the end."
+      ]
+    },
+    "agnia": {
+      "title": "A.L.",
+      "lines": [
+        "Notes from the box at the Saddle. Violet pencil, a postal form.",
+        "All by the form. And at the end — “Watch your feet.”"
+      ]
+    },
+    "nil": {
+      "title": "Brother Nil",
+      "lines": [
+        "A monk of the Belfry. He patches the tube of Vera's bicycle.",
+        "For now the bicycle stands at the gate."
+      ]
+    },
+    "monk_old": {
+      "title": "Old monk",
+      "lines": [
+        "A monk of the Belfry.",
+        "They make candles and honey here. There are hives on the lower tiers of the bell tower."
+      ]
+    },
+    "monk_frail": {
+      "title": "Thin monk",
+      "lines": [
+        "A monk of the Belfry.",
+        "Bees in the windows, wax on the walls. Three logs prop up the bell tower."
+      ]
+    },
+    "lab_anya": {
+      "title": "Lab assistant Anya",
+      "lines": [
+        "A lab assistant at the Radioshadow Institute.",
+        "At the Institute they keep goats and make cheese. They trade it for batteries and candles."
+      ]
+    },
+    "lab_fedor": {
+      "title": "Lab assistant Fyodor",
+      "lines": [
+        "A lab assistant at the Radioshadow Institute.",
+        "Vera has books, tools, and parts. People bring whatever has broken."
+      ]
+    },
+    "matrena": {
+      "title": "Matryona the goat",
+      "lines": [
+        "Grazes by the Institute. A notch in her ear.",
+        "She comes up to the mailbag. Better hold the envelopes higher."
+      ]
+    },
+    "goat_kid": {
+      "title": "Kid",
+      "lines": [
+        "A kid by the Institute antenna. He reaches for a bread crust.",
+        "The antenna is lying on its side. It suits the goats."
+      ]
+    },
+    "cat_barrel": {
+      "title": "Shop cat",
+      "lines": [
+        "A cat from the Tubs. She lies on a barrel by the Shop.",
+        "She has already pinned the free end of the twine with a paw."
+      ]
+    },
+    "rooster": {
+      "title": "Rooster",
+      "lines": [
+        "The rooster by the walkway at the Stilts.",
+        "He has stretched his neck. First he looks the bag over, then he announces the morning."
+      ]
+    },
+    "raven_saddle": {
+      "title": "Raven",
+      "lines": [
+        "A raven by the mailbox at the Saddle. He pecks the iron.",
+        "He noticed the shiny button at once."
+      ]
+    },
+    "lesnik": {
+      "title": "Ranger",
+      "lines": [
+        "Lives at Burn Cordon. Mending the gate.",
+        "His people are at the Tubs. He asks you to pass it on: they could use salt."
+      ]
+    },
+    "sawyer": {
+      "title": "Sawyer",
+      "lines": [
+        "A sawyer on the mountain road.",
+        "Further on is the Stumps logging site, with stacks and stump houses."
+      ]
+    },
+    "brigadir": {
+      "title": "Foreman",
+      "lines": [
+        "Foreman of the Stumps logging site.",
+        "He trades tins for Belfry candles. If someone is passing."
+      ]
+    },
+    "dog_penki": {
+      "title": "Stumps dog",
+      "lines": [
+        "A dog from the cut. He brought a stick and laid it on a boot.",
+        "He barked once, short. Your turn."
+      ]
+    },
+    "penki_worker": {
+      "title": "Worker",
+      "lines": [
+        "A worker at the Stumps logging site.",
+        "Stump houses, stacks, and a tractor with no wheels. They sleep wherever the day caught them."
+      ]
+    },
+    "repka_tech": {
+      "title": "Turnip keeper",
+      "lines": [
+        "Keeper of the Turnip radio relay.",
+        "The relay stands on the mountain road, before the Crook Pinch."
+      ]
+    },
+    "krivulya_local": {
+      "title": "Crook local",
+      "lines": [
+        "Lives by the Crook Pinch.",
+        "Further on the road goes to Olshanik and Throat Ravine."
+      ]
+    },
+    "ramka": {
+      "title": "Ramka",
+      "lines": [
+        "A goat from the Radioshadow Institute. She sleeps in the antenna.",
+        "A nick in her ear. Vera knows her by it."
+      ]
+    },
+    "nyura": {
+      "title": "Aunt Nyura",
+      "lines": [
+        "Take the cranberry off the hummock. Off the water it takes you faster.",
+        "Leave the ribbon. It is not yours."
+      ]
+    },
+    "semyon": {
+      "title": "Semyon",
+      "lines": [
+        "The shift left. Here are the stacks. I am drying them.",
+        "They wrote on the post. I turn peat, not papers."
+      ]
+    },
+    "grisha": {
+      "title": "Uncle Grisha",
+      "lines": [
+        "They put the boat up on trestles at the Boardwalk. Right. It is damp for her here.",
+        "No going on down. The channel is choked. What kind of ferry is that."
+      ]
+    },
+    "petka": {
+      "title": "Petka",
+      "lines": [
+        "The fish walks higher up. I go after her. She goes away from me.",
+        "The receiver shouts, then it hisses. I already took the lid off."
+      ]
+    }
+  },
+  "stories": {
+    "1": {
+      "finaleTitle": "Chapter 1 · Valley",
+      "finaleSubtitle": "done",
+      "nextChapter": "Chapter 2, “Mountains”",
+      "sortAuto": "The postman takes every letter. Each tag says where that one goes.",
+      "items": {
+        "l1": {
+          "to": "Kuzma",
+          "place": "Stilts",
+          "from": "Nina",
+          "address": [
+            "STILTS.",
+            "KUZMA YEROFEICH",
+            "FROM NINA"
+          ],
+          "attachmentCaption": "a dried dill umbrella in a scrap of newspaper",
+          "text": "Kuzma Yerofeich hello, my respects and I'm asking how you are out there on the water, Mitya says he's building the pile up again, what kind of spring is this. Send me three dried bream for Timosha in a parcel, he likes dried fish with potatoes, he didn't come for New Year so let him eat for Trinity at least. I'll give you a jar of cucumbers for them, small but crunchy, and I put in a dill umbrella for seed, dill won't grow out there on the water so plant it in a box on the walkway. Mitya eats soup at my place and writes to me, his hand is quick, don't scold him. Will you send the bream, even two, when someone is passing.\n(Granddad, you said there's no bream, they went to the Throat. I told her. She says write it anyway. M.)\nX N."
+        },
+        "l2": {
+          "to": "Pimen",
+          "place": "Belfry",
+          "from": "Mitya",
+          "address": [
+            "BELFRY.",
+            "FATHER PIMEN",
+            "FROM MITYA (US)"
+          ],
+          "attachmentCaption": "a drawing on graph paper and a yellow wrapper folded like a little fir",
+          "text": "FATHER PIMEN HELLO.\nPlease let me put an ANTENA on the bell tower. Drawing enclosed. I have 14 m of copper wire, I took it off the phone pole by the Post Office, it was hanging empty anyway.\nIt's low here at the Stilts, the mountains get in the way. Every band hisses THE SAME. It should be different: one thing by day, far stations at night, that's what the book says. So it has to be higher.\nI won't touch the bell. I'm not afraid of the bees. Any day is fine.\nThe wrapper is what it will look like, only made of wire.\nOver.\nMitya (Us)"
+        },
+        "l3": {
+          "to": "Timofey",
+          "place": "Olkhovka · via the Saddle",
+          "from": "Nina",
+          "address": [
+            "Olkhovka, general delivery.",
+            "Timofey Kolobov",
+            "Grigoryevich"
+          ],
+          "attachmentCaption": "grey wool socks, double heel",
+          "text": "Timosha hello, I'm sending you wool socks, double on the heel, you always wear the heels through, don't wash them hot or they'll shrink, and don't dry them on the stove itself. Are you eating something hot. The cucumbers are small this year but crunchy, I'm not touching your jar, it stands where it stood. Are you writing to Lida. Vera Ignatyevna rides past on the bicycle and won't come in, I keep thinking it's the skirt, you write to Lida and tell her not to be hurt about what I said about the skirt, and tell her mother. Are you writing to Lida. They might let you go for Trinity, so sit down off the road first, eat, and then talk. Are you eating something hot.\n(She said the jar twice, I wrote it once. M.)\nX N."
+        },
+        "l4": {
+          "to": "the Postman",
+          "place": "from Vera · Institute",
+          "from": "Vera",
+          "address": [],
+          "attachmentCaption": "hand it to Vera herself; do not drop it in the Institute box",
+          "text": "RADIOSHADOW INSTITUTE. REQUISITION No. 23\nItem: K-2\nName: 1.5 V cell, “keg”\nQuantity (in words): 12 (twelve) pcs.\nReason: keeping the set running\nRequested by: Pasechnik V.I.\nTo the postman.\n1. Collect the cells at the Shop, Tubs. Paid: cheese, 2 wheels, 1.6 kg.\n2. Count them when you take them. There must be 12. If fewer, don't take them, bring the requisition back.\n3. Carry them apart from the letters. They leak.\n4. Hand them to me. Do not drop them in the Institute box.\nV.I. Pasechnik\nP.S. If on the climb past the apiary you meet a goat with a nick in the left ear, that is Ramka. She follows anyone going up."
+        },
+        "batteries": {
+          "to": "Vera",
+          "place": "Institute · 12 pcs.",
+          "from": "the Shop",
+          "text": "1.5 V cells, “keg” — 12 pcs. A canvas sack. Keep them off the letters: they leak."
+        },
+        "l5": {
+          "to": "Vera",
+          "place": "Institute · personal",
+          "from": "Pimen",
+          "address": [
+            "V I PASECHNIK",
+            "PERSONAL"
+          ],
+          "attachmentCaption": "the seal is a thumb pressed into candle wax",
+          "outside": "BILL STOP BELFRY STOP MEMORIAL WAX CANDLES 41 PCS STOP WAX IS THE CUSTOMER'S STOP DO NOT CHARGE FOR THE WORK STOP PIMEN",
+          "text": "VERA STOP THURSDAY STOP FORTY-ONE CANDLES STOP I WILL BRING THEM MYSELF STOP\nYOUR WAX IS ALL USED UP STOP THE WICK IS OURS STOP\nYOUR BICYCLE IS AT THE GATE STOP BROTHER NIL PATCHED THE TUBE STOP\nTHE BOY US ASKS FOR THE BELL TOWER FOR AN ANTENNA STOP I HAVE NOT GIVEN IT YET STOP\nGOD WILLING WE WILL TALK STOP PIMEN"
+        },
+        "l6": {
+          "to": "Nina",
+          "place": "Tubs",
+          "from": "“Timofey”",
+          "address": [
+            "TUBS.",
+            "KOLOBOVA N.A.",
+            "FROM HER SON TIMOFEY"
+          ],
+          "stamp": [
+            "TUBS",
+            "box 2"
+          ],
+          "attachmentCaption": "a green wrapper folded like a little fir",
+          "text": "MAMA HELLO!\nThe socks came just in time. The heel is double, I don't wash them hot or they'll shrink. Everything here is in order. I eat something hot every day, soup. Small cucumbers are fine, the main thing is they're crunchy. Don't open the jar yet.\nI'm writing to Lida, she sends her respects too and isn't hurt about the skirt.\nAt work the antena is this big, a good 20 meters. Don't throw out the fridge, I'll fix it when I come.\nDon't chase Mitya off, let him walk around.\nMore later.\nTima"
+        },
+        "l7": {
+          "to": "the Postman",
+          "place": "Saddle · collection",
+          "from": "“Ksenia”",
+          "address": [
+            "Valley, Post Office at the Fork.",
+            "To the Postman"
+          ],
+          "stamp": [
+            "N. STVOR",
+            "{postmark}"
+          ],
+          "attachmentCaption": "a label, “Sprats. Olkhovka Cannery,” soaked off a tin",
+          "note": "Dear postman! I made the collection. Kolobova N.A.'s item was accepted. Next collection — Thursday. Watch your feet. A.L.",
+          "text": "Hello, brother.\nYour letter arrived whole. Everything here is the same: Olkhovka, the cannery, I'm on the seaming line, shift from seven. I'm sending the label, this is our sprats. I'm not putting in a tin, it's heavy, and you have enough to carry.\nThey don't let anyone through the cordon. We have no radio and no telephone either, so don't think that. Don't go down: the road below the Saddle has washed out, there's a post, they'll turn you around anyway. Carry the mail, the old people can't manage without you.\nEat something hot. Watch your feet.\nKsenia",
+          "notes": [
+            {
+              "who": "",
+              "text": "Dear postman! I made the collection. Kolobova N.A.'s item did not arrive. Next collection — Thursday. Watch your feet. A.L."
+            }
+          ]
+        },
+        "animal_cat_stamp": {
+          "to": "the Postman",
+          "place": "under the barrel at the Shop",
+          "from": "Shop cat",
+          "text": "An old brass stamp with no handle. The cat sat on it until she jumped off the barrel."
+        }
+      },
+      "events": {
+        "sort": {
+          "push": [
+            {
+              "who": "",
+              "text": "Post Office. The bag is buckled, the postman left in the dark."
+            }
+          ]
+        },
+        "e_cart": {
+          "title": "A barrow across the road",
+          "text": "A barrow of cabbage has slid one wheel into the ditch and ended up across the road. An old woman from the Tubs stands beside it, holding the shaft.",
+          "options": {
+            "help": {
+              "label": "Help",
+              "result": "The postman and the old woman hauled the barrow out of the ditch. She tucked a cabbage stump into the bag and said, “Regards to Nina.”",
+              "auto": "The postman didn't wait — he put his shoulder to the barrow."
+            },
+            "around": {
+              "label": "Go around",
+              "result": "The postman went around the barrow along the boundary. Behind him, they kept scolding the wheel for a long while."
+            }
+          },
+          "push": [
+            {
+              "who": "",
+              "text": "Stilts, the road. A barrow of cabbage across the way — help the old woman?"
+            }
+          ]
+        },
+        "e_animal_rooster": {
+          "title": "Before the rooster",
+          "text": "The rooster by the walkway has stretched out his neck and is looking at the bag. He's about to crow.",
+          "options": {
+            "listen": {
+              "label": "Listen",
+              "result": "The rooster crowed so hard the bream on the line shook. Kuzma turned his head.",
+              "auto": "The postman stopped by the walkway and let the rooster finish."
+            },
+            "pass": {
+              "label": "Pass quietly",
+              "result": "The rooster followed the bag with one eye. Kuzma heard the steps anyway."
+            }
+          }
+        },
+        "s_animal_rooster_kuzma": {
+          "title": "Kuzma by the walkway",
+          "lines": [
+            {
+              "who": "Kuzma",
+              "text": "I said I played till the rooster. And this one wasn't even going to."
+            },
+            {
+              "who": "Kuzma",
+              "text": "This one looks the bag over first, and only then announces the morning."
+            }
+          ]
+        },
+        "d_l1": {
+          "lines": [
+            {
+              "who": "Kuzma",
+              "text": "Well. From Nina. There's no bream — there, the grandson wrote it in."
+            },
+            {
+              "who": "Kuzma",
+              "text": "I'll plant the umbrella. Let her send the jar."
+            },
+            {
+              "who": "Mitya",
+              "text": "I wrote that. Quick hand. Over."
+            },
+            {
+              "who": "Kuzma",
+              "text": "Well. Empty today? Right. Move along."
+            },
+            {
+              "who": "Mitya",
+              "text": "Nothing from Aunt Nina? She did write."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Stilts. Kuzma took the letter in wet hands: “Well. From Nina.”"
+            },
+            {
+              "who": "",
+              "text": "Stilts. Kuzma looks into the empty bag: “Well. Move along.”"
+            }
+          ]
+        },
+        "e_ramka": {
+          "title": "A goat on the road",
+          "text": "On the climb past the apiary, a goat stands chewing fireweed. There's a nick in her left ear.",
+          "options": {
+            "lead": {
+              "label": "Take her along",
+              "result": "The postman headed uphill, and the goat followed. She keeps up with him.",
+              "auto": "The postman shrugged and went uphill. The goat followed."
+            },
+            "chase": {
+              "label": "Shoo her",
+              "result": "The postman swung the bag. The goat moved off toward the hives and is watching him go."
+            }
+          },
+          "push": [
+            {
+              "who": "",
+              "text": "The climb to the Belfry. A goat with a nicked ear chews fireweed and looks at the bag."
+            }
+          ]
+        },
+        "d_l2": {
+          "lines": [
+            {
+              "who": "Pimen",
+              "text": "An antenna, then. On the bell tower. He's not afraid of the bees."
+            },
+            {
+              "who": "Pimen",
+              "text": "Tell the boy: I'll think about it."
+            },
+            {
+              "who": "Pimen",
+              "text": "Empty? God willing, another time."
+            },
+            {
+              "who": "Pimen",
+              "text": "Whose goat are you leading? She's the Institute's. Vera knows her by the ear."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Belfry. Pimen read about the antenna and said: “I'll think about it.”"
+            },
+            {
+              "who": "",
+              "text": "Belfry. No letters — the bell hums for two."
+            }
+          ]
+        },
+        "p_l5": {
+          "lines": [
+            {
+              "who": "Pimen",
+              "text": "To Vera Ignatyevna. Personal. Into her hands."
+            },
+            {
+              "who": "Pimen",
+              "text": "Bag full? Well, I'll leave it at the gate. God willing, someone picks it up."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Belfry. Pimen shoved a letter into the bag: “To Vera Ignatyevna. Personal.”"
+            },
+            {
+              "who": "",
+              "text": "Belfry. The bag is full — Pimen's letter stayed at the gate."
+            }
+          ]
+        },
+        "s_nina": {
+          "lines": [
+            {
+              "who": "Nina",
+              "text": "Well, did you get it to Timosha?"
+            },
+            {
+              "who": "Nina",
+              "text": "Matryona passed on the cabbage stump? So you hauled it out. Thank you, son."
+            },
+            {
+              "who": "Nina",
+              "text": "Matryona says the postman walked past. Well, the post has government feet."
+            },
+            {
+              "who": "",
+              "text": "The letter for Timofey is in the bag."
+            },
+            {
+              "who": "",
+              "text": "The letter for Timofey stayed at the Post Office."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Tubs. Nina wipes her hands on her apron: “Did you get it to Timosha?”"
+            }
+          ]
+        },
+        "p_l6": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Box no. 2 by the well. One envelope. Collection mark: “Tubs, box 2.”"
+            },
+            {
+              "who": "",
+              "text": "There's an envelope in box no. 2, but there's no room left in the bag. It will have to stay here for now."
+            },
+            {
+              "who": "",
+              "text": "Ramka ate half a bucket of greens by the well. Nobody objected."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Tubs. In box no. 2 by the well — one envelope."
+            },
+            {
+              "who": "",
+              "text": "Tubs. An envelope in box no. 2, and no room in the bag."
+            }
+          ]
+        },
+        "d_l6": {
+          "lines": [
+            {
+              "who": "Nina",
+              "text": "From Timosha? Put it on the table. Mitya will come and read it."
+            },
+            {
+              "who": "Nina",
+              "text": "Sit down off the road first, eat."
+            },
+            {
+              "who": "Nina",
+              "text": "Nothing today? Well, sit down at least, eat."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Tubs. Nina put the letter “from her son” on the table — to wait for Mitya."
+            },
+            {
+              "who": "",
+              "text": "Tubs. Nina: “Nothing today? Well, sit down at least, eat.”"
+            }
+          ]
+        },
+        "p_bat": {
+          "lines": [
+            {
+              "who": "the Shop",
+              "text": "Twelve. Count them, she said so. Don't turn the sack over."
+            },
+            {
+              "who": "the Shop",
+              "text": "Bag's full — where would you put them. Let them lie, the cheese is paid."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "The Shop at the Tubs. Twelve batteries in a sack — don't turn it over."
+            },
+            {
+              "who": "",
+              "text": "The Shop at the Tubs. The batteries didn't fit — let them lie, the cheese is paid."
+            }
+          ]
+        },
+        "e_animal_cat": {
+          "title": "The cat on the barrel",
+          "text": "The cat at the Shop has pinned the free end of the twine with a paw. Something under the barrel glints dully.",
+          "options": {
+            "twine": {
+              "label": "Pull the twine",
+              "result": "The cat took the twine away, sat down on it and turned her back. The barrel is hers now too.",
+              "auto": "The postman tugged the twine. The cat decided it was hers."
+            },
+            "look": {
+              "label": "Look under the barrel",
+              "result": "The cat jumped off the barrel. Under the barrel lies a brass stamp with no handle, and it fit in the pocket."
+            }
+          }
+        },
+        "e_storm": {
+          "title": "Storm",
+          "text": "Thunder rolls over the stream, and the postman waits out the storm in the turbine shed. Inside, the hum is louder than outside — steady, as if it doesn't come from the water.",
+          "push": [
+            {
+              "who": "",
+              "text": "Storm by the Institute. Waited it out in the turbine shed. It hums."
+            }
+          ],
+          "lines": [
+            {
+              "who": "",
+              "text": "Ramka stopped by the shed and won't go on."
+            }
+          ]
+        },
+        "e_animal_goat_kid": {
+          "title": "The kid by the antenna",
+          "text": "A kid stands under the antenna lying on its side and reaches for a bread crust in a hand.",
+          "options": {
+            "feed": {
+              "label": "Give the crust",
+              "result": "The kid crunched up the crust and is now waiting by the gate. He walks the postman past the Institute and back to the antenna.",
+              "auto": "The postman broke the kid off a crust."
+            },
+            "leave": {
+              "label": "Leave him by the antenna",
+              "result": "The kid nudged the edge of the antenna with his nose and stayed in the shade."
+            }
+          }
+        },
+        "d_vera": {
+          "lines": [
+            {
+              "who": "Vera",
+              "text": "Twelve. I'll count them."
+            },
+            {
+              "who": "Vera",
+              "text": "No cells. Bring the requisition back."
+            },
+            {
+              "who": "Vera",
+              "text": "The bill from the Belfry. Good."
+            },
+            {
+              "who": "Vera",
+              "text": "The seal was opened. Two prints. The second, I suppose, is yours."
+            },
+            {
+              "who": "Vera",
+              "text": "You brought Ramka. Thank you."
+            },
+            {
+              "who": "Vera",
+              "text": "P.S. Ramka slept in the antenna again."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Institute. Vera counts the batteries. Twelve."
+            },
+            {
+              "who": "",
+              "text": "Institute. Vera Ignatyevna took the mail and said nothing."
+            }
+          ]
+        },
+        "e_animal_matrena": {
+          "title": "Matryona and the bag",
+          "text": "A goat came up to the bag with a notch in her ear, like Ramka's. Only this goat is older and wider.",
+          "options": {
+            "hand": {
+              "label": "Hold out a palm",
+              "result": "Matryona sniffed his fingers and butted the bag. There was nothing in it but paper and nothing to eat, so she left.",
+              "auto": "The postman held out a palm. Matryona checked the bag with a horn."
+            },
+            "pass": {
+              "label": "Hide the bag behind his back",
+              "result": "Matryona reached after it, changed her mind, and went back to the pen."
+            }
+          }
+        },
+        "e_animal_matrena_jealous": {
+          "title": "Two goats, one path",
+          "text": "Ramka is already standing by the pen. Matryona noticed her watching the postman go, butted the bag and stood across the path. She's jealous.",
+          "options": {
+            "greens": {
+              "label": "Give her the greens",
+              "result": "Matryona got busy with the greens, and the path cleared. Ramka is pretending she isn't looking.",
+              "auto": "The postman held a bunch of greens out to Matryona, and the path cleared."
+            },
+            "chase": {
+              "label": "Shoo her",
+              "result": "The postman waved his hand. Matryona stepped back, butted the bag one last time and let him through."
+            }
+          }
+        },
+        "e_wind": {
+          "title": "Wind",
+          "text": "On the switchbacks the wind tears at the bag's flap, and a fat envelope flies down toward the barrier. Go after it?",
+          "fallback": "The wind flaps the empty flap of the bag. Nothing to lose.",
+          "options": {
+            "chase": {
+              "label": "Go after it",
+              "result": "He caught it at the barrier. The envelope is muddy, but whole.",
+              "auto": "The postman broke into a run after the envelope."
+            },
+            "let": {
+              "label": "Let it go",
+              "result": "The envelope went into the fog, socks and all."
+            }
+          },
+          "push": [
+            {
+              "who": "",
+              "text": "Saddle, the switchbacks. The wind is taking a fat envelope toward the barrier!"
+            },
+            {
+              "who": "",
+              "text": "Saddle. The wind flaps the empty flap of the bag."
+            }
+          ]
+        },
+        "finale": {
+          "lines": [
+            {
+              "who": "",
+              "text": "The box at the Saddle. A sign: “Collection: Tue, Thu.”"
+            },
+            {
+              "who": "",
+              "text": "Nina's letter went into the box."
+            },
+            {
+              "who": "",
+              "text": "The envelope is muddy, but the socks are dry."
+            },
+            {
+              "who": "",
+              "text": "Nothing to put in the box."
+            },
+            {
+              "who": "",
+              "text": "Inside there's an envelope marked “to the Postman” and a note on a form."
+            }
+          ],
+          "note": "Dear postman! I made the collection. Kolobova N.A.'s item was accepted. Next collection — Thursday. Watch your feet. A.L.",
+          "push": [
+            {
+              "who": "",
+              "text": "Saddle. In the blue box, an envelope “to the Postman.”"
+            }
+          ]
+        }
+      },
+      "quests": {
+        "sort|": "All the mail is already in the bag",
+        "d_l1|inBag:l1": "Take Nina's letter to Kuzma at the Stilts",
+        "d_l2|inBag:l2": "Take Mitya's letter to Father Pimen at the Belfry",
+        "p_l5|": "Stop at the Belfry, at Father Pimen's",
+        "p_l6|": "Reach the Tubs and look in box no. 2",
+        "d_l6|inBag:l6": "Give Nina the letter from box no. 2",
+        "p_bat|": "Pick up 12 batteries at the Shop for Vera",
+        "d_vera|inBag:batteries": "Take the batteries and Pimen's letter to Vera at the Institute",
+        "d_vera|inBag:l5": "Take Pimen's letter to Vera at the Institute",
+        "d_vera|": "Reach the Institute, Vera Ignatyevna",
+        "finale|inBag:l3": "Carry Nina's letter to the box at the Saddle",
+        "finale|": "Reach the box at the Saddle"
+      },
+      "residents": {
+        "kuzma": "Kuzma",
+        "mitya": "Mitya",
+        "pimen": "Pimen",
+        "nina": "Nina",
+        "vera": "Vera",
+        "agnia": "A.L.",
+        "nil": "Brother Nil",
+        "monk_old": "Old monk",
+        "monk_frail": "Thin monk",
+        "lab_anya": "Lab assistant Anya",
+        "lab_fedor": "Lab assistant Fyodor",
+        "matrena": "Matryona the goat",
+        "goat_kid": "Kid",
+        "cat_barrel": "Shop cat",
+        "rooster": "Rooster"
+      },
+      "fates": {
+        "svai|delivered:l1": "For Kuzma — Nina's letter: delivered. The dill umbrella goes in the box on the walkway.",
+        "svai|!delivered:l1": "There was no letter for Kuzma: it stayed at the Post Office.",
+        "svai|flag:cart_helped": "He helped the old woman with the barrow. Nina got regards, and a cabbage stump.",
+        "svai|flag:cart_bypassed": "He went around the barrow. The Tubs heard about it before you did.",
+        "zvonarnya|delivered:l2": "For Pimen — Mitya's request about the antenna: delivered, “I'll think about it.”",
+        "zvonarnya|!delivered:l2": "Mitya's request about the antenna stayed at the Post Office.",
+        "kadushki|delivered:l6": "For Nina — the letter “from her son” out of box no. 2: delivered.",
+        "kadushki|!delivered:l6": "Nina did not get the letter “from her son.”",
+        "nii|delivered:batteries": "For Vera — 12 cells, on requisition no. 23.",
+        "nii|!delivered:batteries": "The batteries were not brought to Vera. Requisition no. 23 came back.",
+        "nii|sealed:l5": "Pimen's bill: the seal is whole, one print.",
+        "nii|opened:l5": "Pimen's letter was opened: two prints on the seal. Vera noticed.",
+        "nii|flag:ramka": "Ramka is home, in the antenna.",
+        "nii|!flag:ramka": "He shooed Ramka. She got home herself and spent the night in the antenna.",
+        "sedlo|sent:l3": "For Timofey — the socks and Nina's letter: put in the box at the Saddle.",
+        "sedlo|lost:l3": "The wind took Nina's letter on the switchbacks.",
+        "sedlo|atPost:l3": "Nina's letter for Timofey stayed at the Post Office."
+      },
+      "arrivals": {
+        "svai": "Stilts. Boards underfoot, water under the boards. Someone is drying bream.",
+        "zvonarnya": "Belfry. It smells of wax, and a bell hums overhead.",
+        "kadushki": "Tubs. Barrels, dill, smoke from a gramophone horn.",
+        "nii": "Institute. The windows are lit even by day.",
+        "sedlo": "Saddle. The pass. Fog, and a blue mailbox."
+      }
+    },
+    "2": {
+      "finaleTitle": "Chapter 2 · Mountains",
+      "finaleSubtitle": "done",
+      "nextChapter": "Chapter 3, “The Marshes”",
+      "items": {
+        "l1": {
+          "to": "Nina",
+          "place": "Tubs · via Vera",
+          "from": "Timofey",
+          "address": [
+            "TUBS.",
+            "KOLOBOVA N.A.",
+            "FROM HER SON"
+          ],
+          "stamp": [
+            "N. STVOR",
+            "the day before"
+          ],
+          "attachmentCaption": "a pay slip folded in four; the “to be paid” line says 40",
+          "note": "Dear postman!\nKolobova N.A.'s item was held up in sorting, my apologies. Please deliver it to the addressee. Next collection — Thursday. Watch your feet.\nA.L.",
+          "text": "Ma hello. They paid me, I'm sending forty, don't save on coal, winter is close, take whatever firewood they give. Lidka sends her respects, says she'll stop by when the shift lets her, only don't start about the skirt with her again, we settled it ourselves, don't worry. The shift is two more weeks, then a short leave. We'll both come for New Year, so you sit down off the road first, eat, and then listen. I'm wearing your socks, the heels are whole, I don't dry them hot. Don't open the jar, I'll come and we'll open it. Hello to Mitya, let him mind his granddad. Tima"
+        },
+        "l2": {
+          "to": "Mitya",
+          "place": "Stilts · via Vera",
+          "from": "Vera",
+          "address": [
+            "Dmitry Us"
+          ],
+          "attachmentCaption": "a glass 0.25 A fuse in an envelope of graph paper; a tag, “K-2”",
+          "text": "Dmitry.\n1. Your diagram needs a fuse on the receiver input. I am sending 0.25 A.\n2. The tag is from the instrument I took it off. Item K-2. There is no other rating in the store.\n3. Fit it strictly to the diagram. No jumpers. After fitting, check the current at idle.\n4. Write observations in pencil. Ink smears in the damp.\n5. Do not touch the antenna on the bell tower yet. The talk with Pimen is not finished.\nV.I. Pasechnik\nP.S. Ramka slept in the antenna again. Feed is in the box by the gate."
+        },
+        "l3": {
+          "to": "Vera",
+          "place": "Institute",
+          "from": "Mitya",
+          "address": [
+            "RADIOSHADOW INSTITUTE.",
+            "PASECHNIK V.I."
+          ],
+          "attachmentCaption": "a burnt fuse, the leads charred; a note, “0.25 A — BURNT”",
+          "text": "AUNT VERA HELLO.\nThe fuse BURNT. The moment I switched it on. The leads are black, it smells.\nAunt Vera sent the wrong one. Or the right one.\nOn the antena it was hearing steady, now it hisses THE SAME on every band again. The book says it shouldn't.\nThe receiver has been silent two days. Granddad's batteries are low, I already took one. I'll try again if I find another at 1 A like the diagram.\nYour drawing is whole. Over.\nMitya (Us)"
+        },
+        "l4": {
+          "to": "Mitya",
+          "place": "Stilts · via Vera",
+          "from": "Kuzma",
+          "address": [
+            "MITYA US"
+          ],
+          "attachmentCaption": "a dead 1.5 V “keg” battery; a wrapper with a grease spot",
+          "text": "Mitya. The battery from the receiver died, I changed it this morning. I played till the rooster, and the light was already out. Well.\nTake it, maybe it's of use. Get home by seven, you've got nets.\nK. Us"
+        },
+        "l5": {
+          "to": "Mitya",
+          "place": "Stilts · via Vera",
+          "from": "Pimen",
+          "address": [
+            "THE BOY MITRY US"
+          ],
+          "attachmentCaption": "a stub of wax candle; a Morse table on a scrap of tape",
+          "text": "TO THE BOY MITRY US STOP I WILL NOT GIVE THE BELL TOWER STOP ON THURSDAYS EVEN LESS STOP\nI PUT IN THE ALPHABET LET HIM LEARN IT STOP A STUB FOR THE PRAYER STOP\nDO NOT TOUCH THE BEES STOP PIMEN"
+        },
+        "l6": {
+          "to": "Vera",
+          "place": "Institute",
+          "from": "Mitya",
+          "address": [
+            "RADIOSHADOW INSTITUTE.",
+            "PASECHNIK V.I."
+          ],
+          "attachmentCaption": "a page of the log: day / hour / 7.3; by Thursday it says “quieter”",
+          "text": "VERA IGNATYEVNA HELLO.\nI put in Granddad's battery, no fuse for now, I twisted a wire. The receiver hears again.\nLog enclosed. On 7.3 it doesn't hiss, it HUMS. Steady, like Aunt Nina's fridge when it still worked. Louder at night. On Thu QUIETER, I measured twice, less both times.\nBy day the other bands are still THE SAME. Only 7.3 is separate.\nWhat is it. Maybe your transformer. Or not. Write.\nOver.\nMitya (Us)"
+        },
+        "l7": {
+          "to": "Nina",
+          "place": "Tubs · via Vera",
+          "from": "“Timofey”",
+          "address": [
+            "TUBS.",
+            "KOLOBOVA N.A.",
+            "FROM HER SON TIMOFEY"
+          ],
+          "stamp": [
+            "TUBS",
+            "box 2"
+          ],
+          "attachmentCaption": "a wrapper folded into a little-fir antenna",
+          "text": "MAMA HELLO!\nEverything here is in order. I work at the radio station, the antena is this big, taller than the last one. I eat something hot every day, soup. Small cucumbers are fine, the main thing is they're crunchy. Don't open the jar yet.\nI'm writing to Lida, she sends her respects and isn't hurt about the skirt. Don't chase Mitya off, let him walk around, he's got an important log now.\nDon't throw out the fridge, I'll fix it when I come. I'm wearing the socks, the heel holds.\nMore later.\nTima"
+        },
+        "l8": {
+          "to": "Vera",
+          "place": "Institute · personal",
+          "from": "Kuzma",
+          "address": [
+            "V.I. Pasechnik.",
+            "Personal"
+          ],
+          "attachmentCaption": "a chip with notch 44; a drop of resin",
+          "outside": "V.I. Pasechnik. Personal.",
+          "text": "44.\nWell.\nK. Us"
+        },
+        "l9": {
+          "to": "the Postman",
+          "place": "from Pimen",
+          "from": "Pimen",
+          "address": [
+            "TO THE POSTMAN"
+          ],
+          "attachmentCaption": "a narrow strip of telegraph tape; the seal is a thumb pressed into wax",
+          "text": "TWO FORTY STOP LAMP STOP I WROTE IT DOWN STOP\nPIMEN"
+        },
+        "note_gar": {
+          "to": "Tubs",
+          "place": "the ranger's note",
+          "from": "Ranger",
+          "address": [],
+          "attachmentCaption": "into the hut at the Collar, with the mail going down",
+          "text": "To the Tubs. Alive. Mending the gate. Short on tea. If someone is passing — send salt. L."
+        },
+        "animal_raven_scrap": {
+          "to": "the Postman",
+          "place": "at the collection on the Saddle",
+          "from": "Raven",
+          "text": "A small scrap of faded orange cloth. The raven brought it in trade for a shiny button. No writing, no marks."
+        },
+        "animal_dog_horn": {
+          "to": "the Postman",
+          "place": "in the sawdust at the Stumps",
+          "from": "Stumps dog",
+          "text": "A small rusty horn, packed with sawdust. The dog scraped it up at the edge of the cut. Put it to your ear — silence."
+        }
+      },
+      "events": {
+        "p_l1": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Collection at the Saddle. An envelope for Kolobova N.A. and a note from A.L.: “Held up in sorting.”"
+            },
+            {
+              "who": "",
+              "text": "There's an envelope in the box at the Saddle, but there's no room for it in the bag."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Saddle. In the collection — a letter for Nina and a note from A.L."
+            }
+          ]
+        },
+        "p_l2": {
+          "title": "Institute box · scroll",
+          "text": "If you scroll back, there's a small parcel from Vera to Mitya in the box at the Institute — a 0.25 A fuse.",
+          "lines": [
+            {
+              "who": "",
+              "text": "Vera's parcel: a 0.25 A fuse, a tag “K-2.”"
+            },
+            {
+              "who": "",
+              "text": "Vera's parcel didn't fit."
+            }
+          ]
+        },
+        "e_animal_raven": {
+          "title": "The raven at the collection",
+          "text": "A raven has stopped pecking at the iron box and is now looking at the postman's shiny button.",
+          "options": {
+            "trade": {
+              "label": "Leave the shiny button",
+              "result": "The raven carried the button past the barrier and came back with a scrap of orange cloth. He put it on the box and sat down beside it. Now he recognizes the postman.",
+              "auto": "The postman left the raven a spare shiny button."
+            },
+            "leave": {
+              "label": "Don't distract him",
+              "result": "The raven pecked the box once more and flew up onto the barrier. He left the collection alone."
+            }
+          }
+        },
+        "s_nii_drop": {
+          "title": "The box “for down below”",
+          "text": "Mail only goes down with Vera. Timofey's letter has to be left in the Institute box, and she'll collect it on Thursday.",
+          "lines": [
+            {
+              "who": "",
+              "text": "Timofey's letter went into the Institute box “for down below.”"
+            },
+            {
+              "who": "",
+              "text": "Timofey's letter is still in the bag. Unless it's left in the Institute box, it won't reach Nina."
+            }
+          ]
+        },
+        "e_windfall": {
+          "title": "Windfall",
+          "text": "In the Paws fir wood, the fir boughs look like sleeves. A trunk lies across the road.",
+          "options": {
+            "climb": {
+              "label": "Climb over",
+              "result": "He climbed over. Needles in the bag, knees wet.",
+              "auto": "The postman climbed over the trunk — the bag caught on a fir bough."
+            },
+            "around": {
+              "label": "Go around",
+              "result": "He went around the trunk through a gap. The route was about four hundred steps longer."
+            }
+          },
+          "push": [
+            {
+              "who": "",
+              "text": "The Paws fir wood. A windfall across the road."
+            }
+          ]
+        },
+        "arrive_gar": {
+          "title": "Burn Cordon",
+          "text": "There's a hut and a well here. Two mugs stand on the table; the second one is wobbling. The ranger is mending the gate.",
+          "lines": [
+            {
+              "who": "Ranger",
+              "text": "Alive. Mending the gate. Tell my people down at the Tubs — we could use salt."
+            },
+            {
+              "who": "Ranger",
+              "text": "Short on tea. There's kerosene. Sit down."
+            },
+            {
+              "who": "",
+              "text": "Two mugs. The second one wobbles."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Burn Cordon. The ranger is mending the gate."
+            }
+          ]
+        },
+        "p_note_gar": {
+          "lines": [
+            {
+              "who": "Ranger",
+              "text": "Put it in the hut at the Collar, with the mail going down. Just a word."
+            },
+            {
+              "who": "Ranger",
+              "text": "Well, suit yourself."
+            }
+          ]
+        },
+        "arrive_penki": {
+          "title": "Stumps logging site",
+          "text": "There are stump houses, stacks and a tractor with no wheels here. Smoke rises from a fire. The night's lodging is “wherever the day caught you.”",
+          "lines": [
+            {
+              "who": "Foreman",
+              "text": "Tins for Belfry candles — if someone is passing."
+            },
+            {
+              "who": "Foreman",
+              "text": "Tomorrow is Thursday. Vera will take the “down below” mail from the Institute box — if you managed to leave it."
+            },
+            {
+              "who": "",
+              "text": "Timofey's letter should be waiting for Vera in the Institute box."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Stumps. The foreman by the fire: tins for candles."
+            }
+          ]
+        },
+        "e_animal_dog": {
+          "title": "A stick for the Stumps",
+          "text": "A dog at the cut brought a stick, laid it on a boot, and barked once, short. Behind the stacks the sawdust is dug up by paws.",
+          "options": {
+            "throw": {
+              "label": "Throw the stick",
+              "result": "The dog bolted, but he didn't bring the stick back. He looked back and called toward the sawdust: something is buried there.",
+              "auto": "The postman threw the stick and went to see where the dog was calling."
+            },
+            "bark": {
+              "label": "Call the dog",
+              "result": "The dog barked, took the stick, and lay down under a stack. The cache can wait."
+            }
+          }
+        },
+        "p_animal_dog_find": {
+          "title": "Under the sawdust",
+          "lines": [
+            {
+              "who": "",
+              "text": "The dog dug up the sawdust. Under it, a small rusty horn. He shook it off — and took it along."
+            },
+            {
+              "who": "",
+              "text": "The dog is chewing the stick by a stack. Nobody has touched the sawdust yet."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Stumps. The dog led him to a rusty horn under the sawdust."
+            },
+            {
+              "who": "",
+              "text": "Stumps. The dog stayed with the stick by a stack."
+            }
+          ]
+        },
+        "p_l3": {
+          "title": "A chance going up",
+          "text": "After Thursday, Mitya's reply to Vera will turn up in the passing mail or in the box: the fuse burnt out.",
+          "lines": [
+            {
+              "who": "",
+              "text": "Mitya's letter: the fuse BURNT."
+            },
+            {
+              "who": "",
+              "text": "Mitya's letter didn't fit."
+            }
+          ]
+        },
+        "p_l4": {
+          "lines": [
+            {
+              "who": "",
+              "text": "From Kuzma to Mitya: a battery. “Played till the rooster.”"
+            },
+            {
+              "who": "",
+              "text": "Kuzma's letter didn't fit."
+            }
+          ]
+        },
+        "p_l5": {
+          "lines": [
+            {
+              "who": "",
+              "text": "From Pimen to Mitya: I won't give the bell tower. On Thursdays even less. Morse is enclosed."
+            },
+            {
+              "who": "",
+              "text": "Pimen's letter didn't fit."
+            }
+          ]
+        },
+        "e_blizzard": {
+          "title": "A blizzard at the marker",
+          "text": "The climb to the Collar. A board: “Pass. Keep the pace. Don't stand in the ground wind.”",
+          "options": {
+            "shelter": {
+              "label": "Shelter behind the board",
+              "result": "He waited it out behind the board. The wind is weaker.",
+              "auto": "The postman stood behind the board and waited out the blizzard."
+            },
+            "push": {
+              "label": "Walk",
+              "result": "He kept going. On the Collar, if you don't keep up the pace, the snow will close in at once."
+            }
+          }
+        },
+        "e_khomut": {
+          "title": "Collar Pass",
+          "text": "The saddle is narrow. There's a little flag, and the roadman's hut is empty. It needs a brisk walk, or it will drift shut.",
+          "options": {
+            "burst": {
+              "label": "Pick up the pace",
+              "result": "He got across the pass. The flag says “open,” and in the hut there's a note: “On Thu the wind is weaker.”",
+              "auto": "The postman picked up the pace and crossed the Collar before it drifted shut."
+            },
+            "wait": {
+              "label": "Go around below, on the scree",
+              "result": "It drifted shut, and he had to go below, along the scree — about eighteen hundred steps longer. And not a single letter on the way."
+            }
+          },
+          "push": [
+            {
+              "who": "",
+              "text": "Collar. The pass. It needs a fast walk."
+            }
+          ]
+        },
+        "p_l6": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Mitya hears the air again. The 7.3 log — quieter on Thu."
+            },
+            {
+              "who": "",
+              "text": "Mitya's log didn't fit."
+            }
+          ]
+        },
+        "p_l7": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Box no. 2 / a chance passing: “from Tima” to Nina. A little-fir wrapper. “I work at the radio station.”"
+            },
+            {
+              "who": "",
+              "text": "The letter “from Tima” didn't fit."
+            }
+          ]
+        },
+        "arrive_repka": {
+          "title": "Turnip Relay",
+          "text": "A mast stands here, and a hut hangs on a hook. Clay spills out of the loudspeaker. It hums like a fridge, only louder than in the Valley.",
+          "lines": [
+            {
+              "who": "",
+              "text": "The service box is empty. A note: “out since autumn.”"
+            },
+            {
+              "who": "",
+              "text": "At night, a yellow duty light shines in the empty window."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Turnip. Clay spills out of the loudspeaker."
+            }
+          ]
+        },
+        "p_l8": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Kuzma to Vera. Resin. Notch 44."
+            },
+            {
+              "who": "",
+              "text": "Kuzma's secret didn't fit."
+            }
+          ]
+        },
+        "e_krivulya_tempo": {
+          "title": "The pinch",
+          "text": "On the Crook, the path is only half a body wide, and there's a short snowdrift at the pinch.",
+          "options": {
+            "burst": {
+              "label": "Pick up the pace",
+              "result": "He got through the pinch. The rope rails creak.",
+              "auto": "The postman got through the pinch without going around."
+            },
+            "wait": {
+              "label": "Go the long way",
+              "result": "The detour came to about twelve hundred steps. Fog is creeping up from below."
+            }
+          }
+        },
+        "p_l9": {
+          "title": "Evening bell",
+          "text": "From the lee side, you can hear the Belfry bell beating out a steady, drawn-out rhythm. There's a telegram for the postman in the box or the passing mail.",
+          "lines": [
+            {
+              "who": "",
+              "text": "Pimen's telegram: “TWO FORTY STOP LAMP STOP I WROTE IT DOWN STOP.”"
+            },
+            {
+              "who": "",
+              "text": "A bell “for the memorial” — no signature. Someone who knows Morse can match it later."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Crook. A bell from the Valley. Telegram: “TWO FORTY.”"
+            }
+          ]
+        },
+        "s_bell": {
+          "lines": [
+            {
+              "who": "",
+              "text": "An evening bell carries from the Valley. A count, with no words."
+            },
+            {
+              "who": "",
+              "text": "Pimen's telegram about the lamp is with you."
+            }
+          ]
+        },
+        "finale": {
+          "lines": [
+            {
+              "who": "",
+              "text": "Throat Ravine. The path dives down, and down there is raw clay and marsh."
+            },
+            {
+              "who": "",
+              "text": "Empty boots stand in pairs along the edges of the ravine. A clean envelope with no stamp lies in the clay."
+            },
+            {
+              "who": "",
+              "text": "The tape is behind you. If you scroll back, you can see whether the “down below” letters left with Thursday."
+            }
+          ],
+          "push": [
+            {
+              "who": "",
+              "text": "Throat. The road goes off toward the marshes."
+            }
+          ]
+        }
+      },
+      "quests": {
+        "p_l1|": "Take the letter from the collection at the Saddle",
+        "s_nii_drop|inBag:l1": "The letters for the lower valley will stay in the Institute box",
+        "arrive_gar|": "Reach Burn Cordon",
+        "arrive_penki|": "To the Stumps · a night's sleep",
+        "e_khomut|": "Collar Pass — keep the pace",
+        "arrive_repka|": "To Turnip",
+        "p_l9|": "Crook · the bell",
+        "finale|": "To the Throat"
+      },
+      "residents": {
+        "raven_saddle": "Raven",
+        "lesnik": "Ranger",
+        "sawyer": "Sawyer",
+        "brigadir": "Foreman",
+        "dog_penki": "Stumps dog",
+        "penki_worker": "Worker",
+        "repka_tech": "Turnip keeper",
+        "krivulya_local": "Crook local"
+      },
+      "fates": {
+        "sedlo|inBag:l1": "Timofey's letter from the sack is still in the bag — it did not go to Nina by way of Vera.",
+        "sedlo|delivered:l1": "Timofey's letter was left “for down below” / went with Vera.",
+        "gar|inPocket:note_gar": "The ranger's note is with you — for the hut at the Collar.",
+        "krivulya|read:l9": "Pimen's telegram has been read.",
+        "khomut|flag:khomut_ok": "The Collar was crossed at pace.",
+        "khomut|flag:khomut_detour": "The Collar was gone around below — no letters on the detour.",
+        "krivulya|inPocket:l9": "Pimen's telegram: the lamp went out at 02:40.",
+        "gorlovina|flag:khomut_ok": "The road to the marshes is open. Ch. 3 is waiting."
+      },
+      "arrivals": {
+        "sedlo": "Saddle. The box. Past the pass — fir wood and fog.",
+        "gar": "Burn. Black trunks, two mugs, a hut.",
+        "penki": "Stumps. Sawdust, a thread of smoke, stump houses.",
+        "khomut": "Collar. Two slopes like pincers. Wind.",
+        "repka": "Turnip. A mast. A hum.",
+        "krivulya": "Crook. The pinch. Fog from below.",
+        "gorlovina": "Throat. Raw clay ahead."
+      }
+    },
+    "3": {
+      "finaleTitle": "Chapter 3 · Marshes",
+      "finaleSubtitle": "finished",
+      "nextChapter": "Chapter 4, “The City of Silence” — soon",
+      "items": {
+        "l1": {
+          "to": "For Mitya",
+          "from": "Galya",
+          "place": "Stilts · a chance downstream, the box on the Boardwalk",
+          "text": "Mityusha, I bought the hooks, the very thin ones you asked for, for the roach. Don't tell Grandad, or he'll say it's too soon, he'll buy them himself, and then he'll go about boasting. They paid us, so I'll stop at the shop before the shift if the queue is short. I have washed your socks. They are hanging over our stove, and I'll take them down in the morning and bring them. Don't throw the nets without asking. Grandad grumbles, and still he waits for you by seven. I am on the night shift today, so don't expect a letter before Sunday. I'll sleep it off and write how the week went. I kiss you. Mama.",
+          "note": "Dear postman!\nThe road below has washed out. I have made the collection. The next collection is Thursday. Mind your feet.\nA.L.",
+          "attachmentCaption": "three thin hooks in a paper marked “for the roach”; no stamp",
+          "address": [
+            "FOR MITYA US",
+            "FROM MAMA"
+          ]
+        },
+        "l4": {
+          "to": "For Vera",
+          "from": "Mitya",
+          "place": "Institute · for Vera, the hut at the Mire",
+          "text": "VERA IGNATYEVNA, HELLO.\nI built the loop from your book and I put the drawing in. It is a direction finder. You turn it and watch where it is LOUDER.\nOn 7.3 it still HUMS, quieter on Thursday, and stronger at night. I want to know WHERE FROM. If it is your transformer, write which way it ought to be louder, and I will check.\nYou can give the drawing to the postman. Let him turn it on the road. It is flatter there than between our stilts.\nOver.\nMitya (Us)\nThe wrapper is the model. I already have one made of wire.",
+          "attachmentCaption": "a drawing of the loop and a fir-tree wrapper",
+          "address": [
+            "RADIOSHADOW INSTITUTE.",
+            "PASECHNIK V.I."
+          ]
+        },
+        "frame": {
+          "to": "For the postman",
+          "from": "Mitya",
+          "place": "Personal things",
+          "text": "A wire loop. You turn it and listen for where the hum is louder."
+        },
+        "note_fedya": {
+          "to": "For Marya",
+          "from": "Old Fedya",
+          "place": "Tubs · a chance downstream, the hut at the Mire",
+          "text": "For Marya at the Tubs. I am alive, I am holding the boardwalk, I have not gone lower: the road has washed out. Send socks if there is a chance. Mine have rotted. There is tea, and bread too.\nOld F.",
+          "attachmentCaption": "pencil on a nail wrapper",
+          "address": [
+            "FOR MARYA",
+            "THE TUBS"
+          ]
+        },
+        "l2": {
+          "to": "For Timofey",
+          "from": "Nina",
+          "place": "Olkhovka · for A.L., the box at the Peat Cut",
+          "text": "Timosha, hello, how are your socks wearing, has the heel gone through, don't wash them in hot water, I told you, or they will shrink, and don't dry them on the stove itself. Are you eating something hot. Don't open the jar, it stands where it stood, the cucumbers are small but they crunch. I am asking you one thing and you write it to me straight, what was the name of our goat, the one that lived behind the tub when you were still at school, I have started to forget and Mitya says he does not remember. Write what she was called, and give Lida my regards, she should not take offence. They may let you go by Trinity, so when you come off the road sit down first, eat, and only then tell the news. You are eating something hot, aren't you.\n(she said the goat three times, I wrote it once. I'll ask Grandad the name. I did not tell her. M.)\nX N.",
+          "attachmentCaption": "no enclosure",
+          "address": [
+            "OLKHOVKA, TO BE CALLED FOR.",
+            "KOLOBOV T.G."
+          ]
+        },
+        "l3": {
+          "to": "For Nina",
+          "from": "Timofey",
+          "place": "Tubs · a chance downstream, the box on the barge",
+          "text": "Hello, Mama.\nI received your letter safely, and the socks too, thank you. I work at the cannery in Olkhovka, I stand at the sealing machine, the shift is from seven. They will not let you through the cordon, so don't come, the road below has washed out. We have no radio and no telephone either, so don't you worry.\nI remember our goat well. Her name was Ramka, a red one, she lived behind the tub. Give my regards to Lida. She is well and sends hers back.\nEat something hot. Take care of yourself.\nTimofey",
+          "attachmentCaption": "a label, “Sprats in tomato”",
+          "address": [
+            "THE TUBS.",
+            "KOLOBOVA N.A."
+          ]
+        },
+        "l5": {
+          "to": "For Mitya",
+          "from": "Galya",
+          "place": "Stilts · a chance downstream, the box in the Reeds",
+          "text": "Sonny, I received your letter safely. Everything is as it was with me. I am working. They still will not let anyone through the cordon, so don't you worry.\nMind your grandfather and go to school while they keep it open. Help him haul the nets in the evening. He cannot manage alone.\nEat something hot. Dry the socks by the stove, only do not put them on it.\nMama",
+          "attachmentCaption": "no enclosure",
+          "address": [
+            "FOR MITYA US"
+          ]
+        },
+        "l6": {
+          "to": "For the postman",
+          "from": "Mitya",
+          "place": "Old Channel · read where it is found",
+          "text": "POSTMAN, HELLO.\nI took Father Pimen's table and read the evening bell, not all of it, only a piece. The names go by letters, the way they do in the alphabet. Four have come out so far. Then my hand got tired, and the bell goes on, even and long.\nThis is what came out: FEDOSEEVA M. US GALYA. SHUBIN P. REPNINA A.\nI don't know what it is. Mama is written the same way, that is true. Write if you hear any more, or just listen in the evening. The bell reaches the marshes. I checked.\nOver.\nMitya (Us)",
+          "attachmentCaption": "a scrap of tape: four names, Us Galya among them",
+          "address": [
+            "FOR THE POSTMAN"
+          ]
+        },
+        "l7": {
+          "to": "For Vera",
+          "from": "Kuzma",
+          "outside": "V.I. Pasechnik. Personal.",
+          "place": "Institute · for Vera, the box in the Reeds",
+          "text": "Vera Ignatyevna. The pole already reads fifty-eight. The water is not falling.\nWell.\nK. Us",
+          "attachmentCaption": "a chip notched 58",
+          "address": [
+            "V.I. PASECHNIK.",
+            "PERSONAL"
+          ]
+        },
+        "l8": {
+          "to": "For the postman",
+          "from": "Vera",
+          "outside": "For the postman. Personal.",
+          "place": "Gullet · read where it is found",
+          "text": "To the postman.\n1. I have received the mark of 58. That is the third nick on the pole the count is kept on.\n2. I enclose the reckoning by the water. There is still a margin before it works. I am putting the decision off until the next mark. The road below is wet. The descent is not required.\n3. The hum on 7.3 that Dmitry wrote about is still from our transformer. The bearing taken in the field does not move the source.\n4. My letters are not to be opened. The seal on them is numbered.\nV.I. Pasechnik\nP.S. Do not let Ramka onto the plank road. She follows anyone.",
+          "attachmentCaption": "graph paper: 31, 44, 58; “at the 3rd” crossed out, “at the 4th”",
+          "address": [
+            "FOR THE POSTMAN.",
+            "PERSONAL"
+          ]
+        },
+        "l9": {
+          "to": "For Vera",
+          "from": "Nina",
+          "place": "Institute · a chance to the Valley, the box at the Settling Pool",
+          "text": "Vera Ignatyevna, hello, I come to you with my regards and a request, you drive past every week and you do not stop at mine, I am not talking about the skirt, you know that yourself. Come in for tea at least. I'll put out a jar. The cucumbers are small but they crunch. I want to ask you about Timosha. The letters that come to me are different, one hand and another, and about the goat one of them wrote the wrong thing. Ours was called Zorka. I remember that myself, so why did I ask. Write to Lida and let her tell me the truth, or tell me yourself if you know. Let Mitya sit. I am not chasing him. There is soup.\n(she told me to write \"not about the skirt\", and I did. About the goat she said \"ours was called Zorka\". I have already asked Grandad myself. Zorka too. M.)\nX N.",
+          "attachmentCaption": "no enclosure",
+          "address": [
+            "RADIOSHADOW INSTITUTE.",
+            "PASECHNIK V.I."
+          ]
+        },
+        "l10": {
+          "to": "For the postman",
+          "from": "Kuzma",
+          "outside": "For the postman.",
+          "place": "Settling Pool · read where it is found",
+          "text": "For the postman.",
+          "attachmentCaption": "a refusal sheet: Somov Ferapont Ilyich, the Tubs",
+          "address": [
+            "FOR THE POSTMAN"
+          ]
+        },
+        "find_edge": {
+          "to": "For the postman",
+          "from": "Boardwalk",
+          "place": "Personal things",
+          "text": "The edge of a stamp from under the planks. No letters. The colour still holds."
+        },
+        "find_tag": {
+          "to": "For the postman",
+          "from": "Old Fedya",
+          "place": "Personal things",
+          "text": "A chip stamped by the plant. From the lower store."
+        },
+        "find_card": {
+          "to": "For the postman",
+          "from": "Hummocks",
+          "place": "Personal things",
+          "text": "A memorial card. “Somov F.I.”. The ribbon on the stake has faded."
+        },
+        "find_pole": {
+          "to": "For the postman",
+          "from": "Mire",
+          "place": "Personal things",
+          "text": "A pole with no nicks. Someone else's. In the silt by the boardwalk."
+        },
+        "find_graph": {
+          "to": "For the postman",
+          "from": "Mire",
+          "place": "Personal things",
+          "text": "A scrap of graph paper. Another hand. The word “pilot”, no figures."
+        },
+        "find_pass": {
+          "to": "For the postman",
+          "from": "Peat Cut",
+          "place": "Personal things",
+          "text": "A work pass on a string. An old pattern. The name cannot be made out."
+        },
+        "find_wet": {
+          "to": "For the postman",
+          "from": "Old Channel",
+          "place": "Personal things",
+          "text": "A wet envelope. The stamp says “N. Stvor”. No letters inside. The stamp is still coloured."
+        }
+      },
+      "events": {
+        "p_l1": {
+          "title": "A clean envelope",
+          "lines": [
+            {
+              "text": "In the clay by the stake lies a clean envelope with no stamp. Hooks inside, a note: “for the roach”."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Throat. An envelope with no stamp in the clay."
+            }
+          ]
+        },
+        "s_al": {
+          "title": "A note in the box",
+          "text": "Dear postman!\nThe road below has washed out. I have made the collection. The next collection is Thursday. Mind your feet.\nA.L.",
+          "lines": [
+            {
+              "text": "Dear postman!\nThe road below has washed out. I have made the collection. The next collection is Thursday. Mind your feet.\nA.L."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Throat. A.L.: the road below has washed out."
+            }
+          ]
+        },
+        "e_gati_fog": {
+          "title": "A plank road in the fog",
+          "text": "The poles run off into the fog. The length of the path is the same.",
+          "push": [
+            {
+              "text": "A plank road in the fog. Where to step?"
+            }
+          ],
+          "options": {
+            "poles": {
+              "label": "Walk the poles",
+              "result": "Feet dry. The planks breathe a little with the water.",
+              "auto": "The postman walked the poles."
+            },
+            "hummocks": {
+              "label": "Step onto the hummocks",
+              "result": "Feet wet. The bag sloshes. From the hummocks you can take the edge of a stamp."
+            }
+          }
+        },
+        "p_edge": {
+          "title": "An edge from a crack",
+          "lines": [
+            {
+              "text": "The edge of a stamp sticks out of a crack in the boardwalk. There are no letters."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boardwalk. The edge of an envelope in a crack of the planks."
+            }
+          ]
+        },
+        "d_gat": {
+          "title": "The box on the Boardwalk",
+          "text": "A tin box, “a chance”. Mail goes down from here, into the Valley.",
+          "lines": [
+            {
+              "text": "Galya's letter went into the box on the Boardwalk, “a chance downstream”."
+            },
+            {
+              "text": "The stamp edge was left in the same box, for old Fedya."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boardwalk. The chance box."
+            }
+          ]
+        },
+        "p_l4": {
+          "lines": [
+            {
+              "text": "A chance from the Valley: Mitya to Vera. A drawing of the loop, and a wrapper."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boardwalk. Mitya's letter to Vera."
+            }
+          ]
+        },
+        "p_frame": {
+          "lines": [
+            {
+              "text": "A wire loop went into the personal things."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boardwalk. A loop for taking a bearing."
+            }
+          ]
+        },
+        "e_fedya_help": {
+          "title": "A span has come apart",
+          "text": "Old Fedya is laying a span. Help does not change the length of the path.",
+          "push": [
+            {
+              "text": "Old Fedya is laying a span. Will you help?"
+            }
+          ],
+          "options": {
+            "hand": {
+              "label": "Pass him a pole",
+              "result": "A short job at the planks. Fedya pushes over a note for Marya: socks, if there is a chance.",
+              "auto": "The postman passed him a pole."
+            },
+            "walk": {
+              "label": "Walk on",
+              "result": "Fedya pushes the note over anyway. “Go on, then. Only put it in the box.”"
+            }
+          }
+        },
+        "p_card": {
+          "title": "A card on a stake",
+          "lines": [
+            {
+              "text": "On a crooked stake, a faded ribbon and a card: Somov F.I."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Hummocks. Somov's card on a stake."
+            }
+          ]
+        },
+        "e_somov": {
+          "title": "Somov's card",
+          "text": "It can be given once, through a box still ahead. There is no need to go back to the Tubs or the Belfry.",
+          "push": [
+            {
+              "text": "Somov's card. Who should have it?"
+            }
+          ],
+          "options": {
+            "pimen": {
+              "label": "Leave it for Pimen",
+              "result": "Pimen will answer by a chance: he buried Somov Ferapont in August. The apples were not picked yet."
+            },
+            "nina": {
+              "label": "Leave it for Nina",
+              "result": "Nina will answer by a chance: Ferapont has been gone since August, the apple trees were still standing, she used to bring him a jar."
+            },
+            "keep": {
+              "label": "Keep it",
+              "result": "The card stays with the personal things. The refusal sheet can be set beside it later.",
+              "auto": "The postman kept the card."
+            }
+          }
+        },
+        "d_top": {
+          "title": "The hut at the Mire",
+          "text": "The hut is empty. In the box, notes: “for Vera” and “a chance downstream”.",
+          "lines": [
+            {
+              "text": "Mitya's letter and Fedya's note went into the hut at the Mire."
+            },
+            {
+              "text": "Fedya's note went “downstream, by a chance”, to Marya."
+            },
+            {
+              "text": "The stamped chip was left for Vera. She answers: the lower stamp, noted."
+            },
+            {
+              "text": "Somov's card was left for Pimen. He buried Ferapont in August. The apples were not picked."
+            },
+            {
+              "text": "Somov's card was left for Nina. Ferapont has been gone since August. She used to bring him a jar."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Mire. The hut. The chance box."
+            }
+          ]
+        },
+        "p_l2": {
+          "lines": [
+            {
+              "text": "A chance from the Valley: Nina to Timofey. She asks what the goat was called."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Mire. Nina's letter to Timofey."
+            }
+          ]
+        },
+        "p_pole": {
+          "lines": [
+            {
+              "text": "In the silt by the boardwalk, a pole with not a single nick."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Mire. Someone else's pole in the silt."
+            }
+          ]
+        },
+        "p_graph": {
+          "lines": [
+            {
+              "text": "By the hut, a scrap of graph paper. “Pilot”. No figures."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Mire. Someone else's scrap of graph paper."
+            }
+          ]
+        },
+        "d_torf": {
+          "title": "The box at the Peat Cut",
+          "text": "A service box. A note: “for A.L.”.",
+          "lines": [
+            {
+              "text": "Nina's letter went into the box at the Peat Cut, “for A.L.”."
+            },
+            {
+              "text": "The pole with no nicks was left for Kuzma. Not his. Someone further down is measuring too."
+            },
+            {
+              "text": "Mitya was left the scrap: pilot, not his hand, someone had already measured."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Peat Cut. The box for A.L."
+            }
+          ]
+        },
+        "p_l3": {
+          "lines": [
+            {
+              "text": "A chance: “Tima” to Nina. He called the goat Ramka. A tin label."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Peat Cut. A letter “from Tima” to Nina."
+            }
+          ]
+        },
+        "p_pass": {
+          "lines": [
+            {
+              "text": "In the peat, a pass on a string. An old pattern."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Peat Cut. A pass in the peat."
+            }
+          ]
+        },
+        "e_bearing": {
+          "title": "Where the loop is louder",
+          "text": "A note on the post: louder toward the top. The loop can be turned. That does not make the road longer.",
+          "push": [
+            {
+              "text": "A note on the post: louder toward the top. Turn the loop?"
+            }
+          ],
+          "fallback": "The loop is not among the things. On the post, in pencil: “louder toward the top”.",
+          "options": {
+            "valley": {
+              "label": "Take a bearing toward the Valley",
+              "result": "Louder toward the Valley than toward the Reach. Steady, like a refrigerator.",
+              "auto": "The postman took a bearing toward the Valley."
+            },
+            "stvor": {
+              "label": "Take a bearing toward the Reach",
+              "result": "Quieter toward the Reach. Louder back, toward the Valley."
+            },
+            "skip": {
+              "label": "Don't turn it",
+              "result": "The post still says: louder toward the top. There is no bearing of his own."
+            }
+          }
+        },
+        "p_l5": {
+          "lines": [
+            {
+              "text": "A chance: “Galya” to Mitya. “Received in one piece”. There are no hooks."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Old Channel. A letter “from Galya” to Mitya."
+            }
+          ]
+        },
+        "d_barge": {
+          "title": "The box on the barge",
+          "text": "A “chance” box on the deck.",
+          "lines": [
+            {
+              "text": "The letter “from Tima” went into the box on the barge, “a chance downstream”."
+            },
+            {
+              "text": "The pass was left for old Fedya. The lower yard, an old pattern. He has not gone there since autumn."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Old Channel. The box on the barge."
+            }
+          ]
+        },
+        "p_l7": {
+          "lines": [
+            {
+              "text": "Kuzma to Vera. On the chip, fifty-eight. Pitch."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Old Channel. Kuzma to Vera: fifty-eight."
+            }
+          ]
+        },
+        "p_l6": {
+          "lines": [
+            {
+              "text": "Mitya to the postman. Four names from the bell. Us Galya among them."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Old Channel. Mitya made out a piece of the bell."
+            }
+          ]
+        },
+        "p_wet": {
+          "lines": [
+            {
+              "text": "Under the barge, a wet envelope. The stamp says “N. Stvor”. No letters."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Old Channel. The envelope under the barge cannot be read."
+            }
+          ]
+        },
+        "d_reeds": {
+          "title": "The box in the Reeds",
+          "text": "A tin box by the verst post. The figure on the post is washed off.",
+          "lines": [
+            {
+              "text": "The letter “from Galya” went “downstream, by a chance”."
+            },
+            {
+              "text": "Kuzma's chip went in “for Vera”."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Reeds. The box by the verst post."
+            }
+          ]
+        },
+        "e_radio": {
+          "title": "A radio in the reeds",
+          "text": "An abandoned radio lies on the path. Night is not required for this.",
+          "push": [
+            {
+              "text": "A radio lies in the reeds. Listen?"
+            }
+          ],
+          "fallback": "The song had already broken off. The radio was touched earlier.",
+          "options": {
+            "listen": {
+              "label": "Listen",
+              "result": "The song broke off. After that, only noise.",
+              "auto": "The postman listened. The song broke off."
+            },
+            "walk": {
+              "label": "Walk on",
+              "result": "The radio stays on the path. It can be touched later."
+            }
+          }
+        },
+        "p_l8": {
+          "lines": [
+            {
+              "text": "Vera to the postman. 58 is the third nick. The shutdown is put off until the fourth."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Gullet. Vera puts off the third mark."
+            }
+          ]
+        },
+        "e_plug": {
+          "title": "A wall of mud",
+          "text": "A grey wall across the river. It can be seen from the road anyway.",
+          "push": [
+            {
+              "text": "A grey wall ahead. Go closer?"
+            }
+          ],
+          "options": {
+            "close": {
+              "label": "Go closer",
+              "result": "In the wall: a box door, a rim, a thermos, a pass on a string. Nobody says what the wall is.",
+              "auto": "The postman went up to the wall."
+            },
+            "stay": {
+              "label": "Stay on the boardwalk",
+              "result": "The wall can be seen from the boardwalk. A closer look can be taken later, by scrolling."
+            }
+          }
+        },
+        "p_l9": {
+          "lines": [
+            {
+              "text": "Nina to Vera. The goat was called Zorka. She asks for the truth, with no accusations."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Gullet. Nina writes to Vera."
+            }
+          ]
+        },
+        "d_otstoy": {
+          "title": "The box at the Settling Pool",
+          "text": "The last stake. The kettle on the hook is still warm. Nobody is here.",
+          "lines": [
+            {
+              "text": "Nina's letter went into the box at the Settling Pool, “a chance to the Valley, for Vera”."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Pool. The box by the last stake."
+            }
+          ]
+        },
+        "p_l10": {
+          "lines": [
+            {
+              "text": "A bundle, “For the postman, personal”. A refusal sheet inside. The line: Somov Ferapont Ilyich, the Tubs. No annotations."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Pool. A bundle without a single word."
+            }
+          ]
+        },
+        "finale": {
+          "lines": [
+            {
+              "text": "The landing “Settling Pool”. The barrier in the fog does not open."
+            },
+            {
+              "text": "In a break in the sheet, pipes show for a moment. Then fog again."
+            },
+            {
+              "text": "The kettle is still warm. Who was here is not said. Beyond is raw clay."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Pool. The kettle is warm. Beyond, the town in the fog."
+            }
+          ]
+        }
+      },
+      "quests": {
+        "d_gat|inBag:l1": "Carry the clean envelope to the box on the Boardwalk",
+        "d_top|": "To the Mire: a letter for Vera and Fedya's note",
+        "d_torf|": "To the Peat Cut, the box for A.L.",
+        "d_reeds|": "To the Reeds",
+        "finale|": "To the Settling Pool"
+      },
+      "residents": {
+        "fedya": "Old Fedya",
+        "nyura": "Aunt Nyura",
+        "semyon": "Semyon",
+        "grisha": "Uncle Grisha",
+        "petka": "Petka"
+      },
+      "fates": {
+        "gat|inBag:l1": "The clean envelope is still in the bag. Its place is the box on the Boardwalk.",
+        "gat|delivered:l1": "Galya's letter was left on the Boardwalk, a chance downstream.",
+        "top|flag:bearing_done": "The loop was turned. It was louder toward the Valley.",
+        "gorlo|flag:plug_close": "The wall in the Gullet was approached. It holds household things, not bodies.",
+        "otstoy|read:l10": "The refusal sheet has been read. Nobody circled Ferapont's signature."
+      },
+      "arrivals": {
+        "gorlovina": "The Throat. The path dives into the fog. A clean envelope in the clay.",
+        "gat": "The Boardwalk. Planks, a hut, the chance box. Old Fedya is mending a span.",
+        "top": "The Mire. The same boardwalk by day and by night. A box in the hut.",
+        "torfyanik": "The Peat Cut. Stacks, a tally, an empty barrack.",
+        "staraya_protoka": "The Old Channel. A barge by the bank, a box on the deck.",
+        "kamyshi": "The Reeds. A straight boardwalk, a verst post, a box by the post.",
+        "gorlo": "The Gullet. A grey wall across the river. A box by the stake.",
+        "otstoy": "The Settling Pool. A barrier, a warm kettle, pipes in a break in the fog."
+      }
+    }
+  }
+}

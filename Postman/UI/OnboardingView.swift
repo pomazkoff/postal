@@ -118,18 +118,15 @@ struct OnboardingView: View {
     }
 
     private var header: some View {
-        VStack(spacing: 4) {
-            Text(AppInfo.displayName)
-                .font(Ink.title(36))
-                .foregroundStyle(Theme.paper)
-                .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
-            Text("письмо в Долину")
-                .font(Ink.label(15))
-                .foregroundStyle(Theme.paper.opacity(0.75))
-                .tracking(1.2)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityAddTraits(.isHeader)
+        Text(L10n.text("app.title"))
+            .font(Ink.title(28))
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
+            .minimumScaleFactor(0.7)
+            .foregroundStyle(Theme.paper)
+            .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
+            .frame(maxWidth: .infinity)
+            .accessibilityAddTraits(.isHeader)
     }
 
     /// Собственный пейджер: offset = -progress * width, DragGesture даёт непрерывный offset на iOS 17.
@@ -213,14 +210,14 @@ struct OnboardingView: View {
                         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: indicatorIndex)
                 }
             }
-            .accessibilityLabel("Страница \(pageIndex + 1) из \(cards.count)")
+            .accessibilityLabel(L10n.format("onboarding.page", pageIndex + 1, cards.count))
 
             if pageIndex < cards.count - 1 {
-                Text("листай дальше →")
+                Text(L10n.text("onboarding.swipe"))
                     .font(Ink.label(13))
                     .foregroundStyle(Theme.paper.opacity(0.65))
             } else {
-                Text("доступ можно изменить позже в настройках")
+                Text(L10n.text("onboarding.permissionsLater"))
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Theme.paper.opacity(0.7))
@@ -256,38 +253,38 @@ private struct OnboardCard: Identifiable {
         [
             OnboardCard(
                 id: 0,
-                title: "Долина опустела",
-                body: "Ты — последний почтальон. Письма — единственная нитка между оставшимися жителями пластилиновой Долины. Впереди дорога: от Почты через Сваи, Звонарню и Кадушки до Седла.",
+                title: L10n.text("onboarding.card0.title"),
+                body: L10n.text("onboarding.card0.body"),
                 imagePath: "Chapter1/places/place_pochta_main"
             ),
             OnboardCard(
                 id: 1,
-                title: "Шаги — это путь",
-                body: "Клади телефон в карман и иди. Каждый реальный шаг двигает почтальона по дороге. Глава первая — около 20 тысяч шагов; вся игра — около 150 тысяч.",
+                title: L10n.text("onboarding.card1.title"),
+                body: L10n.text("onboarding.card1.body"),
                 imagePath: "UI/map/postman",
                 backdropPath: "Chapter1/places/place_svai_main",
                 imageFit: true
             ),
             OnboardCard(
                 id: 2,
-                title: "Пока ты гуляешь",
-                body: "История не ждёт у экрана. Почтальон доходит до остановок сам. Тебе приходят тихие уведомления: кто встретился, что случилось, какое письмо вручили.",
+                title: L10n.text("onboarding.card2.title"),
+                body: L10n.text("onboarding.card2.body"),
                 imagePath: "Chapter1/places/place_zvonarnya_main",
                 overlayPath: "UI/ch1/env_plain"
             ),
             OnboardCard(
                 id: 3,
-                title: "Вернёшься — прочитаешь",
-                body: "В журнале — карточки мест и жителей: что случилось без тебя. Иногда на развилке выбираешь ты — и сюжет повернёт.",
+                title: L10n.text("onboarding.card3.title"),
+                body: L10n.text("onboarding.card3.body"),
                 imagePath: "Chapter1/places/place_kadushki_main",
                 overlayPath: "UI/ch1/card_telegram"
             ),
             OnboardCard(
                 id: 4,
-                title: "Чтобы он шёл с тобой",
+                title: L10n.text("onboarding.card4.title"),
                 body: fake
-                    ? "На симуляторе HealthKit недоступен — шаги добавляются кнопкой «+500». На устройстве игра попросит чтение шагов и уведомления; геолокацию для погоды — мягко, от неё можно отказаться."
-                    : "Нужен доступ к шагам из «Здоровья» и уведомлениям об остановках. Шаги только читаем, ничего не записываем. Погоду подстроим под твою: система может спросить геолокацию; без неё будет сезонная.",
+                    ? L10n.text("onboarding.card4.body.fake")
+                    : L10n.text("onboarding.card4.body"),
                 imagePath: "UI/ch1/btn_postman",
                 overlayPath: "UI/ch1/env_wax"
             ),
@@ -426,9 +423,9 @@ private struct OnboardCardView: View {
 
     private var permissionsNote: some View {
         VStack(alignment: .leading, spacing: 6) {
-            labelRow(icon: "figure.walk", text: isFake ? "Шаги: тестовый режим" : "Шаги из «Здоровья»")
-            labelRow(icon: "bell.fill", text: "Уведомления об остановках")
-            labelRow(icon: "cloud.sun.fill", text: "Геолокация для погоды — по желанию")
+            labelRow(icon: "figure.walk", text: isFake ? L10n.text("onboarding.perm.steps.fake") : L10n.text("onboarding.perm.steps"))
+            labelRow(icon: "bell.fill", text: L10n.text("onboarding.perm.notes"))
+            labelRow(icon: "cloud.sun.fill", text: L10n.text("onboarding.perm.location"))
         }
         .font(Ink.label(13))
         .foregroundStyle(Ink.brown.opacity(0.85))
@@ -449,7 +446,7 @@ private struct OnboardCardView: View {
         Button(action: onStart) {
             HStack(spacing: 10) {
                 if isRequesting { ProgressView().tint(Theme.paper) }
-                Text(isFake ? "Начать" : "Разрешить и начать")
+                Text(isFake ? L10n.text("onboarding.start") : L10n.text("onboarding.start.permissions"))
                     .font(Ink.title(18))
             }
             .frame(maxWidth: .infinity)
@@ -461,7 +458,7 @@ private struct OnboardCardView: View {
         .buttonStyle(PressStyle())
         .disabled(isRequesting)
         .padding(.top, 4)
-        .accessibilityHint("Запросит доступ к шагам, уведомлениям и при необходимости геолокации")
+        .accessibilityHint(L10n.text("onboarding.start.hint"))
     }
 }
 

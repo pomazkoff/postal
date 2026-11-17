@@ -8,24 +8,24 @@ struct DebugPanel: View {
     @State private var confirmReset = false
 
     private var debugMessage: String {
-        var text = "Гл.\(game.chapterIndex+1) \(game.chapter.title)\nСегодня \(game.steps.todaySteps), всего \(game.steps.totalSteps)"
-        if let error = game.steps.lastError { text += "\nОшибка: \(error)" }
+        var text = L10n.format("debug.status", game.chapterIndex + 1, game.chapter.title, game.steps.todaySteps, game.steps.totalSteps)
+        if let error = game.steps.lastError { text += "\n" + L10n.format("debug.error", error) }
         return text
     }
 
     private static var hourShift: String {
         let h = Int(AmbientLayer.debugHourOffset)
-        return h == 0 ? "по часам" : "+\(h) ч"
+        return h == 0 ? L10n.text("debug.hour.clock") : L10n.format("debug.hour.shift", h)
     }
 
     private static var weatherTitle: String {
         if let o = WeatherService.debugOverride { return o.title }
-        return "авто (\(WeatherService.shared.current.title), \(WeatherService.shared.sourceTitle))"
+        return L10n.format("debug.weather.auto", WeatherService.shared.current.title, WeatherService.shared.sourceTitle)
     }
 
     var body: some View {
         VStack(spacing: 6) {
-            Button("+500 шагов") { game.steps.addDebugSteps(500) }
+            Button(L10n.text("debug.plus500")) { game.steps.addDebugSteps(500) }
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -39,33 +39,33 @@ struct DebugPanel: View {
                     .foregroundStyle(.white.opacity(0.8))
             }
         }
-        .confirmationDialog("Отладка", isPresented: $showMenu, titleVisibility: .visible) {
-            Button("+5 000 шагов") { game.steps.addDebugSteps(5000) }
-            Button("Время суток +3 ч (сейчас \(Self.hourShift))") {
+        .confirmationDialog(L10n.text("debug.menu"), isPresented: $showMenu, titleVisibility: .visible) {
+            Button(L10n.text("debug.plus5000")) { game.steps.addDebugSteps(5000) }
+            Button(L10n.format("debug.time", Self.hourShift)) {
                 AmbientLayer.debugHourOffset = (AmbientLayer.debugHourOffset + 3).truncatingRemainder(dividingBy: 24)
                 game.scene.ambient?.refreshTimeOfDay()
             }
-            Button("Погода: \(Self.weatherTitle) → дальше") {
+            Button(L10n.format("debug.weather", Self.weatherTitle)) {
                 let order: [Weather?] = [nil] + Weather.allCases.map { Optional($0) }
                 let i = order.firstIndex(where: { $0 == WeatherService.debugOverride }) ?? 0
                 WeatherService.debugOverride = order[(i + 1) % order.count]
                 game.scene.weather?.refresh()
             }
-            Button("Читаемость героев: \(Readability.enabled ? "вкл" : "выкл") → переключить") {
+            Button(L10n.format("debug.read", Readability.enabled ? L10n.text("debug.read.on") : L10n.text("debug.read.off"))) {
                 Readability.enabled.toggle()
                 game.scene.applyReadability()
             }
-            Button("Выборы без игрока: \(game.engine.choiceMode.title) → дальше") {
+            Button(L10n.format("debug.choice", game.engine.choiceMode.title)) {
                 let all = ChapterEngine.ChoiceMode.allCases
                 let i = all.firstIndex(of: game.engine.choiceMode) ?? 0
                 game.engine.choiceMode = all[(i + 1) % all.count]
                 AppCore.shared.syncEngine(total: game.steps.totalSteps)
             }
             ForEach(StepService.Mode.allCases, id: \.self) { mode in
-                Button("Источник: \(mode.title)") { game.steps.setMode(mode) }
+                Button(L10n.format("debug.source", mode.title)) { game.steps.setMode(mode) }
             }
-            Button("Тестовый пуш") { AppCore.shared.postTestNotification() }
-            Button(game.progress.forceChapterIndex != nil ? "Глава: Горы (сброс форса)" : "Форс глава 2 «Горы»") {
+            Button(L10n.text("debug.push")) { AppCore.shared.postTestNotification() }
+            Button(game.progress.forceChapterIndex != nil ? L10n.text("debug.force.on") : L10n.text("debug.force.off")) {
                 if game.progress.forceChapterIndex != nil {
                     AppCore.shared.debugClearChapterForce()
                 } else {
@@ -74,8 +74,8 @@ struct DebugPanel: View {
                 game.refreshChapterProgress()
                 game.objectWillChange.send()
             }
-            Button("Сбросить историю…", role: .destructive) { confirmReset = true }
-            Button("Отмена", role: .cancel) {}
+            Button(L10n.text("debug.reset"), role: .destructive) { confirmReset = true }
+            Button(L10n.text("debug.cancel"), role: .cancel) {}
         } message: {
             Text(debugMessage)
         }

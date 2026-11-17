@@ -1,0 +1,18 @@
+{
+  "note": "Visible Russian pixels. No new art was generated. English shows a caption; the picture stays as drawn. Russian shows the picture alone, as before.",
+  "att_label": {
+    "file": "Postman/GameAssets/UI/ch1/att_label.png",
+    "pixels": ["КИЛЬКА В ТОМАТЕ", "Ольховский консервный завод"],
+    "where": "Ksenia's soaked tin label, letter attachment"
+  },
+  "att_drawing": {
+    "file": "Postman/GameAssets/UI/ch1/att_drawing.png",
+    "pixels": ["14 м"],
+    "where": "Mitya's antenna sketch, letter attachment. м is the Russian abbreviation for meters."
+  },
+  "sheet_telegram": {
+    "file": "Postman/GameAssets/UI/ch1/sheet_telegram.png",
+    "pixels": ["ТЕЛЕГРАММА"],
+    "where": "Telegraph paper used for Pimen's letters and the saddle notes. The HUD card (card_telegram) is blank; its title is drawn in text and is localized."
+  }
+}

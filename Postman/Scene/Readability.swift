@@ -4,7 +4,9 @@ import UIKit
 /// Читаемость героев на фоне поселений — все ручки в одном месте.
 /// Фон (дальний/средний план и постройки «places» основного плана) мягко уходит в дымку,
 /// герои (почтальон, жители, коза) получают тёплый «ключевой свет», край-подсветку и контактную тень.
-/// Дорога, передний план и небо не трогаются.
+/// Днём дорога, передний план и небо не трогаются.
+/// Ночь светлеет общим тоном суток в ambient.json, одним и тем же для героя, домов и земли.
+/// Отдельный множитель героя выключен: иначе он читается вырезом на уже более светлом мире.
 enum Readability {
     /// DEBUG-переключатель «до/после» (DebugPanel, UserDefaults). Применяется сразу: WorldScene.applyReadability().
     static let debugOffKey = "postman.debug.readabilityOff"
@@ -93,19 +95,12 @@ enum Readability {
         r.name = "rim"
         return r
     }
-    // MARK: Вечер/ночь — герои светлее фона
+    // MARK: Вечер/ночь — только яркость фигур
 
-    /// Доля тёмного тона суток, которая ложится на героев (фон получает 100%).
-    static let nightTintShare: CGFloat = 0.42
-    /// Подъём яркости и насыщенности героев на полной ночи (плавно от 0 днём).
-    static let nightBrightness: CGFloat = 0.10
-    static let nightSaturation: CGFloat = 0.30
-    /// Тёплый «фонарь»: доля смешивания с тёплым цветом в усилении.
-    static let lanternColor = (r: CGFloat(1.0), g: CGFloat(0.86), b: CGFloat(0.64))
-    static let lanternAmount: CGFloat = 0.22
-    /// Яркость (luma) тона, при которой считается «полная ночь» (ночной тон #8090B8 ≈ 0.57).
-    static let nightLuma: CGFloat = 0.57
-    static let maxGain: CGFloat = 2.4
+    /// 1 — фигура в том же свете, что и мир. Больше 1 снова включит отдельный шейдер.
+    static let nightFigureGain: CGFloat = 1
+    /// Luma тона, при которой ночь считается полной. Совпадает с ночным тинтом #C6CDDF.
+    static let nightLuma: CGFloat = 0.80
 
     /// 0 днём (тон белый) … 1 ночью. Закат (#F0C6A0) ≈ 0.45.
     static func nightAmount(tint: RGB) -> CGFloat {
@@ -113,42 +108,32 @@ enum Readability {
         return max(0, min(1, (1 - l) / max(0.05, 1 - nightLuma)))
     }
 
-    private static let gainUniform = SKUniform(name: "u_gain", vectorFloat3: SIMD3<Float>(1, 1, 1))
-    private static let satUniform = SKUniform(name: "u_sat", float: 1)
+    private static let gainUniform = SKUniform(name: "u_gain", float: 1)
 
-    /// Общий шейдер героев: насыщенность + усиление, компенсирующее часть умножения тоном суток.
-    /// Один объект на всех — униформы обновляются раз в кадр.
+    /// Пиксели фигуры × u_gain. Если пик выше альфы, все каналы сжимаются вместе — оттенок не уезжает.
+    /// Дальше кадр как и весь мир умножается на тон суток.
     static let nightShader: SKShader = {
         let src = """
         void main() {
             vec4 c = texture2D(u_texture, v_tex_coord);
-            vec3 rgb = c.rgb;
-            float l = dot(rgb, vec3(0.299, 0.587, 0.114));
-            rgb = mix(vec3(l), rgb, u_sat);
-            rgb = clamp(rgb * u_gain, vec3(0.0), vec3(c.a));
+            vec3 rgb = c.rgb * u_gain;
+            float peak = max(rgb.r, max(rgb.g, rgb.b));
+            float limit = max(c.a, 0.0001);
+            rgb *= min(1.0, limit / max(peak, 0.0001));
             gl_FragColor = vec4(rgb, c.a) * v_color_mix.a;
         }
         """
         let sh = SKShader(source: src)
-        sh.uniforms = [gainUniform, satUniform]
+        sh.uniforms = [gainUniform]
         return sh
     }()
 
-    /// Обновить униформы под текущий тон. Возвращает силу эффекта (0 — шейдер не нужен).
+    /// 0 — шейдер не вешается, фигура остаётся в общем тоне (дневной вид при белом тинте тоже).
     @discardableResult
     static func updateNight(tint: RGB) -> CGFloat {
         let n = nightAmount(tint: tint)
-        let keep = 1 - nightTintShare       // какую долю затемнения снимаем
-        let boost = 1 + nightBrightness * n
-        func ch(_ t: CGFloat, _ warm: CGFloat) -> Float {
-            let undo = pow(max(0.05, t), -keep)
-            let lantern = 1 + (warm - 1) * lanternAmount * n
-            return Float(min(maxGain, undo * boost * lantern))
-        }
-        gainUniform.vectorFloat3Value = SIMD3<Float>(ch(tint.r, lanternColor.r),
-                                                     ch(tint.g, lanternColor.g),
-                                                     ch(tint.b, lanternColor.b))
-        satUniform.floatValue = Float(1 + nightSaturation * n)
-        return n
+        let extra = (nightFigureGain - 1) * n
+        gainUniform.floatValue = Float(1 + extra)
+        return extra > 0.01 ? n : 0
     }
 }

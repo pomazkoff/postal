@@ -7,11 +7,11 @@ struct StoryResetAlert: ViewModifier {
     @Binding var isPresented: Bool
 
     func body(content: Content) -> some View {
-        content.alert("Сбросить историю?", isPresented: $isPresented) {
-            Button("Сбросить", role: .destructive) { game.resetStory() }
-            Button("Отмена", role: .cancel) {}
+        content.alert(L10n.text("reset.title"), isPresented: $isPresented) {
+            Button(L10n.text("reset.confirm"), role: .destructive) { game.resetStory() }
+            Button(L10n.text("reset.cancel"), role: .cancel) {}
         } message: {
-            Text("Письма, выборы, события и журнал начнутся заново. Шаги будут считаться с этой минуты, уведомления удалятся. Снова откроется обучение.")
+            Text(L10n.text("reset.message"))
         }
     }
 }

@@ -15,6 +15,10 @@ struct PostmanApp: App {
             RootView()
                 .environmentObject(game)
                 .preferredColorScheme(.dark)
+                .onOpenURL { url in
+                    game.receiveFirstMail(url)
+                    game.receiveSwamps(url)
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -28,15 +32,29 @@ struct PostmanApp: App {
 
 struct RootView: View {
     @EnvironmentObject private var game: GameModel
+    /// Один показ на жизнь процесса. В UserDefaults не пишется.
+    @State private var brandSplashDone = false
 
     var body: some View {
-        Group {
-            if game.onboardingDone {
-                GameView()
-            } else {
-                OnboardingView()
+        ZStack {
+            Group {
+                if !brandSplashDone {
+                    BrandSplash { brandSplashDone = true }
+                } else if game.onboardingDone {
+                    GameView()
+                } else {
+                    OnboardingView()
+                }
+            }
+            if FirstMailGate.shouldShow(splashDone: brandSplashDone,
+                                        onboardingDone: game.onboardingDone,
+                                        pending: game.firstMailPending) {
+                FirstMailCard(reading: game.firstMailReading(), onContinue: game.dismissFirstMail)
             }
         }
         .animation(.easeInOut(duration: 0.3), value: game.onboardingDone)
+        .onAppear { game.pullFirstMailInbox(); game.pullSwampsInbox() }
+        .onChange(of: brandSplashDone) { _, _ in game.pullFirstMailInbox(); game.pullSwampsInbox() }
+        .onChange(of: game.onboardingDone) { _, _ in game.pullFirstMailInbox(); game.pullSwampsInbox() }
     }
 }

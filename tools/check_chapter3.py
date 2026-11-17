@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""Chapter 3, the Marshes. Static only: letters, mail ahead of the player, one path length."""
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+FAILS = []
+
+
+def fail(msg):
+    FAILS.append(msg)
+
+
+def letter_blocks(text, n):
+    match = re.search(r"^## Письмо %d\..*?$(.*?)(?=^## )" % n, text, re.S | re.M)
+    assert match, n
+    blocks, cur = [], []
+    for ln in match.group(1).split("\n"):
+        if ln.startswith(">"):
+            cur.append(ln[2:] if ln.startswith("> ") else ln[1:])
+        elif cur:
+            blocks.append("\n".join(cur).strip())
+            cur = []
+    if cur:
+        blocks.append("\n".join(cur).strip())
+    return blocks
+
+
+canon = (ROOT / "docs/canon/letters-ch3.md").read_text(encoding="utf-8")
+story = json.loads((ROOT / "Postman/GameAssets/Data/chapter3_story.json").read_text(encoding="utf-8"))
+world = json.loads((ROOT / "Postman/GameAssets/Data/world.json").read_text(encoding="utf-8"))
+swamps = json.loads((ROOT / "Postman/GameAssets/UI/map/swamps.json").read_text(encoding="utf-8"))
+items = {item["id"]: item for item in story["items"]}
+events = {event["id"]: event for event in story["events"]}
+
+blocks = {n: letter_blocks(canon, n) for n in range(1, 11)}
+if "Митюша, купила крючки" not in blocks[1][1]:
+    fail("the canon letter file is not the edited Galya letter")
+expected = {
+    "l1": blocks[1][1],
+    "l2": blocks[2][0],
+    "l3": blocks[3][0],
+    "l4": blocks[4][0],
+    "l5": blocks[5][0],
+    "l6": blocks[6][0],
+    "l7": blocks[7][0],
+    "l8": blocks[8][0],
+    "l9": blocks[9][0],
+}
+for key, text in expected.items():
+    if items[key]["text"] != text:
+        fail(f"{key} is not the edited letter")
+if items["l1"]["note"] != blocks[1][0]:
+    fail("A.L.'s note is not the first block of letter 1")
+if "Дед Ф." not in items["note_fedya"]["text"]:
+    fail("Fedya's note was rewritten")
+if items["l10"]["text"] != "Почтальону.":
+    fail("the silent bundle grew a letter")
+for banned in ("Тишина", "сорок один", "41 имён"):
+    blob = "\n".join(item["text"] for item in story["items"])
+    if banned in blob:
+        fail(f"a letter contains {banned}")
+
+chapter = next(c for c in world["chapters"] if c["id"] == 3)
+if chapter["startStep"] != 45000 or chapter["lengthSteps"] != 30000:
+    fail(f"chapter 3 is not world steps 45000–75000: {chapter['startStep']} + {chapter['lengthSteps']}")
+if chapter["title"] != "Болота":
+    fail("chapter 3 title is not Болота")
+if any(c["id"] == 2 and "скоро" in json.dumps(c, ensure_ascii=False) for c in world["chapters"]):
+    fail("chapter 2 still says the marshes are only coming")
+
+# t431: pickup and the drop are both still ahead, and never back in chapters 1–2.
+behind = {"nii", "sedlo", "kadushki", "svai", "zvonarnya", "pochta"}
+drops = {
+    "l1": "d_gat", "l4": "d_top", "note_fedya": "e_fedya_help",
+    "l2": "d_torf", "l3": "d_barge", "l5": "d_reeds", "l7": "d_reeds", "l9": "d_otstoy",
+}
+read_here = {"l6", "l8", "l10"}
+pickup = {
+    "l1": "p_l1", "l2": "p_l2", "l3": "p_l3", "l4": "p_l4", "l5": "p_l5",
+    "l6": "p_l6", "l7": "p_l7", "l8": "p_l8", "l9": "p_l9", "l10": "p_l10",
+    "note_fedya": "e_fedya_help",
+}
+for item_id, event_id in pickup.items():
+    step = events[event_id]["step"]
+    if step <= 0:
+        fail(f"{item_id} is picked up at a step the player has already passed ({step})")
+    if events[event_id]["settlement"] in behind:
+        fail(f"{item_id} is picked up back in the valley or the mountains")
+for item_id, event_id in drops.items():
+    if item_id == "note_fedya":
+        event_id = "d_top"
+    drop = events[event_id]
+    taken = events[pickup[item_id]]["step"]
+    if drop["step"] <= taken:
+        fail(f"{item_id} is delivered at {drop['step']}, not ahead of pickup {taken}")
+    if drop["settlement"] in behind:
+        fail(f"{item_id} is delivered at {drop['settlement']}")
+for item_id in read_here:
+    if any(item_id in json.dumps(event) and event["type"] == "deliver" for event in story["events"]):
+        fail(f"{item_id} is read in place and must not have a delivery event")
+
+policy = (ROOT / "Postman/App/BagPolicy.swift").read_text(encoding="utf-8")
+for item_id in ("l6", "l8", "l10"):
+    if f'(3, "{item_id}")' in policy.split("func drops", 1)[1].split("func handoff", 1)[0]:
+        fail(f"{item_id} was given a drop")
+
+# Туман болот — клочья в глубине кадра, не белая вуаль на всю камеру.
+scene = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
+if "marshVeil" in scene or "updateMarshVeil" in scene:
+    fail("the full-screen marsh veil is still in the walking scene")
+if "UIColor(white: 0.86" in scene:
+    fail("the walking scene still paints a milky full-screen veil")
+if "stepUnderCamera" not in scene:
+    fail("marsh sky still follows the postman instead of the camera")
+if story["choicePolicy"]["timeoutSteps"] != 400:
+    fail("choices do not resolve after 400 steps")
+for choice in ("e_gati_fog", "e_fedya_help", "e_bearing", "e_radio", "e_plug"):
+    if choice not in events or events[choice]["type"] != "choice" or not events[choice].get("default"):
+        fail(f"{choice} is not a choice with a default")
+
+places = {place["id"]: place["step"] for place in swamps["settlements"]}
+expected_places = {"gat": 4000, "top": 9000, "torfyanik": 12500, "staraya_protoka": 16500, "gorlo": 22500, "otstoy": 30000}
+if places != expected_places:
+    fail(f"swamp map places drifted: {places}")
+if swamps["globalStart"] != 45000 or swamps["lengthSteps"] != 30000:
+    fail("the swamp sheet is not the 45000–75000 road")
+if abs(swamps["join"][0] - 619.9) > 0.2 or abs(swamps["join"][1] - 2373.7) > 0.2:
+    fail("the swamp join moved")
+atlas = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
+screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
+if "loadSwamps" not in atlas or "MarshSeam.apply" not in screen:
+    fail("the swamp sheet is not joined onto the mountains")
+if "mountain:" not in atlas.split("enum MarshSeam", 1)[-1][:900]:
+    fail("the seam does not blend into the mountain picture")
+if "fadeDesignPx" not in atlas or "420" not in atlas.split("fadeDesignPx", 1)[-1][:80]:
+    fail("the swamp sheet does not fade into the peaks")
+chapter_dir = ROOT / "Postman/GameAssets/Chapter3"
+for folder in ("road", "places", "underground", "foreground", "residents/fedya"):
+    path = chapter_dir / folder
+    if path.is_symlink():
+        fail(f"{folder} is still a link to another chapter")
+    if not path.is_dir():
+        fail(f"{folder} is not a chapter 3 folder")
+if chapter["assetsFolder"] != "Chapter3":
+    fail("chapter 3 does not load its own asset folder")
+if chapter.get("sky") != {"topColor": "#3D4A45", "bottomColor": "#6A6B52"}:
+    fail("chapter 3 daytime sky is not the swamp gradient")
+layers = json.loads((ROOT / "Postman/GameAssets/Data/world.json").read_text(encoding="utf-8"))["layers"]["sky"]
+if layers["topColor"] != "#14505F" or layers["bottomColor"] != "#3C7873":
+    fail("the shared sky used by the valley and the mountains changed")
+barge = next(p for p in chapter["props"] if p["image"] == "places/place_staraya_protoka_main")
+if barge["height"] != 500 or barge["sink"] != 217 or barge["dx"] != -1045.5:
+    fail(f"the barge is not beside the causeway: {barge['height']} {barge['sink']} {barge['dx']}")
+if any(p["layer"] == "underground" and "ug_" not in p["image"] for p in chapter["props"]):
+    fail("a chapter 3 underground prop is not a swamp tile")
+modules = chapter["underground"]["modules"]
+if [m["step"] for m in modules] != [800, 2500, 4000, 6500, 9000, 11500, 14000, 16500, 18800, 20800, 22500, 24800, 26800, 28800]:
+    fail("chapter 3 underground modules are not the approved steps")
+for module in modules:
+    if not (chapter_dir / (module["image"] + ".png")).exists():
+        fail(f"missing underground module {module['image']}")
+if any("el_cloud_" in p["image"] for p in chapter["props"]):
+    fail("chapter 3 still repeats the hanging clay clouds")
+if sum(1 for p in chapter["props"] if p["image"] == "places/el_fog_bank") != 2:
+    fail("chapter 3 shore fog should stay as the two low banks")
+for name in ("cloud_stratus", "cloud_rain", "cloud_torn", "cloud_moon", "fog_wisp"):
+    if not (chapter_dir / "sky" / f"{name}.png").exists():
+        fail(f"missing sky sprite {name}")
+expected_art = {
+    "road/road_main_alder.png": (2400, 680),
+    "places/bg_far_ridges_tile.png": (2636, 1236),
+    "places/bg_mid_fields_tile.png": (2636, 1040),
+    "underground/ug_neutral_tile.png": (1148, 415),
+}
+from PIL import Image
+import numpy as np
+sw_color = Image.open(ROOT / "Postman/GameAssets/UI/map/swamps_color.jpg").convert("RGB")
+sw_pencil = Image.open(ROOT / "Postman/GameAssets/UI/map/swamps_pencil.jpg").convert("RGB")
+if sw_color.size != sw_pencil.size:
+    fail("the swamp pencil plate is a different size from the color")
+c = np.array(sw_color.resize((200, 400))).astype(np.int16)
+p = np.array(sw_pencil.resize((200, 400))).astype(np.int16)
+if abs(c - p).mean() < 40 or p.mean() < c.mean():
+    fail("closed swamps are not the light color haze used for the mountains")
+for rel, size in expected_art.items():
+    path = chapter_dir / rel
+    if not path.exists():
+        continue
+    with Image.open(path) as im:
+        if im.size != size:
+            fail(f"{rel} is {im.size}, the strip expects {size}")
+taps = json.loads((ROOT / "Postman/GameAssets/Data/chapter3_taps.json").read_text(encoding="utf-8"))
+needed = {"frog1", "heron", "bubble1", "boat", "barge", "bell", "radio", "wall", "kettle", "barrier"}
+got = {tap["id"] for tap in taps}
+if not needed <= got:
+    fail(f"missing world taps {sorted(needed - got)}")
+scene_body = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
+if "marsh:" not in scene_body or "chapter3_taps.json" not in scene_body:
+    fail("marsh taps are not hit targets")
+fedya = chapter_dir / "residents/fedya/full.png"
+if fedya.exists():
+    with Image.open(fedya) as im:
+        if im.mode != "RGBA":
+            fail("Fedya's picture needs a transparent background")
+if "destinationIn" in screen:
+    fail("the fade must not punch a hole with destinationIn")
+
+history = (ROOT / "Postman/App/StoryChronicle.swift").read_text(encoding="utf-8")
+for beat in ("clean", "ramka", "fiftyeight", "names", "zorka", "signature", "marsh"):
+    if f'id: "{beat}"' not in history:
+        fail(f"history is missing {beat}")
+for secret in ("включила К-2", "Агния", "Тишина"):
+    if secret in history:
+        fail(f"history names {secret}")
+
+ch2 = json.loads((ROOT / "Postman/GameAssets/Data/chapter2_story.json").read_text(encoding="utf-8"))
+if ch2["nextChapter"] != "Глава 3 «Болота»":
+    fail("chapter 2 does not continue into the marshes")
+if story["nextChapter"] != "Глава 4 «Город молчания» — скоро":
+    fail("chapter 3 does not point at chapter 4")
+
+# Жители и сценки. Левый край = центр (dx истории) − ширина/2.
+# Ширина = height * pixelW / pixelH. У этих спрайтов pixelH == height, ширина = pixelW.
+expected_people = {
+    "nyura": {"step": 7000, "height": 365, "sink": 0, "left": 160, "pixels": (174, 365)},
+    "semyon": {"step": 12500, "height": 430, "sink": 0, "left": 200, "pixels": (102, 430)},
+    "grisha": {"step": 16500, "height": 325, "sink": 13, "left": -270, "pixels": (189, 325)},
+    "petka": {"step": 20500, "height": 270, "sink": 0, "left": 140, "pixels": (114, 270)},
+}
+by_id = {r["id"]: r for r in story["residents"]}
+if set(expected_people) - set(by_id):
+    fail(f"missing swamp residents {sorted(set(expected_people) - set(by_id))}")
+for rid, want in expected_people.items():
+    got = by_id[rid]
+    width = want["pixels"][0]
+    left = got["dx"] - width / 2
+    if got["step"] != want["step"] or got["height"] != want["height"] or got.get("sink") != want["sink"]:
+        fail(f"{rid} placement drifted: {got['step']} {got['height']} sink {got.get('sink')}")
+    if abs(left - want["left"]) > 0.6:
+        fail(f"{rid} left edge is {left}, the sheet wants {want['left']}")
+    path = chapter_dir / "residents" / rid / "full.png"
+    if not path.exists():
+        fail(f"missing resident art {path.name} for {rid}")
+        continue
+    with Image.open(path) as im:
+        if im.size != want["pixels"] or im.mode != "RGBA":
+            fail(f"{rid} art is {im.size} {im.mode}, expected {want['pixels']} RGBA")
+# Одобренный dx 80 оставлял ящик Гриши на гати, справа от кормы.
+if by_id["grisha"]["dx"] > -100:
+    fail("Grisha is still beside the causeway, not on the barge deck")
+barge_right = barge["dx"] + barge["height"] * barge["pixelSize"][0] / barge["pixelSize"][1]
+grisha_left = by_id["grisha"]["dx"] - expected_people["grisha"]["pixels"][0] / 2
+grisha_right = grisha_left + expected_people["grisha"]["pixels"][0]
+if grisha_left < barge["dx"] or grisha_right > barge_right + 8:
+    fail(f"Grisha's crate is not on the hull: {grisha_left:.1f}..{grisha_right:.1f}, hull ends {barge_right:.1f}")
+for forbidden in (22500, 30000):
+    if any(r["step"] == forbidden and r["id"] != "fedya" for r in story["residents"]):
+        fail(f"a person stands at step {forbidden}; Горло and Отстой stay empty of people")
+life = [p for p in chapter["props"] if p["image"].startswith("ambient/")]
+if len(life) != 12:
+    fail(f"expected 12 swamp life props, got {len(life)}")
+scene_src = (ROOT / "Postman/Scene/WorldScene.swift").read_text(encoding="utf-8")
+referenced = set(re.findall(r"ambient/[a-z0-9_]+", scene_src))
+referenced.update(p["image"] for p in life)
+for image in sorted(referenced):
+    path = chapter_dir / f"{image}.png"
+    if not path.exists():
+        fail(f"missing life art {image}")
+        continue
+    with Image.open(path) as im:
+        if im.mode != "RGBA":
+            fail(f"{image} is not RGBA")
+for prop in life:
+    path = chapter_dir / f"{prop['image']}.png"
+    if not path.exists():
+        continue
+    with Image.open(path) as im:
+        if list(im.size) != prop["pixelSize"]:
+            fail(f"{prop['image']} is {im.size}, world.json says {prop['pixelSize']}")
+# Цапля у протоки с z 9 лежит под непрозрачной баржей и не видна.
+protoka_heron = [p for p in life if p["image"] == "ambient/heron_stand" and p["step"] == 16500]
+if not protoka_heron or protoka_heron[0]["z"] <= barge["z"]:
+    fail("the channel heron is behind the opaque barge")
+if "swayLiving" not in scene_src or "hopFrog" not in scene_src or "herdHeron" not in scene_src:
+    fail("swamp life is placed but not animated")
+if '"nyura"' not in (ROOT / "Postman/GameAssets/Data/resident_lore.json").read_text(encoding="utf-8"):
+    fail("the new residents have no tap line")
+
+if FAILS:
+    print(f"{len(FAILS)} chapter 3 check(s) failed:")
+    for item in FAILS:
+        print(" -", item)
+    raise SystemExit(1)
+print("chapter 3 checks ok")
