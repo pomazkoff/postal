@@ -84,9 +84,11 @@ final class TiledStripNode: SKNode {
     /// Разложить тайлы на видимый участок в локальных координатах слоя.
     func layout(localMinX: CGFloat, localMaxX: CGFloat) {
         let w = tileSize.width
+        // NaN/∞ в камере (нулевой view на старте, зум) не должны ронять Int(floor(...)).
+        guard w > 0, w.isFinite, localMinX.isFinite, localMaxX.isFinite else { return }
         let first = Int(floor(localMinX / w))
         let last = Int(floor(localMaxX / w))
-        let needed = max(0, last - first + 1)
+        let needed = min(64, max(0, last - first + 1))
         while pool.count < needed {
             let s = SKSpriteNode(texture: texture)
             s.anchorPoint = .zero

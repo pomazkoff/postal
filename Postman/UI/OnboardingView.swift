@@ -479,13 +479,18 @@ private struct OnboardTileStrip: View {
         let img = OnboardArt.image(path, maxWidth: 1400)
         let aspect = img.size.height > 0 ? img.size.width / img.size.height : 2.5
         // Для зеркальной травы не раздуваем тайл до ширины экрана — иначе паттерн редкий.
-        let tileW = flipAlternate
-            ? max(height * aspect, 1)
+        // Первый проход раскладки может дать нулевой (или нечисловой) размер: 0/0 → NaN,
+        // и Int(floor(NaN)) роняет приложение. Ширина тайла всегда конечная и ≥ 1.
+        let rawTileW = flipAlternate
+            ? height * aspect
             : max(height * aspect, viewportWidth * 0.9)
+        let tileW = rawTileW.isFinite ? max(rawTileW, 1) : 1
+        let safeShift = shift.isFinite ? shift : 0
+        let safeViewport = viewportWidth.isFinite ? max(viewportWidth, 0) : 0
         // База на ближайший меньший кратный tileW — непрерывный скролл без modulo-скачка.
-        let base = floor(shift / tileW) * tileW
-        let baseIndex = Int(floor(shift / tileW))
-        let count = max(6, Int(ceil(viewportWidth / tileW)) + 3)
+        let base = floor(safeShift / tileW) * tileW
+        let baseIndex = Int(floor(safeShift / tileW))
+        let count = min(64, max(6, Int(ceil(safeViewport / tileW)) + 3))
         return HStack(spacing: 0) {
             ForEach(0..<count, id: \.self) { i in
                 // Мировой индекс тайла — чтобы flip не скакал при смене base.
