@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import StoreKit
 
 /// HUD по макету ui/v3: бирка расстояния, карманные часы, телеграмма-задание, сумка и карта —
 /// всё пластилиновое, в координатах кадра 1170×2532 (как сцена, .aspectFill) — см. HUDLayout.
@@ -131,6 +132,10 @@ struct HUDView: View {
         }
         .onChange(of: letterID) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
+        // Оценка в App Store: один раз, только когда глава 2 пройдена целиком и её финальные экраны закрыты.
+        .onChange(of: screen) { _, _ in maybeAskForReview() }
+        .onChange(of: letterID) { _, _ in maybeAskForReview() }
+        .onAppear { maybeAskForReview() }
         .storyResetAlert(isPresented: $confirmReset)
     }
 
@@ -183,6 +188,17 @@ struct HUDView: View {
         case .none:
             EmptyView()
         }
+    }
+
+    /// Вся история (гл.1 + гл.2) пройдена, финальная карточка, письмо, «Глава 3 скоро» и итоги уже показаны.
+    private var storyCompletedAndSeen: Bool {
+        game.chapter.id == 2 && engine.isFinished && engine.hasSeenJourneyCard && engine.state.endCardSeen
+            && screen == .none && letterID == nil
+    }
+
+    private func maybeAskForReview() {
+        guard storyCompletedAndSeen, !ReviewPrompt.alreadyAsked else { return }
+        ReviewPrompt.schedule { storyCompletedAndSeen }
     }
 
     private func finishCard(_ card: StoryCard) {
@@ -391,5 +407,34 @@ enum ScreenInsets {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         let windows = scenes.flatMap(\.windows)
         return (windows.first { $0.isKeyWindow } ?? windows.first)?.safeAreaInsets.bottom ?? 0
+    }
+}
+
+/// Системный запрос оценки (StoreKit). Один раз за установку, после финала главы 2.
+/// iOS сама решает, показать ли окно (не чаще 3 раз в год); флаг ставим при вызове.
+@MainActor
+enum ReviewPrompt {
+    static let askedKey = "postman.review.askedAfterChapter2"
+    /// Пауза после закрытия финального экрана, чтобы окно не наложилось на анимацию.
+    static let delay: UInt64 = 2_000_000_000
+    private static var pending = false
+
+    static var alreadyAsked: Bool { UserDefaults.standard.bool(forKey: askedKey) }
+
+    /// stillValid перепроверяется после задержки: игрок мог открыть меню или уйти в фон.
+    static func schedule(stillValid: @escaping @MainActor () -> Bool) {
+        guard !alreadyAsked, !pending else { return }
+        pending = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: delay)
+            pending = false
+            guard !alreadyAsked, stillValid(),
+                  UIApplication.shared.applicationState == .active,
+                  let scene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive }) else { return }
+            UserDefaults.standard.set(true, forKey: askedKey)
+            AppStore.requestReview(in: scene)
+        }
     }
 }
