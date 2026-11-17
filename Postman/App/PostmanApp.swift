@@ -15,7 +15,10 @@ struct PostmanApp: App {
             RootView()
                 .environmentObject(game)
                 .preferredColorScheme(.dark)
-                .onOpenURL { game.receiveFirstMail($0) }
+                .onOpenURL { url in
+                    game.receiveFirstMail(url)
+                    game.receiveSwamps(url)
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -50,8 +53,8 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: game.onboardingDone)
-        .onAppear { game.pullFirstMailInbox() }
-        .onChange(of: brandSplashDone) { _, _ in game.pullFirstMailInbox() }
-        .onChange(of: game.onboardingDone) { _, _ in game.pullFirstMailInbox() }
+        .onAppear { game.pullFirstMailInbox(); game.pullSwampsInbox() }
+        .onChange(of: brandSplashDone) { _, _ in game.pullFirstMailInbox(); game.pullSwampsInbox() }
+        .onChange(of: game.onboardingDone) { _, _ in game.pullFirstMailInbox(); game.pullSwampsInbox() }
     }
 }

@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         core.startBackgroundObservation()
         if let url = launchOptions?[.url] as? URL {
             FirstMailInbox.note(url)
+            SwampsInbox.note(url)
         }
         Task { @MainActor in
             await core.notifier.refreshAuthorizationStatus()
@@ -24,6 +25,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      open url: URL,
                      options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        if SwampsLink.route(from: url) {
+            SwampsInbox.note(url)
+            return true
+        }
         guard FirstMailLink.route(from: url) else { return false }
         FirstMailInbox.note(url)
         return true

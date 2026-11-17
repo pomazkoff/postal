@@ -133,11 +133,23 @@ struct MapScreen: View {
                         .task(id: Int(geo.size.height)) {
                             guard !didCenter, geo.size.height > 1 else { return }
                             didCenter = true
-                            guard atlas.centersHero(viewSize: geo.size, scale: m.scale) else { return }
+                            guard atlas.centersHero(viewSize: geo.size, scale: m.scale) else {
+                                game.swampsMapFocus = false
+                                return
+                            }
+                            if game.swampsMapFocus {
+                                focusSwamps(atlas: atlas, global: global, m: m, size: geo.size)
+                                return
+                            }
                             let feet = atlas.point(globalStep: global)
                             pan = clamped(CGPoint(x: geo.size.width / 2 - m.point(feet.x, feet.y).x,
                                                   y: geo.size.height / 2 - m.point(feet.x, feet.y).y),
                                           zoom: 1, m: m, size: geo.size, content: atlas.contentSize)
+                        }
+                        // Ссылка болот, пришедшая при уже открытой карте: та же наводка, без сдвига шагов.
+                        .onChange(of: game.swampsMapFocus) { _, on in
+                            guard on, didCenter, geo.size.height > 1 else { return }
+                            focusSwamps(atlas: atlas, global: global, m: m, size: geo.size)
                         }
                         chrome(map, m: m, mountains: atlas.mountains != nil, swamps: atlas.swamps != nil)
                     } else {
@@ -448,6 +460,31 @@ struct MapScreen: View {
                 at: tags.postmanTag, dim: false, rotation: 5, m: m)
                 .onTapGesture { openPostman() }
         }
+    }
+
+    /// Ссылка «Болота». Глава 3 открыта — камера на почтальоне. Нет — на Гати под дымкой
+    /// и карточка «сколько идти». Шаги, глава и сохранение не меняются; флаг снимается здесь.
+    private func focusSwamps(atlas: MapAtlas, global: Int, m: FrameMapper, size: CGSize) {
+        game.swampsMapFocus = false
+        guard let swamps = atlas.swamps else { return }
+        let target: Int
+        switch SwampsFocus.resolve(globalStep: global, swampsStart: swamps.globalStart) {
+        case .hero:
+            target = global
+        case .ahead(let left):
+            let first = swamps.settlements.min { $0.step < $1.step }
+            target = swamps.globalStart + (first?.step ?? 0)
+            let title = game.world.chapters.first { $0.startStep == swamps.globalStart }?.title
+                ?? first?.name ?? ""
+            note = MapNote(title: title,
+                           body: L10n.format("map.place.ahead", Format.steps(left) + " " + L10n.text("abbr.steps")),
+                           image: nil)
+        }
+        zoom = 1
+        let feet = atlas.point(globalStep: target)
+        pan = clamped(CGPoint(x: size.width / 2 - m.point(feet.x, feet.y).x,
+                              y: size.height / 2 - m.point(feet.x, feet.y).y),
+                      zoom: 1, m: m, size: size, content: atlas.contentSize)
     }
 
     private func openMountain(_ place: ParchmentMap.Place, sheet: MountainSheet, global: Int) {

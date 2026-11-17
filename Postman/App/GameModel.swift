@@ -34,6 +34,10 @@ final class GameModel: ObservableObject {
     @Published var worldCovered = false
     /// Карточка «Первый почтовый рейс». Не сейв и не сдвиг сюжета.
     @Published var firstMailPending = false
+    /// Ссылка «Болота» ждёт, пока HUD сможет открыть карту. Не сейв и не сдвиг сюжета.
+    @Published var swampsMapPending = false
+    /// Карта, открытая по ссылке болот, ещё не навела камеру. Снимается самой картой.
+    @Published var swampsMapFocus = false
     @Published private(set) var chapterIndex = 0
 
     /// Визит к жителю не переключает главу/шаги. Для пройденной главы берём её собственное сохранение.
@@ -419,6 +423,29 @@ final class GameModel: ObservableObject {
         guard FirstMailInbox.pending else { return }
         FirstMailInbox.pending = false
         firstMailPending = true
+    }
+
+    /// Ссылка болот только просит карту. Шаги, глава, сумка и сюжет не трогаются.
+    func receiveSwamps(_ url: URL) {
+        guard SwampsLink.route(from: url) else { return }
+        swampsMapPending = true
+    }
+
+    func pullSwampsInbox() {
+        guard SwampsInbox.pending else { return }
+        SwampsInbox.pending = false
+        swampsMapPending = true
+    }
+
+    /// HUD открыл карту: дальше камеру наводит она сама.
+    func takeSwampsMapRequest() {
+        swampsMapPending = false
+        swampsMapFocus = true
+    }
+
+    /// Куда смотреть: только по уже пройденным мировым шагам, без записи.
+    func swampsFocus() -> SwampsFocus {
+        SwampsFocus.resolve(globalStep: chapter.startStep + chapterSteps)
     }
 
     func dismissFirstMail() {

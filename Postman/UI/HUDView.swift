@@ -149,10 +149,30 @@ struct HUDView: View {
             if new != .none { game.showHeroCard = false; game.marshNote = nil }
         }
         .onChange(of: letterID) { _, _ in publishWorldCover(screen: screen) }
+        // Ссылка «Болота»: карта открывается, когда нет журнала, разбора сумки, карточки сюжета или визита.
+        .onAppear { openSwampsMapIfReady() }
+        .onChange(of: game.swampsMapPending) { _, _ in openSwampsMapIfReady() }
+        .onChange(of: screen) { _, _ in openSwampsMapIfReady() }
         .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.marshNote) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.showAccessNote) { _, _ in publishWorldCover(screen: screen) }
         .storyResetAlert(isPresented: $confirmReset)
+    }
+
+    /// Только открывает карту и просит её навести камеру на болота. Шаги и сюжет не трогаются.
+    private func openSwampsMapIfReady() {
+        guard game.swampsMapPending else { return }
+        switch screen {
+        case .journal, .sorting, .card, .resident, .journey, .panel(.endCard):
+            return
+        default:
+            break
+        }
+        showMenu = false
+        showHistory = false
+        game.roadMenuOpen = false
+        game.takeSwampsMapRequest()
+        panel = .map
     }
 
     // MARK: Экраны главы
