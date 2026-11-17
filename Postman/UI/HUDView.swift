@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import StoreKit
 
 /// HUD по макету ui/v3: бирка расстояния, карманные часы, телеграмма-задание, сумка и карта —
 /// всё пластилиновое, в координатах кадра 1170×2532 (как сцена, .aspectFill) — см. HUDLayout.
@@ -156,6 +157,16 @@ struct HUDView: View {
         .onChange(of: game.showHeroCard) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.marshNote) { _, _ in publishWorldCover(screen: screen) }
         .onChange(of: game.showAccessNote) { _, _ in publishWorldCover(screen: screen) }
+        // Оценка в App Store: один раз, после главы 2, когда поверх дороги ничего не открыто.
+        .onChange(of: screen) { _, _ in maybeAskForReview() }
+        .onChange(of: letterID) { _, _ in maybeAskForReview() }
+        .onAppear { maybeAskForReview() }
+        .onChange(of: game.chapter.id) { _, _ in maybeAskForReview() }
+        .onChange(of: game.marshNote) { _, _ in maybeAskForReview() }
+        .onChange(of: game.showHeroCard) { _, _ in maybeAskForReview() }
+        .onChange(of: game.showAccessNote) { _, _ in maybeAskForReview() }
+        .onChange(of: showDeveloper) { _, _ in maybeAskForReview() }
+        .onChange(of: watchExpanded) { _, _ in maybeAskForReview() }
         .storyResetAlert(isPresented: $confirmReset)
     }
 
@@ -224,6 +235,22 @@ struct HUDView: View {
         case .none:
             EmptyView()
         }
+    }
+
+    /// Глава 2 пройдена: либо её финал и итоги уже закрыты, либо игрок уже дошёл до главы 3 ногами.
+    /// Служебный прыжок по главам (форс) не считается. Поверх дороги ничего не открыто.
+    private var storyCompletedAndSeen: Bool {
+        let chapter2Done = (game.chapter.id == 2 && engine.isFinished && engine.state.endCardSeen)
+            || game.chapter.id >= 3
+        return chapter2Done && game.progress.forceChapterIndex == nil
+            && screen == .none && letterID == nil
+            && !game.showHeroCard && game.marshNote == nil && !game.showAccessNote
+            && game.residentVisit == nil && !showDeveloper && !watchExpanded
+    }
+
+    private func maybeAskForReview() {
+        guard storyCompletedAndSeen, !ReviewPrompt.alreadyAsked else { return }
+        ReviewPrompt.schedule { storyCompletedAndSeen }
     }
 
     private func finishCard(_ card: StoryCard) {
@@ -428,9 +455,12 @@ struct HUDView: View {
         }
     }
 
+    /// Служебная консоль (шаги, прыжки по главам) — только в DEBUG. В App Store / TestFlight её нет.
     private func openDeveloper() {
+        #if DEBUG
         confirmReset = false
         showDeveloper = true
+        #endif
     }
 
     private func toggleWatch() {
@@ -492,5 +522,34 @@ enum ScreenInsets {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         let windows = scenes.flatMap(\.windows)
         return (windows.first { $0.isKeyWindow } ?? windows.first)?.safeAreaInsets.bottom ?? 0
+    }
+}
+
+/// Системный запрос оценки (StoreKit). Один раз за установку, после финала главы 2.
+/// iOS сама решает, показать ли окно (не чаще 3 раз в год); флаг ставим при вызове.
+@MainActor
+enum ReviewPrompt {
+    static let askedKey = "postman.review.askedAfterChapter2"
+    /// Пауза после закрытия финального экрана, чтобы окно не наложилось на анимацию.
+    static let delay: UInt64 = 2_000_000_000
+    private static var pending = false
+
+    static var alreadyAsked: Bool { UserDefaults.standard.bool(forKey: askedKey) }
+
+    /// stillValid перепроверяется после задержки: игрок мог открыть меню или уйти в фон.
+    static func schedule(stillValid: @escaping @MainActor () -> Bool) {
+        guard !alreadyAsked, !pending else { return }
+        pending = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: delay)
+            pending = false
+            guard !alreadyAsked, stillValid(),
+                  UIApplication.shared.applicationState == .active,
+                  let scene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive }) else { return }
+            UserDefaults.standard.set(true, forKey: askedKey)
+            AppStore.requestReview(in: scene)
+        }
     }
 }
