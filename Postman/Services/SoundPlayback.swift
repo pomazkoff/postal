@@ -161,6 +161,7 @@ final class SoundPlayback: NSObject {
             guard let fresh = try? AVAudioPlayer(contentsOf: url) else { return nil }
             fresh.prepareToPlay()
             effects[slot] = fresh
+            retire(player)
             return fresh
         }
         return player
@@ -180,7 +181,9 @@ final class SoundPlayback: NSObject {
         player.volume = 0
         player.play()
         player.setVolume(SoundPrefs.ambience.gain * 0.45, fadeDuration: 0.8)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { old?.stop() }
+        if let old {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in self?.retire(old) }
+        }
     }
 
     private func stopBed(fade: TimeInterval) {
@@ -189,8 +192,23 @@ final class SoundPlayback: NSObject {
         bed = nil
         bedID = nil
         bedLoop = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + fade + 0.05) { player.stop() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + fade + 0.05) { [weak self] in self?.retire(player) }
     }
+
+    /// 1.0 (23): 10 из 10 крэшей Organizer — `-[… finishedPlaying:]` на освобождённом объекте.
+    /// AVAudioPlayer, отпущенный во время звучания, шлёт себе finishedPlaying: уже после dealloc.
+    /// Поэтому плеер сначала останавливаем, а держим ещё пару секунд, пока не уйдут отложенные вызовы.
+    private var retired: [AVAudioPlayer] = []
+
+    private func retire(_ player: AVAudioPlayer) {
+        player.stop()
+        retired.append(player)
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.retireHold) { [weak self] in
+            self?.retired.removeAll { $0 === player }
+        }
+    }
+
+    private static let retireHold: TimeInterval = 3
 
     private func clipURL(_ id: String) -> URL? {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Audio/\(id).wav")
