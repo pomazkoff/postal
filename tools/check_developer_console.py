@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The developer console is a Release gesture on the watch, not a DEBUG-only panel."""
+"""The developer console is a hidden 10 s watch hold. Since 1.0 (24) it opens only in DEBUG:
+App Store / TestFlight builds must not offer step cheats or chapter jumps."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +35,10 @@ for needle in ("Сбросить прогресс", "Запланированн�
         fail(f"console is missing {needle}")
 if "DeveloperConsole.swift in Sources" not in project:
     fail("DeveloperConsole.swift is not in the Xcode target")
+
+opener = hud.split("private func openDeveloper()", 1)[-1][:300]
+if "#if DEBUG" not in opener or "showDeveloper = true" not in opener:
+    fail("openDeveloper is reachable outside DEBUG (Release would offer +500 steps and chapter jumps)")
 
 if FAILS:
     print(f"{len(FAILS)} developer console check(s) failed:")
