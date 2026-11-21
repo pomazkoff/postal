@@ -611,8 +611,10 @@ final class GameModel: ObservableObject {
             guard let id = event.item, let item = story.item(id), let image = item.road else { continue }
             let entry = UIArt.entry(image)
             let foot = entry.anchor("foot")
+            let height: CGFloat? = entry.image.hasSuffix("road_envstake")
+                ? WorldScene.RoadItemSpec.envStakeHeight : nil
             road.append(.init(id: id, step: chapter.startStep + event.step, image: entry.image, foot: foot,
-                              leftBehind: leftBehind.contains(id)))
+                              leftBehind: leftBehind.contains(id), height: height))
         }
         var residents: [WorldScene.ResidentSpec] = []
         for r in story.residents where r.step <= chapter.lengthSteps {

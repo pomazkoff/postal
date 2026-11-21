@@ -610,6 +610,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         /// Точка «ноги» в пикселях картинки (Y вниз): ставится на линию дороги.
         let foot: CGPoint
         let leftBehind: Bool
+        /// Высота в px дизайна кадра 1170×2532. nil — родной размер текстуры.
+        var height: CGFloat? = nil
+
+        /// Конверт на палке во всех главах. PNG 146×253, на дороге рисуем 160 с теми же пропорциями.
+        static let envStakeHeight: CGFloat = 160
     }
 
     struct ResidentSpec {
@@ -690,7 +695,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             let tex = TextureStore.shared.texture(spec.image)
             let node = SKSpriteNode(texture: tex)
             let size = tex.size()
-            node.size = size
+            if let h = spec.height, h > 0, size.height > 0 {
+                node.size = CGSize(width: size.width * (h / size.height), height: h)
+            } else {
+                node.size = size
+            }
             node.anchorPoint = CGPoint(x: size.width > 0 ? spec.foot.x / size.width : 0.5,
                                        y: size.height > 0 ? 1 - spec.foot.y / size.height : 0)
             // Чуть впереди точки события — почтальон «подходит» к палке.
