@@ -2943,9 +2943,9 @@
           "image": "places/place_staraya_protoka_main",
           "layer": "main",
           "step": 16500,
-          "dx": -1772,
-          "height": 1200,
-          "sink": 480,
+          "dx": -1812,
+          "height": 900,
+          "sink": 360,
           "z": 10,
           "pixelSize": [
             851,

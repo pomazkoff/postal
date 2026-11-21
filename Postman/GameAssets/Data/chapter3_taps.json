@@ -209,20 +209,20 @@
   {
     "id": "barge",
     "step": 16500,
-    "dx": -617,
+    "dx": -945.6,
     "sprite": "Chapter3/taps/barge",
-    "height": 1200,
-    "sink": 480,
+    "height": 900,
+    "sink": 360,
     "z": 11,
     "draw": false
   },
   {
     "id": "bell",
     "step": 16500,
-    "dx": -80,
+    "dx": -543,
     "sprite": "Chapter3/taps/bell",
-    "height": 220,
-    "sink": -180,
+    "height": 165,
+    "sink": -135,
     "z": 16,
     "draw": false
   },

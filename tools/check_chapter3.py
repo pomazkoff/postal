@@ -151,8 +151,8 @@ layers = json.loads((ROOT / "Postman/GameAssets/Data/world.json").read_text(enco
 if layers["topColor"] != "#14505F" or layers["bottomColor"] != "#3C7873":
     fail("the shared sky used by the valley and the mountains changed")
 barge = next(p for p in chapter["props"] if p["image"] == "places/place_staraya_protoka_main")
-# Кабина выше почтальона; водяной край спрайта по-прежнему уходит под линию дороги.
-if barge["height"] != 1200 or barge["sink"] != 480 or barge["dx"] != -1772:
+# Кабина сопоставима с почтальоном, не накрывает его; вода уходит под линию дороги.
+if barge["height"] != 900 or barge["sink"] != 360 or barge["dx"] != -1812:
     fail(f"the barge is not beside the causeway: {barge['height']} {barge['sink']} {barge['dx']}")
 if any(p["layer"] == "underground" and "ug_" not in p["image"] for p in chapter["props"]):
     fail("a chapter 3 underground prop is not a swamp tile")
