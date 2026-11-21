@@ -199,7 +199,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var marshBirdClock: Double = 6
     private var marshSkyTime: Double = 0
     private var marshSkySpan: CGFloat = 0
-    private var shimmerTime: Double = 0
 
     /// Небо главы 3: Chapter3/sky. Облака висят в открытой полосе над грядами,
     /// клочья тумана — ниже, над полями. Птиц и puff пока нет: файл с префиксом bird_ подхватится сам.
@@ -974,8 +973,6 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         ambient?.update(dt: dt, now: Date(), cameraX: camX, cameraScale: camScale,
                         visibleSize: CGSize(width: visibleWidth, height: visibleHeight))
         weather?.update(dt: dt)
-        shimmerTime += dt
-        MarshSurface.time.floatValue = Float(shimmerTime)
         applyChapterSky()
         updateMarshSky(dt: dt)
         updateCompanion(dt)
@@ -1608,7 +1605,8 @@ extension WorldScene {
 
 /// Лёгкий блик по верхней кромке разреза болот. Не вуаль на камеру: только пиксели тайла.
 enum MarshSurface {
-    static let time = SKUniform(name: "u_time", float: 0)
+    // SpriteKit already provides a built-in u_time; a custom uniform of the same
+    // name fails shader compilation ("redefinition of parameter 'u_time'").
     static let shader: SKShader = {
         let src = """
         void main() {
@@ -1620,9 +1618,7 @@ enum MarshSurface {
             gl_FragColor = c * v_color_mix;
         }
         """
-        let sh = SKShader(source: src)
-        sh.uniforms = [time]
-        return sh
+        return SKShader(source: src)
     }()
 }
 
