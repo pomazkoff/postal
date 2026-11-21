@@ -2,260 +2,393 @@
   {
     "id": "poles",
     "step": 1800,
-    "dx": -220,
-    "sprite": "Chapter3/taps/poles"
+    "dx": -420,
+    "sprite": "Chapter3/taps/poles",
+    "height": 400,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "lime",
-    "step": 2200,
-    "dx": 200,
-    "sprite": "Chapter3/taps/lime"
+    "step": 2400,
+    "dx": 340,
+    "sprite": "Chapter3/taps/lime",
+    "height": 150,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "cable",
-    "step": 3000,
-    "dx": -180,
-    "sprite": "Chapter3/taps/cable"
+    "step": 3100,
+    "dx": -360,
+    "sprite": "Chapter3/taps/cable",
+    "height": 90,
+    "sink": 80,
+    "z": 9
   },
   {
     "id": "nails",
-    "step": 4200,
-    "dx": 210,
-    "sprite": "Chapter3/taps/nails"
+    "step": 4400,
+    "dx": 380,
+    "sprite": "Chapter3/taps/nails",
+    "height": 170,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "boat",
-    "step": 4500,
-    "dx": -260,
-    "sprite": "Chapter3/taps/boat"
+    "step": 5200,
+    "dx": -480,
+    "sprite": "Chapter3/taps/boat",
+    "height": 300,
+    "sink": 30,
+    "z": 13
   },
   {
     "id": "smoke",
-    "step": 4700,
-    "dx": 40,
-    "sprite": "Chapter3/taps/smoke"
+    "step": 5800,
+    "dx": 320,
+    "sprite": "Chapter3/taps/smoke",
+    "height": 560,
+    "sink": 40,
+    "z": 10
   },
   {
     "id": "stack",
-    "step": 5200,
-    "dx": 240,
-    "sprite": "Chapter3/taps/poles"
+    "step": 6400,
+    "dx": -400,
+    "sprite": "Chapter3/taps/poles",
+    "height": 380,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "frog1",
-    "step": 6000,
-    "dx": -200,
-    "sprite": "Chapter3/taps/frog"
+    "step": 6800,
+    "dx": -300,
+    "sprite": "Chapter3/taps/frog",
+    "height": 80,
+    "sink": 16,
+    "z": 14
   },
   {
     "id": "bubble1",
-    "step": 6500,
-    "dx": 190,
-    "sprite": "Chapter3/taps/bubble"
+    "step": 7200,
+    "dx": 360,
+    "sprite": "Chapter3/taps/bubble",
+    "height": 55,
+    "sink": 70,
+    "z": 9
   },
   {
     "id": "hummock",
-    "step": 7000,
-    "dx": -160,
-    "sprite": "Chapter3/taps/hummock"
+    "step": 7600,
+    "dx": -440,
+    "sprite": "Chapter3/taps/hummock",
+    "height": 150,
+    "sink": 20,
+    "z": 11
   },
   {
     "id": "boots",
-    "step": 7400,
-    "dx": 220,
-    "sprite": "Chapter3/taps/boots"
+    "step": 8000,
+    "dx": 340,
+    "sprite": "Chapter3/taps/boots",
+    "height": 100,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "stake",
-    "step": 7600,
-    "dx": -40,
-    "sprite": "Chapter3/taps/stake"
+    "step": 8400,
+    "dx": -280,
+    "sprite": "Chapter3/taps/stake",
+    "height": 540,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "ripples",
-    "step": 9500,
-    "dx": 180,
-    "sprite": "Chapter3/taps/ripples"
+    "step": 9400,
+    "dx": 360,
+    "sprite": "Chapter3/taps/ripples",
+    "height": 55,
+    "sink": 80,
+    "z": 8
   },
   {
     "id": "duckweed",
-    "step": 10000,
-    "dx": -200,
-    "sprite": "Chapter3/taps/duckweed"
+    "step": 9900,
+    "dx": -400,
+    "sprite": "Chapter3/taps/duckweed",
+    "height": 70,
+    "sink": 70,
+    "z": 8
   },
   {
     "id": "pole",
-    "step": 10200,
-    "dx": 160,
-    "sprite": "Chapter3/taps/pole"
+    "step": 10400,
+    "dx": 300,
+    "sprite": "Chapter3/taps/pole",
+    "height": 780,
+    "sink": 50,
+    "z": 11
   },
   {
     "id": "hut",
-    "step": 11000,
-    "dx": -240,
-    "sprite": "Chapter3/taps/hut"
+    "step": 11200,
+    "dx": -200,
+    "sprite": "Chapter3/taps/hut",
+    "height": 720,
+    "sink": 40,
+    "z": 10
   },
   {
     "id": "frog2",
     "step": 11800,
-    "dx": 200,
-    "sprite": "Chapter3/taps/frog"
+    "dx": -320,
+    "sprite": "Chapter3/taps/frog",
+    "height": 80,
+    "sink": 16,
+    "z": 14
   },
   {
     "id": "bubble2",
     "step": 12200,
-    "dx": -180,
-    "sprite": "Chapter3/taps/bubble"
+    "dx": 300,
+    "sprite": "Chapter3/taps/bubble",
+    "height": 55,
+    "sink": 70,
+    "z": 9
   },
   {
     "id": "tally",
-    "step": 13000,
-    "dx": 210,
-    "sprite": "Chapter3/taps/tally"
+    "step": 13100,
+    "dx": 360,
+    "sprite": "Chapter3/taps/tally",
+    "height": 420,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "peat",
-    "step": 13200,
-    "dx": -220,
-    "sprite": "Chapter3/taps/peat"
+    "step": 13600,
+    "dx": -420,
+    "sprite": "Chapter3/taps/peat",
+    "height": 250,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "dryer",
-    "step": 13600,
-    "dx": 180,
-    "sprite": "Chapter3/taps/dryer"
+    "step": 14850,
+    "dx": 360,
+    "sprite": "Chapter3/taps/dryer",
+    "height": 500,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "duty",
-    "step": 13800,
-    "dx": -160,
-    "sprite": "Chapter3/taps/duty"
+    "step": 14600,
+    "dx": -360,
+    "sprite": "Chapter3/taps/duty",
+    "height": 440,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "louder",
-    "step": 14000,
-    "dx": 60,
-    "sprite": "Chapter3/taps/note"
+    "step": 15400,
+    "dx": 300,
+    "sprite": "Chapter3/taps/note",
+    "height": 180,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "barge",
-    "step": 15800,
-    "dx": -280,
-    "sprite": "Chapter3/taps/barge"
+    "step": 16500,
+    "dx": -617,
+    "sprite": "Chapter3/taps/barge",
+    "height": 1200,
+    "sink": 480,
+    "z": 11,
+    "draw": false
   },
   {
     "id": "bell",
-    "step": 15950,
+    "step": 16500,
     "dx": -80,
-    "sprite": "Chapter3/taps/bell"
+    "sprite": "Chapter3/taps/bell",
+    "height": 220,
+    "sink": -180,
+    "z": 16,
+    "draw": false
   },
   {
     "id": "spawn",
-    "step": 16200,
-    "dx": 200,
-    "sprite": "Chapter3/taps/spawn"
+    "step": 17000,
+    "dx": 400,
+    "sprite": "Chapter3/taps/spawn",
+    "height": 80,
+    "sink": 70,
+    "z": 9
   },
   {
     "id": "heron",
-    "step": 17200,
-    "dx": 240,
-    "sprite": "Chapter3/taps/heron"
+    "step": 17600,
+    "dx": 380,
+    "sprite": "Chapter3/taps/heron",
+    "height": 400,
+    "sink": 20,
+    "z": 13
   },
   {
     "id": "frog3",
     "step": 18800,
-    "dx": -200,
-    "sprite": "Chapter3/taps/frog"
+    "dx": -300,
+    "sprite": "Chapter3/taps/frog",
+    "height": 80,
+    "sink": 16,
+    "z": 14
   },
   {
     "id": "reeds",
     "step": 19200,
-    "dx": 180,
-    "sprite": "Chapter3/taps/reeds"
+    "dx": 400,
+    "sprite": "Chapter3/taps/reeds",
+    "height": 420,
+    "sink": 30,
+    "z": 11
   },
   {
     "id": "verst",
-    "step": 19800,
-    "dx": -60,
-    "sprite": "Chapter3/taps/verst"
+    "step": 19600,
+    "dx": -360,
+    "sprite": "Chapter3/taps/verst",
+    "height": 560,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "bubble3",
     "step": 20600,
-    "dx": 200,
-    "sprite": "Chapter3/taps/bubble"
+    "dx": 340,
+    "sprite": "Chapter3/taps/bubble",
+    "height": 55,
+    "sink": 70,
+    "z": 9
   },
   {
     "id": "radio",
-    "step": 20800,
-    "dx": -160,
+    "step": 21000,
+    "dx": 360,
     "sprite": "Chapter3/taps/radio",
+    "height": 180,
+    "sink": 40,
+    "z": 12,
     "flag": "ether_heard"
   },
   {
     "id": "wall",
-    "step": 23200,
-    "dx": 40,
-    "sprite": "Chapter3/taps/wall"
+    "step": 22500,
+    "dx": -175,
+    "sprite": "Chapter3/taps/wall",
+    "height": 760,
+    "sink": 40,
+    "z": 9,
+    "draw": false
   },
   {
     "id": "door",
-    "step": 23600,
-    "dx": -80,
-    "sprite": "Chapter3/taps/door"
+    "step": 22500,
+    "dx": 460,
+    "sprite": "Chapter3/taps/door",
+    "height": 400,
+    "sink": 40,
+    "z": 14
   },
   {
     "id": "rim",
-    "step": 23720,
-    "dx": 120,
-    "sprite": "Chapter3/taps/rim"
+    "step": 22500,
+    "dx": -400,
+    "sprite": "Chapter3/taps/rim",
+    "height": 160,
+    "sink": -80,
+    "z": 15,
+    "draw": false
   },
   {
     "id": "thermos",
-    "step": 23840,
-    "dx": -140,
-    "sprite": "Chapter3/taps/thermos"
+    "step": 22500,
+    "dx": -280,
+    "sprite": "Chapter3/taps/thermos",
+    "height": 170,
+    "sink": -80,
+    "z": 16
   },
   {
     "id": "passwall",
-    "step": 23960,
-    "dx": 160,
-    "sprite": "Chapter3/taps/pass"
+    "step": 22500,
+    "dx": -520,
+    "sprite": "Chapter3/taps/pass",
+    "height": 200,
+    "sink": -280,
+    "z": 16
   },
   {
     "id": "pole2",
-    "step": 24200,
-    "dx": -200,
-    "sprite": "Chapter3/taps/pole"
+    "step": 23400,
+    "dx": -400,
+    "sprite": "Chapter3/taps/pole",
+    "height": 780,
+    "sink": 50,
+    "z": 11
   },
   {
     "id": "lids",
-    "step": 28600,
-    "dx": 200,
-    "sprite": "Chapter3/taps/lids"
+    "step": 28400,
+    "dx": -400,
+    "sprite": "Chapter3/taps/lids",
+    "height": 170,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "kettle",
-    "step": 29200,
-    "dx": -180,
-    "sprite": "Chapter3/taps/kettle"
+    "step": 29100,
+    "dx": 340,
+    "sprite": "Chapter3/taps/kettle",
+    "height": 190,
+    "sink": 40,
+    "z": 12
   },
   {
     "id": "cordon",
-    "step": 29400,
-    "dx": 160,
-    "sprite": "Chapter3/taps/cordon"
+    "step": 29500,
+    "dx": -360,
+    "sprite": "Chapter3/taps/cordon",
+    "height": 400,
+    "sink": 40,
+    "z": 11
   },
   {
     "id": "barrier",
-    "step": 29700,
-    "dx": 0,
-    "sprite": "Chapter3/taps/barrier"
+    "step": 29800,
+    "dx": 80,
+    "sprite": "Chapter3/taps/barrier",
+    "height": 520,
+    "sink": 40,
+    "z": 13
   },
   {
     "id": "pipes",
-    "step": 29900,
-    "dx": 220,
-    "sprite": "Chapter3/taps/pipes"
+    "step": 30100,
+    "dx": 420,
+    "sprite": "Chapter3/taps/pipes",
+    "height": 340,
+    "sink": 40,
+    "z": 10
   }
 ]

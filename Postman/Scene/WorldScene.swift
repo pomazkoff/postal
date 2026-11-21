@@ -458,9 +458,15 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         let dx: Double
         let sprite: String
         let flag: String?
+        let height: Double?
+        let sink: Double?
+        let z: Double?
+        /// false — только цель тапа поверх уже нарисованного места (баржа, стена).
+        let draw: Bool?
     }
 
     /// Вещи §10.3. Каждая — отдельная цель, не житель и не письмо.
+    /// Высота и sink берутся из JSON, как у пропсов гл. 1–2; больше не одна высота 150 на линии дороги.
     private func installMarshTaps(in layer: SKNode, chapter: ChapterConfig) {
         let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/chapter3_taps.json")
         guard let data = try? Data(contentsOf: url),
@@ -470,13 +476,14 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             guard FileManager.default.fileExists(atPath: path) else { continue }
             let tex = TextureStore.shared.texture(tap.sprite)
             let node = SKSpriteNode(texture: tex)
-            let h: CGFloat = 150
+            let h = CGFloat(tap.height ?? 150)
             let w = tex.size().width > 0 ? h * tex.size().width / tex.size().height : h
             node.size = CGSize(width: w, height: h)
             node.anchorPoint = CGPoint(x: 0.5, y: 0)
             node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + tap.step)) + CGFloat(tap.dx),
-                                    y: geo.roadY - 8)
-            node.zPosition = 60
+                                    y: geo.roadY - CGFloat(tap.sink ?? 40))
+            node.zPosition = CGFloat(tap.z ?? 12)
+            if tap.draw == false { node.alpha = 0.01 }
             node.name = "marsh:" + tap.id
             node.isUserInteractionEnabled = false
             layer.addChild(node)
