@@ -1262,7 +1262,10 @@
     {
       "id": "nyura",
       "name": "Тётя Нюра",
-      "aliases": ["nyura", "нюра"],
+      "aliases": [
+        "nyura",
+        "нюра"
+      ],
       "step": 7000,
       "dx": 247,
       "height": 365,
@@ -1271,7 +1274,11 @@
     {
       "id": "semyon",
       "name": "Семён",
-      "aliases": ["semyon", "семён", "семен"],
+      "aliases": [
+        "semyon",
+        "семён",
+        "семен"
+      ],
       "step": 12500,
       "dx": 251,
       "height": 430,
@@ -1280,7 +1287,10 @@
     {
       "id": "grisha",
       "name": "Дядя Гриша",
-      "aliases": ["grisha", "гриша"],
+      "aliases": [
+        "grisha",
+        "гриша"
+      ],
       "step": 16500,
       "dx": -175.5,
       "height": 325,
@@ -1289,7 +1299,10 @@
     {
       "id": "petka",
       "name": "Петька",
-      "aliases": ["petka", "петька"],
+      "aliases": [
+        "petka",
+        "петька"
+      ],
       "step": 20500,
       "dx": 197,
       "height": 270,
@@ -1325,7 +1338,7 @@
   ],
   "finaleTitle": "Глава 3 · Болота",
   "finaleSubtitle": "пройдена",
-  "nextChapter": "Глава 4 «Город молчания» — скоро",
+  "nextChapter": "Глава 4 «Нижний Створ»",
   "trustSettlements": [
     "gat",
     "top",

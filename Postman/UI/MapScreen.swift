@@ -62,9 +62,12 @@ struct MapScreen: View {
     @State private var mountainPictureFor: Double = -1
     @State private var swampPicture: UIImage?
     @State private var swampPictureFor: Double = -1
+    @State private var stvorPicture: UIImage?
+    @State private var stvorPictureFor: Double = -1
     @State private var valleySlot = MapRenderSlot()
     @State private var mountainSlot = MapRenderSlot()
     @State private var swampSlot = MapRenderSlot()
+    @State private var stvorSlot = MapRenderSlot()
     @State private var zoom: CGFloat = 1
     @State private var pan: CGPoint = .zero
     @State private var pinchStart: (zoom: CGFloat, pan: CGPoint)?
@@ -91,6 +94,10 @@ struct MapScreen: View {
         guard let map, let sheet = MapAtlas.make(valley: map).swamps else { return -1 }
         return sheet.revealThreshold(worldStep: game.chapter.startStep + step)
     }
+    private var stvorRevealKey: Double {
+        guard let map, let sheet = MapAtlas.make(valley: map).stvor else { return -1 }
+        return sheet.revealThreshold(worldStep: game.chapter.startStep + step)
+    }
 
     var body: some View {
         FrameScreen(dim: 0.9) { m in
@@ -100,14 +107,16 @@ struct MapScreen: View {
                         let atlas = MapAtlas.make(valley: map)
                         let road = RoadGeometry(map.points)
                         let global = game.chapter.startStep + step
-                        let heroOnSwamp = atlas.swamps != nil && global >= SwampPlaces.globalStart
-                        let heroOnMountain = !heroOnSwamp && atlas.mountains != nil && global >= MountainPlaces.globalStart
+                        let heroOnStvor = atlas.stvor != nil && global >= StvorPlaces.globalStart
+                        let heroOnSwamp = !heroOnStvor && atlas.swamps != nil && global >= SwampPlaces.globalStart
+                        let heroOnMountain = !heroOnStvor && !heroOnSwamp && atlas.mountains != nil && global >= MountainPlaces.globalStart
                         ZStack(alignment: .topLeading) {
                             // Долина снизу. Горы непрозрачным кадром сверху: в перекрытии нет смешения, иначе шов двоится.
                             // Болота ещё выше: низ листа растворяется в вершинах, сами горы не прячутся.
-                            // Рамка — весь холст, не экран: иначе верх болот оказывается за пределами
+                            // Створ сверху болот: низ листа растворяется в Отстое. Неоткрытый лист — карандаш (t490).
+                            // Рамка — весь холст, не экран: иначе верх оказывается за пределами
                             // зоны жеста и до него не доскроллить.
-                            mapLayer(map, road: road, m: m, drawHero: !heroOnMountain && !heroOnSwamp)
+                            mapLayer(map, road: road, m: m, drawHero: !heroOnMountain && !heroOnSwamp && !heroOnStvor)
                                 .offset(x: m.length(atlas.valleyOrigin.x), y: m.length(atlas.valleyOrigin.y + atlas.lift))
                             if let mountains = atlas.mountains {
                                 mountainLayer(mountains, global: global, m: m, drawHero: heroOnMountain,
@@ -119,6 +128,12 @@ struct MapScreen: View {
                                 mountainLayer(swamps, global: global, m: m, drawHero: heroOnSwamp,
                                               picture: swampPicture, postman: map.postman,
                                               fadeBottom: swampPicture == nil ? MarshSeam.fadeDesignPx : 0)
+                                    .offset(y: m.length(atlas.stvorLift))
+                            }
+                            if let stvor = atlas.stvor {
+                                mountainLayer(stvor, global: global, m: m, drawHero: heroOnStvor,
+                                              picture: stvorPicture, postman: map.postman,
+                                              fadeBottom: atlas.stvorOverlap > 1 ? atlas.stvorOverlap : MarshSeam.fadeDesignPx)
                             }
                         }
                         .frame(width: atlas.contentSize.width * m.scale,
@@ -151,7 +166,7 @@ struct MapScreen: View {
                             guard on, didCenter, geo.size.height > 1 else { return }
                             focusSwamps(atlas: atlas, global: global, m: m, size: geo.size)
                         }
-                        chrome(map, m: m, mountains: atlas.mountains != nil, swamps: atlas.swamps != nil)
+                        chrome(map, m: m, mountains: atlas.mountains != nil, swamps: atlas.swamps != nil, stvor: atlas.stvor != nil)
                     } else {
                         Text(L10n.text("map.missing")).foregroundStyle(Ink.chalk)
                     }
@@ -178,6 +193,7 @@ struct MapScreen: View {
         .task(id: MapRevealQuantizer.key(map?.revealThreshold(step: sheetStep) ?? 0)) { await refreshReveal() }
         .task(id: MapRevealQuantizer.key(mountainRevealKey)) { await refreshMountain() }
         .task(id: MapRevealQuantizer.key(swampRevealKey)) { await refreshSwamp() }
+        .task(id: MapRevealQuantizer.key(stvorRevealKey)) { await refreshStvor() }
         .onAppear { SoundPlayback.shared.effect("ui_paper_open") }
     }
 
@@ -326,7 +342,7 @@ struct MapScreen: View {
         if let line = engine.story.arrivals?.first(where: { $0.settlement == placeID })?.text, !line.isEmpty {
             return line
         }
-        for chapter in [2, 3] where chapter != game.chapter.id {
+        for chapter in [2, 3, 4] where chapter != game.chapter.id {
             if let line = StoryConfig.load(chapter: chapter).arrivals?.first(where: { $0.settlement == placeID })?.text,
                !line.isEmpty {
                 return line
@@ -515,10 +531,11 @@ struct MapScreen: View {
     }
 
     @ViewBuilder
-    private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool, swamps: Bool) -> some View {
+    private func chrome(_ map: ParchmentMap, m: FrameMapper, mountains: Bool, swamps: Bool, stvor: Bool) -> some View {
         let k = m.scale
         PlacedArt(name: "plaque", m: m, at: CGPoint(x: 300, y: 250), scale: 520 / 660) { e, f in
-            Text(swamps && game.chapter.id >= 3 ? L10n.text("map.swamps")
+            Text(stvor && game.chapter.id >= 4 ? L10n.text("map.stvor")
+                 : swamps && game.chapter.id >= 3 ? L10n.text("map.swamps")
                  : mountains && !valleySheet ? L10n.text("map.mountains") : L10n.text("map.region"))
                 .font(Ink.title(84 * f))
                 .foregroundStyle(Ink.brown)
@@ -659,7 +676,7 @@ struct MapScreen: View {
         let atlas = MapAtlas.make(valley: map)
         let mountainURL = atlas.mountains.map { URL(fileURLWithPath: $0.colorPath) }
         let mountainRoad = atlas.mountains?.road ?? []
-        let lift = atlas.lift
+        let lift = atlas.lift - atlas.stvorLift
         await refresh(key: key, shown: swampPictureFor, slot: swampSlot) {
             guard !Task.isCancelled else { return nil }
             let revealed = ParchmentReveal.render(color: color, pencil: pencil, field: field,
@@ -674,6 +691,28 @@ struct MapScreen: View {
         } store: { image, key in
             swampPicture = image
             swampPictureFor = key
+        }
+    }
+
+    @MainActor
+    private func refreshStvor() async {
+        guard let map, let sheet = MapAtlas.make(valley: map).stvor else { return }
+        let key = MapRevealQuantizer.key(stvorRevealKey)
+        guard key >= 0 else { return }
+        let color = URL(fileURLWithPath: sheet.colorPath)
+        let pencil = URL(fileURLWithPath: sheet.pencilPath)
+        let field = URL(fileURLWithPath: sheet.fieldPath)
+        let scale = sheet.field.decodeScale
+        let bias = sheet.field.decodeBias
+        let soft = sheet.softFraction
+        await refresh(key: key, shown: stvorPictureFor, slot: stvorSlot) {
+            guard !Task.isCancelled else { return nil }
+            return ParchmentReveal.render(color: color, pencil: pencil, field: field,
+                                          decodeScale: scale, decodeBias: bias,
+                                          softFraction: soft, threshold: key)
+        } store: { image, key in
+            stvorPicture = image
+            stvorPictureFor = key
         }
     }
 

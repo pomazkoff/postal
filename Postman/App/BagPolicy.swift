@@ -64,6 +64,12 @@ enum BagPolicy {
         case (3, "find_pole"): return [Drop(event: "d_torf", step: 12500)]
         case (3, "find_graph"): return [Drop(event: "d_torf", step: 12500)]
         case (3, "find_pass"): return [Drop(event: "d_barge", step: 16500)]
+        case (4, "l1"): return [Drop(event: "d_otstoyniki", step: 4000)]
+        case (4, "l2"): return [Drop(event: "d_kotelnaya", step: 21000)]
+        case (4, "l3"), (4, "l4"): return [Drop(event: "d_sarai", step: 28000)]
+        case (4, "l5"): return [Drop(event: "e_address", step: 36500),
+                                Drop(event: "d_otdelenie", step: 39500)]
+        case (4, "l7"): return [Drop(event: "d_otdelenie", step: 39500)]
         default:
             return []
         }
@@ -114,6 +120,22 @@ enum BagPolicy {
         case (3, "find_pole"): return "p_pole"
         case (3, "find_graph"): return "p_graph"
         case (3, "find_pass"): return "p_pass"
+        case (4, "l1"): return "p_l1"
+        case (4, "l2"): return "p_l2"
+        case (4, "l3"): return "p_l3"
+        case (4, "l4"): return "p_l4"
+        case (4, "l5"): return "p_l5"
+        case (4, "l6"): return "p_l6"
+        case (4, "l7"): return "p_l7"
+        case (4, "l8"): return "p_l8"
+        case (4, "l9"): return "p_l9"
+        case (4, "l10"): return "p_l10"
+        case (4, "find_sluice"): return "e_sluice"
+        case (4, "note_kolya"): return "e_sluice"
+        case (4, "note_pavel"): return "e_kotel"
+        case (4, "find_blank"): return "p_blank"
+        case (4, "find_stub"): return "p_stub"
+        case (4, "find_cup"): return "p_cup"
         default: return nil
         }
     }

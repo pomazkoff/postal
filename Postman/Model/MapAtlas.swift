@@ -44,19 +44,25 @@ struct MapAtlas {
     let valley: ParchmentMap
     let mountains: MountainSheet?
     let swamps: MountainSheet?
+    let stvor: MountainSheet?
     /// Верхний левый угол листа Долины на общем холсте. Ноль, пока гор нет.
     let valleyOrigin: CGPoint
-    /// Сдвиг вниз, чтобы лист болот (его низ стыкуется с верхом гор) начинался с нуля.
+    /// Сдвиг вниз, чтобы самый верхний лист (Створ или Болота) начинался с нуля.
     let lift: CGFloat
+    /// Сдвиг листа болот вниз, когда сверху лежит Нижний Створ (стык с Отстоем).
+    let stvorLift: CGFloat
     /// Нижние 560 px листа болот полупрозрачны: шов с горами не читается, вершины остаются.
     let swampOverlap: CGFloat
+    /// Нижние ~560 px листа Створа растворяются в Отстой болот.
+    let stvorOverlap: CGFloat
     let contentSize: CGSize
 
     static func make(valley: ParchmentMap, mountains: MountainSheet? = MountainSheet.load(),
-                     swamps: MountainSheet? = MountainSheet.loadSwamps()) -> MapAtlas {
+                     swamps: MountainSheet? = MountainSheet.loadSwamps(),
+                     stvor: MountainSheet? = MountainSheet.loadStvor()) -> MapAtlas {
         guard let mountains else {
-            return MapAtlas(valley: valley, mountains: nil, swamps: nil, valleyOrigin: .zero,
-                            lift: 0, swampOverlap: 0,
+            return MapAtlas(valley: valley, mountains: nil, swamps: nil, stvor: nil, valleyOrigin: .zero,
+                            lift: 0, stvorLift: 0, swampOverlap: 0, stvorOverlap: 0,
                             contentSize: CGSize(width: valley.size[0], height: valley.size[1]))
         }
         let origin = MapJoin.valleyOrigin
@@ -71,21 +77,38 @@ struct MapAtlas {
         } else {
             swampSheet = nil
         }
-        // Верх холста — y=0, верх листа болот. Низ — низ Долины после сдвига lift.
-        // Высота без lift обрезает прокрутку ровно по верху гор.
-        let height = origin.y + valley.size[1] + lift
-        let width = max(valley.size[0], max(mountains.size.width, swampSheet?.size.width ?? 0))
-        return MapAtlas(valley: valley, mountains: mountains, swamps: swampSheet, valleyOrigin: origin,
-                        lift: lift, swampOverlap: overlap,
+        var stvorSheet = stvor
+        var stvorLift: CGFloat = 0
+        var stvorOverlap: CGFloat = 0
+        if let stvor, let swamps = swampSheet, let end = swamps.road.last {
+            stvorLift = StvorJoin.point.y - end.y
+            stvorOverlap = stvor.size.height - (StvorJoin.point.y - end.y)
+            if stvorLift < 1 || stvorOverlap < 1 { stvorSheet = nil; stvorLift = 0; stvorOverlap = 0 }
+        } else {
+            stvorSheet = nil
+        }
+        let totalLift = lift + stvorLift
+        // Верх холста — y=0, верх самого высокого листа (Створ, иначе Болота).
+        let height = origin.y + valley.size[1] + totalLift
+        let width = max(valley.size[0], max(mountains.size.width,
+                                            max(swampSheet?.size.width ?? 0, stvorSheet?.size.width ?? 0)))
+        return MapAtlas(valley: valley, mountains: mountains, swamps: swampSheet, stvor: stvorSheet,
+                        valleyOrigin: origin, lift: totalLift, stvorLift: stvorLift,
+                        swampOverlap: overlap, stvorOverlap: stvorOverlap,
                         contentSize: CGSize(width: width, height: height))
     }
 
     /// Глобальный шаг: `chapter.startStep + chapterSteps`.
     func point(globalStep: Int) -> CGPoint {
+        if let stvor, globalStep >= stvor.globalStart {
+            let local = min(stvor.lengthSteps, globalStep - stvor.globalStart)
+            let p = RoadGeometry(stvor.road).point(at: stvor.fraction(localStep: local))
+            return CGPoint(x: p.x, y: p.y)
+        }
         if let swamps, globalStep >= swamps.globalStart {
             let local = min(swamps.lengthSteps, globalStep - swamps.globalStart)
             let p = RoadGeometry(swamps.road).point(at: swamps.fraction(localStep: local))
-            return CGPoint(x: p.x, y: p.y + lift + swampOriginY)
+            return CGPoint(x: p.x, y: p.y + stvorLift)
         }
         if let mountains, globalStep >= mountains.globalStart {
             let local = min(mountains.lengthSteps, globalStep - mountains.globalStart)
@@ -97,18 +120,35 @@ struct MapAtlas {
         return CGPoint(x: p.x + valleyOrigin.x, y: p.y + valleyOrigin.y + lift)
     }
 
-    /// Низ листа болот в координатах, где горы ещё стоят в нуле. Отрицательный.
-    private var swampOriginY: CGFloat { swamps == nil ? 0 : -lift }
-
     /// Лист Долины и так на весь кадр. К герою едем только когда сверху есть продолжение.
     func centersHero(viewSize: CGSize, scale: CGFloat) -> Bool {
-        guard mountains != nil || swamps != nil else { return false }
+        guard mountains != nil || swamps != nil || stvor != nil else { return false }
         return contentSize.height * scale > viewSize.height + 2
     }
 }
 
 enum SwampJoin {
     static let point = CGPoint(x: 619.9, y: 2373.7)
+}
+
+enum StvorJoin {
+    /// Стык с официальным Отстоем болот: (551.5, 128.8) на листе болот → эта точка на листе Створа.
+    static let point = CGPoint(x: 551.5, y: 2100.8)
+}
+
+enum StvorPlaces {
+    static let steps: [String: Int] = [
+        "shlagbaum": 0,
+        "otstoyniki": 4000,
+        "kotelnaya": 21000,
+        "sarai": 25000,
+        "naberezhnaya": 32000,
+        "dvory": 36500,
+        "otdelenie": 39500,
+        "verkhnyaya": 45000,
+    ]
+    static let lengthSteps = 45000
+    static let globalStart = 75000
 }
 
 /// Стык листа болот с горами. Низ листа растворяется в вершины.
@@ -331,6 +371,45 @@ struct MountainSheet {
               hypot(first.x - SwampJoin.point.x, first.y - SwampJoin.point.y) < 1 else { return nil }
         for place in raw.settlements {
             guard let expected = SwampPlaces.steps[place.id], place.step == expected else { return nil }
+        }
+        return MountainSheet(size: CGSize(width: raw.size[0], height: raw.size[1]),
+                             lengthSteps: raw.lengthSteps,
+                             globalStart: raw.globalStart,
+                             road: road,
+                             roadLength: raw.roadLength,
+                             aheadPx: raw.aheadPx,
+                             softPx: raw.softPx,
+                             field: raw.field,
+                             fieldPath: fieldURL.path,
+                             puffs: raw.puffs,
+                             colorPath: colorURL.path,
+                             pencilPath: pencilURL.path,
+                             settlements: raw.settlements)
+    }
+
+    static func loadStvor(root: URL = WorldConfigLoader.assetsRoot) -> MountainSheet? {
+        let mapRoot = root.appendingPathComponent("UI/map")
+        let jsonURL = mapRoot.appendingPathComponent("stvor.json")
+        let colorURL = mapRoot.appendingPathComponent("stvor_color.jpg")
+        let pencilURL = mapRoot.appendingPathComponent("stvor_pencil.jpg")
+        guard FileManager.default.fileExists(atPath: jsonURL.path),
+              FileManager.default.fileExists(atPath: colorURL.path),
+              FileManager.default.fileExists(atPath: pencilURL.path) else { return nil }
+        let data = ContentLocalizer.data(at: jsonURL, kind: .map)
+        guard let raw = try? JSONDecoder().decode(File.self, from: data) else { return nil }
+        let fieldURL = root.appendingPathComponent(raw.field.image)
+        guard FileManager.default.fileExists(atPath: fieldURL.path) else { return nil }
+        guard raw.lengthSteps == StvorPlaces.lengthSteps,
+              raw.globalStart == StvorPlaces.globalStart,
+              raw.join.count == 2,
+              abs(raw.join[0] - StvorJoin.point.x) < 0.6,
+              abs(raw.join[1] - StvorJoin.point.y) < 0.6,
+              raw.road.count >= 2 else { return nil }
+        let road = raw.road.map { CGPoint(x: $0[0], y: $0[1]) }
+        guard let first = road.first,
+              hypot(first.x - StvorJoin.point.x, first.y - StvorJoin.point.y) < 1 else { return nil }
+        for place in raw.settlements {
+            guard let expected = StvorPlaces.steps[place.id], place.step == expected else { return nil }
         }
         return MountainSheet(size: CGSize(width: raw.size[0], height: raw.size[1]),
                              lengthSteps: raw.lengthSteps,

@@ -1,0 +1,138 @@
+[
+  {
+    "id": "kettle",
+    "step": 80,
+    "dx": -220,
+    "sprite": "Chapter3/taps/kettle",
+    "height": 120,
+    "sink": 40,
+    "z": 12
+  },
+  {
+    "id": "barrier",
+    "step": 0,
+    "dx": -40,
+    "sprite": "Chapter3/taps/barrier",
+    "height": 200,
+    "sink": 40,
+    "z": 11,
+    "draw": false
+  },
+  {
+    "id": "ducks_gate",
+    "step": 200,
+    "dx": 200,
+    "sprite": "Chapter3/taps/duckweed",
+    "height": 80,
+    "sink": 20,
+    "z": 11
+  },
+  {
+    "id": "sluice",
+    "step": 4000,
+    "dx": -300,
+    "sprite": "Chapter3/taps/pipes",
+    "height": 180,
+    "sink": 40,
+    "z": 11
+  },
+  {
+    "id": "key",
+    "step": 4100,
+    "dx": -80,
+    "sprite": "Chapter3/taps/nails",
+    "height": 80,
+    "sink": 20,
+    "z": 12
+  },
+  {
+    "id": "crow",
+    "step": 11000,
+    "dx": 200,
+    "sprite": "Chapter3/taps/heron",
+    "height": 140,
+    "sink": -40,
+    "z": 14
+  },
+  {
+    "id": "nest",
+    "step": 12000,
+    "dx": -100,
+    "sprite": "Chapter3/taps/hummock",
+    "height": 90,
+    "sink": 20,
+    "z": 11
+  },
+  {
+    "id": "crust",
+    "step": 17500,
+    "dx": -40,
+    "sprite": "Chapter3/taps/peat",
+    "height": 80,
+    "sink": 20,
+    "z": 11
+  },
+  {
+    "id": "boiler",
+    "step": 23000,
+    "dx": -200,
+    "sprite": "Chapter3/taps/kettle",
+    "height": 160,
+    "sink": 40,
+    "z": 12
+  },
+  {
+    "id": "cat_soot",
+    "step": 23100,
+    "dx": 260,
+    "sprite": "Chapter3/taps/frog",
+    "height": 100,
+    "sink": 0,
+    "z": 12
+  },
+  {
+    "id": "pigeons",
+    "step": 27000,
+    "dx": 180,
+    "sprite": "Chapter3/taps/heron",
+    "height": 100,
+    "sink": -20,
+    "z": 13
+  },
+  {
+    "id": "bench",
+    "step": 32000,
+    "dx": 100,
+    "sprite": "Chapter3/taps/dryer",
+    "height": 140,
+    "sink": 40,
+    "z": 11
+  },
+  {
+    "id": "gate",
+    "step": 36500,
+    "dx": -120,
+    "sprite": "Chapter3/taps/door",
+    "height": 220,
+    "sink": 40,
+    "z": 11
+  },
+  {
+    "id": "counter",
+    "step": 39500,
+    "dx": -80,
+    "sprite": "Chapter3/taps/duty",
+    "height": 160,
+    "sink": 40,
+    "z": 12
+  },
+  {
+    "id": "sign",
+    "step": 45000,
+    "dx": 80,
+    "sprite": "Chapter3/taps/note",
+    "height": 120,
+    "sink": 20,
+    "z": 12
+  }
+]

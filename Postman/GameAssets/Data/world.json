@@ -3025,7 +3025,10 @@
           "height": 140,
           "sink": -220,
           "z": 8,
-          "pixelSize": [183, 160]
+          "pixelSize": [
+            183,
+            160
+          ]
         },
         {
           "image": "ambient/boat_trestles",
@@ -3035,7 +3038,10 @@
           "height": 280,
           "sink": 40,
           "z": 11,
-          "pixelSize": [340, 137]
+          "pixelSize": [
+            340,
+            137
+          ]
         },
         {
           "image": "ambient/smoke_chimney",
@@ -3045,7 +3051,10 @@
           "height": 220,
           "sink": -520,
           "z": 14,
-          "pixelSize": [70, 220]
+          "pixelSize": [
+            70,
+            220
+          ]
         },
         {
           "image": "ambient/frog",
@@ -3055,7 +3064,10 @@
           "height": 70,
           "sink": 10,
           "z": 11,
-          "pixelSize": [79, 70]
+          "pixelSize": [
+            79,
+            70
+          ]
         },
         {
           "image": "ambient/heron_stand",
@@ -3065,7 +3077,10 @@
           "height": 400,
           "sink": 20,
           "z": 11,
-          "pixelSize": [230, 320]
+          "pixelSize": [
+            230,
+            320
+          ]
         },
         {
           "image": "ambient/smoke_peat",
@@ -3075,7 +3090,10 @@
           "height": 90,
           "sink": -40,
           "z": 11,
-          "pixelSize": [280, 48]
+          "pixelSize": [
+            280,
+            48
+          ]
         },
         {
           "image": "ambient/heron_stand",
@@ -3085,7 +3103,10 @@
           "height": 400,
           "sink": 20,
           "z": 12,
-          "pixelSize": [230, 320]
+          "pixelSize": [
+            230,
+            320
+          ]
         },
         {
           "image": "ambient/punt",
@@ -3095,7 +3116,10 @@
           "height": 240,
           "sink": 60,
           "z": 8,
-          "pixelSize": [380, 106]
+          "pixelSize": [
+            380,
+            106
+          ]
         },
         {
           "image": "ambient/ducks",
@@ -3105,7 +3129,10 @@
           "height": 70,
           "sink": 24,
           "z": 10,
-          "pixelSize": [280, 73]
+          "pixelSize": [
+            280,
+            73
+          ]
         },
         {
           "image": "ambient/frog",
@@ -3115,7 +3142,10 @@
           "height": 70,
           "sink": 12,
           "z": 11,
-          "pixelSize": [79, 70]
+          "pixelSize": [
+            79,
+            70
+          ]
         },
         {
           "image": "ambient/mist_low",
@@ -3125,7 +3155,10 @@
           "height": 160,
           "sink": -40,
           "z": 15,
-          "pixelSize": [800, 72]
+          "pixelSize": [
+            800,
+            72
+          ]
         },
         {
           "image": "ambient/boat_moored",
@@ -3135,7 +3168,10 @@
           "height": 260,
           "sink": 40,
           "z": 11,
-          "pixelSize": [340, 101]
+          "pixelSize": [
+            340,
+            101
+          ]
         }
       ],
       "underground": {
@@ -3242,11 +3278,891 @@
           "lettersInBag": 0
         }
       ],
-      "rawClayAfterStep": 30000,
       "sky": {
         "topColor": "#3D4A45",
         "bottomColor": "#6A6B52"
       }
+    },
+    {
+      "id": 4,
+      "title": "Нижний Створ",
+      "startStep": 75000,
+      "lengthSteps": 45000,
+      "assetsFolder": "Chapter4",
+      "settlements": [
+        {
+          "id": "shlagbaum",
+          "name": "Шлагбаум",
+          "nameGenitive": "Шлагбаума",
+          "fullName": "Шлагбаум",
+          "step": 0
+        },
+        {
+          "id": "otstoyniki",
+          "name": "Отстойники",
+          "nameGenitive": "Отстойников",
+          "fullName": "Отстойники",
+          "step": 4000
+        },
+        {
+          "id": "kotelnaya",
+          "name": "Котельная",
+          "nameGenitive": "Котельной",
+          "fullName": "Котельная",
+          "step": 21000
+        },
+        {
+          "id": "sarai",
+          "name": "Сараи",
+          "nameGenitive": "Сараев",
+          "fullName": "Сараи",
+          "step": 25000
+        },
+        {
+          "id": "naberezhnaya",
+          "name": "Набережная",
+          "nameGenitive": "Набережной",
+          "fullName": "Набережная",
+          "step": 32000
+        },
+        {
+          "id": "dvory",
+          "name": "Дворы",
+          "nameGenitive": "Дворов",
+          "fullName": "Дворы",
+          "step": 36500
+        },
+        {
+          "id": "otdelenie",
+          "name": "Отделение",
+          "nameGenitive": "Отделения",
+          "fullName": "Отделение",
+          "step": 39500
+        },
+        {
+          "id": "verkhnyaya",
+          "name": "Верхняя",
+          "nameGenitive": "Верхней",
+          "fullName": "Верхняя",
+          "step": 45000
+        }
+      ],
+      "props": [
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 0,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 2000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 4000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 6000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 8000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 10000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 12000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 14000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 16000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 18000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_prom",
+          "layer": "main",
+          "step": 20000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_mid",
+          "layer": "main",
+          "step": 22000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_mid",
+          "layer": "main",
+          "step": 24000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_mid",
+          "layer": "main",
+          "step": 26000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_mid",
+          "layer": "main",
+          "step": 28000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_mid",
+          "layer": "main",
+          "step": 30000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 32000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 34000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 36000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 38000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 40000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 42000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "road/road_city",
+          "layer": "main",
+          "step": 44000,
+          "dx": -1200,
+          "height": 680,
+          "sink": 40,
+          "z": -20,
+          "pixelSize": [
+            2400,
+            680
+          ]
+        },
+        {
+          "image": "places/place_shlagbaum_main",
+          "layer": "main",
+          "step": 0,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_otstoyniki_main",
+          "layer": "main",
+          "step": 4000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_truby_main",
+          "layer": "main",
+          "step": 11000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_shlam_main",
+          "layer": "main",
+          "step": 17500,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_kotelnaya_main",
+          "layer": "main",
+          "step": 21000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_sarai_main",
+          "layer": "main",
+          "step": 25000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_naberezhnaya_main",
+          "layer": "main",
+          "step": 32000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_dvory_main",
+          "layer": "main",
+          "step": 36500,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_otdelenie_main",
+          "layer": "main",
+          "step": 39500,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "places/place_verkhnyaya_main",
+          "layer": "main",
+          "step": 45000,
+          "dx": -398.3,
+          "height": 1100,
+          "sink": 40,
+          "z": 10,
+          "pixelSize": [
+            766,
+            1100
+          ]
+        },
+        {
+          "image": "ambient/ducks",
+          "layer": "main",
+          "step": 300,
+          "dx": -80,
+          "height": 70,
+          "sink": 24,
+          "z": 10,
+          "pixelSize": [
+            191,
+            112
+          ]
+        },
+        {
+          "image": "ambient/ducks",
+          "layer": "main",
+          "step": 2500,
+          "dx": 200,
+          "height": 70,
+          "sink": 24,
+          "z": 10,
+          "pixelSize": [
+            191,
+            112
+          ]
+        },
+        {
+          "image": "ambient/ducks",
+          "layer": "main",
+          "step": 6000,
+          "dx": 160,
+          "height": 70,
+          "sink": 24,
+          "z": 10,
+          "pixelSize": [
+            191,
+            112
+          ]
+        },
+        {
+          "image": "ambient/dog_otstoyniki",
+          "layer": "main",
+          "step": 4000,
+          "dx": 220,
+          "height": 165,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            213,
+            165
+          ]
+        },
+        {
+          "image": "ambient/dog_otstoyniki",
+          "layer": "main",
+          "step": 6500,
+          "dx": -180,
+          "height": 165,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            213,
+            165
+          ]
+        },
+        {
+          "image": "ambient/fish",
+          "layer": "main",
+          "step": 4500,
+          "dx": 80,
+          "height": 60,
+          "sink": 30,
+          "z": 9,
+          "pixelSize": [
+            137,
+            78
+          ]
+        },
+        {
+          "image": "ambient/crow",
+          "layer": "main",
+          "step": 9000,
+          "dx": 300,
+          "height": 140,
+          "sink": -80,
+          "z": 14,
+          "pixelSize": [
+            137,
+            140
+          ]
+        },
+        {
+          "image": "ambient/crow_fly",
+          "layer": "main",
+          "step": 12000,
+          "dx": -40,
+          "height": 150,
+          "sink": -200,
+          "z": 16,
+          "pixelSize": [
+            230,
+            156
+          ]
+        },
+        {
+          "image": "ambient/crow",
+          "layer": "main",
+          "step": 13000,
+          "dx": 180,
+          "height": 140,
+          "sink": -60,
+          "z": 14,
+          "pixelSize": [
+            137,
+            140
+          ]
+        },
+        {
+          "image": "ambient/dog_slag",
+          "layer": "main",
+          "step": 17500,
+          "dx": 200,
+          "height": 160,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            221,
+            160
+          ]
+        },
+        {
+          "image": "ambient/lizard",
+          "layer": "main",
+          "step": 19000,
+          "dx": -60,
+          "height": 50,
+          "sink": 8,
+          "z": 11,
+          "pixelSize": [
+            223,
+            72
+          ]
+        },
+        {
+          "image": "ambient/cat_soot",
+          "layer": "main",
+          "step": 23000,
+          "dx": 280,
+          "height": 125,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            158,
+            125
+          ]
+        },
+        {
+          "image": "ambient/pigeons",
+          "layer": "main",
+          "step": 27000,
+          "dx": 200,
+          "height": 90,
+          "sink": -40,
+          "z": 13,
+          "pixelSize": [
+            221,
+            118
+          ]
+        },
+        {
+          "image": "ambient/cat_sarai",
+          "layer": "main",
+          "step": 28000,
+          "dx": -160,
+          "height": 132,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            121,
+            132
+          ]
+        },
+        {
+          "image": "ambient/dog_city",
+          "layer": "main",
+          "step": 33000,
+          "dx": 180,
+          "height": 160,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            220,
+            160
+          ]
+        },
+        {
+          "image": "ambient/sparrows",
+          "layer": "main",
+          "step": 34000,
+          "dx": -80,
+          "height": 70,
+          "sink": -30,
+          "z": 13,
+          "pixelSize": [
+            178,
+            90
+          ]
+        },
+        {
+          "image": "ambient/chickens",
+          "layer": "main",
+          "step": 36500,
+          "dx": 240,
+          "height": 140,
+          "sink": 0,
+          "z": 11,
+          "pixelSize": [
+            230,
+            168
+          ]
+        },
+        {
+          "image": "ambient/cat_otdelenie",
+          "layer": "main",
+          "step": 39500,
+          "dx": 300,
+          "height": 130,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            124,
+            130
+          ]
+        },
+        {
+          "image": "ambient/dog_city",
+          "layer": "main",
+          "step": 37000,
+          "dx": -200,
+          "height": 160,
+          "sink": 0,
+          "z": 12,
+          "pixelSize": [
+            220,
+            160
+          ]
+        },
+        {
+          "image": "sky/cloud_hang",
+          "layer": "far",
+          "step": 800,
+          "dx": -200,
+          "height": 280,
+          "sink": -700,
+          "z": 3,
+          "pixelSize": [
+            660,
+            340
+          ]
+        },
+        {
+          "image": "sky/cloud_right",
+          "layer": "far",
+          "step": 2000,
+          "dx": 100,
+          "height": 320,
+          "sink": -500,
+          "z": 3,
+          "pixelSize": [
+            700,
+            500
+          ]
+        },
+        {
+          "image": "sky/cloud_nab",
+          "layer": "far",
+          "step": 32000,
+          "dx": -100,
+          "height": 260,
+          "sink": -640,
+          "z": 3,
+          "pixelSize": [
+            1170,
+            400
+          ]
+        }
+      ],
+      "underground": {
+        "neutralTile": "underground/ug_neutral_tile",
+        "top": 1700,
+        "scale": 2.0,
+        "tilePixelSize": [
+          1148,
+          415
+        ],
+        "minGapFraction": 0.3,
+        "modules": [
+          {
+            "image": "underground/ug_shlagbaum",
+            "step": 200,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_otstoyniki",
+            "step": 4000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_truby",
+            "step": 11000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_shlam",
+            "step": 17500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_kotelnaya",
+            "step": 21000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_sarai",
+            "step": 25000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_naberezhnaya",
+            "step": 32000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_dvory",
+            "step": 36500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_otdelenie",
+            "step": 39500,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_verkhnyaya",
+            "step": 44000,
+            "dx": 0.0
+          }
+        ]
+      },
+      "quests": [
+        {
+          "untilStep": 4000,
+          "telegram": "Оставить записку А.Л. в ящике на Отстойниках",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 21000,
+          "telegram": "До Котельной, оказия вниз",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 28000,
+          "telegram": "Оставить почту на Сараях",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 36500,
+          "telegram": "До Дворов, письмо Нюре",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 39500,
+          "telegram": "К отделению",
+          "lettersInBag": 1
+        },
+        {
+          "untilStep": 45000,
+          "telegram": "До Верхней",
+          "lettersInBag": 0
+        }
+      ],
+      "sky": {
+        "topColor": "#A7D0E1",
+        "bottomColor": "#D3AE9B"
+      },
+      "rawClayAfterStep": 45000
     }
   ]
 }

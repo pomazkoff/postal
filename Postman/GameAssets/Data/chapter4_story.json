@@ -1,0 +1,1075 @@
+{
+  "_comment": "Глава 4 «Нижний Створ». Письма дословно из docs/canon/letters-ch4.md (правка слога). Сдача только впереди (t431). Арт находок, вложений и кадров Истории — заглушки env_plain. К-2 вслух не называется.",
+  "chapter": 4,
+  "slots": 99,
+  "days": [
+    {
+      "day": 1,
+      "from": 0,
+      "to": 7500
+    },
+    {
+      "day": 2,
+      "from": 7500,
+      "to": 15000
+    },
+    {
+      "day": 3,
+      "from": 15000,
+      "to": 22500
+    },
+    {
+      "day": 4,
+      "from": 22500,
+      "to": 30000
+    },
+    {
+      "day": 5,
+      "from": 30000,
+      "to": 37500
+    },
+    {
+      "day": 6,
+      "from": 37500,
+      "to": 45000
+    }
+  ],
+  "items": [
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l1",
+      "to": "Почтальону",
+      "place": "Шлагбаум · оставить на Отстойниках, «к отделению»",
+      "settlement": "shlagbaum",
+      "senderSettlement": "otdelenie",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_open",
+        "address": [
+          "ПОЧТАЛЬОНУ",
+          "А.Л."
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": null
+      },
+      "text": "Уважаемый почтальон!\nВыемку произвела. До отделения идите по дамбам. В пульпу не сходите. На стойке буду.\nСледующая выемка — по прибытии. Береги ноги.\nА.Л.",
+      "from": "А.Л."
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l2",
+      "to": "маме в Кадушки",
+      "place": "Отстойники · оказия вниз, ящик на Котельной",
+      "settlement": "otstoyniki",
+      "senderSettlement": "dvory",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_closed",
+        "address": [
+          "МАМЕ",
+          "КАДУШКИ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": null
+      },
+      "text": "Мам, я живой, не надо ехать. Смену ту уже не ставят, я наверху, во дворах. Котёл один ещё греет, сапоги сушим там же.\nПисьмо твоё получил в целости. Ешь горячее. Через оцепление не пускают.\nАндрей",
+      "from": "«Андрей»"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l3",
+      "to": "Вере",
+      "place": "Котельная · оставить на Сараях, «для Веры»",
+      "settlement": "kotelnaya",
+      "senderSettlement": "svai",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_closed",
+        "address": [
+          "ВЕРЕ ИГНАТЬЕВНЕ",
+          "НИИ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": "щепка с зарубкой 71 — отдельного рисунка нет, заглушка"
+      },
+      "text": "Вера Игнатьевна. На шесте уже семьдесят один. Вода прибывает.\nНу.\nК. Ус",
+      "from": "Кузьма"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l4",
+      "to": "Нине",
+      "place": "Котельная · оказия вниз, ящик на Сараях",
+      "settlement": "kotelnaya",
+      "senderSettlement": "svai",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_closed",
+        "address": [
+          "БАБЕ НИНЕ",
+          "ОКАЗИЯ ВНИЗ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": null
+      },
+      "text": "БАБА НИНА ЗДРАСТВУЙ.\nЭто не Тима писал тебе про радиостанцию и про фантики. Это я. Я думал так почта скорее дойдёт. Козу у деда спросил, поэтому Зорьку я знал.\nТы не ругайся. Суп я доем. Ищо приду в четверг.\nПриём.\nМитя (Ус)",
+      "from": "Митя"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l5",
+      "to": "«Зое» / Нюре",
+      "place": "Сараи · отдать Нюре у калитки на Дворах",
+      "settlement": "sarai",
+      "senderSettlement": "sarai",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_closed",
+        "address": [
+          "ЗОЕ",
+          "ВЕРХНЯЯ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": "банка леща — отдельного арта нет, заглушка"
+      },
+      "text": "Зоя, банку с лещом кладу по оказии. Ты отдай во двор той тёте, что письма за соседей пишет, у калитки сидит, Нюрой вроде зовут. Соли не жалей, рыба жирная. Кланяйся.\nМарья",
+      "from": "Марья"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l6",
+      "to": "Почтальону",
+      "place": "Набережная · читается на месте",
+      "settlement": "naberezhnaya",
+      "senderSettlement": "zvonarnya",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_open",
+        "address": [
+          "ПОЧТАЛЬОНУ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": "лента 37 имён — отдельного арта нет, заглушка"
+      },
+      "text": "ПОМИН ПРИЛОЖИЛ ТЧК ИМЁН ТРИДЦАТЬ СЕМЬ ТЧК ОСТАЛЬНЫХ ПОКА НЕ СТАВЛЮ ТЧК ЗВОН С КОЛОКОЛЬНИ ТУДА НЕ ДОЙДЁТ ТЧК ПРОЧТИ ВСЛУХ ЕСЛИ БУДЕТ КОМУ СЛУШАТЬ ТЧК ПИМЕН",
+      "from": "Пимен"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l7",
+      "to": "Мите",
+      "place": "Дворы · оказия вниз, ящик на Отделении",
+      "settlement": "dvory",
+      "senderSettlement": "svai",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_closed",
+        "address": [
+          "МИТЕ УСУ",
+          "ОКАЗИЯ ВНИЗ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": null
+      },
+      "text": "Митя свет, я знаю, знаю, ты не думай что я слепая совсем. Тима меня мамочкой не звал, это я с первого письма поняла, а ты всё равно приходи, суп на плите, сядь сначала, носки твои на лежанке сушатся, в горячей не стирай а то сядут. Тимоше я ищо напишу, ты только пиши как я говорю.\n(она сказала «я знаю», два раза, я так и написал. М.)\nХ Н.",
+      "from": "Нина"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l8",
+      "to": "Почтальону",
+      "place": "Отделение · читается на месте",
+      "settlement": "otdelenie",
+      "senderSettlement": "nii",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_open",
+        "address": [
+          "ПОЧТАЛЬОНУ"
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": "миллиметровка 31–71 — отдельного арта нет, заглушка"
+      },
+      "text": "Почтальону.\n1. Отметку 71 получила. Это четвёртая риска на шесте, с которого ведётся счёт.\n2. Расчёт пересмотрен. До сработки запас ещё есть. Решение откладываю до следующей отметки. Спуск по-прежнему не обязателен.\n3. Гул на 7,3 — наводка от нашего трансформатора. Источник тот же.\n4. Письма мои вскрывать не следует. Печать номерная.\nВ.И. Пасечник\nP.S. Рамка сегодня ночевала на крыльце, в институт её не пускайте.",
+      "from": "Вера"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": null,
+      "kind": "form",
+      "id": "l9",
+      "to": "Почтальону",
+      "place": "Кладовая Отделения · находка, не вскрывать",
+      "settlement": "otdelenie",
+      "senderSettlement": "otdelenie",
+      "text": "Стопка: на верхнем конверте «от Ксении, брату». Тридцать одно письмо. Тексты не вскрывать.",
+      "from": "кладовая"
+    },
+    {
+      "takesSlot": true,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "letter",
+      "id": "l10",
+      "to": "Почтальону",
+      "place": "Верхняя · читается на месте",
+      "settlement": "verkhnyaya",
+      "senderSettlement": "otdelenie",
+      "reader": {
+        "paper": "sheet",
+        "font": "hand",
+        "envelope": "renv_open",
+        "address": [
+          "ПОЧТАЛЬОНУ",
+          "А.Л."
+        ],
+        "stamp": null,
+        "attachment": null,
+        "attachmentCaption": null
+      },
+      "text": "Уважаемый почтальон!\nДорогу ниже не держу. Через оцепление не пускают, ты не ходи. Выемку на Краю не назначала.\nСумку не перегружайте. Береги ноги.\nА.Л.",
+      "from": "А.Л."
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "locked",
+      "road": null,
+      "kind": "form",
+      "id": "note_kolya",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "otstoyniki",
+      "senderSettlement": "otstoyniki",
+      "text": "По дамбе ходи. В пульпу — нет.\nКоля",
+      "from": "Коля"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "locked",
+      "road": null,
+      "kind": "form",
+      "id": "note_pavel",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "kotelnaya",
+      "senderSettlement": "kotelnaya",
+      "text": "Сапоги на сушилке. Котёл один, для верхних. Ночевать можно.",
+      "from": "Павел"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "locked",
+      "road": null,
+      "kind": "form",
+      "id": "find_sluice",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "otstoyniki",
+      "senderSettlement": "otstoyniki",
+      "text": "Бирка пруда, жетон задвижки. Отдельного рисунка нет.",
+      "from": "Отстойники"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "form",
+      "id": "find_blank",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "otstoyniki",
+      "senderSettlement": "otstoyniki",
+      "text": "Обрывок бланка: два почерка, одно имя. Отдельного рисунка нет.",
+      "from": "Трубы"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "form",
+      "id": "find_stub",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "kotelnaya",
+      "senderSettlement": "otstoyniki",
+      "text": "Корешок извещения, подпись снята. Отдельного рисунка нет.",
+      "from": "Шлам"
+    },
+    {
+      "takesSlot": false,
+      "art": "env_plain",
+      "stick": "stick_plain",
+      "initial": "onRoad",
+      "road": "road_envstake",
+      "kind": "form",
+      "id": "find_cup",
+      "to": "Почтальону",
+      "place": "Личные вещи",
+      "settlement": "verkhnyaya",
+      "senderSettlement": "verkhnyaya",
+      "text": "Меловая помета и холодная чашка. Кто-то сидел недавно.",
+      "from": "Верхняя"
+    }
+  ],
+  "events": [
+    {
+      "id": "p_l1",
+      "step": 40,
+      "type": "pickup",
+      "settlement": "shlagbaum",
+      "item": "l1",
+      "title": "Записка в ящике",
+      "lines": [
+        {
+          "who": "",
+          "text": "В ящике у шлагбаума служебная записка. Фиолетовый карандаш, подпись А.Л."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Шлагбаум. В ящике записка А.Л."
+        }
+      ]
+    },
+    {
+      "id": "e_sluice",
+      "step": 4000,
+      "type": "choice",
+      "settlement": "otstoyniki",
+      "title": "Задвижка не идёт",
+      "text": "Коля возится с задвижкой. Длина пути одна.",
+      "default": "help",
+      "options": [
+        {
+          "id": "help",
+          "label": "Помочь с задвижкой",
+          "result": "Ноги сухие. Коля суёт бирку и записку: «По дамбе ходи. В пульпу — нет.»",
+          "flags": [
+            "sluice_helped"
+          ],
+          "auto": "Почтальон помог закрыть задвижку.",
+          "effects": [
+            {
+              "item": "find_sluice",
+              "status": "inBag"
+            },
+            {
+              "item": "note_kolya",
+              "status": "inBag"
+            }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Идти дальше",
+          "result": "Коля бурчит вслед. Бирки нет. Письма на месте.",
+          "flags": [
+            "sluice_left"
+          ]
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Коля возится с задвижкой. Поможешь?"
+        }
+      ]
+    },
+    {
+      "id": "p_l2",
+      "step": 4200,
+      "type": "pickup",
+      "settlement": "otstoyniki",
+      "item": "l2",
+      "title": "Письмо «Андрея»",
+      "lines": [
+        {
+          "who": "",
+          "text": "В ящике будки конверт. Две руки, рабочее имя Андрей. Оказия вниз, на Котельную."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Отстойники. В будке конверт на Кадушки."
+        }
+      ]
+    },
+    {
+      "id": "d_otstoyniki",
+      "step": 4000,
+      "type": "scene",
+      "settlement": "otstoyniki",
+      "title": "Ящик «к отделению»",
+      "lines": [
+        {
+          "who": "",
+          "text": "Записку А.Л. можно оставить в ящике на Отстойниках, «к отделению»."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Отстойники. Ящик «к отделению»."
+        }
+      ],
+      "text": "Ящик «к отделению»"
+    },
+    {
+      "id": "p_blank",
+      "step": 11000,
+      "type": "pickup",
+      "settlement": "otstoyniki",
+      "item": "find_blank",
+      "title": "Обрывок бланка",
+      "lines": [
+        {
+          "who": "",
+          "text": "На опоре эстакады обрывок бланка: два почерка, одно имя."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Трубы. Обрывок бланка, два почерка."
+        }
+      ]
+    },
+    {
+      "id": "p_stub",
+      "step": 17500,
+      "type": "pickup",
+      "settlement": "kotelnaya",
+      "item": "find_stub",
+      "title": "Корешок извещения",
+      "lines": [
+        {
+          "who": "",
+          "text": "На корке шлама корешок извещения. Подпись снята."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Шлам. Корешок извещения, подпись снята."
+        }
+      ]
+    },
+    {
+      "id": "p_l3",
+      "step": 21100,
+      "type": "pickup",
+      "settlement": "kotelnaya",
+      "item": "l3",
+      "title": "Щепка 71",
+      "lines": [
+        {
+          "who": "",
+          "text": "В ящике оказии записка Кузьмы Вере. К ней щепка с зарубкой 71."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Котельная. Записка Кузьмы, зарубка 71."
+        }
+      ]
+    },
+    {
+      "id": "p_l4",
+      "step": 21200,
+      "type": "pickup",
+      "settlement": "kotelnaya",
+      "item": "l4",
+      "title": "Письмо Мити",
+      "lines": [
+        {
+          "who": "",
+          "text": "Рядом конверт Нине. Почерк Мити, ошибки на месте."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Котельная. Конверт Нине, рука Мити."
+        }
+      ]
+    },
+    {
+      "id": "e_kotel",
+      "step": 23000,
+      "type": "choice",
+      "settlement": "kotelnaya",
+      "title": "Котёл живой",
+      "text": "Павел зовёт к котлу. Письма в ящике можно взять и так, и так.",
+      "default": "stay",
+      "options": [
+        {
+          "id": "stay",
+          "label": "Посидеть у котла",
+          "result": "Сапоги на сушилке. Павел оставляет записку. Ночевать здесь можно.",
+          "flags": [
+            "kotel_stayed"
+          ],
+          "auto": "Почтальон сел у котла.",
+          "effects": [
+            {
+              "item": "note_pavel",
+              "status": "inBag"
+            }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Идти дальше",
+          "result": "Тепло остаётся в кадре. Ящик всё равно доступен.",
+          "flags": [
+            "kotel_left"
+          ]
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Павел зовёт к котлу. Зайдёшь?"
+        }
+      ]
+    },
+    {
+      "id": "d_kotelnaya",
+      "step": 21000,
+      "type": "scene",
+      "settlement": "kotelnaya",
+      "title": "Оказия вниз",
+      "lines": [
+        {
+          "who": "",
+          "text": "Письмо «Андрея» можно оставить в ящике на Котельной, оказия вниз."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Котельная. Ящик оказии вниз."
+        }
+      ],
+      "text": "Оказия вниз"
+    },
+    {
+      "id": "p_l5",
+      "step": 28000,
+      "type": "pickup",
+      "settlement": "sarai",
+      "item": "l5",
+      "title": "Банка и конверт",
+      "lines": [
+        {
+          "who": "",
+          "text": "В сухом сарае конверт «Зое, Верхняя». В тексте банка для Нюры у калитки."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Сараи. Конверт Зое, в тексте — Нюра."
+        }
+      ]
+    },
+    {
+      "id": "d_sarai",
+      "step": 28000,
+      "type": "scene",
+      "settlement": "sarai",
+      "title": "Для Веры",
+      "lines": [
+        {
+          "who": "",
+          "text": "Записку Кузьмы и письмо Мити можно оставить на Сараях: «для Веры» и «оказия вниз»."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Сараи. Ящик «для Веры» и оказия вниз."
+        }
+      ],
+      "text": "Для Веры"
+    },
+    {
+      "id": "p_l6",
+      "step": 32000,
+      "type": "pickup",
+      "settlement": "naberezhnaya",
+      "item": "l6",
+      "title": "Лента имён",
+      "lines": [
+        {
+          "who": "",
+          "text": "На набережной телеграмма Пимена. Тридцать семь имён. Читается здесь."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Набережная. Телеграмма Пимена, 37 имён."
+        }
+      ]
+    },
+    {
+      "id": "p_l7",
+      "step": 36500,
+      "type": "pickup",
+      "settlement": "dvory",
+      "item": "l7",
+      "title": "Письмо Нины",
+      "lines": [
+        {
+          "who": "",
+          "text": "У калитки конверт Мите. Нина знала. Оказия вниз, на Отделение."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Дворы. Конверт Мите, рука Нины."
+        }
+      ]
+    },
+    {
+      "id": "e_address",
+      "step": 36500,
+      "type": "choice",
+      "settlement": "dvory",
+      "title": "На конверте — Зоя",
+      "text": "Банка и конверт. На конверте Зоя, в тексте — Нюра у калитки.",
+      "default": "nyura",
+      "options": [
+        {
+          "id": "nyura",
+          "label": "Отдать Нюре у калитки",
+          "result": "Нюра берёт банку: «Это мне, да. Зоя туда не ест такое.»",
+          "flags": [
+            "addr_nyura"
+          ],
+          "auto": "Почтальон отдал банку Нюре."
+        },
+        {
+          "id": "zoya",
+          "label": "Нести на Верхнюю",
+          "result": "На Верхней сдать некому. Банку можно потом оставить на Отделении «для Нюры».",
+          "flags": [
+            "addr_zoya"
+          ]
+        },
+        {
+          "id": "office",
+          "label": "Отдать в отделение",
+          "result": "Агния принимает как до востребования и молча отложит.",
+          "flags": [
+            "addr_office"
+          ]
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Банка и конверт. Кому нести?"
+        }
+      ]
+    },
+    {
+      "id": "p_l8",
+      "step": 39600,
+      "type": "pickup",
+      "settlement": "otdelenie",
+      "item": "l8",
+      "title": "Записка Веры",
+      "lines": [
+        {
+          "who": "",
+          "text": "На стойке записка Веры. Цифры, откладывает снова. Читается здесь."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Отделение. Записка Веры, отметка 71."
+        }
+      ]
+    },
+    {
+      "id": "p_l9",
+      "step": 40000,
+      "type": "pickup",
+      "settlement": "otdelenie",
+      "item": "l9",
+      "title": "Кладовая",
+      "lines": [
+        {
+          "who": "",
+          "text": "В кладовой три мешка и стопка: «от Ксении, брату». Тридцать одно письмо. Тексты не вскрывать."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Кладовая. Стопка писем, тексты не вскрывать."
+        }
+      ]
+    },
+    {
+      "id": "e_believe",
+      "step": 41000,
+      "type": "choice",
+      "settlement": "otdelenie",
+      "title": "Три версии",
+      "text": "После кладовой — три версии. Письма от выбора не меняются.",
+      "default": "agnia",
+      "options": [
+        {
+          "id": "agnia",
+          "label": "Держать порядок Агнии",
+          "result": "Агния кивает на стойке: «Ноги береги. Почту носи.» Никто не говорит, что она права.",
+          "flags": [
+            "believe_agnia"
+          ],
+          "auto": "Почтальон держит порядок Агнии."
+        },
+        {
+          "id": "kuzma",
+          "label": "Держать лист Кузьмы",
+          "result": "Лист Ферапонта в Истории поднимается выше. Агния этого не комментирует.",
+          "flags": [
+            "believe_kuzma"
+          ]
+        },
+        {
+          "id": "vera",
+          "label": "Держать замер Веры",
+          "result": "Цифры 58 и 71 складываются рядом. Слов «она включила» нет.",
+          "flags": [
+            "believe_vera"
+          ]
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Три версии. Кому верить?"
+        }
+      ]
+    },
+    {
+      "id": "d_otdelenie",
+      "step": 39500,
+      "type": "scene",
+      "settlement": "otdelenie",
+      "title": "Оказия вниз",
+      "lines": [
+        {
+          "who": "",
+          "text": "Письмо Нины можно оставить в ящике отделения, оказия вниз."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Отделение. Ящик оказии вниз."
+        }
+      ],
+      "text": "Оказия вниз"
+    },
+    {
+      "id": "p_l10",
+      "step": 42600,
+      "type": "pickup",
+      "settlement": "verkhnyaya",
+      "item": "l10",
+      "title": "Записка с Верхней",
+      "lines": [
+        {
+          "who": "",
+          "text": "На скамейке записка А.Л.: через оцепление не ходи. Выемку на Краю не назначала."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Верхняя. Записка А.Л., дальше хода нет."
+        }
+      ]
+    },
+    {
+      "id": "p_cup",
+      "step": 43000,
+      "type": "pickup",
+      "settlement": "verkhnyaya",
+      "item": "find_cup",
+      "title": "Холодная чашка",
+      "lines": [
+        {
+          "who": "",
+          "text": "На столе меловая помета и холодная чашка. Кто-то сидел недавно."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Верхняя. Чашка ещё холодная."
+        }
+      ]
+    },
+    {
+      "id": "finale",
+      "step": 45000,
+      "type": "finale",
+      "settlement": "verkhnyaya",
+      "title": "Верхняя",
+      "lines": [
+        {
+          "who": "",
+          "text": "Дальше хода нет. Пост ещё впереди, в дымке. Ключ от кладовой не выдан."
+        }
+      ],
+      "push": [
+        {
+          "who": "",
+          "text": "Верхняя. Глава пройдена."
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "telegram": "Оставить записку А.Л. на Отстойниках",
+      "event": "d_otstoyniki"
+    },
+    {
+      "telegram": "До Котельной",
+      "event": "p_l3"
+    },
+    {
+      "telegram": "Оставить почту на Сараях",
+      "event": "d_sarai"
+    },
+    {
+      "telegram": "До Дворов",
+      "event": "e_address"
+    },
+    {
+      "telegram": "К отделению",
+      "event": "e_believe"
+    },
+    {
+      "telegram": "До Верхней",
+      "event": "finale"
+    }
+  ],
+  "residents": [
+    {
+      "id": "kolya",
+      "name": "Коля",
+      "aliases": [
+        "kolya",
+        "коля",
+        "сторож"
+      ],
+      "step": 4000,
+      "dx": 240,
+      "height": 430,
+      "sink": 0
+    },
+    {
+      "id": "pavel",
+      "name": "Павел",
+      "aliases": [
+        "pavel",
+        "павел",
+        "кочегар"
+      ],
+      "step": 23000,
+      "dx": 240,
+      "height": 430,
+      "sink": 0
+    },
+    {
+      "id": "nyura",
+      "name": "Нюра",
+      "aliases": [
+        "nyura",
+        "нюра"
+      ],
+      "step": 36500,
+      "dx": 240,
+      "height": 430,
+      "sink": 0
+    },
+    {
+      "id": "agnia",
+      "name": "Агния",
+      "aliases": [
+        "agnia",
+        "агния",
+        "а.л.",
+        "ворсина"
+      ],
+      "step": 39500,
+      "dx": 240,
+      "height": 430,
+      "sink": 0
+    }
+  ],
+  "fates": [
+    {
+      "settlement": "otstoyniki",
+      "if": "inBag:l1",
+      "text": "Записка А.Л. ещё в сумке. Её место — ящик на Отстойниках, «к отделению»."
+    },
+    {
+      "settlement": "otstoyniki",
+      "if": "delivered:l1",
+      "text": "Записка А.Л. оставлена на Отстойниках, к отделению."
+    },
+    {
+      "settlement": "kotelnaya",
+      "if": "inBag:l2",
+      "text": "Письмо «Андрея» ещё в сумке. Оказия вниз — ящик на Котельной."
+    },
+    {
+      "settlement": "sarai",
+      "if": "inBag:l3",
+      "text": "Записка Кузьмы ещё в сумке. Её место — ящик на Сараях, «для Веры»."
+    },
+    {
+      "settlement": "sarai",
+      "if": "inBag:l4",
+      "text": "Письмо Мити ещё в сумке. Оказия вниз — ящик на Сараях."
+    },
+    {
+      "settlement": "dvory",
+      "if": "inBag:l5",
+      "text": "Банка и конверт ещё в сумке. На конверте Зоя, в тексте — Нюра у калитки."
+    },
+    {
+      "settlement": "otdelenie",
+      "if": "inBag:l7",
+      "text": "Письмо Нины ещё в сумке. Оказия вниз — ящик отделения."
+    }
+  ],
+  "finaleTitle": "Глава 4 · Нижний Створ",
+  "finaleSubtitle": "пройдена",
+  "nextChapter": "Глава 5 «Край карты» — скоро",
+  "trustSettlements": [
+    "otdelenie"
+  ],
+  "choicePolicy": {
+    "mode": "notifyThenAuto",
+    "timeoutSteps": 400
+  },
+  "arrivals": [
+    {
+      "settlement": "shlagbaum",
+      "text": "Шлагбаум. Полосатая жесть, тёплый котелок, трубы в разрыве. В ящике записка А.Л."
+    },
+    {
+      "settlement": "otstoyniki",
+      "text": "Отстойники. Дамбы, пруды, будка Коли. В ящике — конверт и место «к отделению»."
+    },
+    {
+      "settlement": "kotelnaya",
+      "text": "Котельная. Один котёл «для верхних». В ящике оказии — почта вниз и для Веры."
+    },
+    {
+      "settlement": "sarai",
+      "text": "Сараи. Сухое сено, голуби. Ящик «для Веры» и оказия вниз. В углу — банка и конверт Зое."
+    },
+    {
+      "settlement": "naberezhnaya",
+      "text": "Набережная. Телеграмма Пимена, тридцать семь имён. Читается здесь."
+    },
+    {
+      "settlement": "dvory",
+      "text": "Дворы. Нюра у калитки. Банка для неё, хотя на конверте — Зоя."
+    },
+    {
+      "settlement": "otdelenie",
+      "text": "Отделение. Агния на стойке. «Поешь сначала». Дальше — кладовая и три версии."
+    },
+    {
+      "settlement": "verkhnyaya",
+      "text": "Верхняя. Табличка, скамейка, вид дальше. Хода через оцепление нет."
+    }
+  ]
+}

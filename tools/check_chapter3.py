@@ -219,7 +219,7 @@ for secret in ("включила К-2", "Агния", "Тишина"):
 ch2 = json.loads((ROOT / "Postman/GameAssets/Data/chapter2_story.json").read_text(encoding="utf-8"))
 if ch2["nextChapter"] != "Глава 3 «Болота»":
     fail("chapter 2 does not continue into the marshes")
-if story["nextChapter"] != "Глава 4 «Город молчания» — скоро":
+if story["nextChapter"] != "Глава 4 «Нижний Створ»":
     fail("chapter 3 does not point at chapter 4")
 
 # Жители и сценки. Левый край = центр (dx истории) − ширина/2.

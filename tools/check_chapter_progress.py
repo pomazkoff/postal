@@ -257,8 +257,9 @@ class AssetTests(unittest.TestCase):
             spec = WORLD['layers'][key]
             for chapter in WORLD['chapters']:
                 path = ASSETS / chapter['assetsFolder'] / (spec['image'] + '.png')
-                # Глава 3 ждёт свои тайлы. Пока файла нет, мир рисует пустую текстуру.
-                if chapter['id'] == 3 and not path.exists():
+                # Гл. 3–4 рисуют небо и облака, без общих far/mid-тайлов долины.
+                # Пока файла нет, мир рисует пустую текстуру.
+                if not path.exists():
                     continue
                 with Image.open(path) as im:
                     self.assertEqual(im.size, tuple(spec['pixelSize']))

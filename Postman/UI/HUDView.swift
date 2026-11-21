@@ -440,11 +440,14 @@ struct HUDView: View {
     }
 
     private func marshLine(_ id: String, title: Bool) -> String {
-        var key = "tap."
-        key += "ch3."
-        key += id
-        if title { key += ".title" }
-        return L10n.text(key)
+        let parts = id.split(separator: ".", maxSplits: 1)
+        let key: String
+        if parts.count == 2 {
+            key = "tap.ch\(parts[0]).\(parts[1])"
+        } else {
+            key = "tap.ch3.\(id)"
+        }
+        return L10n.text(title ? key + ".title" : key)
     }
 
     private func publishWorldCover(screen: Screen) {

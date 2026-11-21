@@ -1,0 +1,264 @@
+{
+  "sky_top": "#A7D0E1",
+  "sky_bot": "#D3AE9B",
+  "places": [
+    {
+      "image": "places/place_shlagbaum_main",
+      "layer": "main",
+      "step": 0,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_otstoyniki_main",
+      "layer": "main",
+      "step": 4000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_truby_main",
+      "layer": "main",
+      "step": 11000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_shlam_main",
+      "layer": "main",
+      "step": 17500,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_kotelnaya_main",
+      "layer": "main",
+      "step": 21000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_sarai_main",
+      "layer": "main",
+      "step": 25000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_naberezhnaya_main",
+      "layer": "main",
+      "step": 32000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_dvory_main",
+      "layer": "main",
+      "step": 36500,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_otdelenie_main",
+      "layer": "main",
+      "step": 39500,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    },
+    {
+      "image": "places/place_verkhnyaya_main",
+      "layer": "main",
+      "step": 45000,
+      "dx": -398.3,
+      "height": 1100,
+      "sink": 40,
+      "z": 10,
+      "pixelSize": [
+        766,
+        1100
+      ]
+    }
+  ],
+  "road": {
+    "road_prom": [
+      2400,
+      680
+    ],
+    "road_mid": [
+      2400,
+      680
+    ],
+    "road_city": [
+      2400,
+      680
+    ]
+  },
+  "ambient": [
+    {
+      "id": "ducks",
+      "file": "ducks.png",
+      "pixelSize": [
+        191,
+        112
+      ]
+    },
+    {
+      "id": "dog_otstoyniki",
+      "file": "dog_otstoyniki.png",
+      "pixelSize": [
+        213,
+        165
+      ]
+    },
+    {
+      "id": "fish",
+      "file": "fish.png",
+      "pixelSize": [
+        137,
+        78
+      ]
+    },
+    {
+      "id": "crow",
+      "file": "crow.png",
+      "pixelSize": [
+        137,
+        140
+      ]
+    },
+    {
+      "id": "crow_fly",
+      "file": "crow_fly.png",
+      "pixelSize": [
+        230,
+        156
+      ]
+    },
+    {
+      "id": "dog_slag",
+      "file": "dog_slag.png",
+      "pixelSize": [
+        221,
+        160
+      ]
+    },
+    {
+      "id": "lizard",
+      "file": "lizard.png",
+      "pixelSize": [
+        223,
+        72
+      ]
+    },
+    {
+      "id": "cat_soot",
+      "file": "cat_soot.png",
+      "pixelSize": [
+        158,
+        125
+      ]
+    },
+    {
+      "id": "pigeons",
+      "file": "pigeons.png",
+      "pixelSize": [
+        221,
+        118
+      ]
+    },
+    {
+      "id": "cat_sarai",
+      "file": "cat_sarai.png",
+      "pixelSize": [
+        121,
+        132
+      ]
+    },
+    {
+      "id": "dog_city",
+      "file": "dog_city.png",
+      "pixelSize": [
+        220,
+        160
+      ]
+    },
+    {
+      "id": "sparrows",
+      "file": "sparrows.png",
+      "pixelSize": [
+        178,
+        90
+      ]
+    },
+    {
+      "id": "chickens",
+      "file": "chickens.png",
+      "pixelSize": [
+        230,
+        168
+      ]
+    },
+    {
+      "id": "cat_otdelenie",
+      "file": "cat_otdelenie.png",
+      "pixelSize": [
+        124,
+        130
+      ]
+    }
+  ]
+}

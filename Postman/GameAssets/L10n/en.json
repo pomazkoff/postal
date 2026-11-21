@@ -140,6 +140,59 @@
           "20000": "To the Reeds",
           "30000": "To the Settling Pool"
         }
+      },
+      "4": {
+        "title": "The Lower Stvor",
+        "settlements": {
+          "shlagbaum": {
+            "name": "Barrier",
+            "nameGenitive": "the Barrier",
+            "fullName": "The Barrier"
+          },
+          "otstoyniki": {
+            "name": "Settling Ponds",
+            "nameGenitive": "the Settling Ponds",
+            "fullName": "The Settling Ponds"
+          },
+          "kotelnaya": {
+            "name": "Boiler House",
+            "nameGenitive": "the Boiler House",
+            "fullName": "The Boiler House"
+          },
+          "sarai": {
+            "name": "Sheds",
+            "nameGenitive": "the Sheds",
+            "fullName": "The Sheds"
+          },
+          "naberezhnaya": {
+            "name": "Embankment",
+            "nameGenitive": "the Embankment",
+            "fullName": "The Embankment"
+          },
+          "dvory": {
+            "name": "Yards",
+            "nameGenitive": "the Yards",
+            "fullName": "The Yards"
+          },
+          "otdelenie": {
+            "name": "Branch",
+            "nameGenitive": "the Branch",
+            "fullName": "The Branch"
+          },
+          "verkhnyaya": {
+            "name": "Upper",
+            "nameGenitive": "the Upper",
+            "fullName": "The Upper"
+          }
+        },
+        "quests": {
+          "4000": "Leave A.L.'s note in the box at the Settling Ponds",
+          "21000": "To the Boiler House, a chance downstream",
+          "28000": "Leave the mail at the Sheds",
+          "36500": "To the Yards, a letter for Nyura",
+          "39500": "To the Branch",
+          "45000": "To the Upper"
+        }
       }
     }
   },
@@ -162,7 +215,15 @@
       "torfyanik": "Peat Cut",
       "staraya_protoka": "Old Channel",
       "gorlo": "Gullet",
-      "otstoy": "Settling Pool"
+      "otstoy": "Settling Pool",
+      "shlagbaum": "Barrier",
+      "otstoyniki": "Settling Ponds",
+      "kotelnaya": "Boiler House",
+      "sarai": "Sheds",
+      "naberezhnaya": "Embankment",
+      "dvory": "Yards",
+      "otdelenie": "Branch",
+      "verkhnyaya": "Upper"
     }
   },
   "lore": {
@@ -1533,7 +1594,7 @@
     "3": {
       "finaleTitle": "Chapter 3 · Marshes",
       "finaleSubtitle": "finished",
-      "nextChapter": "Chapter 4, “The City of Silence” — soon",
+      "nextChapter": "Chapter 4, “The Lower Stvor”",
       "items": {
         "l1": {
           "to": "For Mitya",
@@ -2218,6 +2279,509 @@
         "kamyshi": "The Reeds. A straight boardwalk, a verst post, a box by the post.",
         "gorlo": "The Gullet. A grey wall across the river. A box by the stake.",
         "otstoy": "The Settling Pool. A barrier, a warm kettle, pipes in a break in the fog."
+      }
+    },
+    "4": {
+      "_comment": "EN overlay newly written for Chapter 4 “The Lower Stvor” (official title; working title retired). Letter bodies are translations of docs/canon/letters-ch4.md; Mitya's misspellings kept in kind. Findings/attachment art is stubbed in the Russian source.",
+      "finaleTitle": "Chapter 4 · The Lower Stvor",
+      "finaleSubtitle": "finished",
+      "nextChapter": "Chapter 5, “The Edge of the Map” — soon",
+      "items": {
+        "l1": {
+          "to": "To the postman",
+          "place": "The Barrier · leave at the Settling Ponds, “to the branch”",
+          "from": "A.L.",
+          "text": "Dear postman!\nI have made the collection. To the branch, walk the dikes. Do not step into the pulp. I will be at the counter.\nThe next collection is on arrival. Mind your feet.\nA.L.",
+          "address": [
+            "TO THE POSTMAN",
+            "A.L."
+          ]
+        },
+        "l2": {
+          "to": "to mama in Tubs",
+          "place": "The Settling Ponds · a chance downstream, the box at the Boiler House",
+          "from": "“Andrei”",
+          "text": "Mama, I am alive, you must not come. They do not put that shift on any more, I am up top, in the yards. One boiler is still going, we dry the boots there too.\nI got your letter in one piece. Eat something hot. They do not let anyone through the cordon.\nAndrei",
+          "address": [
+            "TO MAMA",
+            "TUBS"
+          ]
+        },
+        "l3": {
+          "to": "To Vera",
+          "place": "The Boiler House · leave at the Sheds, “for Vera”",
+          "from": "Kuzma",
+          "text": "Vera Ignatyevna. The pole is already at seventy-one. The water is rising.\nWell.\nK. Uss",
+          "address": [
+            "TO VERA IGNATYEVNA",
+            "THE INSTITUTE"
+          ],
+          "attachmentCaption": "a chip with the nick 71 — no separate drawing, a stub"
+        },
+        "l4": {
+          "to": "To Nina",
+          "place": "The Boiler House · a chance downstream, the box at the Sheds",
+          "from": "Mitya",
+          "text": "BABA NINA HELLO.\nIt was not Tima who wrote you about the radio and the wrappers. It was me. I thought the mail would get there faster that way. I asked grandad about the goat, that is how I knew Zorka.\nDont be mad. I will finish the soup. I will come agen on Thursday.\nOver.\nMitya (Uss)",
+          "address": [
+            "TO BABA NINA",
+            "A CHANCE DOWNSTREAM"
+          ]
+        },
+        "l5": {
+          "to": "“Zoya” / Nyura",
+          "place": "The Sheds · give to Nyura at the gate in the Yards",
+          "from": "Marya",
+          "text": "Zoya, I am sending a jar of bream by chance mail. You give it in the yard to that auntie who writes letters for the neighbours, sits at the gate, Nyura I think they call her. Do not spare the salt, the fish is fatty. My regards.\nMarya",
+          "address": [
+            "TO ZOYA",
+            "THE UPPER"
+          ],
+          "attachmentCaption": "a jar of bream — no separate art, a stub"
+        },
+        "l6": {
+          "to": "To the postman",
+          "place": "The Embankment · read in place",
+          "from": "Pimen",
+          "text": "A MEMORIAL IS ATTACHED STOP THIRTY SEVEN NAMES STOP I AM NOT PUTTING THE REST YET STOP THE BELL FROM THE BELFRY WILL NOT REACH THERE STOP READ IT ALOUD IF THERE IS ANYONE TO HEAR STOP PIMEN",
+          "address": [
+            "TO THE POSTMAN"
+          ],
+          "attachmentCaption": "a ribbon of 37 names — no separate art, a stub"
+        },
+        "l7": {
+          "to": "To Mitya",
+          "place": "The Yards · a chance downstream, the box at the Branch",
+          "from": "Nina",
+          "text": "Mitya my light, I know, I know, do not think I am altogether blind. Tima never called me mamochka, I saw that from the first letter, but you come all the same, the soup is on the stove, sit down first, your socks are drying on the bench, do not wash them in hot or they will shrink. I will write to Timosha agen, you just write how I tell you.\n(she said “I know,” twice, that is how I wrote it. M.)\nX N.",
+          "address": [
+            "TO MITYA USS",
+            "A CHANCE DOWNSTREAM"
+          ]
+        },
+        "l8": {
+          "to": "To the postman",
+          "place": "The Branch · read in place",
+          "from": "Vera",
+          "text": "To the postman.\n1. I have received the mark 71. This is the fourth nick on the pole from which the count is kept.\n2. The calculation has been revised. There is still a reserve before the release. I am putting the decision off until the next mark. A discharge is still not required.\n3. The hum at 7.3 is pickup from our transformer. The source is the same.\n4. My letters should not be opened. The seal is numbered.\nV.I. Pasechnik\nP.S. Ramka spent the night on the porch today; do not let her into the institute.",
+          "address": [
+            "TO THE POSTMAN"
+          ],
+          "attachmentCaption": "graph paper 31–71 — no separate art, a stub"
+        },
+        "l9": {
+          "to": "To the postman",
+          "place": "The Branch storeroom · a find, do not open",
+          "from": "the storeroom",
+          "text": "A stack: on the top envelope, “from Ksenia, to her brother.” Thirty-one letters. Do not open the texts."
+        },
+        "l10": {
+          "to": "To the postman",
+          "place": "The Upper · read in place",
+          "from": "A.L.",
+          "text": "Dear postman!\nI do not hold the road below. They do not let anyone through the cordon, you are not to go. I have not appointed a collection at the Edge.\nDo not overload the bag. Mind your feet.\nA.L.",
+          "address": [
+            "TO THE POSTMAN",
+            "A.L."
+          ]
+        },
+        "note_kolya": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "Kolya",
+          "text": "Walk the dike. Into the pulp — no.\nKolya"
+        },
+        "note_pavel": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "Pavel",
+          "text": "Boots on the dryer. One boiler, for those up top. You can stay the night."
+        },
+        "find_sluice": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "The Settling Ponds",
+          "text": "A pond tag, a sluice token. No separate drawing."
+        },
+        "find_blank": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "The Pipes",
+          "text": "A scrap of a form: two hands, one name. No separate drawing."
+        },
+        "find_stub": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "The Slurry",
+          "text": "A notice stub, the signature taken off. No separate drawing."
+        },
+        "find_cup": {
+          "to": "To the postman",
+          "place": "Personal things",
+          "from": "The Upper",
+          "text": "A chalk mark and a cold cup. Someone sat here a little while ago."
+        }
+      },
+      "events": {
+        "p_l1": {
+          "title": "A note in the box",
+          "lines": [
+            {
+              "text": "In the box at the barrier is a service note. Violet pencil, signed A.L."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Barrier. A.L.'s note is in the box."
+            }
+          ]
+        },
+        "e_sluice": {
+          "title": "The sluice will not go",
+          "text": "Kolya is working at the sluice. The length of the path is the same.",
+          "push": [
+            {
+              "text": "Kolya is working at the sluice. Will you help?"
+            }
+          ],
+          "options": {
+            "help": {
+              "label": "Help with the sluice",
+              "result": "Feet dry. Kolya pushes a tag and a note: “Walk the dike. Into the pulp — no.”",
+              "auto": "The postman helped close the sluice."
+            },
+            "leave": {
+              "label": "Walk on",
+              "result": "Kolya mutters after him. There is no tag. The letters are in place."
+            }
+          }
+        },
+        "p_l2": {
+          "title": "A letter from “Andrei”",
+          "lines": [
+            {
+              "text": "In the booth box, an envelope. Two hands, the working name Andrei. A chance downstream, to the Boiler House."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Ponds. In the booth, an envelope for Tubs."
+            }
+          ]
+        },
+        "d_otstoyniki": {
+          "title": "The “to the branch” box",
+          "text": "The “to the branch” box",
+          "lines": [
+            {
+              "text": "A.L.'s note can be left in the box at the Settling Ponds, “to the branch.”"
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Ponds. The “to the branch” box."
+            }
+          ]
+        },
+        "p_blank": {
+          "title": "A scrap of a form",
+          "lines": [
+            {
+              "text": "On a trestle support, a scrap of a form: two hands, one name."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Pipes. A scrap of a form, two hands."
+            }
+          ]
+        },
+        "p_stub": {
+          "title": "A notice stub",
+          "lines": [
+            {
+              "text": "On a crust of slurry, a notice stub. The signature has been taken off."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Slurry. A notice stub, the signature taken off."
+            }
+          ]
+        },
+        "p_l3": {
+          "title": "The chip 71",
+          "lines": [
+            {
+              "text": "In the chance-mail box, Kuzma's note to Vera. With it, a chip with the nick 71."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boiler House. Kuzma's note, the nick 71."
+            }
+          ]
+        },
+        "p_l4": {
+          "title": "Mitya's letter",
+          "lines": [
+            {
+              "text": "Next to it, an envelope for Nina. Mitya's hand, the mistakes in place."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boiler House. An envelope for Nina, Mitya's hand."
+            }
+          ]
+        },
+        "e_kotel": {
+          "title": "The boiler is alive",
+          "text": "Pavel calls you to the boiler. The letters in the box can be taken either way.",
+          "push": [
+            {
+              "text": "Pavel calls you to the boiler. Will you come in?"
+            }
+          ],
+          "options": {
+            "stay": {
+              "label": "Sit by the boiler",
+              "result": "Boots on the dryer. Pavel leaves a note. You can stay the night here.",
+              "auto": "The postman sat by the boiler."
+            },
+            "leave": {
+              "label": "Walk on",
+              "result": "The warmth stays in the frame. The box is still there."
+            }
+          }
+        },
+        "d_kotelnaya": {
+          "title": "A chance downstream",
+          "text": "A chance downstream",
+          "lines": [
+            {
+              "text": "The letter from “Andrei” can be left in the box at the Boiler House, a chance downstream."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Boiler House. The chance-downstream box."
+            }
+          ]
+        },
+        "p_l5": {
+          "title": "A jar and an envelope",
+          "lines": [
+            {
+              "text": "In a dry shed, an envelope “to Zoya, the Upper.” In the text, a jar for Nyura at the gate."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Sheds. An envelope for Zoya; in the text — Nyura."
+            }
+          ]
+        },
+        "d_sarai": {
+          "title": "For Vera",
+          "text": "For Vera",
+          "lines": [
+            {
+              "text": "Kuzma's note and Mitya's letter can be left at the Sheds: “for Vera” and “a chance downstream.”"
+            }
+          ],
+          "push": [
+            {
+              "text": "The Sheds. The “for Vera” box and a chance downstream."
+            }
+          ]
+        },
+        "p_l6": {
+          "title": "A ribbon of names",
+          "lines": [
+            {
+              "text": "On the embankment, Pimen's telegram. Thirty-seven names. It is read here."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Embankment. Pimen's telegram, 37 names."
+            }
+          ]
+        },
+        "p_l7": {
+          "title": "Nina's letter",
+          "lines": [
+            {
+              "text": "At the gate, an envelope for Mitya. Nina knew. A chance downstream, to the Branch."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Yards. An envelope for Mitya, Nina's hand."
+            }
+          ]
+        },
+        "e_address": {
+          "title": "The envelope says Zoya",
+          "text": "A jar and an envelope. The envelope says Zoya; in the text — Nyura at the gate.",
+          "push": [
+            {
+              "text": "A jar and an envelope. Who is it for?"
+            }
+          ],
+          "options": {
+            "nyura": {
+              "label": "Give it to Nyura at the gate",
+              "result": "Nyura takes the jar: “That is for me, yes. Zoya does not eat that up there.”",
+              "auto": "The postman gave the jar to Nyura."
+            },
+            "zoya": {
+              "label": "Carry it to the Upper",
+              "result": "At the Upper there is no one to deliver it to. The jar can later be left at the Branch “for Nyura.”"
+            },
+            "office": {
+              "label": "Give it in at the branch",
+              "result": "Agnia takes it poste restante and will set it aside without a word."
+            }
+          }
+        },
+        "p_l8": {
+          "title": "Vera's note",
+          "lines": [
+            {
+              "text": "On the counter, Vera's note. Figures; she is putting it off again. It is read here."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Branch. Vera's note, the mark 71."
+            }
+          ]
+        },
+        "p_l9": {
+          "title": "The storeroom",
+          "lines": [
+            {
+              "text": "In the storeroom, three sacks and a stack: “from Ksenia, to her brother.” Thirty-one letters. Do not open the texts."
+            }
+          ],
+          "push": [
+            {
+              "text": "The storeroom. A stack of letters; do not open the texts."
+            }
+          ]
+        },
+        "e_believe": {
+          "title": "Three versions",
+          "text": "After the storeroom, three versions. The letters do not change with the choice.",
+          "push": [
+            {
+              "text": "Three versions. Who do you believe?"
+            }
+          ],
+          "options": {
+            "agnia": {
+              "label": "Keep Agnia's order",
+              "result": "Agnia nods at the counter: “Mind your feet. Carry the mail.” No one says that she is right.",
+              "auto": "The postman keeps Agnia's order."
+            },
+            "kuzma": {
+              "label": "Keep Kuzma's sheet",
+              "result": "Ferapont's sheet rises higher in the History. Agnia does not comment."
+            },
+            "vera": {
+              "label": "Keep Vera's measurement",
+              "result": "The figures 58 and 71 sit side by side. There are no words “she switched it on.”"
+            }
+          }
+        },
+        "d_otdelenie": {
+          "title": "A chance downstream",
+          "text": "A chance downstream",
+          "lines": [
+            {
+              "text": "Nina's letter can be left in the branch box, a chance downstream."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Branch. The chance-downstream box."
+            }
+          ]
+        },
+        "p_l10": {
+          "title": "A note from the Upper",
+          "lines": [
+            {
+              "text": "On the bench, a note from A.L.: do not go through the cordon. She has not appointed a collection at the Edge."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Upper. A.L.'s note; there is no road beyond."
+            }
+          ]
+        },
+        "p_cup": {
+          "title": "A cold cup",
+          "lines": [
+            {
+              "text": "On the table, a chalk mark and a cold cup. Someone sat here a little while ago."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Upper. The cup is still cold."
+            }
+          ]
+        },
+        "finale": {
+          "title": "The Upper",
+          "lines": [
+            {
+              "text": "There is no road beyond. The post is still ahead, in the haze. The storeroom key has not been issued."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Upper. The chapter is finished."
+            }
+          ]
+        }
+      },
+      "quests": {
+        "d_otstoyniki|": "Leave A.L.'s note at the Settling Ponds",
+        "p_l3|": "To the Boiler House",
+        "d_sarai|": "Leave the mail at the Sheds",
+        "e_address|": "To the Yards",
+        "e_believe|": "To the Branch",
+        "finale|": "To the Upper"
+      },
+      "residents": {
+        "kolya": "Kolya",
+        "pavel": "Pavel",
+        "nyura": "Nyura",
+        "agnia": "Agnia"
+      },
+      "fates": {
+        "otstoyniki|inBag:l1": "A.L.'s note is still in the bag. Its place is the box at the Settling Ponds, “to the branch.”",
+        "otstoyniki|delivered:l1": "A.L.'s note was left at the Settling Ponds, to the branch.",
+        "kotelnaya|inBag:l2": "The letter from “Andrei” is still in the bag. A chance downstream — the box at the Boiler House.",
+        "sarai|inBag:l3": "Kuzma's note is still in the bag. Its place is the box at the Sheds, “for Vera.”",
+        "sarai|inBag:l4": "Mitya's letter is still in the bag. A chance downstream — the box at the Sheds.",
+        "dvory|inBag:l5": "The jar and the envelope are still in the bag. The envelope says Zoya; in the text — Nyura at the gate.",
+        "otdelenie|inBag:l7": "Nina's letter is still in the bag. A chance downstream — the branch box."
+      },
+      "arrivals": {
+        "shlagbaum": "The Barrier. Striped tin, a warm kettle, pipes in a break. A.L.'s note is in the box.",
+        "otstoyniki": "The Settling Ponds. Dikes, ponds, Kolya's booth. In the box — an envelope and a place “to the branch.”",
+        "kotelnaya": "The Boiler House. One boiler “for those up top.” In the chance-mail box — mail downstream and for Vera.",
+        "sarai": "The Sheds. Dry hay, pigeons. A “for Vera” box and a chance downstream. In the corner — a jar and an envelope for Zoya.",
+        "naberezhnaya": "The Embankment. Pimen's telegram, thirty-seven names. It is read here.",
+        "dvory": "The Yards. Nyura at the gate. The jar is for her, though the envelope says Zoya.",
+        "otdelenie": "The Branch. Agnia at the counter. “Eat first.” Beyond — the storeroom and three versions.",
+        "verkhnyaya": "The Upper. A sign, a bench, a view further on. There is no way through the cordon."
       }
     }
   }

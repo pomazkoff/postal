@@ -110,7 +110,7 @@ def story_check(chapter, doc):
     for a in doc.get("arrivals") or []:
         need(amap.get(a["settlement"]), f"story{chapter}.arrival.{a['settlement']}", a["text"])
 
-for n in (1, 2, 3):
+for n in (1, 2, 3, 4):
     story_check(n, load(DATA / f"chapter{n}_story.json"))
 
 world = load(DATA / "world.json")
@@ -141,6 +141,14 @@ mp = load(ROOT / "Postman/GameAssets/UI/map/map.json")
 mspec = en.get("map", {}).get("settlements", {})
 for s in mp["settlements"]:
     need(mspec.get(s["id"]), f"map.{s['id']}", s["name"])
+for sheet_name in ("mountains.json", "swamps.json", "stvor.json"):
+    sheet_path = ROOT / "Postman/GameAssets/UI/map" / sheet_name
+    if not sheet_path.exists():
+        continue
+    sheet = load(sheet_path)
+    for s in sheet.get("settlements") or []:
+        if s.get("name"):
+            need(mspec.get(s["id"]), f"map.{s['id']}", s["name"])
 
 # Structural parity: ids, conditions, numbers survive a simulated overlay.
 def project(doc):

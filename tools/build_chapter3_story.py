@@ -438,7 +438,7 @@ story = {
     ],
     "finaleTitle": "Глава 3 · Болота",
     "finaleSubtitle": "пройдена",
-    "nextChapter": "Глава 4 «Город молчания» — скоро",
+    "nextChapter": "Глава 4 «Нижний Створ»",
     "trustSettlements": ["gat", "top", "torfyanik"],
     "choicePolicy": {"mode": "notifyThenAuto", "timeoutSteps": 400},
     "arrivals": [

@@ -34,7 +34,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var residentNodes: [String: SKSpriteNode] = [:]
     /// Ключ содержит главу: жители всех глав остаются на единой ленте.
     var onResidentTap: ((_ chapterID: Int, _ residentID: String) -> Void)?
-    /// Короткий тап по вещи на болотах: id из chapter3_taps.json.
+    /// Короткий тап по вещи мира: id из chapterN_taps.json.
     var onMarshTap: ((String) -> Void)?
     var onPostmanTap: (() -> Void)?
     /// Видимый шаг героя: мировой шаг, только когда стопа ставится и он в кадре.
@@ -438,9 +438,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
             actorLayer.addChild(marker)
         }
         // Заглушка только за ПОСЛЕДНЕЙ известной главой, не поверх следующей.
-        if chapter.id == 3 {
-            installMarshTaps(in: actorLayer, chapter: chapter)
-        }
+        installWorldTaps(in: actorLayer, chapter: chapter)
         if index == config.chapters.count - 1, let after = chapter.rawClayAfterStep {
             let clay = SKSpriteNode(color: UIColor(red: 0.55, green: 0.47, blue: 0.38, alpha: 1),
                                     size: CGSize(width: W * 4, height: CGFloat(config.game.designHeight)))
@@ -466,8 +464,8 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
 
     /// Вещи §10.3. Каждая — отдельная цель, не житель и не письмо.
     /// Высота и sink берутся из JSON, как у пропсов гл. 1–2; больше не одна высота 150 на линии дороги.
-    private func installMarshTaps(in layer: SKNode, chapter: ChapterConfig) {
-        let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/chapter3_taps.json")
+    private func installWorldTaps(in layer: SKNode, chapter: ChapterConfig) {
+        let url = WorldConfigLoader.assetsRoot.appendingPathComponent("Data/chapter\(chapter.id)_taps.json")
         guard let data = try? Data(contentsOf: url),
               let taps = try? JSONDecoder().decode([MarshTap].self, from: data) else { return }
         for tap in taps {
@@ -483,7 +481,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
                                     y: geo.roadY - CGFloat(tap.sink ?? 40))
             node.zPosition = CGFloat(tap.z ?? 12)
             if tap.draw == false { node.alpha = 0.01 }
-            node.name = "marsh:" + tap.id
+            node.name = "marsh:\(chapter.id)." + tap.id
             node.isUserInteractionEnabled = false
             layer.addChild(node)
         }

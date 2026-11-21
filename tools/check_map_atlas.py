@@ -97,6 +97,45 @@ if real.exists():
     if hero[1] > 2300:
         fail("step 2419 stayed down at the saddle")
 
+src = (ROOT / "Postman/Model/MapAtlas.swift").read_text(encoding="utf-8")
+screen = (ROOT / "Postman/UI/MapScreen.swift").read_text(encoding="utf-8")
+stvor_path = ROOT / "Postman/GameAssets/UI/map/stvor.json"
+swamps_path = ROOT / "Postman/GameAssets/UI/map/swamps.json"
+if stvor_path.exists():
+    for token in ("loadStvor", "StvorJoin", "StvorPlaces", "stvorLift", "stvorOverlap"):
+        if token not in src:
+            fail(f"atlas is missing {token}")
+    if "heroOnStvor" not in screen or "refreshStvor" not in screen or "stvorRevealKey" not in screen:
+        fail("MapScreen does not draw or reveal the Stvor sheet")
+    if "[2, 3, 4]" not in screen:
+        fail("arrival texts must also look up chapter 4")
+    stvor = json.loads(stvor_path.read_text(encoding="utf-8"))
+    if stvor.get("globalStart") != 75000 or stvor.get("lengthSteps") != 45000:
+        fail(f"stvor sheet is not 75000+45000: {stvor.get('globalStart')} {stvor.get('lengthSteps')}")
+    join = stvor.get("join") or []
+    if len(join) != 2 or abs(join[0] - 551.5) > 0.05 or abs(join[1] - 2100.8) > 0.05:
+        fail(f"stvor join drifted: {join}")
+    if not stvor["road"] or abs(stvor["road"][0][0] - 551.5) > 0.05 or abs(stvor["road"][0][1] - 2100.8) > 0.05:
+        fail(f"stvor road does not start at the join: {stvor['road'][0] if stvor.get('road') else None}")
+    want = {
+        "shlagbaum": 0, "otstoyniki": 4000, "kotelnaya": 21000, "sarai": 25000,
+        "naberezhnaya": 32000, "dvory": 36500, "otdelenie": 39500, "verkhnyaya": 45000,
+    }
+    got = {s["id"]: s["step"] for s in stvor["settlements"]}
+    if got != want:
+        fail(f"stvor settlements drifted: {got}")
+    if swamps_path.exists():
+        swamps = json.loads(swamps_path.read_text(encoding="utf-8"))
+        last = swamps["road"][-1]
+        if abs(last[0] - 551.5) > 0.05 or abs(last[1] - 128.8) > 0.05:
+            fail(f"swamp road no longer ends at Otstoy (551.5, 128.8): {last}")
+        overlap = stvor["size"][1] - (join[1] - last[1])
+        if abs(overlap - 560) > 1:
+            fail(f"stvor/swamp designed overlap is not 560 px: {overlap}")
+    for name in ("stvor_color.jpg", "stvor_pencil.jpg", "stvor_field.png"):
+        if not (ROOT / "Postman/GameAssets/UI/map" / name).exists():
+            fail(f"missing {name}")
+
 if FAILS:
     print(f"{len(FAILS)} map atlas check(s) failed:")
     for item in FAILS:

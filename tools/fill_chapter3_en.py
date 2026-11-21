@@ -257,7 +257,7 @@ EVENTS = {
 STORY = {
     "finaleTitle": "Chapter 3 · Marshes",
     "finaleSubtitle": "finished",
-    "nextChapter": "Chapter 4, “The City of Silence” — soon",
+    "nextChapter": "Chapter 4, “The Lower Stvor”",
     "items": ITEMS,
     "events": EVENTS,
     "quests": {
