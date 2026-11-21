@@ -648,6 +648,18 @@ final class GameModel: ObservableObject {
     private func applyTotal(_ total: Int) {
         // До первого чтения шагов totalSteps = 0 — не сбрасываем сохранённую позицию героя.
         guard steps.hasLoaded else { return }
+        #if DEBUG
+        // QA / DEBUG jump: setDebugTotal accounts for any real/pedometer base so
+        // the world lands on the requested step. Consumed after one apply.
+        if UserDefaults.standard.object(forKey: "postman.debug.jumpTo") != nil {
+            let goal = UserDefaults.standard.integer(forKey: "postman.debug.jumpTo")
+            UserDefaults.standard.removeObject(forKey: "postman.debug.jumpTo")
+            if steps.totalSteps != goal {
+                steps.setDebugTotal(goal)
+                return
+            }
+        }
+        #endif
         guard onboardingDone else {
             scene.setTargetSteps(worldSteps(total: total))
             return
