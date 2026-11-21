@@ -645,6 +645,10 @@ final class GameModel: ObservableObject {
         }
     }
 
+    #if DEBUG
+    private static var debugJumpApplied = false
+    #endif
+
     private func applyTotal(_ total: Int) {
         // До первого чтения шагов totalSteps = 0 — не сбрасываем сохранённую позицию героя.
         guard steps.hasLoaded else { return }
@@ -652,7 +656,8 @@ final class GameModel: ObservableObject {
         // QA / DEBUG jump: setDebugTotal accounts for any real/pedometer base so
         // the world lands on the requested step. Prefer the process env (reliable
         // under simctl) over UserDefaults, which the Simulator prefs daemon can
-        // serve stale.
+        // serve stale. Apply once: setDebugTotal publishes totalSteps and would
+        // re-enter this sink while POSTMAN_DEBUG_JUMP is still in the environment.
         var jumpGoal: Int?
         if let env = ProcessInfo.processInfo.environment["POSTMAN_DEBUG_JUMP"], let v = Int(env) {
             jumpGoal = v
@@ -660,7 +665,8 @@ final class GameModel: ObservableObject {
             jumpGoal = UserDefaults.standard.integer(forKey: "postman.debug.jumpTo")
             UserDefaults.standard.removeObject(forKey: "postman.debug.jumpTo")
         }
-        if let goal = jumpGoal, steps.totalSteps != goal {
+        if !Self.debugJumpApplied, let goal = jumpGoal, steps.totalSteps != goal {
+            Self.debugJumpApplied = true
             steps.setDebugTotal(goal)
             return
         }
