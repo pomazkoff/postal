@@ -650,14 +650,19 @@ final class GameModel: ObservableObject {
         guard steps.hasLoaded else { return }
         #if DEBUG
         // QA / DEBUG jump: setDebugTotal accounts for any real/pedometer base so
-        // the world lands on the requested step. Consumed after one apply.
-        if UserDefaults.standard.object(forKey: "postman.debug.jumpTo") != nil {
-            let goal = UserDefaults.standard.integer(forKey: "postman.debug.jumpTo")
+        // the world lands on the requested step. Prefer the process env (reliable
+        // under simctl) over UserDefaults, which the Simulator prefs daemon can
+        // serve stale.
+        var jumpGoal: Int?
+        if let env = ProcessInfo.processInfo.environment["POSTMAN_DEBUG_JUMP"], let v = Int(env) {
+            jumpGoal = v
+        } else if UserDefaults.standard.object(forKey: "postman.debug.jumpTo") != nil {
+            jumpGoal = UserDefaults.standard.integer(forKey: "postman.debug.jumpTo")
             UserDefaults.standard.removeObject(forKey: "postman.debug.jumpTo")
-            if steps.totalSteps != goal {
-                steps.setDebugTotal(goal)
-                return
-            }
+        }
+        if let goal = jumpGoal, steps.totalSteps != goal {
+            steps.setDebugTotal(goal)
+            return
         }
         #endif
         guard onboardingDone else {
