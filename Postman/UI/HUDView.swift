@@ -458,12 +458,11 @@ struct HUDView: View {
         }
     }
 
-    /// Служебная консоль (шаги, прыжки по главам) — только в DEBUG. В App Store / TestFlight её нет.
+    /// Служебная консоль (шаги, прыжки по главам): DEBUG, симулятор и TestFlight, не App Store.
     private func openDeveloper() {
-        #if DEBUG
+        guard DeveloperAccess.isAvailable else { return }
         confirmReset = false
         showDeveloper = true
-        #endif
     }
 
     private func toggleWatch() {

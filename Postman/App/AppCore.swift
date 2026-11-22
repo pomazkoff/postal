@@ -45,11 +45,11 @@ final class AppCore {
         let world = WorldConfigLoader.load()
         self.world = world
         self.steps = StepService(store: progress)
-        #if !DEBUG
-        // Прыжок по главам из служебной консоли — только в DEBUG. Старый форс из тестовых сборок не держим.
-        progress.forceChapterIndex = nil
-        progress.forceChapterBaseSteps = nil
-        #endif
+        // В продакшен-релизе App Store прыжок из консоли не держим. В TestFlight / DEBUG оставляем.
+        if !DeveloperAccess.isAvailable {
+            progress.forceChapterIndex = nil
+            progress.forceChapterBaseSteps = nil
+        }
         let startIndex = Self.resolveChapterIndex(world: world, progress: progress, totalSteps: 0)
         self.chapterIndex = startIndex
         let chapter = world.chapters[startIndex]

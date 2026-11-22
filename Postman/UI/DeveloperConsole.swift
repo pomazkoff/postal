@@ -6,6 +6,23 @@ enum DeveloperHold {
     static let seconds: Double = 10
 }
 
+/// Служебная консоль: DEBUG, симулятор и TestFlight. В продакшен-релизе App Store — нет.
+/// TestFlight определяется по sandbox-чеку. Тот же бинарник потом уходит в App Store,
+/// поэтому отдельный флаг компиляции для TF здесь не подходит: консоль попала бы и в релиз.
+/// Риск: ревьюеры Apple тоже часто сидят на sandbox-чеке и теоретически могут открыть консоль
+/// тем же скрытым жестом (удержание часов 10 с).
+enum DeveloperAccess {
+    static var isAvailable: Bool {
+        #if DEBUG
+        return true
+        #elseif targetEnvironment(simulator)
+        return true
+        #else
+        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        #endif
+    }
+}
+
 /// Коммит, на котором собрана эта копия исходников. Номер билда берётся из бандла.
 enum DeveloperStamp {
     static let sha = "ede7cfdcca75b9153c5e271cef17b362baafb8e6"
@@ -73,7 +90,7 @@ struct WatchHoldTarget: UIViewRepresentable {
     }
 }
 
-/// Служебная консоль. Не в стиле игры. Открывается в Release тем же жестом, что и в отладке.
+/// Служебная консоль. Не в стиле игры. Жест тот же, что в отладке; в продакшен-релизе App Store не открывается.
 struct DeveloperConsole: View {
     @EnvironmentObject private var game: GameModel
     var onClose: () -> Void
