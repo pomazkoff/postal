@@ -316,8 +316,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private func installStvorSky() {
         let H = CGFloat(config.game.designHeight)
         let folder = WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter4/sky", isDirectory: true)
+        // Only drifting generics (drift_*.png). Official place clouds
+        // (cloud_shlag_*, cloud_otst_*) are props in world.json — do not
+        // also spawn them as chapter-wide drifters.
         let names = ((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? [])
-            .filter { $0.lowercased().hasSuffix(".png") }
+            .filter { $0.lowercased().hasSuffix(".png") && $0.lowercased().hasPrefix("drift_") }
             .sorted()
         guard !names.isEmpty else { return }
         let span = CGFloat(config.game.designWidth) * 6
@@ -630,22 +633,24 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             }
             .sorted { $0.left < $1.left }
 
-        var baseX = stripStart
-        while baseX < stripEnd { addNeutral(left: baseX, width: tileW); baseX += tileW }
-        guard let first = placed.first else { return }
-
-        var cursor = first.left
+        // One pass only: N in the gaps (including before the first and after the
+        // last module), modules on top. A prior regular grid *plus* gap fill
+        // drew N twice with a phase shift — visible ghost drips.
+        if placed.isEmpty {
+            var baseX = stripStart
+            while baseX < stripEnd { addNeutral(left: baseX, width: tileW); baseX += tileW }
+            return
+        }
+        var cursor = stripStart
         for (i, m) in placed.enumerated() {
             var left = m.left
-            if i > 0 {
-                let gap = left - cursor
-                if gap < tileW * CGFloat(ug.minGapFraction) {
-                    left = cursor // вплотную (сдвиг модуля не больше minGapFraction тайла)
-                } else {
-                    let n = max(1, Int((gap / tileW).rounded()))
-                    let w = gap / CGFloat(n)
-                    for j in 0..<n { addNeutral(left: cursor + CGFloat(j) * w, width: w) }
-                }
+            let gap = left - cursor
+            if gap < tileW * CGFloat(ug.minGapFraction) {
+                left = cursor // butt against the previous tile
+            } else if gap > 2 {
+                let n = max(1, Int((gap / tileW).rounded()))
+                let w = gap / CGFloat(n)
+                for j in 0..<n { addNeutral(left: cursor + CGFloat(j) * w, width: w) }
             }
             let node = LazySpriteNode(imagePath: m.path, size: CGSize(width: tileW, height: tileH))
             node.anchorPoint = .zero
@@ -655,6 +660,11 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             layer.addChild(node)
             lazyNodes.append((node, layer))
             cursor = left + tileW
+        }
+        if stripEnd - cursor >= tileW * 0.5 {
+            let n = max(1, Int(((stripEnd - cursor) / tileW).rounded()))
+            let w = (stripEnd - cursor) / CGFloat(n)
+            for j in 0..<n { addNeutral(left: cursor + CGFloat(j) * w, width: w) }
         }
     }
 

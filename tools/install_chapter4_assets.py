@@ -588,16 +588,22 @@ def main():
     for sub in ("places", "road", "underground", "sky"):
         (CH / sub).mkdir(parents=True, exist_ok=True)
 
-    # Remove previous place / road / sky cuts we are replacing (not residents).
+    # PASS4 owns seamless road/UG tiles, place recuts, moon, and sky sprites.
+    # A re-run of this installer must not delete or overwrite them (the old
+    # loop cut unique UG crops per place and a thin road).
+    ug_n = CH / "underground" / "ug_neutral_tile.png"
+    road_p = CH / "road" / "road_main.png"
+    if ug_n.exists() and road_p.exists():
+        print("pass4 tiles present — leaving Chapter4 art and install_meta as-is")
+        return
+
+    # First-time install only: clear leftover sky cards and unique UG crops.
     for pat in (
-        "places/place_*_main.png",
         "places/sky_*.png",
-        "places/sprite_*.png",
-        "places/bg_far_ridges_tile.png",
-        "places/bg_mid_fields_tile.png",
-        "road/*.png",
-        "sky/*.png",
-        "underground/ug_*.png",
+        "sky/cloud_dawn_*.png",
+        "underground/ug_chain.png",
+        "underground/ug_bone.png",
+        "underground/ug_boat.png",
     ):
         for p in CH.glob(pat):
             p.unlink()
@@ -670,30 +676,14 @@ def main():
     save_png(far, CH / "places" / "bg_far_ridges_tile.png")
     save_png(mid, CH / "places" / "bg_mid_fields_tile.png")
 
-    road = make_road(strip)
-    save_png(road, CH / "road" / "road_main.png")
+    # First-time path: build tiles + recut places via pass4, then stop.
+    # pass4 writes install_meta (ug_variants, tilePixelSize, sprites, road).
+    import rebuild_chapter4_pass4 as _pass4
+    _pass4.main(skip_places=False)
+    return
 
-    save_png(cut_ug(strip, 800), CH / "underground" / "ug_neutral_tile.png")
-    for name, step, idx in PLACES:
-        save_png(cut_ug(strip, idx * W_PLACE + 10), CH / "underground" / f"ug_{name}.png")
-
-    # Optional drifting clouds for installStvorSky. Fail soft if a crop is empty.
-    try:
-        clouds = cut_clouds(strip)
-        cloud_list = []
-        for name, rgba, y0, xa, idx in clouds:
-            save_png(rgba, CH / "sky" / f"{name}.png")
-            cloud_list.append(
-                {
-                    "file": name,
-                    "pixelSize": [int(rgba.shape[1]), int(rgba.shape[0])],
-                    "y0": int(y0),
-                    "slice": int(idx),
-                }
-            )
-    except Exception as e:
-        print("cloud cut failed (non-fatal):", e)
-        cloud_list = []
+    # Unreachable. Kept so git blame still shows the old cloud-cut site.
+    cloud_list = []
 
     # Residents / ambient / map are already in the tree from the previous
     # install. Recopy only if missing, never delete them.
@@ -727,7 +717,7 @@ def main():
         "places": place_meta,
         "sprites": sprite_meta,
         "sky_cards": [],
-        "road": {"road_main": [int(road.shape[1]), int(road.shape[0])]},
+        "road": {"road_main": list((Image.open(CH / "road" / "road_main.png").size if (CH / "road" / "road_main.png").exists() else (2400, 680)))},
         "clouds": cloud_list,
         "bg_far": [2636, 1236],
         "bg_mid": [2636, 1040],

@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "Postman/GameAssets"
-OUT = Path("/tmp/ch4_qa_after3/scene")
+OUT = Path("/tmp/ch4_qa_after4/scene")
 W, H = 1170, 2532
 PPS = 1.17
 ROAD_LINE_Y = 1720  # from top
@@ -295,6 +295,23 @@ def render_chapter_frame(world, chapter_id: int, local_step: float, label: str, 
             if world_left + tile_w < view_left - 20 or world_left > view_left + W + 20:
                 continue
             blit_world(canvas, img, world_left, bottom_y, tile_w, tile_h, view_left)
+
+
+        # Underground-layer sprites (finds) over the tiles, same as WorldScene z>0.
+        for p in ch.get("props") or []:
+            if p.get("layer") != "underground":
+                continue
+            img = tex(p["image"])
+            if img is None:
+                continue
+            ph = float(p["height"])
+            ps = p.get("pixelSize") or [img.shape[1], img.shape[0]]
+            pw = ph * (ps[0] / max(1, ps[1]))
+            world_left = (ch["startStep"] + p["step"]) * PPS + float(p.get("dx") or 0)
+            y_bottom = ROAD_Y - float(p.get("sink") or 0)
+            if world_left + pw < view_left - 20 or world_left > view_left + W + 20:
+                continue
+            blit_world(canvas, img, world_left, y_bottom, pw, ph, view_left)
 
     # Postman marker: a simple 430-tall stand-in at screenX 0.55, feet at roadY-30
     # (the live rig). Drawn as a thin silhouette so we can judge scale, not as art.

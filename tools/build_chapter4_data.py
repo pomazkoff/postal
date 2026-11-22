@@ -116,7 +116,7 @@ def build_world():
             "neutralTile": "underground/ug_neutral_tile",
             "top": 1700,
             "scale": 2.0,
-            "tilePixelSize": [1148, 415],
+            "tilePixelSize": META.get("tilePixelSize") or [680, 415],
             "minGapFraction": 0.3,
             "modules": META.get("ug_finds") or [
                 {"image": "underground/ug_chain", "step": 200, "dx": 0.0},
@@ -142,7 +142,7 @@ def build_world():
         },
         "rawClayAfterStep": 45000,
     }
-    ch4["underground"]["modules"] = META.get("ug_finds") or ch4["underground"]["modules"]
+    ch4["underground"]["modules"] = META.get("ug_variants") or []
     world["chapters"].append(ch4)
     (DATA / "world.json").write_text(json.dumps(world, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("world.json: chapter 4 added, ch3 rawClay removed")

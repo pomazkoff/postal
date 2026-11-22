@@ -3678,14 +3678,14 @@
           "layer": "main",
           "step": 0,
           "dx": -643.5,
-          "height": 1680,
+          "height": 1679,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1680
+            1679
           ],
-          "y0": 55,
+          "y0": 56,
           "xa": 0
         },
         {
@@ -3693,14 +3693,14 @@
           "layer": "main",
           "step": 4000,
           "dx": -643.5,
-          "height": 1613,
+          "height": 1612,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1613
+            1612
           ],
-          "y0": 122,
+          "y0": 123,
           "xa": 0
         },
         {
@@ -3708,14 +3708,14 @@
           "layer": "main",
           "step": 11000,
           "dx": -643.5,
-          "height": 1453,
+          "height": 1452,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1453
+            1452
           ],
-          "y0": 282,
+          "y0": 283,
           "xa": 0
         },
         {
@@ -3723,14 +3723,14 @@
           "layer": "main",
           "step": 17500,
           "dx": -643.5,
-          "height": 1490,
+          "height": 1489,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1490
+            1489
           ],
-          "y0": 245,
+          "y0": 246,
           "xa": 0
         },
         {
@@ -3768,14 +3768,14 @@
           "layer": "main",
           "step": 32000,
           "dx": -643.5,
-          "height": 1285,
+          "height": 1192,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1285
+            1192
           ],
-          "y0": 450,
+          "y0": 543,
           "xa": 0
         },
         {
@@ -3813,27 +3813,27 @@
           "layer": "main",
           "step": 45000,
           "dx": -643.5,
-          "height": 1598,
+          "height": 1597,
           "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1598
+            1597
           ],
-          "y0": 137,
+          "y0": 138,
           "xa": 0
         },
         {
           "image": "places/sprite_moon",
           "layer": "main",
           "step": 45000,
-          "dx": -546.5,
-          "height": 472,
-          "sink": -1016,
+          "dx": -543.5,
+          "height": 483,
+          "sink": -1000,
           "z": -6,
           "pixelSize": [
-            224,
-            472
+            202,
+            483
           ]
         },
         {
@@ -4089,24 +4089,14 @@
         "top": 1700,
         "scale": 2.0,
         "tilePixelSize": [
-          1148,
+          680,
           415
         ],
         "minGapFraction": 0.3,
         "modules": [
           {
-            "image": "underground/ug_chain",
-            "step": 200,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_bone",
-            "step": 17500,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_boat",
-            "step": 32000,
+            "image": "underground/ug_var_cracks",
+            "step": 8000,
             "dx": 0.0
           }
         ]
