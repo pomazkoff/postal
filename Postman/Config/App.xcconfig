@@ -7,5 +7,5 @@ APP_DISPLAY_NAME = Postman
 // Уникальный идентификатор. Для подписи своей командой замените на свой, напр. ru.<вашедомен>.postman
 PRODUCT_BUNDLE_IDENTIFIER = games.mazkof.postman
 
-MARKETING_VERSION = 0.1.0
-CURRENT_PROJECT_VERSION = 1
+MARKETING_VERSION = 1.2
+CURRENT_PROJECT_VERSION = 27
