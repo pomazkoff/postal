@@ -59,6 +59,11 @@ spoken = json.dumps({"items": story["items"], "events": story["events"],
 if "К-2" in spoken or "K-2" in spoken:
     fail("chapter 4 names K-2 out loud")
 
+VALID_STATUS = {"atPost", "onRoad", "inBag", "inPocket", "delivered", "sent", "lostWind", "leftBehind", "read"}
+for item in story["items"]:
+    if item.get("initial") not in VALID_STATUS:
+        fail(f"{item['id']} initial is not a valid ItemStatus: {item.get('initial')}")
+
 chapter = next(c for c in world["chapters"] if c["id"] == 4)
 if chapter["startStep"] != 75000 or chapter["lengthSteps"] != 45000:
     fail(f"chapter 4 is not world steps 75000–120000: {chapter['startStep']} + {chapter['lengthSteps']}")
