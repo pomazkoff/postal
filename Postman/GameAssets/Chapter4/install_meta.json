@@ -120,7 +120,7 @@
       "sink": 40,
       "z": 10,
       "pixelSize": [
-        1170,
+        1010,
         1760
       ],
       "y0": 0,
@@ -130,16 +130,16 @@
       "image": "places/place_otdelenie_main",
       "layer": "main",
       "step": 39500,
-      "dx": -643.5,
-      "height": 1370,
+      "dx": -803.5,
+      "height": 1760,
       "sink": 40,
       "z": 10,
       "pixelSize": [
-        1170,
-        1370
+        1330,
+        1760
       ],
-      "y0": 390,
-      "xa": 0
+      "y0": 0,
+      "xa": -160
     },
     {
       "image": "places/place_verkhnyaya_main",
@@ -157,138 +157,22 @@
       "xa": 0
     }
   ],
-  "sky_cards": [
+  "sprites": [
     {
-      "image": "places/sky_shlagbaum",
-      "layer": "main",
-      "step": 0,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_otstoyniki",
-      "layer": "main",
-      "step": 4000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_truby",
-      "layer": "main",
-      "step": 11000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_shlam",
-      "layer": "main",
-      "step": 17500,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_kotelnaya",
-      "layer": "main",
-      "step": 21000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_sarai",
-      "layer": "main",
-      "step": 25000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_naberezhnaya",
-      "layer": "main",
-      "step": 32000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_dvory",
-      "layer": "main",
-      "step": 36500,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_otdelenie",
-      "layer": "main",
-      "step": 39500,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
-      "pixelSize": [
-        1170,
-        1760
-      ]
-    },
-    {
-      "image": "places/sky_verkhnyaya",
+      "image": "places/sprite_moon",
       "layer": "main",
       "step": 45000,
-      "dx": -643.5,
-      "height": 1760,
-      "sink": 40,
-      "z": -5,
+      "dx": -547.5,
+      "height": 473,
+      "sink": -1017,
+      "z": -6,
       "pixelSize": [
-        1170,
-        1760
+        225,
+        473
       ]
     }
   ],
+  "sky_cards": [],
   "road": {
     "road_main": [
       2400,
@@ -340,96 +224,6 @@
       ],
       "y0": 645,
       "slice": 0
-    },
-    {
-      "file": "cloud_pond_5",
-      "pixelSize": [
-        450,
-        204
-      ],
-      "y0": 87,
-      "slice": 1
-    },
-    {
-      "file": "cloud_pond_6",
-      "pixelSize": [
-        47,
-        295
-      ],
-      "y0": 437,
-      "slice": 1
-    },
-    {
-      "file": "cloud_dusk_7",
-      "pixelSize": [
-        209,
-        446
-      ],
-      "y0": 522,
-      "slice": 4
-    },
-    {
-      "file": "cloud_night_8",
-      "pixelSize": [
-        397,
-        345
-      ],
-      "y0": 0,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_9",
-      "pixelSize": [
-        251,
-        686
-      ],
-      "y0": 221,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_10",
-      "pixelSize": [
-        117,
-        113
-      ],
-      "y0": 252,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_11",
-      "pixelSize": [
-        99,
-        193
-      ],
-      "y0": 341,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_12",
-      "pixelSize": [
-        167,
-        395
-      ],
-      "y0": 543,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_13",
-      "pixelSize": [
-        204,
-        224
-      ],
-      "y0": 741,
-      "slice": 9
-    },
-    {
-      "file": "cloud_night_14",
-      "pixelSize": [
-        96,
-        144
-      ],
-      "y0": 745,
-      "slice": 9
     }
   ],
   "bg_far": [

@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "Postman/GameAssets"
-OUT = Path("/tmp/ch4_qa_after/scene")
+OUT = Path("/tmp/ch4_qa_after2/scene")
 W, H = 1170, 2532
 PPS = 1.17
 ROAD_LINE_Y = 1720  # from top
@@ -273,13 +273,20 @@ def render_chapter_frame(world, chapter_id: int, local_step: float, label: str, 
         tile_h = tps[1] * scale
         top_y_scene = H - top  # scene y of UG top
         bottom_y = top_y_scene - tile_h
-        # soil fill
-        soil = np.zeros((H, W, 3), np.uint8)
-        soil[:] = (42, 29, 22)
-        soil_top_row = int(H - (bottom_y + 4))
-        if 0 <= soil_top_row < H:
-            canvas[soil_top_row:] = soil[soil_top_row:]
-        # modules near this step
+        # Neutrals from start-4W to end+4W (same as WorldScene.buildUnderground),
+        # then thematic modules on top (z=1).
+        length = ch.get("lengthSteps") or 0
+        end_step = ch.get("endStep") or (ch["startStep"] + length)
+        strip_start = ch["startStep"] * PPS - W * 4
+        strip_end = end_step * PPS + W * 4
+        nimg = tex(ug["neutralTile"]) if ug.get("neutralTile") else None
+        if nimg is not None:
+            x = strip_start
+            while x < strip_end:
+                if x + tile_w >= view_left - 20 and x <= view_left + W + 20:
+                    blit_world(canvas, nimg, x, bottom_y, tile_w, tile_h, view_left)
+                x += tile_w
+        # modules near this step (drawn over neutrals)
         for m in ug.get("modules") or []:
             img = tex(m["image"])
             if img is None:
@@ -348,8 +355,9 @@ def contact_sheet(images, cols, thumb_w, path, captions=None):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    root = OUT.parent  # /tmp/ch4_qa_after2
+    root.mkdir(parents=True, exist_ok=True)
     world = json.loads((ASSETS / "Data/world.json").read_text())
-    # after (current world + current assets)
     places = [
         ("shlagbaum", 0),
         ("otstoyniki", 4000),
@@ -364,124 +372,54 @@ def main():
     ]
     after = []
     for name, step in places:
-        im = render_chapter_frame(world, 4, step, f"AFTER {name}")
+        im = render_chapter_frame(world, 4, step, f"AFTER2 {name}")
         im.save(OUT / f"after_{name}.jpg", quality=92)
         after.append(im)
         print("after", name)
 
-    # join: last ch3 place (otstoy at local 30000 = global 75000) and a step just before
+    # Frames on the borders between neighbouring places — seams show here.
+    joins = []
+    join_caps = []
+    for i in range(len(places) - 1):
+        n1, s1 = places[i]
+        n2, s2 = places[i + 1]
+        mid = (s1 + s2) // 2
+        shots = [(f"{n1}_{n2}_mid", mid)]
+        if s2 - s1 > 1800:
+            shots.append((f"{n1}_leave", s1 + 800))
+            shots.append((f"{n2}_arrive", s2 - 800))
+        for label, step in shots:
+            im = render_chapter_frame(world, 4, step, f"JOIN {label}")
+            im.save(OUT / f"join_{label}.jpg", quality=92)
+            joins.append(im)
+            join_caps.append(f"{label} @{step}")
+            print("join", label, step)
+
     ch3_otstoy = render_chapter_frame(world, 3, 30000, "CH3 otstoy (join)")
     ch3_otstoy.save(OUT / "ch3_otstoy_join.jpg", quality=92)
     ch3_before = render_chapter_frame(world, 3, 29200, "CH3 approaching join")
     ch3_before.save(OUT / "ch3_approach.jpg", quality=92)
-    # a typical ch3 mid place for scale: kamyshi local 20000, gat 4000
     ch3_kam = render_chapter_frame(world, 3, 20000, "CH3 kamyshi (scale)")
     ch3_kam.save(OUT / "ch3_kamyshi.jpg", quality=92)
     ch3_gat = render_chapter_frame(world, 3, 4000, "CH3 gat (scale)")
     ch3_gat.save(OUT / "ch3_gat.jpg", quality=92)
     print("ch3 frames ok")
 
-    # BEFORE: reuse ch4 chapter data but override images from the snapshot,
-    # and old heights 1100 / dx -398.3 / old roads.
-    before_dir = Path("/tmp/ch4_qa_before")
-    before_ch = json.loads((before_dir / "ch4_chapter.json").read_text())
-    world_before = json.loads((ASSETS / "Data/world.json").read_text())
-    for c in world_before["chapters"]:
-        if c["id"] == 4:
-            c["props"] = before_ch["props"]
-            c["sky"] = before_ch["sky"]
-            c["underground"] = before_ch.get("underground", c.get("underground"))
-    before = []
-    for name, step in places:
-        im = render_chapter_frame(world_before, 4, step, f"BEFORE {name}", assets_override=before_dir)
-        im.save(OUT / f"before_{name}.jpg", quality=92)
-        before.append(im)
-        print("before", name)
-
-    # Contact sheets
     caps = [n for n, _ in places]
-    contact_sheet(before, 5, 390, Path("/tmp/ch4_qa_before/contact_before.jpg"), caps)
-    contact_sheet(after, 5, 390, Path("/tmp/ch4_qa_after/contact_after.jpg"), caps)
-
-    # Side by side: each place before | after | official phone (if any)
-    phone_dir = Path("/workspace/walking-sim/chapter4/art/phone")
-    phone_map = {
-        "shlagbaum": "phone_01_shlagbaum_v53.jpg",
-        "otstoyniki": "phone_02_otstoyniki_v53.jpg",
-        "truby": "phone_03_truby_v53.jpg",
-        "shlam": "phone_04_shlam_v53.jpg",
-        "kotelnaya": "phone_05_kotelnaya_v53.jpg",
-        "sarai": "phone_06_sarai_v53.jpg",
-        "naberezhnaya": "phone_07_naberezhnaya_v53.jpg",
-        "dvory": "phone_08_dvory_v53.jpg",
-        "otdelenie": "phone_09_otdelenie_v53.jpg",
-        "verkhnyaya": "phone_10_verkhnyaya_v53.jpg",
-    }
-    # also list actual files in case names differ
-    phone_files = {p.name: p for p in phone_dir.glob("*v53.jpg")} if phone_dir.exists() else {}
-
-    trio = []
-    trio_caps = []
-    tw = 390
-    for i, (name, _s) in enumerate(places):
-        frames = [before[i], after[i]]
-        ph = None
-        fn = phone_map.get(name)
-        if fn and (phone_dir / fn).exists():
-            ph = Image.open(phone_dir / fn).convert("RGB")
-        else:
-            # fuzzy
-            hits = [p for n, p in phone_files.items() if name in n]
-            if hits:
-                ph = Image.open(hits[0]).convert("RGB")
-        if ph is None:
-            ph = Image.new("RGB", (W, H), (30, 30, 30))
-        frames.append(ph)
-        # scale
-        thumbs = []
-        for im, tag in zip(frames, ("BEFORE", "AFTER", "OFFICIAL")):
-            r = tw / im.size[0]
-            t = im.resize((tw, int(im.size[1] * r)), Image.Resampling.LANCZOS)
-            # tag bar
-            pad = Image.new("RGB", (t.size[0], t.size[1] + 40), (15, 15, 15))
-            pad.paste(t, (0, 40))
-            d = ImageDraw.Draw(pad)
-            d.text((10, 8), f"{tag}  {name}", fill=(255, 255, 255))
-            thumbs.append(pad)
-        row = Image.new("RGB", (tw * 3, thumbs[0].size[1]), (15, 15, 15))
-        for j, t in enumerate(thumbs):
-            row.paste(t, (j * tw, 0))
-        row.save(OUT / f"trio_{name}.jpg", quality=92)
-        trio.append(row)
-        trio_caps.append(name)
-
-    # big contact of trios (2 cols)
-    if trio:
-        cols = 2
-        rws = (len(trio) + cols - 1) // cols
-        rw, rh = trio[0].size
-        grid = Image.new("RGB", (cols * rw, rws * rh), (15, 15, 15))
-        for i, im in enumerate(trio):
-            grid.paste(im, ((i % cols) * rw, (i // cols) * rh))
-        dest = Path("/tmp/ch4_qa_after/contact_trio_before_after_official.jpg")
-        grid.save(dest, quality=90)
-        print("trio contact", dest, grid.size)
-
-    # scale comparison: ch3 gat + ch3 kamyshi + ch4 shlagbaum + ch4 kotelnaya
-    comps = [ch3_gat, ch3_kam, after[0], after[4]]
+    contact_sheet(after, 5, 390, root / "contact_places.jpg", caps)
+    contact_sheet(joins, 5, 390, root / "contact_joins.jpg", join_caps)
     contact_sheet(
-        comps,
+        [ch3_gat, ch3_kam, after[0], after[4]],
         4,
         390,
-        Path("/tmp/ch4_qa_after/contact_scale_ch3_vs_ch4.jpg"),
+        root / "contact_scale_ch3_vs_ch4.jpg",
         ["ch3 gat", "ch3 kamyshi", "ch4 shlagbaum", "ch4 kotelnaya"],
     )
-    # join strip: ch3 approach, ch3 otstoy, ch4 shlagbaum
     contact_sheet(
         [ch3_before, ch3_otstoy, after[0]],
         3,
         400,
-        Path("/tmp/ch4_qa_after/contact_join_ch3_ch4.jpg"),
+        root / "contact_join_ch3_ch4.jpg",
         ["ch3 approach", "ch3 otstoy (75000)", "ch4 shlagbaum (75000)"],
     )
     print("done, frames in", OUT)

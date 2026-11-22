@@ -2,8 +2,10 @@
 """Cut official ch4 strip v5.3 into Chapter3-style tiles.
 
 Places are 1:1 (no downscale), sky is punched with a Lab/variance mask,
-local sky cards keep the strip's unique atmosphere (dawn / dusk / night)
-without opaque rectangles, road is a generic tileable RGBA path, and
+leftover atmosphere on the panels is punched so a single chapter gradient
+(applyChapterSky lerp day→dusk→night) can run continuously — no local sky
+cards. Unique sprites (the Verkhnyaya moon, clay clouds already on the
+panels) keep irregular alpha. Road is a generic tileable RGBA path, and
 bg_far / bg_mid fill the vertical the way Chapter 3 does.
 
 Does not copy the 11700px strip into the repo. Does not delete
@@ -41,6 +43,14 @@ PLACES = [
     ("otdelenie", 39500, 8),
     ("verkhnyaya", 45000, 9),
 ]
+
+# Strip-absolute horizontal crop overrides. The yellow-red column with the
+# pink shirt sits on the slice 7/8 cut (x=9360) and was split across Dvory
+# and Otdelenie. Trim it off Dvory; give the whole column to Otdelenie.
+CROP_X = {
+    "dvory": (7 * W_PLACE, 9200),
+    "otdelenie": (9200, 9 * W_PLACE),
+}
 
 
 def save_png(arr, path: Path, optimize=True):
@@ -168,47 +178,46 @@ def make_tileable_x(img, overlap=200):
     return out
 
 
-def cut_place(strip, idx):
+def cut_place(strip, idx, name=None):
     x0 = idx * W_PLACE
-    tile = strip[0:H_CROP, x0 : x0 + W_PLACE]
+    if name in CROP_X:
+        xa_abs, xb_abs = CROP_X[name]
+    else:
+        xa_abs, xb_abs = x0, x0 + W_PLACE
+    tile = strip[0:H_CROP, xa_abs:xb_abs]
     alpha, keep, labels, bot = segment_alpha(tile)
     ys, xs = np.where(alpha > 0.15)
     pad = 24
-    if len(xs) < 200:
-        y0, y1, xa, xb = 0, H_CROP, 0, W_PLACE
+    if name in CROP_X:
+        # Keep the requested width so the column trim / transplant is exact.
+        y0, y1, xa, xb = 0, H_CROP, 0, tile.shape[1]
+        if len(ys) >= 200:
+            y0 = max(0, int(ys.min()) - pad)
+    elif len(xs) < 200:
+        y0, y1, xa, xb = 0, H_CROP, 0, tile.shape[1]
     else:
         y0 = max(0, int(ys.min()) - pad)
         y1 = H_CROP  # always include the road / sink
         xa = max(0, int(xs.min()) - pad)
-        xb = min(W_PLACE, int(xs.max()) + pad)
-        # Don't cut a pole or facade on the edge: if content is close to a
-        # phone-frame edge, keep the full width so the official composition holds.
+        xb = min(tile.shape[1], int(xs.max()) + pad)
         if xa <= 40:
             xa = 0
-        if xb >= W_PLACE - 40:
-            xb = W_PLACE
+        if xb >= tile.shape[1] - 40:
+            xb = tile.shape[1]
     crop = tile[y0:y1, xa:xb]
     a = alpha[y0:y1, xa:xb]
     rgba = np.dstack([crop, (np.clip(a, 0, 1) * 255).round().astype(np.uint8)])
-    # Sky card is always the full phone frame (y=0..GY+40) so unique dawn/dusk/night
-    # fills the screen even when the place itself is tight-cropped.
-    sky_a = feather_horizontal(1.0 - alpha, px=90)
-    sky_rgba = np.dstack([tile, (np.clip(sky_a, 0, 1) * 255).round().astype(np.uint8)])
     meta = {
         "y0": int(y0),
         "y1": int(y1),
-        "xa": int(xa),
-        "xb": int(xb),
+        "xa": int(xa_abs + xa - x0),
+        "xb": int(xa_abs + xb - x0),
         "pixelSize": [int(rgba.shape[1]), int(rgba.shape[0])],
-        "height": int(rgba.shape[0]),  # 1:1 with the crop
+        "height": int(rgba.shape[0]),
         "sink": 40,
-        "dx": round(xa - 0.55 * W_PLACE, 1),
-        "skyHeight": int(H_CROP),
-        "skyDx": round(0 - 0.55 * W_PLACE, 1),
+        "dx": round((xa_abs + xa - x0) - 0.55 * W_PLACE, 1),
     }
-    return rgba, sky_rgba, meta, (alpha, tile)
-
-
+    return rgba, meta, (alpha, tile)
 def cut_clouds(strip):
     """Floating upper blobs (clouds, moon) as Chapter4/sky sprites."""
     clouds = []
@@ -364,43 +373,211 @@ def copy_resized_png(src: Path, dest: Path):
 
 
 def punch_shlagbaum_postman(rgba):
-    """The official phone mockup paints the postman into slice 0. Remove him so
-    the live rig is the only figure; keep the red/white barrier arm."""
+    """Remove the official painted postman. Rebuild the red/white barrier
+    arm by cloning a clean stripe cycle; fill the sand under the legs;
+    punch the body above the bar to transparent sky."""
     h, w = rgba.shape[:2]
-    x0, x1, y0, y1 = 500, 760, 1280, 1720
+    BAR_Y0, BAR_Y1 = 1494, 1580
+    r = rgba[:, :, 0].astype(int)
+    g = rgba[:, :, 1].astype(int)
+    b = rgba[:, :, 2].astype(int)
+
+    pm = np.zeros((h, w), np.uint8)
+    pm[1300:1712, 470:690] = 1
+    pm[1480:1695, 660:710] = 1
+    dark = (r < 110) & (g < 100) & (b < 90) & (r + g + b < 280)
+    pm[1620:1712, 460:700] |= dark[1620:1712, 460:700].astype(np.uint8)
+    pm = cv2.morphologyEx(pm, cv2.MORPH_CLOSE, np.ones((13, 13), np.uint8))
+    pm = cv2.dilate(pm, np.ones((7, 7), np.uint8))
+    pm[1712:] = 0
+    pm[:, :455] = 0
+    pm[:, 720:] = 0
+    green = (g > r + 10) & (g > b) & (g > 80)
+    pm[1580:1712, 200:520] &= (~green[1580:1712, 200:520]).astype(np.uint8)
+
+    out = rgba.copy()
+
+    # Clone a clean red+cream cycle (x=318..496) into the overlap.
+    src = rgba[BAR_Y0:BAR_Y1, 318:496]
+    out[BAR_Y0:BAR_Y1, 500:678] = src
+    out[BAR_Y0:BAR_Y1, 500:678, 3] = 255
+    for i in range(10):
+        t = (i + 1) / 10.0
+        x = 500 + i
+        col = (1 - t) * rgba[BAR_Y0:BAR_Y1, 496].astype(np.float32) + t * out[BAR_Y0:BAR_Y1, x].astype(np.float32)
+        out[BAR_Y0:BAR_Y1, x] = np.clip(col, 0, 255).astype(np.uint8)
+        out[BAR_Y0:BAR_Y1, x, 3] = 255
+    for i in range(22):
+        t = (i + 1) / 22.0
+        x = 678 - 22 + i
+        orig_x = min(678 + i, 730)
+        col = (1 - t) * out[BAR_Y0:BAR_Y1, x].astype(np.float32) + t * rgba[BAR_Y0:BAR_Y1, orig_x].astype(np.float32)
+        out[BAR_Y0:BAR_Y1, x] = np.clip(col, 0, 255).astype(np.uint8)
+        out[BAR_Y0:BAR_Y1, x, 3] = 255
+
+    # Sand under the legs: Telea, then force opaque in the figure's x-range.
+    body = pm.copy()
+    body[:BAR_Y1] = 0
+    body = cv2.dilate(body, np.ones((9, 9), np.uint8))
+    body[:BAR_Y1] = 0
+    bgr = cv2.cvtColor(out[:, :, :3], cv2.COLOR_RGB2BGR)
+    inb = cv2.inpaint(bgr, (body * 255).astype(np.uint8), 8, cv2.INPAINT_TELEA)
+    in_rgb = cv2.cvtColor(inb, cv2.COLOR_BGR2RGB)
+    # Prefer textured sand from a clean patch to the right, tiled into the hole.
+    sand = rgba[1578:1712, 800:1040]
+    sh, sw = sand.shape[:2]
+    for y in range(1578, min(1712, h)):
+        xs = np.where(body[y] > 0)[0]
+        for x in xs:
+            if x >= 500:
+                out[y, x] = sand[(y - 1578) % sh, (x - 500) % sw]
+            else:
+                out[y, x, :3] = in_rgb[y, x]
+                out[y, x, 3] = 255
+
+    # Body above the bar → transparent (chapter sky shows through).
+    head = pm.copy()
+    head[BAR_Y0:] = 0
+    out[:, :, 3] = np.where(head > 0, 0, out[:, :, 3])
+    return out
+
+
+def punch_leftover_sky(rgba):
+    """Punch leftover atmosphere so the chapter gradient shows through.
+
+    Only true sky/haze is removed: pale, gray-blue, night, and warm dawn/dusk
+    that is either floating or touching the top edge. Bottom-connected clay
+    (yellow walls, doors, laundry) is left alone.
+    """
+    rgb = rgba[:, :, :3]
+    a = rgba[:, :, 3]
+    h, w = a.shape
+    L, A, B = labAB(rgb)
+    chroma = np.sqrt(A * A + B * B)
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    var = variance(gray)
+    pale = (L > 160) & (chroma < 32) & (var < 80)
+    peach = (L > 140) & (A > 8) & (B > 8) & (chroma < 50) & (var < 70)
+    orange = (L > 130) & (L < 200) & (A > 5) & (B > 15) & (var < 55)
+    night = (L < 80) & (chroma < 25) & (var < 40)
+    grayblue = (L > 80) & (L < 180) & (A < 8) & (A > -8) & (B < 8) & (chroma < 22) & (var < 55)
+    cool = pale | grayblue | night
+    warm = peach | orange
+
+    # Bottom-connected opaque (terrain / buildings / trees).
+    opaque = (a > 10).astype(np.uint8)
+    keep = np.zeros((h, w), np.uint8)
+    keep[h - 1] = opaque[h - 1]
+    for y in range(h - 2, -1, -1):
+        row = opaque[y] & (keep[y + 1] | np.roll(keep[y + 1], 1) | np.roll(keep[y + 1], -1))
+        # also horizontal fill along the row once
+        changed = True
+        acc = row.copy()
+        # cheap: dilate the seed along x on this row, clipped to opaque
+        seed = cv2.dilate(keep[y + 1].reshape(1, -1), np.ones((1, 3), np.uint8)).reshape(-1)
+        keep[y] = opaque[y] & seed
+    # one extra close so thin poles still count as ground-connected
+    keep = cv2.morphologyEx(keep, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8)) & opaque
+
+    def top_components(mask):
+        n, lab = cv2.connectedComponents(mask.astype(np.uint8))
+        if n <= 1:
+            return np.zeros((h, w), bool)
+        touch = set(int(v) for v in np.unique(lab[0]) if v > 0)
+        return np.isin(lab, list(touch)) if touch else np.zeros((h, w), bool)
+
+    # Foliage is green and textured and not a pale highlight. Cyan sky has
+    # slightly negative A but L~200 and almost no variance — that is sky.
+    foliage = (A < -8) & (L < 185) & (var > 30)
+    punch = np.zeros((h, w), bool)
+    punch |= cool & (a > 10) & (~foliage)
+    punch |= warm & (a > 10) & (~foliage) & ((keep == 0) | top_components(warm & (a > 10)))
+    punch[-200:] = False
+    mask = punch.astype(np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+    out = rgba.copy()
+    out[:, :, 3] = np.where(mask > 0, 0, out[:, :, 3])
+    return out
+
+
+def punch_nab_haze(rgba):
+    """Gray textured haze on the right of Набережная — too much variance
+    for the generic leftover punch, but it is not foliage."""
+    L, A, B = labAB(rgba[:, :, :3])
+    chroma = np.sqrt(A * A + B * B)
+    var = variance(cv2.cvtColor(rgba[:, :, :3], cv2.COLOR_RGB2GRAY))
+    a = rgba[:, :, 3]
+    fol = (A < -6) & (L < 185) & (var > 30)
+    haze = (a > 10) & (A > -5) & (L > 70) & (L < 210) & (chroma < 28) & (~fol)
+    haze[:, :700] = False
+    haze[-250:] = False
+    haze = cv2.morphologyEx(haze.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    haze = cv2.morphologyEx(haze, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
+    out = rgba.copy()
+    out[:, :, 3] = np.where(haze > 0, 0, out[:, :, 3])
+    return out
+
+
+
+def extract_moon(strip):
+    """Crescent moon on the Verkhnyaya slice, tight irregular alpha."""
+    x0 = 9 * W_PLACE
+    tile = strip[0:H_CROP, x0 : x0 + W_PLACE]
+    h, w = tile.shape[:2]
     mask = np.zeros((h, w), np.uint8)
+    # Crescent body; lamp is to the left (~x=0..90) and must stay on the place.
+    rect = (100, 200, 280, 500)
     mask[:, :] = cv2.GC_BGD
-    mask[y0:y1, x0:x1] = cv2.GC_PR_FGD
-    mask[1480:1620, 560:680] = cv2.GC_FGD
+    mask[200:700, 100:380] = cv2.GC_PR_FGD
+    mask[260:620, 140:330] = cv2.GC_FGD
+    mask[:, :90] = cv2.GC_BGD
+    mask[:180] = cv2.GC_BGD
+    mask[720:] = cv2.GC_BGD
     bgd = np.zeros((1, 65), np.float64)
     fgd = np.zeros((1, 65), np.float64)
-    rgb = rgba[:, :, :3].copy()
-    cv2.grabCut(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR), mask,
-                (x0, y0, x1 - x0, y1 - y0), bgd, fgd, 5, cv2.GC_INIT_WITH_MASK)
-    pm = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 1, 0).astype(np.uint8)
-    pm[:y0] = 0; pm[y1:] = 0; pm[:, :x0] = 0; pm[:, x1:] = 0
-    pm = cv2.morphologyEx(pm, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
-    pm[1710:] = 0
-    r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
-    red = (r > 140) & (r > g + 35) & (r > b + 25)
-    white = (r > 180) & (g > 150) & (b > 120) & (r - g < 50) & (g - b < 40)
-    protect = np.zeros((h, w), bool)
-    protect[1540:1705] = (red | white)[1540:1705]
-    protect = cv2.dilate(protect.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
-    pm[protect] = 0
-    out = rgba.copy()
-    out[:, :, 3] = np.where(pm > 0, 0, out[:, :, 3])
-    alpha = out[:, :, 3]
-    for yy in range(1560, 1700):
-        xs = np.where((pm[yy] == 0) & protect[yy] & (alpha[yy] > 200))[0]
-        holes = np.where((alpha[yy] < 20) & (np.arange(w) >= x0) & (np.arange(w) <= x1))[0]
-        if len(xs) < 5 or len(holes) == 0:
-            continue
-        for x in holes:
-            srcx = int(xs[np.argmin(np.abs(xs - x))])
-            if abs(srcx - x) < 80:
-                out[yy, x] = out[yy, srcx]
-    return out
+    cv2.grabCut(cv2.cvtColor(tile, cv2.COLOR_RGB2BGR), mask, rect, bgd, fgd, 6, cv2.GC_INIT_WITH_MASK)
+    moon = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 1, 0).astype(np.uint8)
+    moon[:, :90] = 0
+    moon = cv2.morphologyEx(moon, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
+    moon = cv2.morphologyEx(moon, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    ys, xs = np.where(moon > 0)
+    if len(xs) < 400:
+        print("  moon extract failed, skipping")
+        return None
+    y0, y1 = max(0, int(ys.min()) - 8), min(h, int(ys.max()) + 8)
+    xa, xb = max(0, int(xs.min()) - 8), min(w, int(xs.max()) + 8)
+    crop = tile[y0:y1, xa:xb]
+    m = moon[y0:y1, xa:xb].astype(np.uint8)
+    dist = cv2.distanceTransform(m, cv2.DIST_L2, 5)
+    a = np.clip(dist / 2.0, 0, 1)
+    rgba = np.dstack([crop, (a * 255).round().astype(np.uint8)])
+    # Punch leftover night sky that GrabCut left inside the crescent / around it.
+    Lc, Ac, Bc = labAB(rgba[:, :, :3])
+    chromac = np.sqrt(Ac * Ac + Bc * Bc)
+    skyish = (Lc < 75) & (chromac < 20)
+    rgba[:, :, 3] = np.where(skyish, 0, rgba[:, :, 3])
+    ys2, xs2 = np.where(rgba[:, :, 3] > 12)
+    if len(xs2) > 200:
+        yy0, yy1 = max(0, int(ys2.min()) - 4), min(rgba.shape[0], int(ys2.max()) + 4)
+        xx0, xx1 = max(0, int(xs2.min()) - 4), min(rgba.shape[1], int(xs2.max()) + 4)
+        rgba = rgba[yy0:yy1, xx0:xx1]
+        y0 += yy0
+        xa += xx0
+    height = int(rgba.shape[0])
+    return {
+        "rgba": rgba,
+        "prop": {
+            "image": "places/sprite_moon",
+            "layer": "main",
+            "step": 45000,
+            "dx": round(xa - 0.55 * W_PLACE, 1),
+            "height": height,
+            "sink": int(y0 + height - GY),
+            "z": -6,
+            "pixelSize": [int(rgba.shape[1]), height],
+        },
+    }
 
 
 def main():
@@ -415,6 +592,7 @@ def main():
     for pat in (
         "places/place_*_main.png",
         "places/sky_*.png",
+        "places/sprite_*.png",
         "places/bg_far_ridges_tile.png",
         "places/bg_mid_fields_tile.png",
         "road/*.png",
@@ -435,13 +613,15 @@ def main():
     print("sky night", sky_night_top, sky_night_bot)
 
     place_meta = []
-    sky_meta = []
+    sprite_meta = []
     for name, step, idx in PLACES:
-        rgba, sky_rgba, meta, _ = cut_place(strip, idx)
+        rgba, meta, _ = cut_place(strip, idx, name)
         if name == "shlagbaum":
             rgba = punch_shlagbaum_postman(rgba)
+        rgba = punch_leftover_sky(rgba)
+        if name == "naberezhnaya":
+            rgba = punch_nab_haze(rgba)
         save_png(rgba, CH / "places" / f"place_{name}_main.png")
-        save_png(sky_rgba, CH / "places" / f"sky_{name}.png")
         opaque = (rgba[:, :, 3] > 10).mean() * 100
         print(f"    {name} opaque {opaque:.1f}% dx={meta['dx']} {meta['pixelSize']}")
         place_meta.append(
@@ -458,20 +638,33 @@ def main():
                 "xa": meta["xa"],
             }
         )
-        # Sky card shares the same crop / dx / height / sink so it sits
-        # exactly behind the place (main, z=-5). No mid parallax.
-        sky_meta.append(
-            {
-                "image": f"places/sky_{name}",
-                "layer": "main",
-                "step": step,
-                "dx": meta.get("skyDx", -0.55 * W_PLACE),
-                "height": meta.get("skyHeight", H_CROP),
-                "sink": 40,
-                "z": -5,
-                "pixelSize": [W_PLACE, meta.get("skyHeight", H_CROP)],
-            }
-        )
+
+    moon = extract_moon(strip)
+    if moon is not None:
+        save_png(moon["rgba"], CH / "places" / "sprite_moon.png")
+        sprite_meta.append(moon["prop"])
+        # Punch the same pixels off the Verkhnyaya panel so the sprite is
+        # the only moon (otherwise a ragged copy sits on the place).
+        vpath = CH / "places" / "place_verkhnyaya_main.png"
+        ver = np.array(Image.open(vpath))
+        vmeta = next(p for p in place_meta if "verkhnyaya" in p["image"])
+        sp = moon["prop"]
+        moon_y_strip = sp["sink"] + GY - sp["height"]
+        moon_x = int(round(sp["dx"] + 0.55 * W_PLACE))
+        y = int(moon_y_strip - vmeta["y0"])
+        x = moon_x - int(vmeta.get("xa") or 0)
+        m = (moon["rgba"][:, :, 3] > 8).astype(np.uint8)
+        m = cv2.dilate(m, np.ones((31, 31), np.uint8))
+        mh, mw = m.shape
+        canvas = np.zeros(ver.shape[:2], np.uint8)
+        yy0, xx0 = max(0, y), max(0, x)
+        yy1, xx1 = min(ver.shape[0], y + mh), min(ver.shape[1], x + mw)
+        if yy1 > yy0 and xx1 > xx0:
+            canvas[yy0:yy1, xx0:xx1] = m[(yy0 - y):(yy1 - y), (xx0 - x):(xx1 - x)]
+            canvas = cv2.dilate(canvas, np.ones((21, 21), np.uint8))
+            canvas[:, :88] = 0  # keep the lamp
+            ver[:, :, 3] = np.where(canvas > 0, 0, ver[:, :, 3])
+            save_png(ver, vpath)
 
     far, mid = make_far_mid(strip)
     save_png(far, CH / "places" / "bg_far_ridges_tile.png")
@@ -532,7 +725,8 @@ def main():
         "sky_night_top": sky_night_top,
         "sky_night_bot": sky_night_bot,
         "places": place_meta,
-        "sky_cards": sky_meta,
+        "sprites": sprite_meta,
+        "sky_cards": [],
         "road": {"road_main": [int(road.shape[1]), int(road.shape[0])]},
         "clouds": cloud_list,
         "bg_far": [2636, 1236],

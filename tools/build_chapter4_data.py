@@ -92,7 +92,7 @@ def road_props():
     im = Image.open(ROOT / "Postman/GameAssets/Chapter4/road/road_main.png")
     ps = [im.size[0], im.size[1]]
     out = []
-    for step in range(0, 45001, 2000):
+    for step in range(0, 49001, 2000):
         out.append(dict(image="road/road_main", layer="main", step=step, dx=-1200,
                         height=680, sink=40, z=-20, pixelSize=ps))
     return out
@@ -111,7 +111,7 @@ def build_world():
         "lengthSteps": 45000,
         "assetsFolder": "Chapter4",
         "settlements": SETTLEMENTS,
-        "props": road_props() + META.get("sky_cards", []) + places + ambient_props(),
+        "props": road_props() + places + META.get("sprites", []) + ambient_props(),
         "underground": {
             "neutralTile": "underground/ug_neutral_tile",
             "top": 1700,
@@ -125,7 +125,7 @@ def build_world():
                     ("shlagbaum", 200), ("otstoyniki", 4000), ("truby", 11000),
                     ("shlam", 17500), ("kotelnaya", 21000), ("sarai", 25000),
                     ("naberezhnaya", 32000), ("dvory", 36500), ("otdelenie", 39500),
-                    ("verkhnyaya", 44000),
+                    ("verkhnyaya", 45000),
                 ]
             ],
         },
@@ -154,7 +154,7 @@ def build_world():
             ("shlagbaum", 200), ("otstoyniki", 4000), ("truby", 11000),
             ("shlam", 17500), ("kotelnaya", 21000), ("sarai", 25000),
             ("naberezhnaya", 32000), ("dvory", 36500), ("otdelenie", 39500),
-            ("verkhnyaya", 44000),
+            ("verkhnyaya", 45000),
         ]
     ]
     world["chapters"].append(ch4)

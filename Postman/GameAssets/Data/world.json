@@ -3648,133 +3648,29 @@
           ]
         },
         {
-          "image": "places/sky_shlagbaum",
+          "image": "road/road_main",
           "layer": "main",
-          "step": 0,
-          "dx": -643.5,
-          "height": 1760,
+          "step": 46000,
+          "dx": -1200,
+          "height": 680,
           "sink": 40,
-          "z": -5,
+          "z": -20,
           "pixelSize": [
-            1170,
-            1760
+            2400,
+            680
           ]
         },
         {
-          "image": "places/sky_otstoyniki",
+          "image": "road/road_main",
           "layer": "main",
-          "step": 4000,
-          "dx": -643.5,
-          "height": 1760,
+          "step": 48000,
+          "dx": -1200,
+          "height": 680,
           "sink": 40,
-          "z": -5,
+          "z": -20,
           "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_truby",
-          "layer": "main",
-          "step": 11000,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_shlam",
-          "layer": "main",
-          "step": 17500,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_kotelnaya",
-          "layer": "main",
-          "step": 21000,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_sarai",
-          "layer": "main",
-          "step": 25000,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_naberezhnaya",
-          "layer": "main",
-          "step": 32000,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_dvory",
-          "layer": "main",
-          "step": 36500,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_otdelenie",
-          "layer": "main",
-          "step": 39500,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
-          ]
-        },
-        {
-          "image": "places/sky_verkhnyaya",
-          "layer": "main",
-          "step": 45000,
-          "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            1170,
-            1760
+            2400,
+            680
           ]
         },
         {
@@ -3891,7 +3787,7 @@
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            1170,
+            1010,
             1760
           ],
           "y0": 0,
@@ -3901,16 +3797,16 @@
           "image": "places/place_otdelenie_main",
           "layer": "main",
           "step": 39500,
-          "dx": -643.5,
-          "height": 1370,
+          "dx": -803.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            1170,
-            1370
+            1330,
+            1760
           ],
-          "y0": 390,
-          "xa": 0
+          "y0": 0,
+          "xa": -160
         },
         {
           "image": "places/place_verkhnyaya_main",
@@ -3926,6 +3822,19 @@
           ],
           "y0": 127,
           "xa": 0
+        },
+        {
+          "image": "places/sprite_moon",
+          "layer": "main",
+          "step": 45000,
+          "dx": -547.5,
+          "height": 473,
+          "sink": -1017,
+          "z": -6,
+          "pixelSize": [
+            225,
+            473
+          ]
         },
         {
           "image": "ambient/ducks",
@@ -4232,7 +4141,7 @@
           },
           {
             "image": "underground/ug_verkhnyaya",
-            "step": 44000,
+            "step": 45000,
             "dx": 0.0
           }
         ]
