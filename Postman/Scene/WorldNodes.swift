@@ -61,12 +61,18 @@ final class TiledStripNode: SKNode {
     var hazeFactor: CGFloat = 0 {
         didSet { for t in pool { styleTile(t) } }
     }
+    /// Extra night darken (гл.4 far/mid follow the same nightness as the sky lerp).
+    var extraDarken: CGFloat = 0 {
+        didSet {
+            if oldValue != extraDarken { for t in pool { styleTile(t) } }
+        }
+    }
 
     private func styleTile(_ s: SKSpriteNode) {
-        let total = min(1, darken + hazeFactor)
+        let total = min(1, darken + extraDarken + hazeFactor)
         guard total > 0 else { s.colorBlendFactor = 0; return }
         // Затемнение (к чёрному) и дымка (к hazeColor) одним смешиванием.
-        let c = RGB(r: 0, g: 0, b: 0).mix(RGB(hazeColor), hazeFactor / max(0.001, darken + hazeFactor))
+        let c = RGB(r: 0, g: 0, b: 0).mix(RGB(hazeColor), hazeFactor / max(0.001, darken + extraDarken + hazeFactor))
         s.color = c.color
         s.colorBlendFactor = total
     }

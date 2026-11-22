@@ -118,15 +118,10 @@ def build_world():
             "scale": 2.0,
             "tilePixelSize": [1148, 415],
             "minGapFraction": 0.3,
-            "modules": [
-                {"image": f"underground/ug_{p['image'].split('_')[1].split('/')[-1] if False else name}",
-                 "step": step, "dx": 0.0}
-                for name, step in [
-                    ("shlagbaum", 200), ("otstoyniki", 4000), ("truby", 11000),
-                    ("shlam", 17500), ("kotelnaya", 21000), ("sarai", 25000),
-                    ("naberezhnaya", 32000), ("dvory", 36500), ("otdelenie", 39500),
-                    ("verkhnyaya", 45000),
-                ]
+            "modules": META.get("ug_finds") or [
+                {"image": "underground/ug_chain", "step": 200, "dx": 0.0},
+                {"image": "underground/ug_bone", "step": 17500, "dx": 0.0},
+                {"image": "underground/ug_boat", "step": 32000, "dx": 0.0},
             ],
         },
         "quests": [
@@ -147,16 +142,7 @@ def build_world():
         },
         "rawClayAfterStep": 45000,
     }
-    # fix modules image paths cleanly
-    ch4["underground"]["modules"] = [
-        {"image": f"underground/ug_{name}", "step": step, "dx": 0.0}
-        for name, step in [
-            ("shlagbaum", 200), ("otstoyniki", 4000), ("truby", 11000),
-            ("shlam", 17500), ("kotelnaya", 21000), ("sarai", 25000),
-            ("naberezhnaya", 32000), ("dvory", 36500), ("otdelenie", 39500),
-            ("verkhnyaya", 45000),
-        ]
-    ]
+    ch4["underground"]["modules"] = META.get("ug_finds") or ch4["underground"]["modules"]
     world["chapters"].append(ch4)
     (DATA / "world.json").write_text(json.dumps(world, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("world.json: chapter 4 added, ch3 rawClay removed")

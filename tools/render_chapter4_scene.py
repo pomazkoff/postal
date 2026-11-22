@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "Postman/GameAssets"
-OUT = Path("/tmp/ch4_qa_after2/scene")
+OUT = Path("/tmp/ch4_qa_after3/scene")
 W, H = 1170, 2532
 PPS = 1.17
 ROAD_LINE_Y = 1720  # from top
@@ -372,7 +372,7 @@ def main():
     ]
     after = []
     for name, step in places:
-        im = render_chapter_frame(world, 4, step, f"AFTER2 {name}")
+        im = render_chapter_frame(world, 4, step, f"AFTER3 {name}")
         im.save(OUT / f"after_{name}.jpg", quality=92)
         after.append(im)
         print("after", name)
@@ -404,6 +404,46 @@ def main():
     ch3_gat = render_chapter_frame(world, 3, 4000, "CH3 gat (scale)")
     ch3_gat.save(OUT / "ch3_gat.jpg", quality=92)
     print("ch3 frames ok")
+
+    # гл.1 comparison frames (same pipeline: seamless road + UG + place sprites)
+    ch1_a = render_chapter_frame(world, 1, 4000, "CH1 ~4000")
+    ch1_a.save(OUT / "ch1_4000.jpg", quality=92)
+    ch1_b = render_chapter_frame(world, 1, 12000, "CH1 ~12000")
+    ch1_b.save(OUT / "ch1_12000.jpg", quality=92)
+    print("ch1 frames ok")
+
+    # Крупно низ (дорога + подземка) на 5 стыках гл.4 рядом с гл.1 и гл.3.
+    def crop_bottom(im, top=1620):
+        return im.crop((0, top, im.width, im.height))
+
+    five = [
+        ("ch4 shlag-otst", (places[0][1] + places[1][1]) // 2),
+        ("ch4 truby-shlam", (places[2][1] + places[3][1]) // 2),
+        ("ch4 sarai-nab", (places[5][1] + places[6][1]) // 2),
+        ("ch4 dvory-otd", (places[7][1] + places[8][1]) // 2),
+        ("ch4 otd-verkh", (places[8][1] + places[9][1]) // 2),
+    ]
+    bottoms = []
+    bottom_caps = []
+    # Reuse already-rendered mid-join frames when the step matches.
+    rendered = {cap: im for im, cap in zip(joins, join_caps)}
+    for label, step in five:
+        im = render_chapter_frame(world, 4, step, f"BOTTOM {label}")
+        im.save(OUT / f"bottom_{label.replace(' ', '_')}.jpg", quality=92)
+        bottoms.append(crop_bottom(im))
+        bottom_caps.append(f"{label} @{step}")
+        print("bottom", label, step)
+    bottoms.append(crop_bottom(ch1_a))
+    bottom_caps.append("ch1 @4000")
+    bottoms.append(crop_bottom(ch1_b))
+    bottom_caps.append("ch1 @12000")
+    bottoms.append(crop_bottom(ch3_gat))
+    bottom_caps.append("ch3 gat @4000")
+    bottoms.append(crop_bottom(ch3_otstoy))
+    bottom_caps.append("ch3 otstoy @30000")
+    contact_sheet(bottoms, 3, 520, root / "contact_bottoms_vs_ch1_ch3.jpg", bottom_caps)
+    # Even larger single-row of just the 5 ch4 bottoms for inspection
+    contact_sheet(bottoms[:5], 5, 430, root / "contact_bottoms_ch4_five.jpg", bottom_caps[:5])
 
     caps = [n for n, _ in places]
     contact_sheet(after, 5, 390, root / "contact_places.jpg", caps)

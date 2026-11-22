@@ -3678,14 +3678,14 @@
           "layer": "main",
           "step": 0,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1680,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1760
+            1680
           ],
-          "y0": 0,
+          "y0": 55,
           "xa": 0
         },
         {
@@ -3693,14 +3693,14 @@
           "layer": "main",
           "step": 4000,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1613,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1760
+            1613
           ],
-          "y0": 0,
+          "y0": 122,
           "xa": 0
         },
         {
@@ -3708,14 +3708,14 @@
           "layer": "main",
           "step": 11000,
           "dx": -643.5,
-          "height": 1488,
-          "sink": 40,
+          "height": 1453,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1488
+            1453
           ],
-          "y0": 272,
+          "y0": 282,
           "xa": 0
         },
         {
@@ -3723,14 +3723,14 @@
           "layer": "main",
           "step": 17500,
           "dx": -643.5,
-          "height": 1525,
-          "sink": 40,
+          "height": 1490,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1525
+            1490
           ],
-          "y0": 235,
+          "y0": 245,
           "xa": 0
         },
         {
@@ -3738,14 +3738,14 @@
           "layer": "main",
           "step": 21000,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1730,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1760
+            1730
           ],
-          "y0": 0,
+          "y0": 5,
           "xa": 0
         },
         {
@@ -3753,14 +3753,14 @@
           "layer": "main",
           "step": 25000,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1730,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1760
+            1730
           ],
-          "y0": 0,
+          "y0": 5,
           "xa": 0
         },
         {
@@ -3768,14 +3768,14 @@
           "layer": "main",
           "step": 32000,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1285,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1760
+            1285
           ],
-          "y0": 0,
+          "y0": 450,
           "xa": 0
         },
         {
@@ -3783,12 +3783,12 @@
           "layer": "main",
           "step": 36500,
           "dx": -643.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1735,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1010,
-            1760
+            1735
           ],
           "y0": 0,
           "xa": 0
@@ -3798,14 +3798,14 @@
           "layer": "main",
           "step": 39500,
           "dx": -803.5,
-          "height": 1760,
-          "sink": 40,
+          "height": 1730,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1330,
-            1760
+            1730
           ],
-          "y0": 0,
+          "y0": 5,
           "xa": -160
         },
         {
@@ -3813,27 +3813,27 @@
           "layer": "main",
           "step": 45000,
           "dx": -643.5,
-          "height": 1633,
-          "sink": 40,
+          "height": 1598,
+          "sink": 15,
           "z": 10,
           "pixelSize": [
             1170,
-            1633
+            1598
           ],
-          "y0": 127,
+          "y0": 137,
           "xa": 0
         },
         {
           "image": "places/sprite_moon",
           "layer": "main",
           "step": 45000,
-          "dx": -547.5,
-          "height": 473,
-          "sink": -1017,
+          "dx": -546.5,
+          "height": 472,
+          "sink": -1016,
           "z": -6,
           "pixelSize": [
-            225,
-            473
+            224,
+            472
           ]
         },
         {
@@ -4095,53 +4095,18 @@
         "minGapFraction": 0.3,
         "modules": [
           {
-            "image": "underground/ug_shlagbaum",
+            "image": "underground/ug_chain",
             "step": 200,
             "dx": 0.0
           },
           {
-            "image": "underground/ug_otstoyniki",
-            "step": 4000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_truby",
-            "step": 11000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_shlam",
+            "image": "underground/ug_bone",
             "step": 17500,
             "dx": 0.0
           },
           {
-            "image": "underground/ug_kotelnaya",
-            "step": 21000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_sarai",
-            "step": 25000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_naberezhnaya",
+            "image": "underground/ug_boat",
             "step": 32000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_dvory",
-            "step": 36500,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_otdelenie",
-            "step": 39500,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_verkhnyaya",
-            "step": 45000,
             "dx": 0.0
           }
         ]

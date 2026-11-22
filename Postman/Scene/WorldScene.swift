@@ -14,6 +14,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private let cam = SKCameraNode()
     private var layerNodes: [(node: SKNode, parallax: CGFloat)] = []
     private var tiledStrips: [(node: TiledStripNode, parallax: CGFloat, kind: LayerKind)] = []
+    /// гл.4 far/mid only — night lerp, same nightness as the sky.
+    private var chapter4Strips: [TiledStripNode] = []
+
     private var chapterCrops: [(node: SKCropNode, range: ClosedRange<CGFloat>)] = []
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
     /// Живые сценки болот. Мало, паузятся за кадром, текстуры не выгружаются.
@@ -434,6 +437,7 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             strip.hazeFactor = Readability.hazeFactor(for: kind)
             layer.addChild(strip)
             tiledStrips.append((strip, CGFloat(spec.parallax), kind))
+            if chapter.id == 4 { chapter4Strips.append(strip) }
         }
         // Постройки могут пересекать границу главы: не режем дом/дерево пополам маской.
         let mainLayer = SKNode()
@@ -1120,6 +1124,16 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
         } else {
             skySprite?.texture = ProceduralTextures.sky(top: topColor, bottom: bottomColor, roadFraction: skyRoadFraction)
         }
+        var extra: CGFloat = 0
+        if id == 4, let chapter {
+            let local = stepUnderCamera - Double(chapter.startStep)
+            let nightness: CGFloat
+            if local <= 36000 { nightness = 0 }
+            else if local >= 42000 { nightness = 1 }
+            else { nightness = CGFloat((local - 36000) / 6000.0) }
+            extra = 0.55 * nightness
+        }
+        for strip in chapter4Strips { strip.extraDarken = extra }
     }
 
     // MARK: Camera
