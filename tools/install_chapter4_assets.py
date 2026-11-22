@@ -580,156 +580,59 @@ def extract_moon(strip):
     }
 
 
-def main():
-    print("load strip", STRIP)
-    strip = np.array(Image.open(STRIP).convert("RGB"))
-    assert strip.shape[1] == 11700 and strip.shape[0] == 2604, strip.shape
 
-    for sub in ("places", "road", "underground", "sky"):
+def _copy_missing(src, dest):
+    """Copy only if the destination does not already exist."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if src.exists() and not dest.exists():
+        if src.suffix.lower() in {".png"} and "copy_resized_png" in globals():
+            copy_resized_png(src, dest)
+        else:
+            shutil.copy2(src, dest)
+        print("  filled missing", dest.relative_to(CH) if CH in dest.parents else dest)
+        return True
+    return False
+
+
+def main():
+    """No-clobber installer.
+
+    Chapter-4 art is now generated and assembled like гл.1–3 (isolated
+    places, seamless road / far / mid, UG neutral + modules, drift clouds
+    and a moon sprite). A re-run must not recut the official v5.3 strip,
+    must not call rebuild_chapter4_pass4, and must not delete or overwrite
+    any existing file under Chapter4/{places,road,underground,sky}.
+
+    Residents, ambient and map assets are copied only when missing.
+    """
+    for sub in ("places", "road", "underground", "sky", "residents", "ambient"):
         (CH / sub).mkdir(parents=True, exist_ok=True)
 
-    # PASS4 owns seamless road/UG tiles, place recuts, moon, and sky sprites.
-    # A re-run of this installer must not delete or overwrite them (the old
-    # loop cut unique UG crops per place and a thin road).
-    ug_n = CH / "underground" / "ug_neutral_tile.png"
-    road_p = CH / "road" / "road_main.png"
-    if ug_n.exists() and road_p.exists():
-        print("pass4 tiles present — leaving Chapter4 art and install_meta as-is")
-        return
-
-    # First-time install only: clear leftover sky cards and unique UG crops.
-    for pat in (
-        "places/sky_*.png",
-        "sky/cloud_dawn_*.png",
-        "underground/ug_chain.png",
-        "underground/ug_bone.png",
-        "underground/ug_boat.png",
-    ):
-        for p in CH.glob(pat):
-            p.unlink()
-
-    sky_day_top = hex_mean(strip, 8, 80, 80, 1090)
-    sky_day_bot = hex_mean(strip, 900, 1100, 80, 1090)
-    sky_dusk_top = hex_mean(strip, 8, 80, 4 * 1170 + 80, 5 * 1170 - 80)
-    sky_dusk_bot = hex_mean(strip, 700, 1000, 4 * 1170 + 80, 4 * 1170 + 240)
-    sky_night_top = hex_mean(strip, 8, 80, 9 * 1170 + 80, 10 * 1170 - 80)
-    sky_night_bot = hex_mean(strip, 700, 1100, 9 * 1170 + 400, 9 * 1170 + 800)
-    print("sky day", sky_day_top, sky_day_bot)
-    print("sky dusk", sky_dusk_top, sky_dusk_bot)
-    print("sky night", sky_night_top, sky_night_bot)
-
-    place_meta = []
-    sprite_meta = []
-    for name, step, idx in PLACES:
-        rgba, meta, _ = cut_place(strip, idx, name)
-        if name == "shlagbaum":
-            rgba = punch_shlagbaum_postman(rgba)
-        rgba = punch_leftover_sky(rgba)
-        if name == "naberezhnaya":
-            rgba = punch_nab_haze(rgba)
-        save_png(rgba, CH / "places" / f"place_{name}_main.png")
-        opaque = (rgba[:, :, 3] > 10).mean() * 100
-        print(f"    {name} opaque {opaque:.1f}% dx={meta['dx']} {meta['pixelSize']}")
-        place_meta.append(
-            {
-                "image": f"places/place_{name}_main",
-                "layer": "main",
-                "step": step,
-                "dx": meta["dx"],
-                "height": meta["height"],
-                "sink": meta["sink"],
-                "z": 10,
-                "pixelSize": meta["pixelSize"],
-                "y0": meta["y0"],
-                "xa": meta["xa"],
-            }
-        )
-
-    moon = extract_moon(strip)
-    if moon is not None:
-        save_png(moon["rgba"], CH / "places" / "sprite_moon.png")
-        sprite_meta.append(moon["prop"])
-        # Punch the same pixels off the Verkhnyaya panel so the sprite is
-        # the only moon (otherwise a ragged copy sits on the place).
-        vpath = CH / "places" / "place_verkhnyaya_main.png"
-        ver = np.array(Image.open(vpath))
-        vmeta = next(p for p in place_meta if "verkhnyaya" in p["image"])
-        sp = moon["prop"]
-        moon_y_strip = sp["sink"] + GY - sp["height"]
-        moon_x = int(round(sp["dx"] + 0.55 * W_PLACE))
-        y = int(moon_y_strip - vmeta["y0"])
-        x = moon_x - int(vmeta.get("xa") or 0)
-        m = (moon["rgba"][:, :, 3] > 8).astype(np.uint8)
-        m = cv2.dilate(m, np.ones((31, 31), np.uint8))
-        mh, mw = m.shape
-        canvas = np.zeros(ver.shape[:2], np.uint8)
-        yy0, xx0 = max(0, y), max(0, x)
-        yy1, xx1 = min(ver.shape[0], y + mh), min(ver.shape[1], x + mw)
-        if yy1 > yy0 and xx1 > xx0:
-            canvas[yy0:yy1, xx0:xx1] = m[(yy0 - y):(yy1 - y), (xx0 - x):(xx1 - x)]
-            canvas = cv2.dilate(canvas, np.ones((21, 21), np.uint8))
-            canvas[:, :88] = 0  # keep the lamp
-            ver[:, :, 3] = np.where(canvas > 0, 0, ver[:, :, 3])
-            save_png(ver, vpath)
-
-    far, mid = make_far_mid(strip)
-    save_png(far, CH / "places" / "bg_far_ridges_tile.png")
-    save_png(mid, CH / "places" / "bg_mid_fields_tile.png")
-
-    # First-time path: build tiles + recut places via pass4, then stop.
-    # pass4 writes install_meta (ug_variants, tilePixelSize, sprites, road).
-    import rebuild_chapter4_pass4 as _pass4
-    _pass4.main(skip_places=False)
-    return
-
-    # Unreachable. Kept so git blame still shows the old cloud-cut site.
-    cloud_list = []
-
-    # Residents / ambient / map are already in the tree from the previous
-    # install. Recopy only if missing, never delete them.
+    # Never delete or overwrite generated art. Especially do not unlink
+    # ug_chain / ug_bone / ug_boat — they are first-class UG modules.
+    filled = 0
     if CHARS.exists():
         for rid in ("kolya", "pavel", "nyura", "agnia"):
-            dest = CH / "residents" / rid / "full.png"
-            src = CHARS / "residents" / rid / "full.png"
-            if src.exists() and not dest.exists():
-                copy_resized_png(src, dest)
+            if _copy_missing(CHARS / "residents" / rid / "full.png",
+                             CH / "residents" / rid / "full.png"):
+                filled += 1
         amb_dir = CHARS / "ambient"
         if amb_dir.exists():
-            (CH / "ambient").mkdir(exist_ok=True)
             for src in amb_dir.glob("*.png"):
-                dest = CH / "ambient" / src.name
-                if not dest.exists():
-                    copy_resized_png(src, dest)
+                if _copy_missing(src, CH / "ambient" / src.name):
+                    filled += 1
 
     if MAP.exists() and (OUT / "UI/map").exists():
         md = OUT / "UI/map"
         for fn in ("stvor_color.jpg", "stvor_pencil.jpg", "stvor_field.png"):
-            if (MAP / fn).exists() and not (md / fn).exists():
-                shutil.copy2(MAP / fn, md / fn)
+            if _copy_missing(MAP / fn, md / fn):
+                filled += 1
 
-    meta = {
-        "sky_top": sky_day_top,
-        "sky_bot": sky_day_bot,
-        "sky_dusk_top": sky_dusk_top,
-        "sky_dusk_bot": sky_dusk_bot,
-        "sky_night_top": sky_night_top,
-        "sky_night_bot": sky_night_bot,
-        "places": place_meta,
-        "sprites": sprite_meta,
-        "sky_cards": [],
-        "road": {"road_main": list((Image.open(CH / "road" / "road_main.png").size if (CH / "road" / "road_main.png").exists() else (2400, 680)))},
-        "clouds": cloud_list,
-        "bg_far": [2636, 1236],
-        "bg_mid": [2636, 1040],
-    }
-    (CH / "install_meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
     print(
-        "Chapter4 bytes",
-        sum(p.stat().st_size for p in CH.rglob("*") if p.is_file()) / 1e6,
-        "MB",
+        "installer no-clobber: left existing Chapter4 art untouched;"
+        f" filled {filled} missing support files"
     )
+
 
 
 if __name__ == "__main__":

@@ -3677,163 +3677,143 @@
           "image": "places/place_shlagbaum_main",
           "layer": "main",
           "step": 0,
-          "dx": -643.5,
-          "height": 1679,
-          "sink": 15,
+          "dx": -479.3,
+          "height": 1050,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1679
-          ],
-          "y0": 56,
-          "xa": 0
+            880,
+            964
+          ]
         },
         {
           "image": "places/place_otstoyniki_main",
           "layer": "main",
           "step": 4000,
-          "dx": -643.5,
-          "height": 1612,
-          "sink": 15,
+          "dx": -598.1,
+          "height": 720,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1612
-          ],
-          "y0": 123,
-          "xa": 0
+            927,
+            558
+          ]
         },
         {
           "image": "places/place_truby_main",
           "layer": "main",
           "step": 11000,
-          "dx": -643.5,
-          "height": 1452,
-          "sink": 15,
+          "dx": -428.0,
+          "height": 980,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1452
-          ],
-          "y0": 283,
-          "xa": 0
+            746,
+            854
+          ]
         },
         {
           "image": "places/place_shlam_main",
           "layer": "main",
           "step": 17500,
-          "dx": -643.5,
-          "height": 1489,
-          "sink": 15,
+          "dx": -524.5,
+          "height": 820,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1489
-          ],
-          "y0": 246,
-          "xa": 0
+            930,
+            727
+          ]
         },
         {
           "image": "places/place_kotelnaya_main",
           "layer": "main",
           "step": 21000,
-          "dx": -643.5,
-          "height": 1730,
-          "sink": 15,
+          "dx": -740.0,
+          "height": 900,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1730
-          ],
-          "y0": 5,
-          "xa": 0
+            1184,
+            720
+          ]
         },
         {
           "image": "places/place_sarai_main",
           "layer": "main",
           "step": 25000,
-          "dx": -643.5,
-          "height": 1730,
-          "sink": 15,
+          "dx": -702.7,
+          "height": 780,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1730
-          ],
-          "y0": 5,
-          "xa": 0
+            1072,
+            595
+          ]
         },
         {
           "image": "places/place_naberezhnaya_main",
           "layer": "main",
           "step": 32000,
-          "dx": -643.5,
-          "height": 1192,
-          "sink": 15,
+          "dx": -623.5,
+          "height": 900,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1192
-          ],
-          "y0": 543,
-          "xa": 0
+            1035,
+            747
+          ]
         },
         {
           "image": "places/place_dvory_main",
           "layer": "main",
           "step": 36500,
-          "dx": -643.5,
-          "height": 1735,
-          "sink": 15,
+          "dx": -707.4,
+          "height": 920,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1010,
-            1735
-          ],
-          "y0": 0,
-          "xa": 0
+            1115,
+            725
+          ]
         },
         {
           "image": "places/place_otdelenie_main",
           "layer": "main",
           "step": 39500,
-          "dx": -803.5,
-          "height": 1730,
-          "sink": 15,
+          "dx": -567.0,
+          "height": 880,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1330,
-            1730
-          ],
-          "y0": 5,
-          "xa": -160
+            893,
+            693
+          ]
         },
         {
           "image": "places/place_verkhnyaya_main",
           "layer": "main",
           "step": 45000,
-          "dx": -643.5,
-          "height": 1597,
-          "sink": 15,
+          "dx": -559.8,
+          "height": 980,
+          "sink": 24,
           "z": 10,
           "pixelSize": [
-            1170,
-            1597
-          ],
-          "y0": 138,
-          "xa": 0
+            754,
+            660
+          ]
         },
         {
           "image": "places/sprite_moon",
           "layer": "main",
           "step": 45000,
-          "dx": -543.5,
-          "height": 483,
-          "sink": -1000,
+          "dx": -180,
+          "height": 320,
+          "sink": -980,
           "z": -6,
           "pixelSize": [
-            202,
-            483
+            551,
+            649
           ]
         },
         {
@@ -4089,14 +4069,69 @@
         "top": 1700,
         "scale": 2.0,
         "tilePixelSize": [
-          680,
+          1148,
           415
         ],
         "minGapFraction": 0.3,
         "modules": [
           {
-            "image": "underground/ug_var_cracks",
-            "step": 8000,
+            "image": "underground/ug_chain",
+            "step": 2000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_pipes",
+            "step": 6000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_bricks",
+            "step": 10000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_bone",
+            "step": 14000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_cables",
+            "step": 18000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_stones",
+            "step": 22000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_iron",
+            "step": 26000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_boat",
+            "step": 30000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tank",
+            "step": 34000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_valve",
+            "step": 37000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_roots",
+            "step": 40000,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_tilefrag",
+            "step": 43000,
             "dx": 0.0
           }
         ]
