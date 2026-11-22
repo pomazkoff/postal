@@ -83,31 +83,18 @@ def ambient_props():
         ps = psz(name)
         props.append(dict(image=f"ambient/{name}", layer="main", step=step, dx=dx,
                           height=height, sink=sink, z=z, pixelSize=ps))
-    # sky clouds as far props
-    for img, step, dx, height, sink in (
-        ("sky/cloud_hang", 800, -200, 280, -700),
-        ("sky/cloud_right", 2000, 100, 320, -500),
-        ("sky/cloud_nab", 32000, -100, 260, -640),
-    ):
-        from PIL import Image as I
-        im = I.open(ROOT / "Postman/GameAssets/Chapter4" / f"{img}.png")
-        props.append(dict(image=img, layer="far", step=step, dx=dx, height=height,
-                          sink=sink, z=3, pixelSize=[im.size[0], im.size[1]]))
+    # Clouds live in Chapter4/sky and are drawn by installStvorSky, not as far props
+    # (the old cloud_* crops were opaque rectangles against the chapter gradient).
     return props
 
 def road_props():
     from PIL import Image
+    im = Image.open(ROOT / "Postman/GameAssets/Chapter4/road/road_main.png")
+    ps = [im.size[0], im.size[1]]
     out = []
     for step in range(0, 45001, 2000):
-        if step < 21000:
-            name = "road_prom"
-        elif step < 32000:
-            name = "road_mid"
-        else:
-            name = "road_city"
-        im = Image.open(ROOT / "Postman/GameAssets/Chapter4/road" / f"{name}.png")
-        out.append(dict(image=f"road/{name}", layer="main", step=step, dx=-1200,
-                        height=680, sink=40, z=-20, pixelSize=[im.size[0], im.size[1]]))
+        out.append(dict(image="road/road_main", layer="main", step=step, dx=-1200,
+                        height=680, sink=40, z=-20, pixelSize=ps))
     return out
 
 def build_world():
@@ -124,7 +111,7 @@ def build_world():
         "lengthSteps": 45000,
         "assetsFolder": "Chapter4",
         "settlements": SETTLEMENTS,
-        "props": road_props() + places + ambient_props(),
+        "props": road_props() + META.get("sky_cards", []) + places + ambient_props(),
         "underground": {
             "neutralTile": "underground/ug_neutral_tile",
             "top": 1700,
@@ -150,7 +137,14 @@ def build_world():
             {"untilStep": 39500, "telegram": "К отделению", "lettersInBag": 1},
             {"untilStep": 45000, "telegram": "До Верхней", "lettersInBag": 0},
         ],
-        "sky": {"topColor": META["sky_top"], "bottomColor": META["sky_bot"]},
+        "sky": {
+            "topColor": META["sky_top"],
+            "bottomColor": META["sky_bot"],
+            "duskTopColor": META.get("sky_dusk_top"),
+            "duskBottomColor": META.get("sky_dusk_bot"),
+            "nightTopColor": META.get("sky_night_top"),
+            "nightBottomColor": META.get("sky_night_bot"),
+        },
         "rawClayAfterStep": 45000,
     }
     # fix modules image paths cleanly
@@ -446,6 +440,11 @@ def build_taps():
     print("chapter4_taps.json", len(taps))
 
 if __name__ == "__main__":
+    import sys
+    props_only = "--props-only" in sys.argv
     build_world()
-    build_story()
-    build_taps()
+    if not props_only:
+        build_story()
+        build_taps()
+    else:
+        print("props-only: story and taps left untouched")

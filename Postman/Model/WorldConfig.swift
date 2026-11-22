@@ -67,6 +67,11 @@ struct LayersConfig: Decodable {
 struct SkyConfig: Decodable {
     let topColor: String
     let bottomColor: String
+    /// Optional stops for chapters whose sky shifts over the walk (гл. 4).
+    let duskTopColor: String?
+    let duskBottomColor: String?
+    let nightTopColor: String?
+    let nightBottomColor: String?
 }
 
 struct TiledLayerConfig: Decodable {

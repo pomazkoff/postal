@@ -3349,7 +3349,7 @@
       ],
       "props": [
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 0,
           "dx": -1200,
@@ -3362,7 +3362,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 2000,
           "dx": -1200,
@@ -3375,7 +3375,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 4000,
           "dx": -1200,
@@ -3388,7 +3388,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 6000,
           "dx": -1200,
@@ -3401,7 +3401,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 8000,
           "dx": -1200,
@@ -3414,7 +3414,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 10000,
           "dx": -1200,
@@ -3427,7 +3427,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 12000,
           "dx": -1200,
@@ -3440,7 +3440,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 14000,
           "dx": -1200,
@@ -3453,7 +3453,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 16000,
           "dx": -1200,
@@ -3466,7 +3466,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 18000,
           "dx": -1200,
@@ -3479,7 +3479,7 @@
           ]
         },
         {
-          "image": "road/road_prom",
+          "image": "road/road_main",
           "layer": "main",
           "step": 20000,
           "dx": -1200,
@@ -3492,7 +3492,7 @@
           ]
         },
         {
-          "image": "road/road_mid",
+          "image": "road/road_main",
           "layer": "main",
           "step": 22000,
           "dx": -1200,
@@ -3505,7 +3505,7 @@
           ]
         },
         {
-          "image": "road/road_mid",
+          "image": "road/road_main",
           "layer": "main",
           "step": 24000,
           "dx": -1200,
@@ -3518,7 +3518,7 @@
           ]
         },
         {
-          "image": "road/road_mid",
+          "image": "road/road_main",
           "layer": "main",
           "step": 26000,
           "dx": -1200,
@@ -3531,7 +3531,7 @@
           ]
         },
         {
-          "image": "road/road_mid",
+          "image": "road/road_main",
           "layer": "main",
           "step": 28000,
           "dx": -1200,
@@ -3544,7 +3544,7 @@
           ]
         },
         {
-          "image": "road/road_mid",
+          "image": "road/road_main",
           "layer": "main",
           "step": 30000,
           "dx": -1200,
@@ -3557,7 +3557,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 32000,
           "dx": -1200,
@@ -3570,7 +3570,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 34000,
           "dx": -1200,
@@ -3583,7 +3583,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 36000,
           "dx": -1200,
@@ -3596,7 +3596,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 38000,
           "dx": -1200,
@@ -3609,7 +3609,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 40000,
           "dx": -1200,
@@ -3622,7 +3622,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 42000,
           "dx": -1200,
@@ -3635,7 +3635,7 @@
           ]
         },
         {
-          "image": "road/road_city",
+          "image": "road/road_main",
           "layer": "main",
           "step": 44000,
           "dx": -1200,
@@ -3648,134 +3648,284 @@
           ]
         },
         {
+          "image": "places/sky_shlagbaum",
+          "layer": "main",
+          "step": 0,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_otstoyniki",
+          "layer": "main",
+          "step": 4000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_truby",
+          "layer": "main",
+          "step": 11000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_shlam",
+          "layer": "main",
+          "step": 17500,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_kotelnaya",
+          "layer": "main",
+          "step": 21000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_sarai",
+          "layer": "main",
+          "step": 25000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_naberezhnaya",
+          "layer": "main",
+          "step": 32000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_dvory",
+          "layer": "main",
+          "step": 36500,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_otdelenie",
+          "layer": "main",
+          "step": 39500,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
+          "image": "places/sky_verkhnyaya",
+          "layer": "main",
+          "step": 45000,
+          "dx": -643.5,
+          "height": 1760,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            1170,
+            1760
+          ]
+        },
+        {
           "image": "places/place_shlagbaum_main",
           "layer": "main",
           "step": 0,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_otstoyniki_main",
           "layer": "main",
           "step": 4000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_truby_main",
           "layer": "main",
           "step": 11000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1488,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1488
+          ],
+          "y0": 272,
+          "xa": 0
         },
         {
           "image": "places/place_shlam_main",
           "layer": "main",
           "step": 17500,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1525,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1525
+          ],
+          "y0": 235,
+          "xa": 0
         },
         {
           "image": "places/place_kotelnaya_main",
           "layer": "main",
           "step": 21000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_sarai_main",
           "layer": "main",
           "step": 25000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_naberezhnaya_main",
           "layer": "main",
           "step": 32000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_dvory_main",
           "layer": "main",
           "step": 36500,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1760,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1760
+          ],
+          "y0": 0,
+          "xa": 0
         },
         {
           "image": "places/place_otdelenie_main",
           "layer": "main",
           "step": 39500,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1370,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1370
+          ],
+          "y0": 390,
+          "xa": 0
         },
         {
           "image": "places/place_verkhnyaya_main",
           "layer": "main",
           "step": 45000,
-          "dx": -398.3,
-          "height": 1100,
+          "dx": -643.5,
+          "height": 1633,
           "sink": 40,
           "z": 10,
           "pixelSize": [
-            766,
-            1100
-          ]
+            1170,
+            1633
+          ],
+          "y0": 127,
+          "xa": 0
         },
         {
           "image": "ambient/ducks",
@@ -4023,45 +4173,6 @@
             220,
             160
           ]
-        },
-        {
-          "image": "sky/cloud_hang",
-          "layer": "far",
-          "step": 800,
-          "dx": -200,
-          "height": 280,
-          "sink": -700,
-          "z": 3,
-          "pixelSize": [
-            660,
-            340
-          ]
-        },
-        {
-          "image": "sky/cloud_right",
-          "layer": "far",
-          "step": 2000,
-          "dx": 100,
-          "height": 320,
-          "sink": -500,
-          "z": 3,
-          "pixelSize": [
-            700,
-            500
-          ]
-        },
-        {
-          "image": "sky/cloud_nab",
-          "layer": "far",
-          "step": 32000,
-          "dx": -100,
-          "height": 260,
-          "sink": -640,
-          "z": 3,
-          "pixelSize": [
-            1170,
-            400
-          ]
         }
       ],
       "underground": {
@@ -4159,8 +4270,12 @@
         }
       ],
       "sky": {
-        "topColor": "#A7D0E1",
-        "bottomColor": "#D3AE9B"
+        "topColor": "#A7D0E2",
+        "bottomColor": "#D8B3A2",
+        "duskTopColor": "#B4836D",
+        "duskBottomColor": "#A2784F",
+        "nightTopColor": "#1D2534",
+        "nightBottomColor": "#212832"
       },
       "rawClayAfterStep": 45000
     }

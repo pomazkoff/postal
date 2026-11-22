@@ -180,6 +180,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         postman = node
 
         installMarshSky()
+        installStvorSky()
         updateCameraAndLayers()
         cullLazyNodes()
         applyReadability()
@@ -199,6 +200,11 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var marshBirdClock: Double = 6
     private var marshSkyTime: Double = 0
     private var marshSkySpan: CGFloat = 0
+    private var stvorSkyNodes: [SKNode] = []
+    private var stvorDrift: [MarshDrift] = []
+    private var stvorSkyTime: Double = 0
+    private var stvorSkySpan: CGFloat = 0
+    private var appliedSkyKey: String = ""
 
     /// Небо главы 3: Chapter3/sky. Облака висят в открытой полосе над грядами,
     /// клочья тумана — ниже, над полями. Птиц и puff пока нет: файл с префиксом bird_ подхватится сам.
@@ -302,7 +308,94 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         ]))
     }
 
-    private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
+    
+    /// Небо главы 4: глиняные облака из полосы v5.3, только пока камера в Нижнем Створе.
+    private func installStvorSky() {
+        let H = CGFloat(config.game.designHeight)
+        let folder = WorldConfigLoader.assetsRoot.appendingPathComponent("Chapter4/sky", isDirectory: true)
+        let names = ((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? [])
+            .filter { $0.lowercased().hasSuffix(".png") }
+            .sorted()
+        guard !names.isEmpty else { return }
+        let span = CGFloat(config.game.designWidth) * 6
+        stvorSkySpan = span
+        let layer = SKNode()
+        layer.zPosition = -730
+        addLayer(layer, parallax: 0)
+        stvorSkyNodes.append(layer)
+        for (i, file) in names.enumerated() {
+            let path = "Chapter4/sky/\((file as NSString).deletingPathExtension)"
+            guard FileManager.default.fileExists(atPath: TextureStore.url(for: path).path) else { continue }
+            let tex = TextureStore.shared.texture(path)
+            let node = SKSpriteNode(texture: tex)
+            let height: CGFloat = (file.contains("night") || file.contains("moon")) ? 280 : 220
+            let aspect = tex.size().width / max(1, tex.size().height)
+            node.size = CGSize(width: height * aspect, height: height)
+            node.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            node.alpha = 0.95
+            // Висят в верхней трети кадра, над грядами, как облака болот.
+            let row = CGFloat(i % 3)
+            node.position.y = H - 160 - row * 90
+            if i % 2 == 1 { node.xScale = -1 }
+            layer.addChild(node)
+            let speed: CGFloat = 5 + CGFloat(i % 4) * 1.4
+            stvorDrift.append(MarshDrift(node: node, speed: speed,
+                                         base: span * CGFloat(i) / CGFloat(max(1, names.count)),
+                                         parallax: 0.05 + 0.02 * row))
+        }
+    }
+
+    private func updateStvorSky(dt: TimeInterval) {
+        guard !stvorSkyNodes.isEmpty else { return }
+        let inStvor = chapter(containing: stepUnderCamera)?.id == 4
+        for node in stvorSkyNodes { node.isHidden = !inStvor }
+        guard inStvor else { return }
+        stvorSkyTime += dt
+        let span = max(stvorSkySpan, 1)
+        for item in stvorDrift {
+            let base = item.base + item.speed * CGFloat(stvorSkyTime)
+            let localCam = camX * item.parallax
+            let u = base - localCam + span / 2
+            let rel = u - span * floor(u / span) - span / 2
+            item.node.position.x = rel.rounded()
+        }
+    }
+
+    /// Цвета неба Нижнего Створа: день → закат → ночь к «Верхней» (официальная полоса v5.3).
+    private func stvorSkyColors(sky: SkyConfig, localStep: Double) -> (String, String) {
+        let dayT = sky.topColor, dayB = sky.bottomColor
+        let duskT = sky.duskTopColor ?? dayT, duskB = sky.duskBottomColor ?? dayB
+        let nightT = sky.nightTopColor ?? "#1D2534", nightB = sky.nightBottomColor ?? "#212832"
+        func lerpHex(_ a: String, _ b: String, _ t: Double) -> String {
+            func ch(_ s: String) -> (Double, Double, Double) {
+                var h = s.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
+                if h.count == 3 { h = h.map { "\($0)\($0)" }.joined() }
+                guard let n = UInt32(h, radix: 16) else { return (0, 0, 0) }
+                return (Double((n >> 16) & 0xFF), Double((n >> 8) & 0xFF), Double(n & 0xFF))
+            }
+            let ca = ch(a), cb = ch(b)
+            let k = max(0, min(1, t))
+            let r = Int((ca.0 + (cb.0 - ca.0) * k).rounded())
+            let g = Int((ca.1 + (cb.1 - ca.1) * k).rounded())
+            let b = Int((ca.2 + (cb.2 - ca.2) * k).rounded())
+            return String(format: "#%02X%02X%02X", r, g, b)
+        }
+        if localStep < 20000 { return (dayT, dayB) }
+        if localStep < 28000 {
+            let t = (localStep - 20000) / 8000
+            return (lerpHex(dayT, duskT, t), lerpHex(dayB, duskB, t))
+        }
+        if localStep < 36000 {
+            return (duskT, duskB)
+        }
+        if localStep < 42000 {
+            let t = (localStep - 36000) / 6000
+            return (lerpHex(duskT, nightT, t), lerpHex(duskB, nightB, t))
+        }
+        return (nightT, nightB)
+    }
+
+private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
 
     /// Маска сплошная и ровно по границе главы. Альфа тайлов здесь не трогается:
     /// на Release 17746c5 она открывала пустую заливку вместо соседней земли.
@@ -982,6 +1075,7 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
         weather?.update(dt: dt)
         applyChapterSky()
         updateMarshSky(dt: dt)
+        updateStvorSky(dt: dt)
         updateCompanion(dt)
         updateNightFigures()
         updatePostmanVisibility()
@@ -1006,10 +1100,18 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private func applyChapterSky() {
         let chapter = chapter(containing: stepUnderCamera)
         let id = chapter?.id ?? 0
-        guard id != appliedSkyChapter else { return }
+        var top = chapter?.sky?.topColor ?? config.layers.sky.topColor
+        var bottom = chapter?.sky?.bottomColor ?? config.layers.sky.bottomColor
+        var quant = 0
+        if id == 4, let sky = chapter?.sky {
+            let local = stepUnderCamera - Double(chapter!.startStep)
+            (top, bottom) = stvorSkyColors(sky: sky, localStep: local)
+            quant = Int(local / 400)
+        }
+        let key = "\(id)-\(quant)-\(top)-\(bottom)"
+        guard key != appliedSkyKey else { return }
+        appliedSkyKey = key
         appliedSkyChapter = id
-        let top = chapter?.sky?.topColor ?? config.layers.sky.topColor
-        let bottom = chapter?.sky?.bottomColor ?? config.layers.sky.bottomColor
         let topColor = UIColor(hex: top)
         let bottomColor = UIColor(hex: bottom)
         backgroundColor = topColor
