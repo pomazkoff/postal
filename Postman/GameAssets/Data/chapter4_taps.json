@@ -1,138 +1,152 @@
 [
   {
     "id": "kettle",
-    "step": 80,
-    "dx": -220,
-    "sprite": "Chapter3/taps/kettle",
-    "height": 120,
+    "step": 300,
+    "dx": 1265.2,
+    "sprite": "Chapter4/places/el_shlagbaum_kettle",
+    "height": 430.0,
     "sink": 40,
-    "z": 12
+    "z": 12,
+    "draw": false
   },
   {
     "id": "barrier",
-    "step": 0,
-    "dx": -40,
-    "sprite": "Chapter3/taps/barrier",
-    "height": 200,
+    "step": 300,
+    "dx": 2808.6,
+    "sprite": "Chapter4/places/el_shlagbaum_tinfence",
+    "height": 520.0,
     "sink": 40,
-    "z": 11,
+    "z": 12,
     "draw": false
   },
   {
     "id": "ducks_gate",
-    "step": 200,
-    "dx": 200,
-    "sprite": "Chapter3/taps/duckweed",
-    "height": 80,
-    "sink": 20,
-    "z": 11
+    "step": 300,
+    "dx": -20.3,
+    "sprite": "Chapter4/ambient/ducks",
+    "height": 70,
+    "sink": 24,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "sluice",
     "step": 4000,
-    "dx": -300,
-    "sprite": "Chapter3/taps/pipes",
-    "height": 180,
+    "dx": -1011.8,
+    "sprite": "Chapter4/places/el_otstoyniki_sluice",
+    "height": 700.0,
     "sink": 40,
-    "z": 11
+    "z": 12,
+    "draw": false
   },
   {
     "id": "key",
-    "step": 4100,
-    "dx": -80,
-    "sprite": "Chapter3/taps/nails",
-    "height": 80,
-    "sink": 20,
-    "z": 12
+    "step": 4000,
+    "dx": -446.7,
+    "sprite": "Chapter4/places/el_otstoyniki_valves",
+    "height": 520.0,
+    "sink": 40,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "crow",
-    "step": 11000,
-    "dx": 200,
-    "sprite": "Chapter3/taps/heron",
+    "step": 9000,
+    "dx": 368.5,
+    "sprite": "Chapter4/ambient/crow",
     "height": 140,
-    "sink": -40,
-    "z": 14
+    "sink": -80,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "nest",
-    "step": 12000,
-    "dx": -100,
-    "sprite": "Chapter3/taps/hummock",
-    "height": 90,
-    "sink": 20,
-    "z": 11
+    "step": 11000,
+    "dx": -684.8,
+    "sprite": "Chapter4/places/el_truby_nest",
+    "height": 380.0,
+    "sink": 40,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "crust",
     "step": 17500,
-    "dx": -40,
-    "sprite": "Chapter3/taps/peat",
-    "height": 80,
-    "sink": 20,
-    "z": 11
+    "dx": -1080.3,
+    "sprite": "Chapter4/places/el_shlam_slab",
+    "height": 260.0,
+    "sink": 40,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "boiler",
-    "step": 23000,
-    "dx": -200,
-    "sprite": "Chapter3/taps/kettle",
-    "height": 160,
+    "step": 21500,
+    "dx": -222.6,
+    "sprite": "Chapter4/places/place_kotelnaya_main",
+    "height": 600,
     "sink": 40,
-    "z": 12
+    "z": 12,
+    "draw": false
   },
   {
     "id": "cat_soot",
-    "step": 23100,
-    "dx": 260,
-    "sprite": "Chapter3/taps/frog",
-    "height": 100,
+    "step": 23000,
+    "dx": 359.0,
+    "sprite": "Chapter4/ambient/cat_soot",
+    "height": 125,
     "sink": 0,
-    "z": 12
+    "z": 12,
+    "draw": false
   },
   {
     "id": "pigeons",
-    "step": 27000,
-    "dx": 180,
-    "sprite": "Chapter3/taps/heron",
-    "height": 100,
-    "sink": -20,
-    "z": 13
+    "step": 28000,
+    "dx": -1180.7,
+    "sprite": "Chapter4/places/el_sarai_ridge",
+    "height": 260.0,
+    "sink": 40,
+    "z": 12,
+    "draw": false
   },
   {
     "id": "bench",
-    "step": 32000,
-    "dx": 100,
-    "sprite": "Chapter3/taps/dryer",
-    "height": 140,
+    "step": 35529,
+    "dx": 252.1,
+    "sprite": "Chapter4/road/prop_bench_poplar",
+    "height": 260.0,
     "sink": 40,
-    "z": 11
+    "z": 12,
+    "draw": false
   },
   {
     "id": "gate",
-    "step": 36500,
-    "dx": -120,
-    "sprite": "Chapter3/taps/door",
-    "height": 220,
+    "step": 37000,
+    "dx": 962.8,
+    "sprite": "Chapter4/places/el_dvory_gatebox",
+    "height": 620.0,
     "sink": 40,
-    "z": 11
+    "z": 12,
+    "draw": false
   },
   {
     "id": "counter",
-    "step": 39500,
-    "dx": -80,
-    "sprite": "Chapter3/taps/duty",
-    "height": 160,
+    "step": 40000,
+    "dx": 729.6,
+    "sprite": "Chapter4/places/el_otdelenie_counter",
+    "height": 520.0,
     "sink": 40,
-    "z": 12
+    "z": 12,
+    "draw": false
   },
   {
     "id": "sign",
-    "step": 45000,
-    "dx": 80,
-    "sprite": "Chapter3/taps/note",
-    "height": 120,
-    "sink": 20,
-    "z": 12
+    "step": 43000,
+    "dx": 1632.5,
+    "sprite": "Chapter4/places/el_verkhnyaya_gate",
+    "height": 620.0,
+    "sink": 40,
+    "z": 12,
+    "draw": false
   }
 ]

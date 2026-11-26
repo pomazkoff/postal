@@ -3349,471 +3349,2096 @@
       ],
       "props": [
         {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 0,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 2000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 4000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 6000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 8000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 10000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 12000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 14000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 16000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 18000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 20000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 22000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 24000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 26000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 28000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 30000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 32000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 34000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 36000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 38000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 40000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 42000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 44000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 46000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
-          "image": "road/road_main",
-          "layer": "main",
-          "step": 48000,
-          "dx": -1200,
-          "height": 680,
-          "sink": 40,
-          "z": -20,
-          "pixelSize": [
-            2400,
-            680
-          ]
-        },
-        {
           "image": "places/place_shlagbaum_main",
           "layer": "main",
-          "step": 0,
-          "dx": -479.3,
-          "height": 1050,
-          "sink": 24,
-          "z": 10,
+          "step": 300,
+          "dx": 950.0,
+          "height": 1150.0,
+          "sink": 40,
+          "z": 1,
           "pixelSize": [
-            880,
-            964
+            1293,
+            1438
+          ]
+        },
+        {
+          "image": "places/el_shlagbaum_kettle",
+          "layer": "main",
+          "step": 300,
+          "dx": 1012.0,
+          "height": 430.0,
+          "sink": 40,
+          "z": 2,
+          "pixelSize": [
+            583,
+            495
+          ]
+        },
+        {
+          "image": "places/el_shlagbaum_mailbox",
+          "layer": "main",
+          "step": 300,
+          "dx": 1856.0,
+          "height": 600.0,
+          "sink": 40,
+          "z": 3,
+          "pixelSize": [
+            589,
+            690
+          ]
+        },
+        {
+          "image": "places/el_shlagbaum_tinfence",
+          "layer": "main",
+          "step": 300,
+          "dx": 2428.2,
+          "height": 520.0,
+          "sink": 40,
+          "z": 4,
+          "pixelSize": [
+            875,
+            598
           ]
         },
         {
           "image": "places/place_otstoyniki_main",
           "layer": "main",
           "step": 4000,
-          "dx": -598.1,
-          "height": 720,
-          "sink": 24,
-          "z": 10,
+          "dx": -900.0,
+          "height": 1150.0,
+          "sink": 40,
+          "z": 6,
           "pixelSize": [
-            927,
-            558
+            2172,
+            1438
+          ]
+        },
+        {
+          "image": "places/el_otstoyniki_valves",
+          "layer": "main",
+          "step": 4000,
+          "dx": -795.8,
+          "height": 520.0,
+          "sink": 40,
+          "z": 7,
+          "pixelSize": [
+            803,
+            598
+          ]
+        },
+        {
+          "image": "places/el_otstoyniki_footbridge",
+          "layer": "main",
+          "step": 4000,
+          "dx": 716.3,
+          "height": 360.0,
+          "sink": 40,
+          "z": 8,
+          "pixelSize": [
+            555,
+            414
+          ]
+        },
+        {
+          "image": "places/el_otstoyniki_sluice",
+          "layer": "main",
+          "step": 4000,
+          "dx": -1291.4,
+          "height": 700.0,
+          "sink": 40,
+          "z": 9,
+          "pixelSize": [
+            643,
+            805
           ]
         },
         {
           "image": "places/place_truby_main",
           "layer": "main",
           "step": 11000,
-          "dx": -428.0,
-          "height": 980,
-          "sink": 24,
-          "z": 10,
+          "dx": -1100.0,
+          "height": 1250.0,
+          "sink": 40,
+          "z": 11,
           "pixelSize": [
-            746,
-            854
+            3324,
+            1563
+          ]
+        },
+        {
+          "image": "places/el_truby_servicebox",
+          "layer": "main",
+          "step": 11000,
+          "dx": 1508.8,
+          "height": 420.0,
+          "sink": 40,
+          "z": 12,
+          "pixelSize": [
+            228,
+            483
+          ]
+        },
+        {
+          "image": "places/el_truby_nest",
+          "layer": "main",
+          "step": 11000,
+          "dx": -940.5,
+          "height": 380.0,
+          "sink": 40,
+          "z": 13,
+          "pixelSize": [
+            588,
+            437
+          ]
+        },
+        {
+          "image": "places/el_truby_ladder",
+          "layer": "main",
+          "step": 11000,
+          "dx": 1767.0,
+          "height": 900.0,
+          "sink": 40,
+          "z": 14,
+          "pixelSize": [
+            591,
+            1035
           ]
         },
         {
           "image": "places/place_shlam_main",
           "layer": "main",
           "step": 17500,
-          "dx": -524.5,
-          "height": 820,
-          "sink": 24,
-          "z": 10,
+          "dx": -1000.0,
+          "height": 1150.0,
+          "sink": 40,
+          "z": 16,
           "pixelSize": [
-            930,
-            727
+            2969,
+            1438
+          ]
+        },
+        {
+          "image": "places/el_shlam_stake",
+          "layer": "main",
+          "step": 17500,
+          "dx": 1261.4,
+          "height": 650.0,
+          "sink": 40,
+          "z": 17,
+          "pixelSize": [
+            520,
+            748
+          ]
+        },
+        {
+          "image": "places/el_shlam_barrow",
+          "layer": "main",
+          "step": 17500,
+          "dx": -857.5,
+          "height": 330.0,
+          "sink": 40,
+          "z": 18,
+          "pixelSize": [
+            530,
+            380
+          ]
+        },
+        {
+          "image": "places/el_shlam_slab",
+          "layer": "main",
+          "step": 17500,
+          "dx": -1281.2,
+          "height": 260.0,
+          "sink": 40,
+          "z": 19,
+          "pixelSize": [
+            462,
+            299
           ]
         },
         {
           "image": "places/place_kotelnaya_main",
           "layer": "main",
-          "step": 21000,
-          "dx": -740.0,
-          "height": 900,
-          "sink": 24,
-          "z": 10,
+          "step": 21500,
+          "dx": -900.0,
+          "height": 1450.0,
+          "sink": 40,
+          "z": 21,
           "pixelSize": [
-            1184,
-            720
+            1694,
+            1813
+          ]
+        },
+        {
+          "image": "places/el_kotelnaya_coalpile",
+          "layer": "main",
+          "step": 21500,
+          "dx": -1177.0,
+          "height": 420.0,
+          "sink": 40,
+          "z": 22,
+          "pixelSize": [
+            708,
+            483
+          ]
+        },
+        {
+          "image": "places/el_kotelnaya_dryer",
+          "layer": "main",
+          "step": 21500,
+          "dx": 280.7,
+          "height": 520.0,
+          "sink": 40,
+          "z": 23,
+          "pixelSize": [
+            801,
+            598
+          ]
+        },
+        {
+          "image": "places/el_kotelnaya_okabox",
+          "layer": "main",
+          "step": 21500,
+          "dx": 1037.2,
+          "height": 420.0,
+          "sink": 40,
+          "z": 24,
+          "pixelSize": [
+            346,
+            483
           ]
         },
         {
           "image": "places/place_sarai_main",
           "layer": "main",
-          "step": 25000,
-          "dx": -702.7,
-          "height": 780,
-          "sink": 24,
-          "z": 10,
+          "step": 28000,
+          "dx": -1100.0,
+          "height": 1150.0,
+          "sink": 40,
+          "z": 26,
           "pixelSize": [
-            1072,
-            595
+            2851,
+            1438
+          ]
+        },
+        {
+          "image": "places/el_sarai_door",
+          "layer": "main",
+          "step": 28000,
+          "dx": 1029.1,
+          "height": 600.0,
+          "sink": 40,
+          "z": 27,
+          "pixelSize": [
+            694,
+            690
+          ]
+        },
+        {
+          "image": "places/el_sarai_blanks",
+          "layer": "main",
+          "step": 28000,
+          "dx": -963.2,
+          "height": 420.0,
+          "sink": 40,
+          "z": 28,
+          "pixelSize": [
+            589,
+            483
+          ]
+        },
+        {
+          "image": "places/el_sarai_ridge",
+          "layer": "main",
+          "step": 28000,
+          "dx": -1382.4,
+          "height": 260.0,
+          "sink": 40,
+          "z": 29,
+          "pixelSize": [
+            464,
+            299
           ]
         },
         {
           "image": "places/place_naberezhnaya_main",
           "layer": "main",
-          "step": 32000,
-          "dx": -623.5,
-          "height": 900,
-          "sink": 24,
-          "z": 10,
+          "step": 33500,
+          "dx": -1100.0,
+          "height": 1200.0,
+          "sink": 40,
+          "z": 31,
           "pixelSize": [
-            1035,
-            747
+            2769,
+            1500
+          ]
+        },
+        {
+          "image": "places/el_naberezhnaya_tumba",
+          "layer": "main",
+          "step": 33500,
+          "dx": 1023.7,
+          "height": 520.0,
+          "sink": 40,
+          "z": 32,
+          "pixelSize": [
+            421,
+            598
+          ]
+        },
+        {
+          "image": "places/el_naberezhnaya_poplar",
+          "layer": "main",
+          "step": 33500,
+          "dx": 1449.8,
+          "height": 1100.0,
+          "sink": 40,
+          "z": 33,
+          "pixelSize": [
+            746,
+            1265
+          ]
+        },
+        {
+          "image": "places/el_naberezhnaya_railing",
+          "layer": "main",
+          "step": 33500,
+          "dx": -1934.5,
+          "height": 420.0,
+          "sink": 40,
+          "z": 34,
+          "pixelSize": [
+            1371,
+            483
           ]
         },
         {
           "image": "places/place_dvory_main",
           "layer": "main",
-          "step": 36500,
-          "dx": -707.4,
-          "height": 920,
-          "sink": 24,
-          "z": 10,
+          "step": 37000,
+          "dx": -1000.0,
+          "height": 1200.0,
+          "sink": 40,
+          "z": 36,
           "pixelSize": [
-            1115,
-            725
+            2194,
+            1500
+          ]
+        },
+        {
+          "image": "places/el_dvory_gatebox",
+          "layer": "main",
+          "step": 37000,
+          "dx": 547.6,
+          "height": 620.0,
+          "sink": 40,
+          "z": 37,
+          "pixelSize": [
+            955,
+            713
+          ]
+        },
+        {
+          "image": "places/el_dvory_laundry",
+          "layer": "main",
+          "step": 37000,
+          "dx": -1812.6,
+          "height": 520.0,
+          "sink": 40,
+          "z": 38,
+          "pixelSize": [
+            1335,
+            598
+          ]
+        },
+        {
+          "image": "places/el_dvory_henhouse",
+          "layer": "main",
+          "step": 37000,
+          "dx": 1438.0,
+          "height": 420.0,
+          "sink": 40,
+          "z": 39,
+          "pixelSize": [
+            602,
+            483
           ]
         },
         {
           "image": "places/place_otdelenie_main",
           "layer": "main",
-          "step": 39500,
-          "dx": -567.0,
-          "height": 880,
-          "sink": 24,
-          "z": 10,
+          "step": 40000,
+          "dx": -900.0,
+          "height": 1600.0,
+          "sink": 40,
+          "z": 41,
           "pixelSize": [
-            893,
-            693
+            1691,
+            2000
+          ]
+        },
+        {
+          "image": "places/el_otdelenie_sacks",
+          "layer": "main",
+          "step": 40000,
+          "dx": -818.8,
+          "height": 600.0,
+          "sink": 40,
+          "z": 42,
+          "pixelSize": [
+            814,
+            690
+          ]
+        },
+        {
+          "image": "places/el_otdelenie_counter",
+          "layer": "main",
+          "step": 40000,
+          "dx": 176.1,
+          "height": 520.0,
+          "sink": 40,
+          "z": 43,
+          "pixelSize": [
+            1273,
+            598
+          ]
+        },
+        {
+          "image": "places/el_otdelenie_postbox",
+          "layer": "main",
+          "step": 40000,
+          "dx": 1343.0,
+          "height": 380.0,
+          "sink": 40,
+          "z": 44,
+          "pixelSize": [
+            256,
+            437
           ]
         },
         {
           "image": "places/place_verkhnyaya_main",
           "layer": "main",
-          "step": 45000,
-          "dx": -559.8,
-          "height": 980,
-          "sink": 24,
+          "step": 43000,
+          "dx": -1000.0,
+          "height": 1150.0,
+          "sink": 40,
+          "z": 46,
+          "pixelSize": [
+            3111,
+            1438
+          ]
+        },
+        {
+          "image": "places/el_verkhnyaya_bench",
+          "layer": "main",
+          "step": 43000,
+          "dx": -850.7,
+          "height": 340.0,
+          "sink": 40,
+          "z": 47,
+          "pixelSize": [
+            418,
+            391
+          ]
+        },
+        {
+          "image": "places/el_verkhnyaya_gate",
+          "layer": "main",
+          "step": 43000,
+          "dx": 1343.4,
+          "height": 620.0,
+          "sink": 40,
+          "z": 48,
+          "pixelSize": [
+            665,
+            713
+          ]
+        },
+        {
+          "image": "places/el_verkhnyaya_lamp",
+          "layer": "main",
+          "step": 43000,
+          "dx": 1981.6,
+          "height": 1000.0,
+          "sink": 40,
+          "z": 49,
+          "pixelSize": [
+            767,
+            1150
+          ]
+        },
+        {
+          "image": "road/road_main_damba_1",
+          "layer": "main",
+          "step": 0,
+          "dx": 0.0,
+          "height": 441.0,
+          "sink": 40,
+          "z": -30.0,
+          "pixelSize": [
+            2400,
+            441
+          ]
+        },
+        {
+          "image": "road/road_main_damba_2",
+          "layer": "main",
+          "step": 2051,
+          "dx": 0.0,
+          "height": 426.0,
+          "sink": 40,
+          "z": -29.999,
+          "pixelSize": [
+            2400,
+            426
+          ]
+        },
+        {
+          "image": "road/road_main_damba_1",
+          "layer": "main",
+          "step": 4102,
+          "dx": 0.0,
+          "height": 441.0,
+          "sink": 40,
+          "z": -29.998,
+          "pixelSize": [
+            2400,
+            441
+          ]
+        },
+        {
+          "image": "road/road_main_damba_2",
+          "layer": "main",
+          "step": 6153,
+          "dx": 0.0,
+          "height": 426.0,
+          "sink": 40,
+          "z": -29.997,
+          "pixelSize": [
+            2400,
+            426
+          ]
+        },
+        {
+          "image": "road/road_main_estakada_1",
+          "layer": "main",
+          "step": 8000,
+          "dx": 0.0,
+          "height": 443.0,
+          "sink": 40,
+          "z": -29.9,
+          "pixelSize": [
+            2400,
+            443
+          ]
+        },
+        {
+          "image": "road/road_main_estakada_2",
+          "layer": "main",
+          "step": 10051,
+          "dx": 0.0,
+          "height": 427.0,
+          "sink": 40,
+          "z": -29.899,
+          "pixelSize": [
+            2400,
+            427
+          ]
+        },
+        {
+          "image": "road/road_main_estakada_1",
+          "layer": "main",
+          "step": 12102,
+          "dx": 0.0,
+          "height": 443.0,
+          "sink": 40,
+          "z": -29.898,
+          "pixelSize": [
+            2400,
+            443
+          ]
+        },
+        {
+          "image": "road/road_main_shlam_1",
+          "layer": "main",
+          "step": 14000,
+          "dx": 0.0,
+          "height": 441.0,
+          "sink": 40,
+          "z": -29.8,
+          "pixelSize": [
+            2400,
+            441
+          ]
+        },
+        {
+          "image": "road/road_main_shlam_2",
+          "layer": "main",
+          "step": 16051,
+          "dx": 0.0,
+          "height": 427.0,
+          "sink": 40,
+          "z": -29.799,
+          "pixelSize": [
+            2400,
+            427
+          ]
+        },
+        {
+          "image": "road/road_main_shlam_1",
+          "layer": "main",
+          "step": 18102,
+          "dx": 0.0,
+          "height": 441.0,
+          "sink": 40,
+          "z": -29.798,
+          "pixelSize": [
+            2400,
+            441
+          ]
+        },
+        {
+          "image": "road/road_main_shlam_2",
+          "layer": "main",
+          "step": 20153,
+          "dx": 0.0,
+          "height": 427.0,
+          "sink": 40,
+          "z": -29.797,
+          "pixelSize": [
+            2400,
+            427
+          ]
+        },
+        {
+          "image": "road/road_main_ugol_1",
+          "layer": "main",
+          "step": 20500,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.7,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_ugol_2",
+          "layer": "main",
+          "step": 22551,
+          "dx": 0.0,
+          "height": 435.0,
+          "sink": 40,
+          "z": -29.699,
+          "pixelSize": [
+            2400,
+            435
+          ]
+        },
+        {
+          "image": "road/road_main_ugol_1",
+          "layer": "main",
+          "step": 24602,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.698,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_sklad_1",
+          "layer": "main",
+          "step": 25000,
+          "dx": 0.0,
+          "height": 436.0,
+          "sink": 40,
+          "z": -29.6,
+          "pixelSize": [
+            2400,
+            436
+          ]
+        },
+        {
+          "image": "road/road_main_sklad_2",
+          "layer": "main",
+          "step": 27051,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.599,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_sklad_1",
+          "layer": "main",
+          "step": 29102,
+          "dx": 0.0,
+          "height": 436.0,
+          "sink": 40,
+          "z": -29.598,
+          "pixelSize": [
+            2400,
+            436
+          ]
+        },
+        {
+          "image": "road/road_main_sklad_2",
+          "layer": "main",
+          "step": 31153,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.597,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_bereg_1",
+          "layer": "main",
+          "step": 32000,
+          "dx": 0.0,
+          "height": 443.0,
+          "sink": 40,
+          "z": -29.5,
+          "pixelSize": [
+            2400,
+            443
+          ]
+        },
+        {
+          "image": "road/road_main_bereg_2",
+          "layer": "main",
+          "step": 34051,
+          "dx": 0.0,
+          "height": 440.0,
+          "sink": 40,
+          "z": -29.499,
+          "pixelSize": [
+            2400,
+            440
+          ]
+        },
+        {
+          "image": "road/road_main_bereg_1",
+          "layer": "main",
+          "step": 36102,
+          "dx": 0.0,
+          "height": 443.0,
+          "sink": 40,
+          "z": -29.498,
+          "pixelSize": [
+            2400,
+            443
+          ]
+        },
+        {
+          "image": "road/road_main_dvor_1",
+          "layer": "main",
+          "step": 36500,
+          "dx": 0.0,
+          "height": 439.0,
+          "sink": 40,
+          "z": -29.4,
+          "pixelSize": [
+            2400,
+            439
+          ]
+        },
+        {
+          "image": "road/road_main_dvor_2",
+          "layer": "main",
+          "step": 38551,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.399,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_dvor_1",
+          "layer": "main",
+          "step": 40602,
+          "dx": 0.0,
+          "height": 439.0,
+          "sink": 40,
+          "z": -29.398,
+          "pixelSize": [
+            2400,
+            439
+          ]
+        },
+        {
+          "image": "road/road_main_noch_1",
+          "layer": "main",
+          "step": 42000,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.3,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/road_main_noch_2",
+          "layer": "main",
+          "step": 44051,
+          "dx": 0.0,
+          "height": 435.0,
+          "sink": 40,
+          "z": -29.299,
+          "pixelSize": [
+            2400,
+            435
+          ]
+        },
+        {
+          "image": "road/road_main_noch_1",
+          "layer": "main",
+          "step": 46102,
+          "dx": 0.0,
+          "height": 442.0,
+          "sink": 40,
+          "z": -29.298,
+          "pixelSize": [
+            2400,
+            442
+          ]
+        },
+        {
+          "image": "road/prop_valve_post",
+          "layer": "main",
+          "step": 600,
+          "dx": -31.7,
+          "height": 420.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            387,
+            483
+          ]
+        },
+        {
+          "image": "road/prop_lifebuoy_post",
+          "layer": "main",
+          "step": 5668,
+          "dx": -41.4,
+          "height": 380.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            237,
+            437
+          ]
+        },
+        {
+          "image": "road/prop_valve_post",
+          "layer": "main",
+          "step": 6752,
+          "dx": -57.6,
+          "height": 420.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            387,
+            483
+          ]
+        },
+        {
+          "image": "road/prop_warning_sign",
+          "layer": "main",
+          "step": 8083,
+          "dx": 50.2,
+          "height": 480.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            311,
+            552
+          ]
+        },
+        {
+          "image": "road/prop_power_pylon",
+          "layer": "main",
+          "step": 9524,
+          "dx": -52.9,
+          "height": 900.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            504,
+            1035
+          ]
+        },
+        {
+          "image": "road/prop_pipe_support",
+          "layer": "main",
+          "step": 13398,
+          "dx": -26.8,
+          "height": 420.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            464,
+            483
+          ]
+        },
+        {
+          "image": "road/prop_marker_pole",
+          "layer": "main",
+          "step": 14536,
+          "dx": 39.2,
+          "height": 520.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            197,
+            598
+          ]
+        },
+        {
+          "image": "road/prop_warning_sign",
+          "layer": "main",
+          "step": 15720,
+          "dx": -34.3,
+          "height": 480.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            311,
+            552
+          ]
+        },
+        {
+          "image": "road/prop_power_pylon",
+          "layer": "main",
+          "step": 19344,
+          "dx": 36.1,
+          "height": 900.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            504,
+            1035
+          ]
+        },
+        {
+          "image": "road/prop_coal_barrow",
+          "layer": "main",
+          "step": 22835,
+          "dx": -25.2,
+          "height": 260.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            442,
+            299
+          ]
+        },
+        {
+          "image": "road/prop_telegraph_pole",
+          "layer": "main",
+          "step": 24259,
+          "dx": 55.3,
+          "height": 900.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            860,
+            1035
+          ]
+        },
+        {
+          "image": "road/prop_coal_barrow",
+          "layer": "main",
+          "step": 25499,
+          "dx": -49.6,
+          "height": 260.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            442,
+            299
+          ]
+        },
+        {
+          "image": "road/prop_telegraph_pole",
+          "layer": "main",
+          "step": 29474,
+          "dx": -13.4,
+          "height": 900.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            860,
+            1035
+          ]
+        },
+        {
+          "image": "road/prop_coal_barrow",
+          "layer": "main",
+          "step": 30651,
+          "dx": -38.7,
+          "height": 260.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            442,
+            299
+          ]
+        },
+        {
+          "image": "road/prop_telegraph_pole",
+          "layer": "main",
+          "step": 31943,
+          "dx": -26.4,
+          "height": 900.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            860,
+            1035
+          ]
+        },
+        {
+          "image": "road/prop_bench_poplar",
+          "layer": "main",
+          "step": 35529,
+          "dx": 49.1,
+          "height": 260.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            467,
+            299
+          ]
+        },
+        {
+          "image": "road/prop_town_lamp",
+          "layer": "main",
+          "step": 38282,
+          "dx": 45.9,
+          "height": 800.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            804,
+            920
+          ]
+        },
+        {
+          "image": "road/prop_post_pole_box",
+          "layer": "main",
+          "step": 41033,
+          "dx": -36.6,
+          "height": 520.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            236,
+            598
+          ]
+        },
+        {
+          "image": "road/prop_water_pump",
+          "layer": "main",
+          "step": 44852,
+          "dx": -8.3,
+          "height": 380.0,
+          "sink": 40,
+          "z": -5,
+          "pixelSize": [
+            371,
+            437
+          ]
+        },
+        {
+          "image": "road/mid_dam_booth",
+          "layer": "mid",
+          "step": 1200,
+          "dx": -403.4,
+          "height": 260.0,
+          "sink": -300,
+          "z": 1,
+          "pixelSize": [
+            713,
+            194
+          ]
+        },
+        {
+          "image": "road/mid_pond_saucer",
+          "layer": "mid",
+          "step": 4065,
+          "dx": -287.5,
+          "height": 220.0,
+          "sink": -300,
+          "z": 2,
+          "pixelSize": [
+            466,
+            253
+          ]
+        },
+        {
+          "image": "road/mid_sluice",
+          "layer": "mid",
+          "step": 6709,
+          "dx": -433.8,
+          "height": 280.0,
+          "sink": -300,
+          "z": 3,
+          "pixelSize": [
+            688,
+            322
+          ]
+        },
+        {
+          "image": "road/mid_trestle_low",
+          "layer": "mid",
+          "step": 9782,
+          "dx": -324.7,
+          "height": 260.0,
+          "sink": -300,
+          "z": 4,
+          "pixelSize": [
+            772,
+            299
+          ]
+        },
+        {
+          "image": "road/mid_slag_heap",
+          "layer": "mid",
+          "step": 12669,
+          "dx": -346.2,
+          "height": 240.0,
+          "sink": -300,
+          "z": 5,
+          "pixelSize": [
+            459,
+            276
+          ]
+        },
+        {
+          "image": "road/mid_rail_cart",
+          "layer": "mid",
+          "step": 15932,
+          "dx": -355.8,
+          "height": 230.0,
+          "sink": -300,
+          "z": 6,
+          "pixelSize": [
+            481,
+            265
+          ]
+        },
+        {
+          "image": "road/mid_trestle_low",
+          "layer": "mid",
+          "step": 18883,
+          "dx": -421.0,
+          "height": 260.0,
+          "sink": -300,
+          "z": 7,
+          "pixelSize": [
+            772,
+            299
+          ]
+        },
+        {
+          "image": "road/mid_shed_row",
+          "layer": "mid",
+          "step": 22172,
+          "dx": -410.9,
+          "height": 290.0,
+          "sink": -300,
+          "z": 8,
+          "pixelSize": [
+            570,
+            334
+          ]
+        },
+        {
+          "image": "road/mid_lamp_cart",
+          "layer": "mid",
+          "step": 25194,
+          "dx": -267.3,
+          "height": 290.0,
+          "sink": -300,
+          "z": 9,
+          "pixelSize": [
+            702,
+            334
+          ]
+        },
+        {
+          "image": "road/mid_coal_heaps",
+          "layer": "mid",
+          "step": 28444,
+          "dx": -323.5,
+          "height": 240.0,
+          "sink": -300,
           "z": 10,
           "pixelSize": [
-            754,
-            660
+            550,
+            276
+          ]
+        },
+        {
+          "image": "road/mid_shed_row",
+          "layer": "mid",
+          "step": 31326,
+          "dx": -413.3,
+          "height": 290.0,
+          "sink": -300,
+          "z": 11,
+          "pixelSize": [
+            570,
+            334
+          ]
+        },
+        {
+          "image": "road/mid_roofs_bank",
+          "layer": "mid",
+          "step": 34372,
+          "dx": -300.6,
+          "height": 280.0,
+          "sink": -300,
+          "z": 12,
+          "pixelSize": [
+            1105,
+            322
+          ]
+        },
+        {
+          "image": "road/mid_poplars",
+          "layer": "mid",
+          "step": 37300,
+          "dx": -323.1,
+          "height": 290.0,
+          "sink": -300,
+          "z": 13,
+          "pixelSize": [
+            570,
+            334
+          ]
+        },
+        {
+          "image": "road/mid_laundry_yard",
+          "layer": "mid",
+          "step": 40103,
+          "dx": -269.1,
+          "height": 250.0,
+          "sink": -300,
+          "z": 14,
+          "pixelSize": [
+            535,
+            288
+          ]
+        },
+        {
+          "image": "road/mid_roofs_bank",
+          "layer": "mid",
+          "step": 42806,
+          "dx": -282.1,
+          "height": 280.0,
+          "sink": -300,
+          "z": 15,
+          "pixelSize": [
+            1105,
+            322
+          ]
+        },
+        {
+          "image": "road/far_sluice_towers",
+          "layer": "far",
+          "step": 3000,
+          "dx": -300.0,
+          "height": 520.0,
+          "sink": -560,
+          "z": 2,
+          "pixelSize": [
+            1260,
+            549
+          ]
+        },
+        {
+          "image": "road/far_power_line",
+          "layer": "far",
+          "step": 7000,
+          "dx": 200.0,
+          "height": 480.0,
+          "sink": -600,
+          "z": 2,
+          "pixelSize": [
+            1008,
+            371
+          ]
+        },
+        {
+          "image": "road/far_chimneys",
+          "layer": "far",
+          "step": 12500,
+          "dx": -200.0,
+          "height": 620.0,
+          "sink": -560,
+          "z": 2,
+          "pixelSize": [
+            1033,
+            603
+          ]
+        },
+        {
+          "image": "road/far_pipe_trestle",
+          "layer": "far",
+          "step": 16500,
+          "dx": 100.0,
+          "height": 260.0,
+          "sink": -600,
+          "z": 2,
+          "pixelSize": [
+            575,
+            299
+          ]
+        },
+        {
+          "image": "road/far_warehouses",
+          "layer": "far",
+          "step": 25500,
+          "dx": -400.0,
+          "height": 300.0,
+          "sink": -600,
+          "z": 2,
+          "pixelSize": [
+            882,
+            329
+          ]
+        },
+        {
+          "image": "road/far_town_bank",
+          "layer": "far",
+          "step": 33500,
+          "dx": -300.0,
+          "height": 420.0,
+          "sink": -580,
+          "z": 2,
+          "pixelSize": [
+            1138,
+            459
+          ]
+        },
+        {
+          "image": "road/far_post_fog",
+          "layer": "far",
+          "step": 42500,
+          "dx": -200.0,
+          "height": 260.0,
+          "sink": -600,
+          "z": 2,
+          "pixelSize": [
+            938,
+            299
+          ]
+        },
+        {
+          "image": "sky/cloud_fog_bank",
+          "layer": "far",
+          "step": 1500,
+          "dx": -200.0,
+          "height": 230.0,
+          "sink": -1420,
+          "z": 0.5,
+          "pixelSize": [
+            534,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_ochre_trio",
+          "layer": "far",
+          "step": 6500,
+          "dx": 250.0,
+          "height": 210.0,
+          "sink": -1520,
+          "z": 0.5,
+          "pixelSize": [
+            860,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_smog",
+          "layer": "far",
+          "step": 11500,
+          "dx": -150.0,
+          "height": 240.0,
+          "sink": -1450,
+          "z": 0.5,
+          "pixelSize": [
+            621,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_factory_smoke",
+          "layer": "far",
+          "step": 16000,
+          "dx": 200.0,
+          "height": 250.0,
+          "sink": -1480,
+          "z": 0.5,
+          "pixelSize": [
+            46,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_dusk",
+          "layer": "far",
+          "step": 22000,
+          "dx": -250.0,
+          "height": 220.0,
+          "sink": -1500,
+          "z": 0.5,
+          "pixelSize": [
+            344,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_boiler_plume",
+          "layer": "far",
+          "step": 26500,
+          "dx": 150.0,
+          "height": 260.0,
+          "sink": -1430,
+          "z": 0.5,
+          "pixelSize": [
+            80,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_town_cream",
+          "layer": "far",
+          "step": 32500,
+          "dx": -100.0,
+          "height": 220.0,
+          "sink": -1500,
+          "z": 0.5,
+          "pixelSize": [
+            455,
+            243
+          ]
+        },
+        {
+          "image": "sky/cloud_cold_fog",
+          "layer": "far",
+          "step": 38500,
+          "dx": 200.0,
+          "height": 240.0,
+          "sink": -1460,
+          "z": 0.5,
+          "pixelSize": [
+            477,
+            243
           ]
         },
         {
           "image": "places/sprite_moon",
-          "layer": "main",
-          "step": 45000,
-          "dx": -180,
-          "height": 320,
-          "sink": -980,
-          "z": -6,
+          "layer": "far",
+          "step": 41000,
+          "dx": 150.0,
+          "height": 280.0,
+          "sink": -1560,
+          "z": 0.6,
           "pixelSize": [
-            551,
-            649
+            123,
+            308
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 400,
+          "dx": 28.8,
+          "height": 359.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 1371,
+          "dx": 409.3,
+          "height": 346.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 2369,
+          "dx": -553.8,
+          "height": 374.6,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 3576,
+          "dx": 441.6,
+          "height": 342.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 4572,
+          "dx": 436.7,
+          "height": 397.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 5431,
+          "dx": -252.6,
+          "height": 363.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 6359,
+          "dx": -156.7,
+          "height": 401.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_reeds_rebar",
+          "layer": "foreground",
+          "step": 7526,
+          "dx": -516.0,
+          "height": 393.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            370,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 8692,
+          "dx": -120.3,
+          "height": 335.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 9611,
+          "dx": 46.7,
+          "height": 340.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 10542,
+          "dx": -589.9,
+          "height": 346.5,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_rebar_tall",
+          "layer": "foreground",
+          "step": 11414,
+          "dx": -108.8,
+          "height": 1300.0,
+          "sink": 900,
+          "z": 1,
+          "pixelSize": [
+            725,
+            1243
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 12450,
+          "dx": -208.3,
+          "height": 382.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 13448,
+          "dx": -125.5,
+          "height": 365.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 14404,
+          "dx": -375.4,
+          "height": 353.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 15284,
+          "dx": 196.1,
+          "height": 325.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 16438,
+          "dx": -438.4,
+          "height": 374.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_rebar_tall",
+          "layer": "foreground",
+          "step": 17308,
+          "dx": -10.1,
+          "height": 1300.0,
+          "sink": 900,
+          "z": 1,
+          "pixelSize": [
+            725,
+            1243
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 18456,
+          "dx": 477.4,
+          "height": 339.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 19368,
+          "dx": -283.7,
+          "height": 386.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 20427,
+          "dx": -383.7,
+          "height": 372.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 21380,
+          "dx": -156.5,
+          "height": 305.4,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 22248,
+          "dx": -121.0,
+          "height": 303.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 23429,
+          "dx": 297.5,
+          "height": 352.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 24534,
+          "dx": -560.2,
+          "height": 301.5,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 25513,
+          "dx": -375.3,
+          "height": 305.5,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 26481,
+          "dx": -317.4,
+          "height": 318.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 27497,
+          "dx": 402.3,
+          "height": 291.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 28636,
+          "dx": 15.3,
+          "height": 296.4,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 29820,
+          "dx": 254.1,
+          "height": 335.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 31051,
+          "dx": -181.5,
+          "height": 290.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 32121,
+          "dx": 343.7,
+          "height": 353.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 33055,
+          "dx": 109.5,
+          "height": 364.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 34233,
+          "dx": -146.4,
+          "height": 362.5,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 35193,
+          "dx": 140.8,
+          "height": 391.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_hogweed",
+          "layer": "foreground",
+          "step": 36180,
+          "dx": -234.4,
+          "height": 1400.0,
+          "sink": 900,
+          "z": 1,
+          "pixelSize": [
+            489,
+            1286
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 37230,
+          "dx": -519.7,
+          "height": 416.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 38223,
+          "dx": 121.8,
+          "height": 416.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 39095,
+          "dx": 69.1,
+          "height": 369.2,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 40337,
+          "dx": 120.6,
+          "height": 417.4,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 41217,
+          "dx": 142.9,
+          "height": 409.1,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_hogweed",
+          "layer": "foreground",
+          "step": 42304,
+          "dx": 14.7,
+          "height": 1400.0,
+          "sink": 900,
+          "z": 1,
+          "pixelSize": [
+            489,
+            1286
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 43536,
+          "dx": -178.3,
+          "height": 369.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 44387,
+          "dx": -430.7,
+          "height": 353.7,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
           ]
         },
         {
@@ -4067,71 +5692,81 @@
       "underground": {
         "neutralTile": "underground/ug_neutral_tile",
         "top": 1700,
-        "scale": 2.0,
+        "scale": 1.0,
         "tilePixelSize": [
-          1148,
-          415
+          2296,
+          830
         ],
         "minGapFraction": 0.3,
         "modules": [
           {
-            "image": "underground/ug_chain",
-            "step": 2000,
-            "dx": 0.0
+            "image": "underground/ug_shlagbaum",
+            "step": 300,
+            "dx": 1467.0
           },
           {
-            "image": "underground/ug_pipes",
-            "step": 6000,
-            "dx": 0.0
+            "image": "underground/ug_otstoyniki",
+            "step": 4000,
+            "dx": -31.5
           },
           {
-            "image": "underground/ug_bricks",
-            "step": 10000,
-            "dx": 0.0
+            "image": "underground/ug_truby",
+            "step": 11000,
+            "dx": 229.2
           },
           {
-            "image": "underground/ug_bone",
-            "step": 14000,
-            "dx": 0.0
+            "image": "underground/ug_shlam",
+            "step": 17500,
+            "dx": 187.2
           },
           {
-            "image": "underground/ug_cables",
-            "step": 18000,
-            "dx": 0.0
+            "image": "underground/ug_kotelnaya",
+            "step": 21500,
+            "dx": -222.6
           },
           {
-            "image": "underground/ug_stones",
-            "step": 22000,
-            "dx": 0.0
+            "image": "underground/ug_sarai",
+            "step": 28000,
+            "dx": 40.0
           },
           {
-            "image": "underground/ug_iron",
-            "step": 26000,
-            "dx": 0.0
+            "image": "underground/ug_naberezhnaya",
+            "step": 33500,
+            "dx": 7.6
           },
           {
-            "image": "underground/ug_boat",
-            "step": 30000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_tank",
-            "step": 34000,
-            "dx": 0.0
-          },
-          {
-            "image": "underground/ug_valve",
+            "image": "underground/ug_dvory",
             "step": 37000,
-            "dx": 0.0
+            "dx": -122.4
           },
           {
-            "image": "underground/ug_roots",
+            "image": "underground/ug_otdelenie",
             "step": 40000,
+            "dx": -223.6
+          },
+          {
+            "image": "underground/ug_verkhnyaya",
+            "step": 43000,
+            "dx": 244.0
+          },
+          {
+            "image": "underground/ug_fill_pipes",
+            "step": 7600,
             "dx": 0.0
           },
           {
-            "image": "underground/ug_tilefrag",
-            "step": 43000,
+            "image": "underground/ug_fill_boot",
+            "step": 14300,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_fill_stove",
+            "step": 24800,
+            "dx": 0.0
+          },
+          {
+            "image": "underground/ug_fill_jars",
+            "step": 30800,
             "dx": 0.0
           }
         ]
@@ -4169,12 +5804,12 @@
         }
       ],
       "sky": {
-        "topColor": "#A7D0E2",
-        "bottomColor": "#D8B3A2",
-        "duskTopColor": "#B4836D",
-        "duskBottomColor": "#A2784F",
-        "nightTopColor": "#1D2534",
-        "nightBottomColor": "#212832"
+        "topColor": "#24505A",
+        "bottomColor": "#A3A894",
+        "duskTopColor": "#2E3A4E",
+        "duskBottomColor": "#B27A4E",
+        "nightTopColor": "#1C3846",
+        "nightBottomColor": "#7E8478"
       },
       "rawClayAfterStep": 45000
     }

@@ -6,7 +6,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "Postman/GameAssets/Data"
-META = json.loads((ROOT / "Postman/GameAssets/Chapter4/install_meta.json").read_text())
 CANON = (ROOT / "docs/canon/letters-ch4.md").read_text(encoding="utf-8")
 
 def letter_text(n: int) -> str:
@@ -87,23 +86,17 @@ def ambient_props():
     # (the old cloud_* crops were opaque rectangles against the chapter gradient).
     return props
 
-def road_props():
-    from PIL import Image
-    im = Image.open(ROOT / "Postman/GameAssets/Chapter4/road/road_main.png")
-    ps = [im.size[0], im.size[1]]
-    out = []
-    for step in range(0, 49001, 2000):
-        out.append(dict(image="road/road_main", layer="main", step=step, dx=-1200,
-                        height=680, sink=40, z=-20, pixelSize=ps))
-    return out
-
 def build_world():
+    """Chapter 4 layout from tools/build_chapter4_world_v2.py (v2 art, built like chapter 1)."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_chapter4_world_v2 as v2
     world = json.loads((DATA / "world.json").read_text(encoding="utf-8"))
     ch3 = next(c for c in world["chapters"] if c["id"] == 3)
     ch3.pop("rawClayAfterStep", None)
-    # drop any previous chapter 4
     world["chapters"] = [c for c in world["chapters"] if c["id"] != 4]
-    places = META["places"]
+    props, anchors = v2.build_props()
+    ambient = ambient_props()
     ch4 = {
         "id": 4,
         "title": "Нижний Створ",
@@ -111,19 +104,8 @@ def build_world():
         "lengthSteps": 45000,
         "assetsFolder": "Chapter4",
         "settlements": SETTLEMENTS,
-        "props": road_props() + places + META.get("sprites", []) + ambient_props(),
-        "underground": {
-            "neutralTile": "underground/ug_neutral_tile",
-            "top": 1700,
-            "scale": 2.0,
-            "tilePixelSize": META.get("tilePixelSize") or [680, 415],
-            "minGapFraction": 0.3,
-            "modules": META.get("ug_finds") or [
-                {"image": "underground/ug_chain", "step": 200, "dx": 0.0},
-                {"image": "underground/ug_bone", "step": 17500, "dx": 0.0},
-                {"image": "underground/ug_boat", "step": 32000, "dx": 0.0},
-            ],
-        },
+        "props": props + ambient,
+        "underground": v2.build_underground(anchors),
         "quests": [
             {"untilStep": 4000, "telegram": "Оставить записку А.Л. в ящике на Отстойниках", "lettersInBag": 1},
             {"untilStep": 21000, "telegram": "До Котельной, оказия вниз", "lettersInBag": 1},
@@ -132,20 +114,13 @@ def build_world():
             {"untilStep": 39500, "telegram": "К отделению", "lettersInBag": 1},
             {"untilStep": 45000, "telegram": "До Верхней", "lettersInBag": 0},
         ],
-        "sky": {
-            "topColor": META["sky_top"],
-            "bottomColor": META["sky_bot"],
-            "duskTopColor": META.get("sky_dusk_top"),
-            "duskBottomColor": META.get("sky_dusk_bot"),
-            "nightTopColor": META.get("sky_night_top"),
-            "nightBottomColor": META.get("sky_night_bot"),
-        },
+        "sky": dict(v2.SKY),
         "rawClayAfterStep": 45000,
     }
-    ch4["underground"]["modules"] = META.get("ug_variants") or []
     world["chapters"].append(ch4)
     (DATA / "world.json").write_text(json.dumps(world, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("world.json: chapter 4 added, ch3 rawClay removed")
+    print("world.json: chapter 4 v2 —", len(props), "art props,", len(ambient), "ambient,", len(ch4["underground"]["modules"]), "ug modules")
+    return v2.taps(anchors, ambient)
 
 def build_story():
     t1, t2, t3, t4, t5, t6, t7, t8, t10 = [letter_text(n) for n in (1,2,3,4,5,6,7,8,10)]
@@ -402,35 +377,17 @@ def build_story():
     p.write_text(json.dumps(s3, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("chapter3 nextChapter updated")
 
-def build_taps():
-    # Reuse ch3 tap sprites as honest placeholders; copy is new. Listed in report.
-    # sprite paths that exist:
-    taps = [
-        {"id":"kettle","step":80,"dx":-220,"sprite":"Chapter3/taps/kettle","height":120,"sink":40,"z":12},
-        {"id":"barrier","step":0,"dx":-40,"sprite":"Chapter3/taps/barrier","height":200,"sink":40,"z":11,"draw":False},
-        {"id":"ducks_gate","step":200,"dx":200,"sprite":"Chapter3/taps/duckweed","height":80,"sink":20,"z":11},
-        {"id":"sluice","step":4000,"dx":-300,"sprite":"Chapter3/taps/pipes","height":180,"sink":40,"z":11},
-        {"id":"key","step":4100,"dx":-80,"sprite":"Chapter3/taps/nails","height":80,"sink":20,"z":12},
-        {"id":"crow","step":11000,"dx":200,"sprite":"Chapter3/taps/heron","height":140,"sink":-40,"z":14},
-        {"id":"nest","step":12000,"dx":-100,"sprite":"Chapter3/taps/hummock","height":90,"sink":20,"z":11},
-        {"id":"crust","step":17500,"dx":-40,"sprite":"Chapter3/taps/peat","height":80,"sink":20,"z":11},
-        {"id":"boiler","step":23000,"dx":-200,"sprite":"Chapter3/taps/kettle","height":160,"sink":40,"z":12},
-        {"id":"cat_soot","step":23100,"dx":260,"sprite":"Chapter3/taps/frog","height":100,"sink":0,"z":12},
-        {"id":"pigeons","step":27000,"dx":180,"sprite":"Chapter3/taps/heron","height":100,"sink":-20,"z":13},
-        {"id":"bench","step":32000,"dx":100,"sprite":"Chapter3/taps/dryer","height":140,"sink":40,"z":11},
-        {"id":"gate","step":36500,"dx":-120,"sprite":"Chapter3/taps/door","height":220,"sink":40,"z":11},
-        {"id":"counter","step":39500,"dx":-80,"sprite":"Chapter3/taps/duty","height":160,"sink":40,"z":12},
-        {"id":"sign","step":45000,"dx":80,"sprite":"Chapter3/taps/note","height":120,"sink":20,"z":12},
-    ]
+def build_taps(taps):
+    # Tap targets sit on the chapter-4 art itself (el_*, places, ambient), invisible: the prop is the picture.
     (DATA / "chapter4_taps.json").write_text(json.dumps(taps, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("chapter4_taps.json", len(taps))
 
 if __name__ == "__main__":
     import sys
     props_only = "--props-only" in sys.argv
-    build_world()
+    taps = build_world()
+    build_taps(taps)
     if not props_only:
         build_story()
-        build_taps()
     else:
-        print("props-only: story and taps left untouched")
+        print("props-only: story left untouched")
