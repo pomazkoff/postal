@@ -189,6 +189,166 @@
       "scale": 0.65,
       "interval": 1.3,
       "wind": 1
+    },
+    {
+      "prop": "places/place_kotelnaya_main",
+      "at": [
+        813,
+        54
+      ],
+      "scale": 1.0,
+      "interval": 1.0,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_kotelnaya_main",
+      "at": [
+        1186,
+        562
+      ],
+      "scale": 0.5,
+      "interval": 1.6,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_sarai_main",
+      "at": [
+        2195,
+        29
+      ],
+      "scale": 0.9,
+      "interval": 1.1,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_sarai_main",
+      "at": [
+        1454,
+        230
+      ],
+      "scale": 0.5,
+      "interval": 1.7,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_dvory_main",
+      "at": [
+        965,
+        45
+      ],
+      "scale": 0.7,
+      "interval": 1.3,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_dvory_main",
+      "at": [
+        1393,
+        255
+      ],
+      "scale": 0.6,
+      "interval": 1.5,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_otdelenie_main",
+      "at": [
+        1398,
+        109
+      ],
+      "scale": 0.6,
+      "interval": 1.4,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_otstoyniki_main",
+      "at": [
+        2148,
+        32
+      ],
+      "scale": 0.6,
+      "interval": 1.4,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_verkhnyaya_main",
+      "at": [
+        529,
+        187
+      ],
+      "scale": 0.6,
+      "interval": 1.4,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_verkhnyaya_main",
+      "at": [
+        1493,
+        144
+      ],
+      "scale": 0.5,
+      "interval": 1.6,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_naberezhnaya_main",
+      "at": [
+        1392,
+        32
+      ],
+      "scale": 0.5,
+      "interval": 1.5,
+      "wind": 1
+    },
+    {
+      "prop": "places/place_shlagbaum_main",
+      "at": [
+        1047,
+        975
+      ],
+      "scale": 0.35,
+      "interval": 1.8,
+      "wind": 1
+    },
+    {
+      "prop": "places/el_kotelnaya_dryer",
+      "at": [
+        561,
+        72
+      ],
+      "scale": 0.45,
+      "interval": 1.5,
+      "wind": 1
+    },
+    {
+      "prop": "road/far_chimneys",
+      "at": [
+        826,
+        18
+      ],
+      "scale": 0.5,
+      "interval": 1.3,
+      "wind": 1
+    },
+    {
+      "prop": "road/far_chimneys",
+      "at": [
+        72,
+        72
+      ],
+      "scale": 0.4,
+      "interval": 1.6,
+      "wind": 1
+    },
+    {
+      "prop": "road/mid_coal_heaps",
+      "at": [
+        341,
+        36
+      ],
+      "scale": 0.35,
+      "interval": 1.5,
+      "wind": 1
     }
   ],
   "sway": [
@@ -399,6 +559,54 @@
         3.0,
         4.2
       ]
+    },
+    {
+      "match": "places/el_dvory_laundry",
+      "amp": 0.6,
+      "period": [
+        2.6,
+        3.4
+      ]
+    },
+    {
+      "match": "foreground/fg_burdock",
+      "amp": 1.4,
+      "period": [
+        3.0,
+        4.0
+      ]
+    },
+    {
+      "match": "foreground/fg_weeds_pipe",
+      "amp": 1.6,
+      "period": [
+        2.8,
+        3.8
+      ]
+    },
+    {
+      "match": "road/prop_marker_pole",
+      "amp": 0.4,
+      "period": [
+        3.8,
+        5.0
+      ]
+    },
+    {
+      "match": "road/prop_warning_sign",
+      "amp": 0.4,
+      "period": [
+        4.0,
+        5.2
+      ]
+    },
+    {
+      "match": "places/el_shlam_stake",
+      "amp": 0.6,
+      "period": [
+        3.4,
+        4.4
+      ]
     }
   ],
   "bells": [
@@ -417,6 +625,268 @@
       "amp": 5,
       "period": 2.8,
       "z": 1
+    }
+  ],
+  "glow": [
+    {
+      "prop": "places/place_kotelnaya_main",
+      "at": [
+        1067,
+        1414
+      ],
+      "radius": 170,
+      "color": "#FF8A2A",
+      "low": 0.25,
+      "high": 0.6,
+      "period": 1.2,
+      "mode": "flicker"
+    },
+    {
+      "prop": "places/place_kotelnaya_main",
+      "at": [
+        644,
+        1106
+      ],
+      "radius": 110,
+      "color": "#FFC060",
+      "low": 0.12,
+      "high": 0.32,
+      "period": 4,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_sarai_main",
+      "at": [
+        1939,
+        1078
+      ],
+      "radius": 150,
+      "color": "#FF8A2A",
+      "low": 0.25,
+      "high": 0.6,
+      "period": 1.2,
+      "mode": "flicker"
+    },
+    {
+      "prop": "places/el_kotelnaya_dryer",
+      "at": [
+        529,
+        341
+      ],
+      "radius": 70,
+      "color": "#FF8A2A",
+      "low": 0.2,
+      "high": 0.55,
+      "period": 1.0,
+      "mode": "flicker"
+    },
+    {
+      "prop": "places/place_shlagbaum_main",
+      "at": [
+        1136,
+        149
+      ],
+      "radius": 110,
+      "color": "#FFD27A",
+      "low": 0.12,
+      "high": 0.6,
+      "period": 3.5,
+      "mode": "blink"
+    },
+    {
+      "prop": "places/place_otstoyniki_main",
+      "at": [
+        1848,
+        481
+      ],
+      "radius": 140,
+      "color": "#FFC060",
+      "low": 0.15,
+      "high": 0.35,
+      "period": 5,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otstoyniki_main",
+      "at": [
+        720,
+        1202
+      ],
+      "radius": 60,
+      "color": "#DFF3EE",
+      "low": 0.0,
+      "high": 0.22,
+      "period": 3.1,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otstoyniki_main",
+      "at": [
+        1248,
+        1154
+      ],
+      "radius": 50,
+      "color": "#DFF3EE",
+      "low": 0.0,
+      "high": 0.2,
+      "period": 2.6,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otstoyniki_main",
+      "at": [
+        1584,
+        1234
+      ],
+      "radius": 55,
+      "color": "#DFF3EE",
+      "low": 0.0,
+      "high": 0.22,
+      "period": 3.7,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_naberezhnaya_main",
+      "at": [
+        1404,
+        538
+      ],
+      "radius": 60,
+      "color": "#FFC060",
+      "low": 0.12,
+      "high": 0.32,
+      "period": 4.2,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_dvory_main",
+      "at": [
+        1733,
+        450
+      ],
+      "radius": 90,
+      "color": "#FFC060",
+      "low": 0.12,
+      "high": 0.32,
+      "period": 4.5,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otdelenie_main",
+      "at": [
+        681,
+        1262
+      ],
+      "radius": 200,
+      "color": "#FFC060",
+      "low": 0.1,
+      "high": 0.3,
+      "period": 6,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otdelenie_main",
+      "at": [
+        466,
+        544
+      ],
+      "radius": 90,
+      "color": "#FFC060",
+      "low": 0.1,
+      "high": 0.3,
+      "period": 5,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_otdelenie_main",
+      "at": [
+        932,
+        544
+      ],
+      "radius": 90,
+      "color": "#FFC060",
+      "low": 0.1,
+      "high": 0.3,
+      "period": 5.5,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_verkhnyaya_main",
+      "at": [
+        1960,
+        604
+      ],
+      "radius": 100,
+      "color": "#FFD27A",
+      "low": 0.2,
+      "high": 0.6,
+      "period": 4,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_verkhnyaya_main",
+      "at": [
+        1338,
+        676
+      ],
+      "radius": 70,
+      "color": "#FFC060",
+      "low": 0.1,
+      "high": 0.3,
+      "period": 5,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/el_verkhnyaya_lamp",
+      "at": [
+        54,
+        92
+      ],
+      "radius": 80,
+      "color": "#FFD27A",
+      "low": 0.2,
+      "high": 0.6,
+      "period": 3,
+      "mode": "pulse"
+    },
+    {
+      "prop": "road/prop_town_lamp",
+      "at": [
+        241,
+        221
+      ],
+      "radius": 70,
+      "color": "#FFD27A",
+      "low": 0.2,
+      "high": 0.55,
+      "period": 3.4,
+      "mode": "pulse"
+    },
+    {
+      "prop": "places/place_truby_main",
+      "at": [
+        1971,
+        694
+      ],
+      "radius": 40,
+      "color": "#FF8A2A",
+      "low": 0.2,
+      "high": 0.5,
+      "period": 0.9,
+      "mode": "flicker"
+    },
+    {
+      "prop": "road/mid_coal_heaps",
+      "at": [
+        319,
+        193
+      ],
+      "radius": 30,
+      "color": "#FF8A2A",
+      "low": 0.2,
+      "high": 0.6,
+      "period": 1.0,
+      "mode": "flicker"
     }
   ]
 }

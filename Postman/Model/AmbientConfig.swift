@@ -16,6 +16,8 @@ struct AmbientConfig: Decodable {
     let smoke: [Smoke]
     let sway: [Sway]
     let bells: [Bell]
+    /// Свечение поверх пропса (огонь в топке, лампа, окно, блик воды). Нет ключа — нет свечения.
+    let glow: [Glow]?
 
     /// Опорная точка суток (час 0…24). Между точками цвета интерполируются.
     struct SkyKey: Decodable {
@@ -87,6 +89,21 @@ struct AmbientConfig: Decodable {
         let amp: Double
         let period: Double
         let z: Double
+    }
+
+    /// Мягкое пятно света (аддитивно) в точке at (пиксели исходника пропса, Y вниз).
+    struct Glow: Decodable {
+        let prop: String
+        let at: [Double]
+        /// Радиус в пикселях исходника пропса.
+        let radius: Double
+        let color: String
+        /// Альфа пятна: от low до high.
+        let low: Double
+        let high: Double
+        let period: Double
+        /// "pulse" — плавно, "flicker" — огонь, "blink" — лампа то и дело мигает.
+        let mode: String?
     }
 
     static func load() -> AmbientConfig? {

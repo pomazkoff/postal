@@ -56,26 +56,26 @@ def ambient_props():
     def psz(name):
         im = Image.open(amb / f"{name}.png")
         return [im.size[0], im.size[1]]
+    # fix pass 1: animals stand on the ground (sink ≥ 0), in front of the places (z 60+),
+    # and only ONE crow is left in the chapter (the story crow at 9000, the tap «crow»).
     specs = [
-        ("ducks", 300, -80, 70, 24, 10),
-        ("ducks", 2500, 200, 70, 24, 10),
-        ("ducks", 6000, 160, 70, 24, 10),
-        ("dog_otstoyniki", 4000, 220, 165, 0, 12),
-        ("dog_otstoyniki", 6500, -180, 165, 0, 12),
-        ("fish", 4500, 80, 60, 30, 9),
-        ("crow", 9000, 300, 140, -80, 14),
-        ("crow_fly", 12000, -40, 150, -200, 16),
-        ("crow", 13000, 180, 140, -60, 14),
-        ("dog_slag", 17500, 200, 160, 0, 12),
-        ("lizard", 19000, -60, 50, 8, 11),
-        ("cat_soot", 23000, 280, 125, 0, 12),
-        ("pigeons", 27000, 200, 90, -40, 13),
-        ("cat_sarai", 28000, -160, 132, 0, 12),
-        ("dog_city", 33000, 180, 160, 0, 12),
-        ("sparrows", 34000, -80, 70, -30, 13),
-        ("chickens", 36500, 240, 140, 0, 11),
-        ("cat_otdelenie", 39500, 300, 130, 0, 12),
-        ("dog_city", 37000, -200, 160, 0, 12),
+        ("ducks", 300, -80, 70, 24, 60),
+        ("ducks", 2500, 200, 70, 24, 60),
+        ("ducks", 6000, 160, 70, 24, 60),
+        ("dog_otstoyniki", 4000, 220, 165, 0, 62),
+        ("dog_otstoyniki", 6500, -180, 165, 0, 62),
+        ("fish", 4500, 80, 60, 30, 59),
+        ("crow", 9000, 300, 140, 10, 64),
+        ("dog_slag", 17500, 200, 160, 0, 62),
+        ("lizard", 19000, -60, 50, 8, 61),
+        ("cat_soot", 23000, 280, 125, 0, 62),
+        ("pigeons", 27000, 200, 90, 10, 63),
+        ("cat_sarai", 28000, -160, 132, 0, 62),
+        ("dog_city", 33000, 180, 160, 0, 62),
+        ("sparrows", 34000, -80, 70, 10, 63),
+        ("chickens", 36500, 240, 140, 0, 61),
+        ("cat_otdelenie", 39500, 300, 130, 0, 62),
+        ("dog_city", 37000, -200, 160, 0, 62),
     ]
     props = []
     for name, step, dx, height, sink, z in specs:

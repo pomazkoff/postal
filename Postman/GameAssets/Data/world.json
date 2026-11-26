@@ -3357,47 +3357,8 @@
           "sink": 40,
           "z": 1,
           "pixelSize": [
-            1293,
-            1438
-          ]
-        },
-        {
-          "image": "places/el_shlagbaum_kettle",
-          "layer": "main",
-          "step": 300,
-          "dx": 1012.0,
-          "height": 430.0,
-          "sink": 40,
-          "z": 2,
-          "pixelSize": [
-            583,
-            495
-          ]
-        },
-        {
-          "image": "places/el_shlagbaum_mailbox",
-          "layer": "main",
-          "step": 300,
-          "dx": 1856.0,
-          "height": 600.0,
-          "sink": 40,
-          "z": 3,
-          "pixelSize": [
-            589,
-            690
-          ]
-        },
-        {
-          "image": "places/el_shlagbaum_tinfence",
-          "layer": "main",
-          "step": 300,
-          "dx": 2428.2,
-          "height": 520.0,
-          "sink": 40,
-          "z": 4,
-          "pixelSize": [
-            875,
-            598
+            1975,
+            1572
           ]
         },
         {
@@ -3407,49 +3368,23 @@
           "dx": -900.0,
           "height": 1150.0,
           "sink": 40,
-          "z": 6,
-          "pixelSize": [
-            2172,
-            1438
-          ]
-        },
-        {
-          "image": "places/el_otstoyniki_valves",
-          "layer": "main",
-          "step": 4000,
-          "dx": -795.8,
-          "height": 520.0,
-          "sink": 40,
           "z": 7,
           "pixelSize": [
-            803,
-            598
-          ]
-        },
-        {
-          "image": "places/el_otstoyniki_footbridge",
-          "layer": "main",
-          "step": 4000,
-          "dx": 716.3,
-          "height": 360.0,
-          "sink": 40,
-          "z": 8,
-          "pixelSize": [
-            555,
-            414
+            2400,
+            1603
           ]
         },
         {
           "image": "places/el_otstoyniki_sluice",
           "layer": "main",
           "step": 4000,
-          "dx": -1291.4,
-          "height": 700.0,
+          "dx": 871.8,
+          "height": 560.0,
           "sink": 40,
-          "z": 9,
+          "z": 8,
           "pixelSize": [
-            643,
-            805
+            923,
+            1400
           ]
         },
         {
@@ -3459,49 +3394,10 @@
           "dx": -1100.0,
           "height": 1250.0,
           "sink": 40,
-          "z": 11,
-          "pixelSize": [
-            3324,
-            1563
-          ]
-        },
-        {
-          "image": "places/el_truby_servicebox",
-          "layer": "main",
-          "step": 11000,
-          "dx": 1508.8,
-          "height": 420.0,
-          "sink": 40,
-          "z": 12,
-          "pixelSize": [
-            228,
-            483
-          ]
-        },
-        {
-          "image": "places/el_truby_nest",
-          "layer": "main",
-          "step": 11000,
-          "dx": -940.5,
-          "height": 380.0,
-          "sink": 40,
           "z": 13,
           "pixelSize": [
-            588,
-            437
-          ]
-        },
-        {
-          "image": "places/el_truby_ladder",
-          "layer": "main",
-          "step": 11000,
-          "dx": 1767.0,
-          "height": 900.0,
-          "sink": 40,
-          "z": 14,
-          "pixelSize": [
-            591,
-            1035
+            2511,
+            1228
           ]
         },
         {
@@ -3511,49 +3407,36 @@
           "dx": -1000.0,
           "height": 1150.0,
           "sink": 40,
-          "z": 16,
+          "z": 19,
           "pixelSize": [
             2969,
             1438
           ]
         },
         {
-          "image": "places/el_shlam_stake",
-          "layer": "main",
-          "step": 17500,
-          "dx": 1261.4,
-          "height": 650.0,
-          "sink": 40,
-          "z": 17,
-          "pixelSize": [
-            520,
-            748
-          ]
-        },
-        {
-          "image": "places/el_shlam_barrow",
-          "layer": "main",
-          "step": 17500,
-          "dx": -857.5,
-          "height": 330.0,
-          "sink": 40,
-          "z": 18,
-          "pixelSize": [
-            530,
-            380
-          ]
-        },
-        {
           "image": "places/el_shlam_slab",
           "layer": "main",
           "step": 17500,
-          "dx": -1281.2,
+          "dx": -1451.7,
           "height": 260.0,
           "sink": 40,
-          "z": 19,
+          "z": 20,
           "pixelSize": [
             462,
             299
+          ]
+        },
+        {
+          "image": "places/el_shlam_stake",
+          "layer": "main",
+          "step": 17500,
+          "dx": 1424.4,
+          "height": 650.0,
+          "sink": 40,
+          "z": 21,
+          "pixelSize": [
+            520,
+            748
           ]
         },
         {
@@ -3563,7 +3446,7 @@
           "dx": -900.0,
           "height": 1450.0,
           "sink": 40,
-          "z": 21,
+          "z": 25,
           "pixelSize": [
             1694,
             1813
@@ -3573,10 +3456,10 @@
           "image": "places/el_kotelnaya_coalpile",
           "layer": "main",
           "step": 21500,
-          "dx": -1177.0,
+          "dx": -1565.7,
           "height": 420.0,
           "sink": 40,
-          "z": 22,
+          "z": 26,
           "pixelSize": [
             708,
             483
@@ -3586,10 +3469,10 @@
           "image": "places/el_kotelnaya_dryer",
           "layer": "main",
           "step": 21500,
-          "dx": 280.7,
-          "height": 520.0,
+          "dx": 504.8,
+          "height": 420.0,
           "sink": 40,
-          "z": 23,
+          "z": 27,
           "pixelSize": [
             801,
             598
@@ -3599,10 +3482,10 @@
           "image": "places/el_kotelnaya_okabox",
           "layer": "main",
           "step": 21500,
-          "dx": 1037.2,
-          "height": 420.0,
+          "dx": 1117.4,
+          "height": 380.0,
           "sink": 40,
-          "z": 24,
+          "z": 28,
           "pixelSize": [
             346,
             483
@@ -3615,7 +3498,7 @@
           "dx": -1100.0,
           "height": 1150.0,
           "sink": 40,
-          "z": 26,
+          "z": 31,
           "pixelSize": [
             2851,
             1438
@@ -3625,10 +3508,10 @@
           "image": "places/el_sarai_door",
           "layer": "main",
           "step": 28000,
-          "dx": 1029.1,
+          "dx": 1230.0,
           "height": 600.0,
           "sink": 40,
-          "z": 27,
+          "z": 32,
           "pixelSize": [
             694,
             690
@@ -3638,26 +3521,13 @@
           "image": "places/el_sarai_blanks",
           "layer": "main",
           "step": 28000,
-          "dx": -963.2,
-          "height": 420.0,
+          "dx": 1883.5,
+          "height": 400.0,
           "sink": 40,
-          "z": 28,
+          "z": 33,
           "pixelSize": [
             589,
             483
-          ]
-        },
-        {
-          "image": "places/el_sarai_ridge",
-          "layer": "main",
-          "step": 28000,
-          "dx": -1382.4,
-          "height": 260.0,
-          "sink": 40,
-          "z": 29,
-          "pixelSize": [
-            464,
-            299
           ]
         },
         {
@@ -3665,51 +3535,25 @@
           "layer": "main",
           "step": 33500,
           "dx": -1100.0,
-          "height": 1200.0,
+          "height": 1300.0,
           "sink": 40,
-          "z": 31,
+          "z": 37,
           "pixelSize": [
-            2769,
-            1500
-          ]
-        },
-        {
-          "image": "places/el_naberezhnaya_tumba",
-          "layer": "main",
-          "step": 33500,
-          "dx": 1023.7,
-          "height": 520.0,
-          "sink": 40,
-          "z": 32,
-          "pixelSize": [
-            421,
-            598
-          ]
-        },
-        {
-          "image": "places/el_naberezhnaya_poplar",
-          "layer": "main",
-          "step": 33500,
-          "dx": 1449.8,
-          "height": 1100.0,
-          "sink": 40,
-          "z": 33,
-          "pixelSize": [
-            746,
-            1265
+            2400,
+            1054
           ]
         },
         {
           "image": "places/el_naberezhnaya_railing",
           "layer": "main",
           "step": 33500,
-          "dx": -1934.5,
-          "height": 420.0,
+          "dx": -1873.9,
+          "height": 300.0,
           "sink": 40,
-          "z": 34,
+          "z": 38,
           "pixelSize": [
-            1371,
-            483
+            1800,
+            746
           ]
         },
         {
@@ -3719,46 +3563,46 @@
           "dx": -1000.0,
           "height": 1200.0,
           "sink": 40,
-          "z": 36,
+          "z": 43,
           "pixelSize": [
             2194,
             1500
           ]
         },
         {
-          "image": "places/el_dvory_gatebox",
-          "layer": "main",
-          "step": 37000,
-          "dx": 547.6,
-          "height": 620.0,
-          "sink": 40,
-          "z": 37,
-          "pixelSize": [
-            955,
-            713
-          ]
-        },
-        {
           "image": "places/el_dvory_laundry",
           "layer": "main",
           "step": 37000,
-          "dx": -1812.6,
-          "height": 520.0,
+          "dx": -2121.6,
+          "height": 480.0,
           "sink": 40,
-          "z": 38,
+          "z": 44,
           "pixelSize": [
             1335,
             598
           ]
         },
         {
+          "image": "places/el_dvory_gatebox",
+          "layer": "main",
+          "step": 37000,
+          "dx": 805.2,
+          "height": 600.0,
+          "sink": 40,
+          "z": 45,
+          "pixelSize": [
+            1356,
+            1400
+          ]
+        },
+        {
           "image": "places/el_dvory_henhouse",
           "layer": "main",
           "step": 37000,
-          "dx": 1438.0,
+          "dx": 1436.3,
           "height": 420.0,
           "sink": 40,
-          "z": 39,
+          "z": 46,
           "pixelSize": [
             602,
             483
@@ -3769,51 +3613,12 @@
           "layer": "main",
           "step": 40000,
           "dx": -900.0,
-          "height": 1600.0,
+          "height": 1450.0,
           "sink": 40,
-          "z": 41,
+          "z": 49,
           "pixelSize": [
-            1691,
-            2000
-          ]
-        },
-        {
-          "image": "places/el_otdelenie_sacks",
-          "layer": "main",
-          "step": 40000,
-          "dx": -818.8,
-          "height": 600.0,
-          "sink": 40,
-          "z": 42,
-          "pixelSize": [
-            814,
-            690
-          ]
-        },
-        {
-          "image": "places/el_otdelenie_counter",
-          "layer": "main",
-          "step": 40000,
-          "dx": 176.1,
-          "height": 520.0,
-          "sink": 40,
-          "z": 43,
-          "pixelSize": [
-            1273,
-            598
-          ]
-        },
-        {
-          "image": "places/el_otdelenie_postbox",
-          "layer": "main",
-          "step": 40000,
-          "dx": 1343.0,
-          "height": 380.0,
-          "sink": 40,
-          "z": 44,
-          "pixelSize": [
-            256,
-            437
+            1792,
+            2175
           ]
         },
         {
@@ -3823,46 +3628,46 @@
           "dx": -1000.0,
           "height": 1150.0,
           "sink": 40,
-          "z": 46,
+          "z": 55,
           "pixelSize": [
             3111,
             1438
           ]
         },
         {
-          "image": "places/el_verkhnyaya_bench",
-          "layer": "main",
-          "step": 43000,
-          "dx": -850.7,
-          "height": 340.0,
-          "sink": 40,
-          "z": 47,
-          "pixelSize": [
-            418,
-            391
-          ]
-        },
-        {
           "image": "places/el_verkhnyaya_gate",
           "layer": "main",
           "step": 43000,
-          "dx": 1343.4,
+          "dx": 1537.9,
           "height": 620.0,
           "sink": 40,
-          "z": 48,
+          "z": 56,
           "pixelSize": [
             665,
             713
           ]
         },
         {
+          "image": "places/el_verkhnyaya_bench",
+          "layer": "main",
+          "step": 43000,
+          "dx": 2166.2,
+          "height": 340.0,
+          "sink": 40,
+          "z": 57,
+          "pixelSize": [
+            418,
+            391
+          ]
+        },
+        {
           "image": "places/el_verkhnyaya_lamp",
           "layer": "main",
           "step": 43000,
-          "dx": 1981.6,
+          "dx": 2579.7,
           "height": 1000.0,
           "sink": 40,
-          "z": 49,
+          "z": 58,
           "pixelSize": [
             767,
             1150
@@ -3873,12 +3678,12 @@
           "layer": "main",
           "step": 0,
           "dx": 0.0,
-          "height": 441.0,
+          "height": 440.0,
           "sink": 40,
           "z": -30.0,
           "pixelSize": [
             2400,
-            441
+            440
           ]
         },
         {
@@ -3886,12 +3691,12 @@
           "layer": "main",
           "step": 2051,
           "dx": 0.0,
-          "height": 426.0,
+          "height": 436.0,
           "sink": 40,
           "z": -29.999,
           "pixelSize": [
             2400,
-            426
+            436
           ]
         },
         {
@@ -3899,12 +3704,12 @@
           "layer": "main",
           "step": 4102,
           "dx": 0.0,
-          "height": 441.0,
+          "height": 440.0,
           "sink": 40,
           "z": -29.998,
           "pixelSize": [
             2400,
-            441
+            440
           ]
         },
         {
@@ -3912,12 +3717,12 @@
           "layer": "main",
           "step": 6153,
           "dx": 0.0,
-          "height": 426.0,
+          "height": 436.0,
           "sink": 40,
           "z": -29.997,
           "pixelSize": [
             2400,
-            426
+            436
           ]
         },
         {
@@ -3925,12 +3730,12 @@
           "layer": "main",
           "step": 8000,
           "dx": 0.0,
-          "height": 443.0,
+          "height": 435.0,
           "sink": 40,
           "z": -29.9,
           "pixelSize": [
             2400,
-            443
+            435
           ]
         },
         {
@@ -3938,12 +3743,12 @@
           "layer": "main",
           "step": 10051,
           "dx": 0.0,
-          "height": 427.0,
+          "height": 439.0,
           "sink": 40,
           "z": -29.899,
           "pixelSize": [
             2400,
-            427
+            439
           ]
         },
         {
@@ -3951,12 +3756,12 @@
           "layer": "main",
           "step": 12102,
           "dx": 0.0,
-          "height": 443.0,
+          "height": 435.0,
           "sink": 40,
           "z": -29.898,
           "pixelSize": [
             2400,
-            443
+            435
           ]
         },
         {
@@ -3964,12 +3769,12 @@
           "layer": "main",
           "step": 14000,
           "dx": 0.0,
-          "height": 441.0,
+          "height": 434.0,
           "sink": 40,
           "z": -29.8,
           "pixelSize": [
             2400,
-            441
+            434
           ]
         },
         {
@@ -3977,12 +3782,12 @@
           "layer": "main",
           "step": 16051,
           "dx": 0.0,
-          "height": 427.0,
+          "height": 419.0,
           "sink": 40,
           "z": -29.799,
           "pixelSize": [
             2400,
-            427
+            419
           ]
         },
         {
@@ -3990,12 +3795,12 @@
           "layer": "main",
           "step": 18102,
           "dx": 0.0,
-          "height": 441.0,
+          "height": 434.0,
           "sink": 40,
           "z": -29.798,
           "pixelSize": [
             2400,
-            441
+            434
           ]
         },
         {
@@ -4003,12 +3808,12 @@
           "layer": "main",
           "step": 20153,
           "dx": 0.0,
-          "height": 427.0,
+          "height": 419.0,
           "sink": 40,
           "z": -29.797,
           "pixelSize": [
             2400,
-            427
+            419
           ]
         },
         {
@@ -4016,12 +3821,12 @@
           "layer": "main",
           "step": 20500,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 418.0,
           "sink": 40,
           "z": -29.7,
           "pixelSize": [
             2400,
-            442
+            418
           ]
         },
         {
@@ -4029,12 +3834,12 @@
           "layer": "main",
           "step": 22551,
           "dx": 0.0,
-          "height": 435.0,
+          "height": 432.0,
           "sink": 40,
           "z": -29.699,
           "pixelSize": [
             2400,
-            435
+            432
           ]
         },
         {
@@ -4042,12 +3847,12 @@
           "layer": "main",
           "step": 24602,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 418.0,
           "sink": 40,
           "z": -29.698,
           "pixelSize": [
             2400,
-            442
+            418
           ]
         },
         {
@@ -4055,12 +3860,12 @@
           "layer": "main",
           "step": 25000,
           "dx": 0.0,
-          "height": 436.0,
+          "height": 440.0,
           "sink": 40,
           "z": -29.6,
           "pixelSize": [
             2400,
-            436
+            440
           ]
         },
         {
@@ -4068,12 +3873,12 @@
           "layer": "main",
           "step": 27051,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 431.0,
           "sink": 40,
           "z": -29.599,
           "pixelSize": [
             2400,
-            442
+            431
           ]
         },
         {
@@ -4081,12 +3886,12 @@
           "layer": "main",
           "step": 29102,
           "dx": 0.0,
-          "height": 436.0,
+          "height": 440.0,
           "sink": 40,
           "z": -29.598,
           "pixelSize": [
             2400,
-            436
+            440
           ]
         },
         {
@@ -4094,12 +3899,12 @@
           "layer": "main",
           "step": 31153,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 431.0,
           "sink": 40,
           "z": -29.597,
           "pixelSize": [
             2400,
-            442
+            431
           ]
         },
         {
@@ -4107,12 +3912,12 @@
           "layer": "main",
           "step": 32000,
           "dx": 0.0,
-          "height": 443.0,
+          "height": 430.0,
           "sink": 40,
           "z": -29.5,
           "pixelSize": [
             2400,
-            443
+            430
           ]
         },
         {
@@ -4120,12 +3925,12 @@
           "layer": "main",
           "step": 34051,
           "dx": 0.0,
-          "height": 440.0,
+          "height": 443.0,
           "sink": 40,
           "z": -29.499,
           "pixelSize": [
             2400,
-            440
+            443
           ]
         },
         {
@@ -4133,12 +3938,12 @@
           "layer": "main",
           "step": 36102,
           "dx": 0.0,
-          "height": 443.0,
+          "height": 430.0,
           "sink": 40,
           "z": -29.498,
           "pixelSize": [
             2400,
-            443
+            430
           ]
         },
         {
@@ -4146,12 +3951,12 @@
           "layer": "main",
           "step": 36500,
           "dx": 0.0,
-          "height": 439.0,
+          "height": 440.0,
           "sink": 40,
           "z": -29.4,
           "pixelSize": [
             2400,
-            439
+            440
           ]
         },
         {
@@ -4159,12 +3964,12 @@
           "layer": "main",
           "step": 38551,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 436.0,
           "sink": 40,
           "z": -29.399,
           "pixelSize": [
             2400,
-            442
+            436
           ]
         },
         {
@@ -4172,12 +3977,12 @@
           "layer": "main",
           "step": 40602,
           "dx": 0.0,
-          "height": 439.0,
+          "height": 440.0,
           "sink": 40,
           "z": -29.398,
           "pixelSize": [
             2400,
-            439
+            440
           ]
         },
         {
@@ -4185,12 +3990,12 @@
           "layer": "main",
           "step": 42000,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 427.0,
           "sink": 40,
           "z": -29.3,
           "pixelSize": [
             2400,
-            442
+            427
           ]
         },
         {
@@ -4211,12 +4016,12 @@
           "layer": "main",
           "step": 46102,
           "dx": 0.0,
-          "height": 442.0,
+          "height": 427.0,
           "sink": 40,
           "z": -29.298,
           "pixelSize": [
             2400,
-            442
+            427
           ]
         },
         {
@@ -4324,62 +4129,36 @@
           ]
         },
         {
-          "image": "road/prop_power_pylon",
+          "image": "road/prop_telegraph_pole",
           "layer": "main",
-          "step": 19344,
-          "dx": 36.1,
-          "height": 900.0,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            504,
-            1035
-          ]
-        },
-        {
-          "image": "road/prop_coal_barrow",
-          "layer": "main",
-          "step": 22835,
+          "step": 24024,
           "dx": -25.2,
-          "height": 260.0,
+          "height": 900.0,
           "sink": 40,
           "z": -5,
           "pixelSize": [
-            442,
-            299
+            860,
+            1035
           ]
         },
         {
-          "image": "road/prop_telegraph_pole",
+          "image": "road/prop_coal_barrow",
           "layer": "main",
-          "step": 24259,
+          "step": 25448,
           "dx": 55.3,
-          "height": 900.0,
+          "height": 260.0,
           "sink": 40,
           "z": -5,
           "pixelSize": [
-            860,
-            1035
+            442,
+            299
           ]
         },
         {
-          "image": "road/prop_coal_barrow",
+          "image": "road/prop_telegraph_pole",
           "layer": "main",
-          "step": 25499,
+          "step": 26688,
           "dx": -49.6,
-          "height": 260.0,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            442,
-            299
-          ]
-        },
-        {
-          "image": "road/prop_telegraph_pole",
-          "layer": "main",
-          "step": 29474,
-          "dx": -13.4,
           "height": 900.0,
           "sink": 40,
           "z": -5,
@@ -4391,47 +4170,21 @@
         {
           "image": "road/prop_coal_barrow",
           "layer": "main",
-          "step": 30651,
-          "dx": -38.7,
+          "step": 30663,
+          "dx": -13.4,
           "height": 260.0,
           "sink": 40,
           "z": -5,
           "pixelSize": [
             442,
-            299
-          ]
-        },
-        {
-          "image": "road/prop_telegraph_pole",
-          "layer": "main",
-          "step": 31943,
-          "dx": -26.4,
-          "height": 900.0,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            860,
-            1035
-          ]
-        },
-        {
-          "image": "road/prop_bench_poplar",
-          "layer": "main",
-          "step": 35529,
-          "dx": 49.1,
-          "height": 260.0,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            467,
             299
           ]
         },
         {
           "image": "road/prop_town_lamp",
           "layer": "main",
-          "step": 38282,
-          "dx": 45.9,
+          "step": 41323,
+          "dx": 49.1,
           "height": 800.0,
           "sink": 40,
           "z": -5,
@@ -4441,250 +4194,42 @@
           ]
         },
         {
-          "image": "road/prop_post_pole_box",
+          "image": "road/prop_bench_poplar",
           "layer": "main",
-          "step": 41033,
-          "dx": -36.6,
-          "height": 520.0,
+          "step": 32200,
+          "dx": 40.0,
+          "height": 260.0,
           "sink": 40,
           "z": -5,
           "pixelSize": [
-            236,
-            598
-          ]
-        },
-        {
-          "image": "road/prop_water_pump",
-          "layer": "main",
-          "step": 44852,
-          "dx": -8.3,
-          "height": 380.0,
-          "sink": 40,
-          "z": -5,
-          "pixelSize": [
-            371,
-            437
-          ]
-        },
-        {
-          "image": "road/mid_dam_booth",
-          "layer": "mid",
-          "step": 1200,
-          "dx": -403.4,
-          "height": 260.0,
-          "sink": -300,
-          "z": 1,
-          "pixelSize": [
-            713,
-            194
-          ]
-        },
-        {
-          "image": "road/mid_pond_saucer",
-          "layer": "mid",
-          "step": 4065,
-          "dx": -287.5,
-          "height": 220.0,
-          "sink": -300,
-          "z": 2,
-          "pixelSize": [
-            466,
-            253
-          ]
-        },
-        {
-          "image": "road/mid_sluice",
-          "layer": "mid",
-          "step": 6709,
-          "dx": -433.8,
-          "height": 280.0,
-          "sink": -300,
-          "z": 3,
-          "pixelSize": [
-            688,
-            322
-          ]
-        },
-        {
-          "image": "road/mid_trestle_low",
-          "layer": "mid",
-          "step": 9782,
-          "dx": -324.7,
-          "height": 260.0,
-          "sink": -300,
-          "z": 4,
-          "pixelSize": [
-            772,
+            467,
             299
-          ]
-        },
-        {
-          "image": "road/mid_slag_heap",
-          "layer": "mid",
-          "step": 12669,
-          "dx": -346.2,
-          "height": 240.0,
-          "sink": -300,
-          "z": 5,
-          "pixelSize": [
-            459,
-            276
-          ]
-        },
-        {
-          "image": "road/mid_rail_cart",
-          "layer": "mid",
-          "step": 15932,
-          "dx": -355.8,
-          "height": 230.0,
-          "sink": -300,
-          "z": 6,
-          "pixelSize": [
-            481,
-            265
-          ]
-        },
-        {
-          "image": "road/mid_trestle_low",
-          "layer": "mid",
-          "step": 18883,
-          "dx": -421.0,
-          "height": 260.0,
-          "sink": -300,
-          "z": 7,
-          "pixelSize": [
-            772,
-            299
-          ]
-        },
-        {
-          "image": "road/mid_shed_row",
-          "layer": "mid",
-          "step": 22172,
-          "dx": -410.9,
-          "height": 290.0,
-          "sink": -300,
-          "z": 8,
-          "pixelSize": [
-            570,
-            334
-          ]
-        },
-        {
-          "image": "road/mid_lamp_cart",
-          "layer": "mid",
-          "step": 25194,
-          "dx": -267.3,
-          "height": 290.0,
-          "sink": -300,
-          "z": 9,
-          "pixelSize": [
-            702,
-            334
           ]
         },
         {
           "image": "road/mid_coal_heaps",
           "layer": "mid",
-          "step": 28444,
-          "dx": -323.5,
+          "step": 22800,
+          "dx": -350.0,
           "height": 240.0,
           "sink": -300,
-          "z": 10,
+          "z": 1,
           "pixelSize": [
             550,
             276
           ]
         },
         {
-          "image": "road/mid_shed_row",
+          "image": "road/mid_coal_heaps",
           "layer": "mid",
-          "step": 31326,
-          "dx": -413.3,
-          "height": 290.0,
-          "sink": -300,
-          "z": 11,
-          "pixelSize": [
-            570,
-            334
-          ]
-        },
-        {
-          "image": "road/mid_roofs_bank",
-          "layer": "mid",
-          "step": 34372,
-          "dx": -300.6,
-          "height": 280.0,
-          "sink": -300,
-          "z": 12,
-          "pixelSize": [
-            1105,
-            322
-          ]
-        },
-        {
-          "image": "road/mid_poplars",
-          "layer": "mid",
-          "step": 37300,
-          "dx": -323.1,
-          "height": 290.0,
-          "sink": -300,
-          "z": 13,
-          "pixelSize": [
-            570,
-            334
-          ]
-        },
-        {
-          "image": "road/mid_laundry_yard",
-          "layer": "mid",
-          "step": 40103,
-          "dx": -269.1,
-          "height": 250.0,
-          "sink": -300,
-          "z": 14,
-          "pixelSize": [
-            535,
-            288
-          ]
-        },
-        {
-          "image": "road/mid_roofs_bank",
-          "layer": "mid",
-          "step": 42806,
-          "dx": -282.1,
-          "height": 280.0,
-          "sink": -300,
-          "z": 15,
-          "pixelSize": [
-            1105,
-            322
-          ]
-        },
-        {
-          "image": "road/far_sluice_towers",
-          "layer": "far",
-          "step": 3000,
+          "step": 30200,
           "dx": -300.0,
-          "height": 520.0,
-          "sink": -560,
+          "height": 220.0,
+          "sink": -300,
           "z": 2,
           "pixelSize": [
-            1260,
-            549
-          ]
-        },
-        {
-          "image": "road/far_power_line",
-          "layer": "far",
-          "step": 7000,
-          "dx": 200.0,
-          "height": 480.0,
-          "sink": -600,
-          "z": 2,
-          "pixelSize": [
-            1008,
-            371
+            550,
+            276
           ]
         },
         {
@@ -4701,19 +4246,6 @@
           ]
         },
         {
-          "image": "road/far_pipe_trestle",
-          "layer": "far",
-          "step": 16500,
-          "dx": 100.0,
-          "height": 260.0,
-          "sink": -600,
-          "z": 2,
-          "pixelSize": [
-            575,
-            299
-          ]
-        },
-        {
           "image": "road/far_warehouses",
           "layer": "far",
           "step": 25500,
@@ -4727,154 +4259,24 @@
           ]
         },
         {
-          "image": "road/far_town_bank",
-          "layer": "far",
-          "step": 33500,
-          "dx": -300.0,
-          "height": 420.0,
-          "sink": -580,
-          "z": 2,
-          "pixelSize": [
-            1138,
-            459
-          ]
-        },
-        {
-          "image": "road/far_post_fog",
-          "layer": "far",
-          "step": 42500,
-          "dx": -200.0,
-          "height": 260.0,
-          "sink": -600,
-          "z": 2,
-          "pixelSize": [
-            938,
-            299
-          ]
-        },
-        {
-          "image": "sky/cloud_fog_bank",
-          "layer": "far",
-          "step": 1500,
-          "dx": -200.0,
-          "height": 230.0,
-          "sink": -1420,
-          "z": 0.5,
-          "pixelSize": [
-            534,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_ochre_trio",
-          "layer": "far",
-          "step": 6500,
-          "dx": 250.0,
-          "height": 210.0,
-          "sink": -1520,
-          "z": 0.5,
-          "pixelSize": [
-            860,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_smog",
-          "layer": "far",
-          "step": 11500,
-          "dx": -150.0,
-          "height": 240.0,
-          "sink": -1450,
-          "z": 0.5,
-          "pixelSize": [
-            621,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_factory_smoke",
-          "layer": "far",
-          "step": 16000,
-          "dx": 200.0,
-          "height": 250.0,
-          "sink": -1480,
-          "z": 0.5,
-          "pixelSize": [
-            46,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_dusk",
-          "layer": "far",
-          "step": 22000,
-          "dx": -250.0,
-          "height": 220.0,
-          "sink": -1500,
-          "z": 0.5,
-          "pixelSize": [
-            344,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_boiler_plume",
-          "layer": "far",
-          "step": 26500,
-          "dx": 150.0,
-          "height": 260.0,
-          "sink": -1430,
-          "z": 0.5,
-          "pixelSize": [
-            80,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_town_cream",
-          "layer": "far",
-          "step": 32500,
-          "dx": -100.0,
-          "height": 220.0,
-          "sink": -1500,
-          "z": 0.5,
-          "pixelSize": [
-            455,
-            243
-          ]
-        },
-        {
-          "image": "sky/cloud_cold_fog",
-          "layer": "far",
-          "step": 38500,
-          "dx": 200.0,
-          "height": 240.0,
-          "sink": -1460,
-          "z": 0.5,
-          "pixelSize": [
-            477,
-            243
-          ]
-        },
-        {
           "image": "places/sprite_moon",
           "layer": "far",
-          "step": 41000,
+          "step": 43500,
           "dx": 150.0,
-          "height": 280.0,
-          "sink": -1560,
+          "height": 150.0,
+          "sink": -1500,
           "z": 0.6,
           "pixelSize": [
             123,
-            308
+            142
           ]
         },
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
           "step": 400,
-          "dx": 28.8,
-          "height": 359.3,
+          "dx": 315.9,
+          "height": 360.7,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4885,9 +4287,9 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 1371,
-          "dx": 409.3,
-          "height": 346.3,
+          "step": 1561,
+          "dx": -142.4,
+          "height": 343.1,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4898,9 +4300,9 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 2369,
-          "dx": -553.8,
-          "height": 374.6,
+          "step": 2742,
+          "dx": -425.8,
+          "height": 344.4,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4911,9 +4313,9 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 3576,
-          "dx": 441.6,
-          "height": 342.9,
+          "step": 3714,
+          "dx": -512.4,
+          "height": 357.0,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4924,9 +4326,9 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 4572,
-          "dx": 436.7,
-          "height": 397.7,
+          "step": 4807,
+          "dx": -39.6,
+          "height": 371.8,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4937,9 +4339,9 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 5431,
-          "dx": -252.6,
-          "height": 363.1,
+          "step": 6115,
+          "dx": -229.7,
+          "height": 399.8,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -4950,21 +4352,8 @@
         {
           "image": "foreground/fg_reeds_rebar",
           "layer": "foreground",
-          "step": 6359,
-          "dx": -156.7,
-          "height": 401.1,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            370,
-            441
-          ]
-        },
-        {
-          "image": "foreground/fg_reeds_rebar",
-          "layer": "foreground",
-          "step": 7526,
-          "dx": -516.0,
+          "step": 7165,
+          "dx": -528.2,
           "height": 393.1,
           "sink": 850,
           "z": 1,
@@ -4976,99 +4365,8 @@
         {
           "image": "foreground/fg_weeds_pipe",
           "layer": "foreground",
-          "step": 8692,
-          "dx": -120.3,
-          "height": 335.3,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 9611,
-          "dx": 46.7,
-          "height": 340.0,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 10542,
-          "dx": -589.9,
-          "height": 346.5,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_rebar_tall",
-          "layer": "foreground",
-          "step": 11414,
-          "dx": -108.8,
-          "height": 1300.0,
-          "sink": 900,
-          "z": 1,
-          "pixelSize": [
-            725,
-            1243
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 12450,
-          "dx": -208.3,
-          "height": 382.7,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 13448,
-          "dx": -125.5,
-          "height": 365.7,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 14404,
-          "dx": -375.4,
-          "height": 353.9,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 15284,
-          "dx": 196.1,
+          "step": 8440,
+          "dx": 83.3,
           "height": 325.0,
           "sink": 850,
           "z": 1,
@@ -5080,35 +4378,9 @@
         {
           "image": "foreground/fg_weeds_pipe",
           "layer": "foreground",
-          "step": 16438,
-          "dx": -438.4,
-          "height": 374.1,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            666,
-            420
-          ]
-        },
-        {
-          "image": "foreground/fg_rebar_tall",
-          "layer": "foreground",
-          "step": 17308,
-          "dx": -10.1,
-          "height": 1300.0,
-          "sink": 900,
-          "z": 1,
-          "pixelSize": [
-            725,
-            1243
-          ]
-        },
-        {
-          "image": "foreground/fg_weeds_pipe",
-          "layer": "foreground",
-          "step": 18456,
-          "dx": 477.4,
-          "height": 339.9,
+          "step": 9572,
+          "dx": -129.2,
+          "height": 348.7,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5119,9 +4391,9 @@
         {
           "image": "foreground/fg_weeds_pipe",
           "layer": "foreground",
-          "step": 19368,
-          "dx": -283.7,
-          "height": 386.8,
+          "step": 10846,
+          "dx": 3.2,
+          "height": 372.7,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5132,9 +4404,113 @@
         {
           "image": "foreground/fg_weeds_pipe",
           "layer": "foreground",
-          "step": 20427,
-          "dx": -383.7,
-          "height": 372.1,
+          "step": 11847,
+          "dx": 306.6,
+          "height": 357.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 12939,
+          "dx": 226.4,
+          "height": 350.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 14010,
+          "dx": -468.1,
+          "height": 375.0,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 15108,
+          "dx": -104.3,
+          "height": 307.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 16415,
+          "dx": -510.8,
+          "height": 377.3,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 17511,
+          "dx": 193.7,
+          "height": 376.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 18470,
+          "dx": -251.4,
+          "height": 328.4,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 19498,
+          "dx": 237.3,
+          "height": 335.2,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            666,
+            420
+          ]
+        },
+        {
+          "image": "foreground/fg_weeds_pipe",
+          "layer": "foreground",
+          "step": 20765,
+          "dx": 134.4,
+          "height": 309.9,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5145,9 +4521,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 21380,
-          "dx": -156.5,
-          "height": 305.4,
+          "step": 22031,
+          "dx": -393.3,
+          "height": 302.2,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5158,9 +4534,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 22248,
-          "dx": -121.0,
-          "height": 303.8,
+          "step": 23050,
+          "dx": -329.9,
+          "height": 312.7,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5171,9 +4547,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 23429,
-          "dx": 297.5,
-          "height": 352.0,
+          "step": 24081,
+          "dx": -242.2,
+          "height": 272.6,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5184,9 +4560,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 24534,
-          "dx": -560.2,
-          "height": 301.5,
+          "step": 25053,
+          "dx": -108.8,
+          "height": 296.8,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5197,9 +4573,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 25513,
-          "dx": -375.3,
-          "height": 305.5,
+          "step": 26188,
+          "dx": 477.0,
+          "height": 310.9,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5210,8 +4586,34 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 26481,
-          "dx": -317.4,
+          "step": 27362,
+          "dx": 460.3,
+          "height": 300.8,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 28418,
+          "dx": -477.3,
+          "height": 276.2,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            573,
+            378
+          ]
+        },
+        {
+          "image": "foreground/fg_coal_nettle",
+          "layer": "foreground",
+          "step": 29745,
+          "dx": -417.8,
           "height": 318.0,
           "sink": 850,
           "z": 1,
@@ -5223,48 +4625,9 @@
         {
           "image": "foreground/fg_coal_nettle",
           "layer": "foreground",
-          "step": 27497,
-          "dx": 402.3,
-          "height": 291.7,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            573,
-            378
-          ]
-        },
-        {
-          "image": "foreground/fg_coal_nettle",
-          "layer": "foreground",
-          "step": 28636,
-          "dx": 15.3,
-          "height": 296.4,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            573,
-            378
-          ]
-        },
-        {
-          "image": "foreground/fg_coal_nettle",
-          "layer": "foreground",
-          "step": 29820,
-          "dx": 254.1,
-          "height": 335.1,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            573,
-            378
-          ]
-        },
-        {
-          "image": "foreground/fg_coal_nettle",
-          "layer": "foreground",
-          "step": 31051,
-          "dx": -181.5,
-          "height": 290.9,
+          "step": 30771,
+          "dx": 55.0,
+          "height": 309.1,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5275,9 +4638,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 32121,
-          "dx": 343.7,
-          "height": 353.7,
+          "step": 32019,
+          "dx": -331.0,
+          "height": 399.8,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5288,9 +4651,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 33055,
-          "dx": 109.5,
-          "height": 364.3,
+          "step": 33031,
+          "dx": 301.6,
+          "height": 343.4,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5301,9 +4664,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 34233,
-          "dx": -146.4,
-          "height": 362.5,
+          "step": 34190,
+          "dx": 103.7,
+          "height": 336.0,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5314,35 +4677,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 35193,
-          "dx": 140.8,
-          "height": 391.0,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            407,
-            441
-          ]
-        },
-        {
-          "image": "foreground/fg_hogweed",
-          "layer": "foreground",
-          "step": 36180,
-          "dx": -234.4,
-          "height": 1400.0,
-          "sink": 900,
-          "z": 1,
-          "pixelSize": [
-            489,
-            1286
-          ]
-        },
-        {
-          "image": "foreground/fg_burdock",
-          "layer": "foreground",
-          "step": 37230,
-          "dx": -519.7,
-          "height": 416.3,
+          "step": 35243,
+          "dx": -338.8,
+          "height": 352.8,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5353,9 +4690,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 38223,
-          "dx": 121.8,
-          "height": 416.8,
+          "step": 36211,
+          "dx": -363.4,
+          "height": 355.5,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5366,9 +4703,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 39095,
-          "dx": 69.1,
-          "height": 369.2,
+          "step": 37492,
+          "dx": 360.4,
+          "height": 386.5,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5379,9 +4716,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 40337,
-          "dx": 120.6,
-          "height": 417.4,
+          "step": 38697,
+          "dx": -397.3,
+          "height": 322.9,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5392,35 +4729,9 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 41217,
-          "dx": 142.9,
-          "height": 409.1,
-          "sink": 850,
-          "z": 1,
-          "pixelSize": [
-            407,
-            441
-          ]
-        },
-        {
-          "image": "foreground/fg_hogweed",
-          "layer": "foreground",
-          "step": 42304,
-          "dx": 14.7,
-          "height": 1400.0,
-          "sink": 900,
-          "z": 1,
-          "pixelSize": [
-            489,
-            1286
-          ]
-        },
-        {
-          "image": "foreground/fg_burdock",
-          "layer": "foreground",
-          "step": 43536,
-          "dx": -178.3,
-          "height": 369.9,
+          "step": 39776,
+          "dx": -338.2,
+          "height": 336.6,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5431,9 +4742,48 @@
         {
           "image": "foreground/fg_burdock",
           "layer": "foreground",
-          "step": 44387,
-          "dx": -430.7,
-          "height": 353.7,
+          "step": 40844,
+          "dx": -149.5,
+          "height": 340.9,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 41960,
+          "dx": -544.6,
+          "height": 394.2,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 43199,
+          "dx": -473.8,
+          "height": 365.6,
+          "sink": 850,
+          "z": 1,
+          "pixelSize": [
+            407,
+            441
+          ]
+        },
+        {
+          "image": "foreground/fg_burdock",
+          "layer": "foreground",
+          "step": 44483,
+          "dx": 106.3,
+          "height": 383.3,
           "sink": 850,
           "z": 1,
           "pixelSize": [
@@ -5448,7 +4798,7 @@
           "dx": -80,
           "height": 70,
           "sink": 24,
-          "z": 10,
+          "z": 60,
           "pixelSize": [
             191,
             112
@@ -5461,7 +4811,7 @@
           "dx": 200,
           "height": 70,
           "sink": 24,
-          "z": 10,
+          "z": 60,
           "pixelSize": [
             191,
             112
@@ -5474,7 +4824,7 @@
           "dx": 160,
           "height": 70,
           "sink": 24,
-          "z": 10,
+          "z": 60,
           "pixelSize": [
             191,
             112
@@ -5487,7 +4837,7 @@
           "dx": 220,
           "height": 165,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             213,
             165
@@ -5500,7 +4850,7 @@
           "dx": -180,
           "height": 165,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             213,
             165
@@ -5513,7 +4863,7 @@
           "dx": 80,
           "height": 60,
           "sink": 30,
-          "z": 9,
+          "z": 59,
           "pixelSize": [
             137,
             78
@@ -5525,34 +4875,8 @@
           "step": 9000,
           "dx": 300,
           "height": 140,
-          "sink": -80,
-          "z": 14,
-          "pixelSize": [
-            137,
-            140
-          ]
-        },
-        {
-          "image": "ambient/crow_fly",
-          "layer": "main",
-          "step": 12000,
-          "dx": -40,
-          "height": 150,
-          "sink": -200,
-          "z": 16,
-          "pixelSize": [
-            230,
-            156
-          ]
-        },
-        {
-          "image": "ambient/crow",
-          "layer": "main",
-          "step": 13000,
-          "dx": 180,
-          "height": 140,
-          "sink": -60,
-          "z": 14,
+          "sink": 10,
+          "z": 64,
           "pixelSize": [
             137,
             140
@@ -5565,7 +4889,7 @@
           "dx": 200,
           "height": 160,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             221,
             160
@@ -5578,7 +4902,7 @@
           "dx": -60,
           "height": 50,
           "sink": 8,
-          "z": 11,
+          "z": 61,
           "pixelSize": [
             223,
             72
@@ -5591,7 +4915,7 @@
           "dx": 280,
           "height": 125,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             158,
             125
@@ -5603,8 +4927,8 @@
           "step": 27000,
           "dx": 200,
           "height": 90,
-          "sink": -40,
-          "z": 13,
+          "sink": 10,
+          "z": 63,
           "pixelSize": [
             221,
             118
@@ -5617,7 +4941,7 @@
           "dx": -160,
           "height": 132,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             121,
             132
@@ -5630,7 +4954,7 @@
           "dx": 180,
           "height": 160,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             220,
             160
@@ -5642,8 +4966,8 @@
           "step": 34000,
           "dx": -80,
           "height": 70,
-          "sink": -30,
-          "z": 13,
+          "sink": 10,
+          "z": 63,
           "pixelSize": [
             178,
             90
@@ -5656,7 +4980,7 @@
           "dx": 240,
           "height": 140,
           "sink": 0,
-          "z": 11,
+          "z": 61,
           "pixelSize": [
             230,
             168
@@ -5669,7 +4993,7 @@
           "dx": 300,
           "height": 130,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             124,
             130
@@ -5682,7 +5006,7 @@
           "dx": -200,
           "height": 160,
           "sink": 0,
-          "z": 12,
+          "z": 62,
           "pixelSize": [
             220,
             160
@@ -5702,17 +5026,17 @@
           {
             "image": "underground/ug_shlagbaum",
             "step": 300,
-            "dx": 1467.0
+            "dx": 1672.4
           },
           {
             "image": "underground/ug_otstoyniki",
             "step": 4000,
-            "dx": -31.5
+            "dx": -39.1
           },
           {
             "image": "underground/ug_truby",
             "step": 11000,
-            "dx": 229.2
+            "dx": 178.0
           },
           {
             "image": "underground/ug_shlam",
@@ -5732,7 +5056,7 @@
           {
             "image": "underground/ug_naberezhnaya",
             "step": 33500,
-            "dx": 7.6
+            "dx": 380.1
           },
           {
             "image": "underground/ug_dvory",
@@ -5742,7 +5066,7 @@
           {
             "image": "underground/ug_otdelenie",
             "step": 40000,
-            "dx": -223.6
+            "dx": -302.7
           },
           {
             "image": "underground/ug_verkhnyaya",

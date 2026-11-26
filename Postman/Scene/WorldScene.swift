@@ -21,6 +21,9 @@ final class WorldScene: SKScene, UIGestureRecognizerDelegate {
     private var lazyNodes: [(node: LazySpriteNode, layer: SKNode)] = []
     /// Живые сценки болот. Мало, паузятся за кадром, текстуры не выгружаются.
     private var lifeNodes: [SKNode] = []
+    /// Тапы глав по ключу "<глава>.<id>" и пропсы основного плана по "<глава>|<image>|<step>" — для отклика на тап.
+    fileprivate var marshTapSpecs: [String: MarshTap] = [:]
+    fileprivate var reactTargets: [String: SKNode] = [:]
     private var postman: PostmanRigNode!
     private var actorLayerRef: SKNode?
 
@@ -488,15 +491,20 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             let worldLeft = geo.x(forStep: Double(chapter.startStep + p.step)) + CGFloat(p.dx)
             let camAtStep = geo.cameraX(forStep: Double(chapter.startStep + p.step))
             let localLeft = worldLeft - camAtStep * CGFloat(1 - k)
-            if chapter.id == 3, p.image.hasPrefix("ambient/"),
+            if chapter.id == 3 || chapter.id == 4, p.image.hasPrefix("ambient/"),
                let life = marshLifeNode(prop: p, chapter: chapter, size: CGSize(width: w, height: h)) {
                 life.position = CGPoint(x: localLeft, y: geo.roadY - CGFloat(p.sink ?? 0))
                 life.zPosition = CGFloat(p.z ?? 0)
                 pinLifeBottom(life)
-                animateMarshLife(life, image: p.image, chapter: chapter,
-                                 pixelHeight: CGFloat(p.pixelSize[1]))
+                if chapter.id == 4 {
+                    animateStvorLife(life, image: p.image)
+                } else {
+                    animateMarshLife(life, image: p.image, chapter: chapter,
+                                     pixelHeight: CGFloat(p.pixelSize[1]))
+                }
                 target.addChild(life)
                 lifeNodes.append(life)
+                if p.layer == .main { reactTargets["\(chapter.id)|\(p.image)|\(p.step)"] = life }
                 continue
             }
             var imagePath = p.image.inChapter(chapter)
@@ -516,6 +524,7 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             node.zPosition = CGFloat(p.z ?? 0)
             target.addChild(node)
             lazyNodes.append((node, target))
+            if p.layer == .main { reactTargets["\(chapter.id)|\(p.image)|\(p.step)"] = node }
             ambient?.decorate(prop: node, image: p.image,
                               pixelSize: CGSize(width: p.pixelSize[0], height: p.pixelSize[1]),
                               seed: p.step &* 31 &+ Int(p.dx))
@@ -549,7 +558,7 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
         }
     }
 
-    private struct MarshTap: Decodable {
+    fileprivate struct MarshTap: Decodable {
         let id: String
         let step: Int
         let dx: Double
@@ -560,6 +569,14 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
         let z: Double?
         /// false — только цель тапа поверх уже нарисованного места (баржа, стена).
         let draw: Bool?
+        /// Ширина цели тапа, если это участок большой картинки места (иначе — по пропорции sprite).
+        let width: Double?
+        /// Отклик: "hop", "squash", "fly", "steam", "dust", "flash", через «+».
+        let react: String?
+        /// Пропс, который откликается: "<image>|<step>" из world.json той же главы.
+        let target: String?
+        /// Точка пара/пыли/вспышки в долях цели тапа: [x слева, y снизу].
+        let at: [Double]?
     }
 
     /// Вещи §10.3. Каждая — отдельная цель, не житель и не письмо.
@@ -574,7 +591,8 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             let tex = TextureStore.shared.texture(tap.sprite)
             let node = SKSpriteNode(texture: tex)
             let h = CGFloat(tap.height ?? 150)
-            let w = tex.size().width > 0 ? h * tex.size().width / tex.size().height : h
+            let w = tap.width.map { CGFloat($0) }
+                ?? (tex.size().width > 0 ? h * tex.size().width / tex.size().height : h)
             node.size = CGSize(width: w, height: h)
             node.anchorPoint = CGPoint(x: 0.5, y: 0)
             node.position = CGPoint(x: geo.x(forStep: Double(chapter.startStep + tap.step)) + CGFloat(tap.dx),
@@ -584,6 +602,7 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
             node.name = "marsh:\(chapter.id)." + tap.id
             node.isUserInteractionEnabled = false
             layer.addChild(node)
+            marshTapSpecs["\(chapter.id)." + tap.id] = tap
         }
     }
 
@@ -1382,8 +1401,9 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
         for hit in nodes(at: point) {
             var candidate: SKNode? = hit
             while let node = candidate, node !== self {
+                // draw:false — невидимая цель (alpha 0.01) поверх нарисованного места, она тоже ловит тап.
                 if let name = node.name, name.hasPrefix("marsh:"),
-                   !node.isHidden, node.alpha > 0.01, let parent = node.parent,
+                   !node.isHidden, node.alpha > 0.005, let parent = node.parent,
                    node.contains(convert(point, to: parent)) {
                     return String(name.dropFirst("marsh:".count))
                 }
@@ -1416,6 +1436,7 @@ private var worldEndStep: Int { config.chapters.map(\.endStep).max() ?? 0 }
         guard g.state == .ended, !isPanning, let view = g.view else { return }
         let point = convertPoint(fromView: g.location(in: view))
         if let key = marshKey(at: point) {
+            playMarshReact(key)
             onMarshTap?(key)
             return
         }
@@ -1516,6 +1537,48 @@ extension WorldScene {
         let dx = (0.5 - node.anchorPoint.x) * node.size.width
         node.anchorPoint = CGPoint(x: 0.5, y: 0)
         node.position.x += dx
+    }
+
+    /// Глава 4: живность из ambient/ — только движение спрайта, без лишних кадров.
+    fileprivate func animateStvorLife(_ node: SKSpriteNode, image: String) {
+        switch (image as NSString).lastPathComponent {
+        case "ducks":
+            driftLife(node, distance: 26, period: 9, alphaLow: 1, alphaHigh: 1)
+            rockLife(node, degrees: 2.2, period: 2.8)
+        case "fish":
+            rockLife(node, degrees: 5, period: 1.8)
+        case "crow", "pigeons", "sparrows", "chickens":
+            peckLife(node)
+        case "cat_soot", "cat_sarai", "cat_otdelenie":
+            breatheLife(node, amount: 0.025, period: 3.2)
+        case "dog_otstoyniki", "dog_slag", "dog_city":
+            breatheLife(node, amount: 0.03, period: 2.2)
+            rockLife(node, degrees: 0.8, period: 2.2)
+        case "lizard":
+            driftLife(node, distance: 14, period: 5, alphaLow: 1, alphaHigh: 1)
+        default:
+            break
+        }
+    }
+
+    /// Клюёт и изредка подскакивает. Якорь — низ по центру.
+    fileprivate func peckLife(_ node: SKSpriteNode) {
+        let wait = Double.random(in: 1.8...3.6)
+        let peck = SKAction.sequence([.rotate(toAngle: -0.12, duration: 0.08), .wait(forDuration: 0.12),
+                                      .rotate(toAngle: 0, duration: 0.1)])
+        let hop = SKAction.sequence([.moveBy(x: 0, y: 10, duration: 0.1), .moveBy(x: 0, y: -10, duration: 0.1)])
+        node.run(.repeatForever(.sequence([.wait(forDuration: wait), peck, .wait(forDuration: 0.5), peck,
+                                           .wait(forDuration: wait * 0.6), hop])), withKey: "peck")
+    }
+
+    /// Дыхание: чуть растёт по высоте от низа.
+    private func breatheLife(_ node: SKSpriteNode, amount: CGFloat, period: Double) {
+        let phase = Double.random(in: 0...(2 * Double.pi))
+        let breathe = SKAction.customAction(withDuration: period) { n, t in
+            let a = 2 * Double.pi * Double(t) / period + phase
+            n.yScale = 1 + amount * CGFloat(0.5 + 0.5 * sin(a))
+        }
+        node.run(.repeatForever(breathe), withKey: "breathe")
     }
 
     fileprivate func animateMarshLife(_ node: SKSpriteNode, image: String,
@@ -1759,5 +1822,91 @@ private extension String {
     /// "places/x" → "Chapter1/places/x"
     func inChapter(_ chapter: ChapterConfig) -> String {
         chapter.assetsFolder + "/" + self
+    }
+}
+
+// MARK: - Отклик вещей главы 4 на тап
+
+extension WorldScene {
+    /// Тап по вещи: вещь сама чуть двигается (подпрыгнуть, присесть, улететь), рядом — пар/пыль/вспышка.
+    /// Текст карточки показывает GameModel, как раньше; здесь только картинка.
+    fileprivate func playMarshReact(_ key: String) {
+        guard !UIAccessibility.isReduceMotionEnabled, let tap = marshTapSpecs[key],
+              let react = tap.react, !react.isEmpty else { return }
+        let chapterID = key.split(separator: ".").first.map(String.init) ?? ""
+        // Имя содержит «:» и «.», поэтому не через childNode(withName:) с его синтаксисом поиска.
+        let tapNode = actorLayerRef?.children.first { $0.name == "marsh:" + key } as? SKSpriteNode
+        let target = tap.target.flatMap { reactTargets["\(chapterID)|\($0)"] }
+        for kind in react.split(separator: "+").map(String.init) {
+            switch kind {
+            case "hop": if let target { reactHop(target) }
+            case "squash": if let target { reactSquash(target) }
+            case "fly": if let target { reactFly(target) }
+            case "steam", "dust", "flash":
+                guard let tapNode, let parent = tapNode.parent else { continue }
+                let at = (tap.at?.count ?? 0) >= 2 ? tap.at! : [0.5, 0.6]
+                let point = CGPoint(x: tapNode.position.x + CGFloat(at[0] - 0.5) * tapNode.size.width,
+                                    y: tapNode.position.y + CGFloat(at[1]) * tapNode.size.height)
+                if kind == "steam" {
+                    ambient?.burst(in: parent, at: point, count: 5, scale: 0.6, z: 90)
+                } else if kind == "dust" {
+                    ambient?.burst(in: parent, at: point, count: 3, scale: 0.35, z: 90)
+                } else {
+                    ambient?.flash(in: parent, at: point, radius: 120,
+                                   color: UIColor(red: 1, green: 0.62, blue: 0.25, alpha: 1), z: 90)
+                }
+            default: break
+            }
+        }
+    }
+
+    private func reactHop(_ node: SKNode) {
+        guard node.action(forKey: "tapReact") == nil else { return }
+        let origin = node.position
+        let duration: TimeInterval = 0.5
+        let react = SKAction.customAction(withDuration: duration) { n, elapsed in
+            let t = min(1, Double(elapsed) / duration)
+            let shake = CGFloat(sin(6 * .pi * t) * (1 - t))
+            n.position = CGPoint(x: origin.x + 5 * shake, y: origin.y + 24 * CGFloat(sin(.pi * t)))
+        }
+        node.run(.sequence([react, .run { [weak node] in node?.position = origin }]), withKey: "tapReact")
+    }
+
+    /// Присесть и распрямиться от низа (якорь по Y внизу у пропсов и сценок).
+    private func reactSquash(_ node: SKNode) {
+        guard node.action(forKey: "tapReact") == nil else { return }
+        let base = node.yScale
+        let squash = SKAction.sequence([
+            .scaleY(to: base * 0.93, duration: 0.08),
+            .scaleY(to: base * 1.05, duration: 0.12),
+            .scaleY(to: base * 0.98, duration: 0.1),
+            .scaleY(to: base, duration: 0.1),
+        ])
+        node.run(squash, withKey: "tapReact")
+    }
+
+    /// Птицы срываются вверх и пропадают, через несколько секунд тихо возвращаются на место.
+    private func reactFly(_ node: SKNode) {
+        guard node.action(forKey: "tapReact") == nil else { return }
+        let origin = node.position
+        let rotation = node.zRotation
+        let alpha = node.alpha
+        node.removeAction(forKey: "peck")
+        let fly = SKAction.sequence([
+            .moveBy(x: 0, y: 14, duration: 0.08),
+            .group([.moveBy(x: 260, y: 320, duration: 1.1), .fadeOut(withDuration: 1.1),
+                    .rotate(toAngle: rotation + 0.25, duration: 0.4)]),
+            .wait(forDuration: 6),
+            .run { [weak node] in
+                node?.position = origin
+                node?.zRotation = rotation
+            },
+            .fadeAlpha(to: alpha, duration: 0.8),
+            .run { [weak self, weak node] in
+                guard let self, let node = node as? SKSpriteNode else { return }
+                self.peckLife(node)
+            },
+        ])
+        node.run(fly, withKey: "tapReact")
     }
 }

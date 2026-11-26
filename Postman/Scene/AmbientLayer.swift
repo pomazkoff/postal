@@ -432,6 +432,22 @@ final class AmbientLayer {
             emitter.run(.repeatForever(.sequence([spawn, .wait(forDuration: smoke.interval, withRange: smoke.interval * 0.5)])))
         }
 
+        for glow in config.glow ?? [] where glow.prop == image {
+            guard glow.at.count >= 2 else { continue }
+            let r = CGFloat(glow.radius) * max(sx, sy)
+            let sprite = SKSpriteNode(texture: Self.glowTexture)
+            sprite.size = CGSize(width: r * 2, height: r * 2)
+            sprite.position = local(glow.at[0], glow.at[1])
+            sprite.zPosition = 4
+            sprite.blendMode = .add
+            sprite.color = UIColor(hex: glow.color)
+            sprite.colorBlendFactor = 1
+            sprite.alpha = CGFloat(glow.low)
+            node.addChild(sprite)
+            var gen = SeededRandom(seed: seed &+ 13 &+ Int(glow.at[0]))
+            sprite.run(Self.glowAction(glow, fps: fps, gen: &gen), withKey: "glow")
+        }
+
         for bell in config.bells where bell.prop == image {
             guard let atlas, let tex = atlas.texture(bell.frame), bell.pivot.count >= 2, bell.hang.count >= 2 else { continue }
             let px = atlas.size(bell.frame)
@@ -444,6 +460,89 @@ final class AmbientLayer {
             node.addChild(sprite)
             var gen = SeededRandom(seed: seed &+ 7)
             sprite.run(Self.swayAction(amp: bell.amp, period: bell.period, fps: fps, gen: &gen), withKey: "bell")
+        }
+    }
+
+    /// Короткий отклик на тап: несколько клубов дыма/пара/пыли в точке parent.
+    func burst(in parent: SKNode, at point: CGPoint, count: Int, scale: CGFloat, z: CGFloat) {
+        guard let atlas else { return }
+        let puffs = atlas.names(prefix: "smoke_").compactMap { name -> (SKTexture, CGSize)? in
+            atlas.texture(name).map { ($0, atlas.size(name)) }
+        }
+        guard !puffs.isEmpty, count > 0 else { return }
+        let fps = max(1, config.fps)
+        let emitter = SKNode()
+        emitter.position = point
+        emitter.zPosition = z
+        parent.addChild(emitter)
+        for i in 0..<count {
+            emitter.run(.sequence([.wait(forDuration: 0.12 * Double(i)), .run { [weak emitter] in
+                guard let emitter, let pick = puffs.randomElement() else { return }
+                Self.puff(in: emitter, texture: pick.0, pixelSize: pick.1, scale: scale, wind: 0.6, fps: fps)
+            }]))
+        }
+        emitter.run(.sequence([.wait(forDuration: 0.12 * Double(count) + 4.6), .removeFromParent()]))
+    }
+
+    /// Короткая вспышка тёплого света (тап по огню/окну).
+    func flash(in parent: SKNode, at point: CGPoint, radius: CGFloat, color: UIColor, z: CGFloat) {
+        let sprite = SKSpriteNode(texture: Self.glowTexture)
+        sprite.size = CGSize(width: radius * 2, height: radius * 2)
+        sprite.position = point
+        sprite.zPosition = z
+        sprite.blendMode = .add
+        sprite.color = color
+        sprite.colorBlendFactor = 1
+        sprite.alpha = 0
+        parent.addChild(sprite)
+        sprite.run(.sequence([.fadeAlpha(to: 0.85, duration: 0.12), .fadeAlpha(to: 0.3, duration: 0.25),
+                              .fadeAlpha(to: 0.7, duration: 0.12), .fadeOut(withDuration: 0.6), .removeFromParent()]))
+    }
+
+    /// Белое мягкое пятно; цвет задаётся color/colorBlendFactor, смешивание аддитивное.
+    static let glowTexture: SKTexture = {
+        let size = CGSize(width: 64, height: 64)
+        let img = UIGraphicsImageRenderer(size: size).image { ctx in
+            let colors = [UIColor(white: 1, alpha: 1).cgColor,
+                          UIColor(white: 1, alpha: 0.35).cgColor,
+                          UIColor(white: 1, alpha: 0).cgColor] as CFArray
+            if let g = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: [0, 0.4, 1]) {
+                let c = CGPoint(x: 32, y: 32)
+                ctx.cgContext.drawRadialGradient(g, startCenter: c, startRadius: 0, endCenter: c, endRadius: 32, options: [])
+            }
+        }
+        return SKTexture(image: img)
+    }()
+
+    /// Свечение: плавный пульс, дрожь огня или мигание лампы. Покадрово (fps), как остальная анимация.
+    static func glowAction(_ glow: AmbientConfig.Glow, fps: Double, gen: inout SeededRandom) -> SKAction {
+        let low = CGFloat(glow.low)
+        let high = CGFloat(max(glow.low, glow.high))
+        let period = max(0.2, glow.period)
+        switch glow.mode ?? "pulse" {
+        case "flicker":
+            let n = max(6, Int((period * fps).rounded()))
+            var steps: [SKAction] = []
+            steps.reserveCapacity(n)
+            for _ in 0..<n {
+                let a = CGFloat(Double.random(in: 0...1, using: &gen))
+                steps.append(.group([.fadeAlpha(to: low + (high - low) * a, duration: 1 / fps),
+                                     .scale(to: 0.9 + 0.2 * a, duration: 1 / fps)]))
+            }
+            return .repeatForever(.sequence(steps))
+        case "blink":
+            return .repeatForever(.sequence([
+                .fadeAlpha(to: high, duration: 0.08), .wait(forDuration: period),
+                .fadeAlpha(to: low, duration: 0.05), .wait(forDuration: 0.12),
+                .fadeAlpha(to: high, duration: 0.05), .wait(forDuration: 0.2),
+                .fadeAlpha(to: low, duration: 0.05), .wait(forDuration: 0.45),
+            ]))
+        default:
+            let phase = Double.random(in: 0...(2 * Double.pi), using: &gen)
+            return .repeatForever(.customAction(withDuration: period) { node, t in
+                let s = 0.5 + 0.5 * sin(2 * Double.pi * Double(t) / period + phase)
+                node.alpha = low + (high - low) * CGFloat(s)
+            })
         }
     }
 
