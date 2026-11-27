@@ -105,6 +105,13 @@
 "bag.handoff.d_barge" = "The letter “from Tima” went into the box on the barge, a chance downstream.";
 "bag.handoff.d_reeds" = "The mail went into the box by the verst post.";
 "bag.handoff.d_otstoy" = "Nina's letter went into the box at the Settling Pool, a chance to the Valley, for Vera.";
+"bag.handoff.d_otstoyniki" = "A.L.'s note went into the box at the Settling Ponds, “to the branch.”";
+"bag.handoff.d_kotelnaya" = "“Andrey's” letter went into the box at the Boiler House, a chance downstream.";
+"bag.handoff.d_sarai" = "Kuzma's note and Mitya's letter went into the box at the Sheds: “for Vera” and a chance downstream.";
+"bag.handoff.d_otdelenie" = "The mail went onto the branch counter, into the chance box.";
+"bag.handoff.s_kolya_dam" = "The tag went back to Kolya on the far dike.";
+"bag.handoff.s_nyura" = "The scrap of the form stayed with Nyura at the gate.";
+"bag.handoff.s_agnia" = "The finds were handed to A.L. at the branch counter.";
 "bag.act.2.l9" = "Read";
 "bag.act.drop.2.e_khomut" = "Leave it in the hut at the Collar";
 "bag.act.drop.2.finale" = "Carry it to the Throat";
@@ -498,7 +505,7 @@
 "history.main.passgift.body" = "The pass was left for old Fedya. He knows the shop, not the person: the lower yard, an old pattern of pass. He has not gone there since autumn.";
 "history.main.kolyagift.title" = "The tag";
 "history.main.kolyagift.body" = "The tag went back to Kolya on the far dike. “It is from the third pond. The key is mine, the tag always walks off.”";
-"history.main.blankgift.title" = "Two hands";
+"history.main.blankgift.title" = "The hand gets muddled";
 "history.main.blankgift.body" = "The scrap of the form went to Nyura at the gate. “That is how we write: now me, now the neighbour. The hand gets muddled.”";
 "history.main.eatfirst.title" = "Eat first";
 "history.main.eatfirst.body" = "At the branch counter A.L. is alive, not just a signature. First the bowl, then the mail. She writes in violet, as in the notes.";
