@@ -33,8 +33,11 @@ if "history.main.belfry.fortyone" not in src:
     fail("the number 41 is only the outside of the account")
 if "chapterID: 5" in src:
     fail("chapter 5 is not part of the playable history")
-if "chapterID: 4" not in src:
-    fail("chapter 4 needs its own history beats")
+if src.count("chapterID: 4,") < 15:
+    fail("chapter 4 history is thinner than chapter 3")
+for key in ("e_sluice", "e_kotel", "e_address", "e_believe"):
+    if f'choices["{key}"]' not in src:
+        fail(f"chapter 4 history must follow the {key} outcome")
 if "chapterID: 3" not in src:
     fail("chapter 3 needs its own history beats")
 for banned in ("Агния", "Савелий", "хвостохранилищ", "включила К-2", "214 подпис"):

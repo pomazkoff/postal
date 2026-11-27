@@ -116,6 +116,18 @@ enum StoryChronicle {
         Beat(id: "stubgift", chapterID: 4, step: 39551, eventID: "s_agnia", residentID: "agnia_stvor", placeID: nil),
         Beat(id: "wetgift", chapterID: 4, step: 40500, eventID: "e_wet", residentID: "agnia_stvor", placeID: nil),
         Beat(id: "storeroom", chapterID: 4, step: 39950, eventID: "s_kladovaya", residentID: nil, placeID: "otdelenie"),
+        Beat(id: "barrier", chapterID: 4, step: 40, eventID: "p_l1", residentID: nil, placeID: "shlagbaum"),
+        Beat(id: "andrey", chapterID: 4, step: 4200, eventID: "p_l2", residentID: nil, placeID: "otstoyniki"),
+        Beat(id: "sluice", chapterID: 4, step: 4000, eventID: "e_sluice", residentID: "kolya", placeID: "otstoyniki"),
+        Beat(id: "seventyone", chapterID: 4, step: 21100, eventID: "p_l3", residentID: nil, placeID: "kotelnaya"),
+        Beat(id: "confession", chapterID: 4, step: 21200, eventID: "p_l4", residentID: nil, placeID: "kotelnaya"),
+        Beat(id: "kotel", chapterID: 4, step: 23000, eventID: "e_kotel", residentID: "pavel", placeID: "kotelnaya"),
+        Beat(id: "names37", chapterID: 4, step: 32000, eventID: "p_l6", residentID: nil, placeID: "naberezhnaya"),
+        Beat(id: "ninaknew", chapterID: 4, step: 36500, eventID: "p_l7", residentID: nil, placeID: "dvory"),
+        Beat(id: "jar", chapterID: 4, step: 36501, eventID: "e_address", residentID: "nyura_stvor", placeID: "dvory"),
+        Beat(id: "fourth", chapterID: 4, step: 39600, eventID: "p_l8", residentID: nil, placeID: "otdelenie"),
+        Beat(id: "versions", chapterID: 4, step: 41000, eventID: "e_believe", residentID: "agnia_stvor", placeID: "otdelenie"),
+        Beat(id: "upper", chapterID: 4, step: 45000, eventID: "finale", residentID: nil, placeID: "verkhnyaya"),
     ]
 
     static func facts(world: WorldConfig, activeIndex: Int, activeSteps: Int,
@@ -192,6 +204,18 @@ enum StoryChronicle {
         case "stubgift": return "history.main.stubgift.title"
         case "wetgift": return "history.main.wetgift.title"
         case "storeroom": return "history.main.storeroom.title"
+        case "barrier": return "history.main.barrier.title"
+        case "andrey": return "history.main.andrey.title"
+        case "sluice": return "history.main.sluice.title"
+        case "seventyone": return "history.main.seventyone.title"
+        case "confession": return "history.main.confession.title"
+        case "kotel": return "history.main.kotel.title"
+        case "names37": return "history.main.names37.title"
+        case "ninaknew": return "history.main.ninaknew.title"
+        case "jar": return "history.main.jar.title"
+        case "fourth": return "history.main.fourth.title"
+        case "versions": return "history.main.versions.title"
+        case "upper": return "history.main.upper.title"
         default: return "history.title"
         }
     }
@@ -352,6 +376,58 @@ enum StoryChronicle {
             return L10n.text("history.main.wetgift.body")
         case "storeroom":
             return L10n.text("history.main.storeroom.body")
+        case "barrier":
+            guard carried("l1", here.items) else { return nil }
+            return L10n.text("history.main.barrier.body")
+        case "andrey":
+            guard carried("l2", here.items) else { return nil }
+            return L10n.text("history.main.andrey.body")
+        case "sluice":
+            switch here.choices["e_sluice"] {
+            case "help": return L10n.text("history.main.sluice.help")
+            case "leave": return L10n.text("history.main.sluice.leave")
+            default: return nil
+            }
+        case "seventyone":
+            guard carried("l3", here.items) else { return nil }
+            return L10n.text("history.main.seventyone.body")
+        case "confession":
+            guard carried("l4", here.items) else { return nil }
+            return L10n.text("history.main.confession.body")
+        case "kotel":
+            switch here.choices["e_kotel"] {
+            case "stay": return L10n.text("history.main.kotel.stay")
+            case "leave": return L10n.text("history.main.kotel.leave")
+            default: return nil
+            }
+        case "names37":
+            guard carried("l6", here.items) else { return nil }
+            return L10n.text("history.main.names37.body")
+        case "ninaknew":
+            guard carried("l7", here.items) else { return nil }
+            return L10n.text("history.main.ninaknew.body")
+        case "jar":
+            // Банки в сумке не было — выбора не было, и абзаца нет.
+            switch here.choices["e_address"] {
+            case "nyura": return L10n.text("history.main.jar.nyura")
+            case "zoya": return L10n.text("history.main.jar.zoya")
+            case "office": return L10n.text("history.main.jar.office")
+            default: return nil
+            }
+        case "fourth":
+            guard carried("l8", here.items) else { return nil }
+            return L10n.text("history.main.fourth.body")
+        case "versions":
+            switch here.choices["e_believe"] {
+            case "agnia": return L10n.text("history.main.versions.order")
+            case "kuzma": return L10n.text("history.main.versions.sheet")
+            case "vera": return L10n.text("history.main.versions.gauge")
+            default: return nil
+            }
+        case "upper":
+            var lines = [L10n.text("history.main.upper.body")]
+            if here.done.contains("p_cup") { lines.append(L10n.text("history.main.upper.cup")) }
+            return lines.joined(separator: " ")
         default:
             return nil
         }
