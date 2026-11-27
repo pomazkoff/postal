@@ -233,6 +233,12 @@ final class GameModel: ObservableObject {
         let finds: [KeptFind]
     }
 
+    /// Флаг главы: живая — из движка, остальные — из сейва.
+    private func chapterFlag(_ chapterID: Int, _ flag: String) -> Bool {
+        if chapterID == engine.story.chapter { return engine.state.flags.contains(flag) }
+        return ChapterStateStore(fileName: "chapter\(chapterID)_state.json").load()?.flags.contains(flag) ?? false
+    }
+
     /// Все найденные улики, новее глава — выше. Живая глава читается из движка, не с диска.
     func keptFinds() -> [KeptChapter] {
         var groups: [KeptChapter] = []
@@ -249,8 +255,11 @@ final class GameModel: ObservableObject {
             for item in story.items {
                 let raw = (saved[item.id] ?? item.initial).rawValue
                 guard BagPolicy.onPersonalShelf(id: item.id, kind: item.kind, status: raw) else { continue }
-                let handed = BagPolicy.personalHandedIn(status: raw)
-                let event = handed ? BagPolicy.drops(chapter: chapter.id, id: item.id).first?.event : nil
+                // Мокрый конверт гл.3 отдают уже в гл.4, Агнии: сейв гл.3 не трогаем, смотрим флаг гл.4.
+                let wetToAgnia = chapter.id == 3 && item.id == "find_wet" && chapterFlag(4, "wet_agnia")
+                let handed = BagPolicy.personalHandedIn(status: raw) || wetToAgnia
+                let event = wetToAgnia ? "s_agnia"
+                    : (handed ? BagPolicy.drops(chapter: chapter.id, id: item.id).first?.event : nil)
                 finds.append(KeptFind(chapter: chapter.id, item: item, handedIn: handed, handoffEvent: event))
             }
             if !finds.isEmpty {

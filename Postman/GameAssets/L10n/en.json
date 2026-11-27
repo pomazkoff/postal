@@ -422,6 +422,34 @@
         "The fish walks higher up. I go after her. She goes away from me.",
         "The receiver shouts, then it hisses. I already took the lid off."
       ]
+    },
+    "kolya": {
+      "title": "Kolya the watchman",
+      "lines": [
+        "I walk the sluices. They stand, I walk. That is how we live.",
+        "Walk the dike. Into the pulp — no. The pulp does not give boots back."
+      ]
+    },
+    "pavel": {
+      "title": "Pavel the stoker",
+      "lines": [
+        "One boiler. For the upper ones, so they do not freeze.",
+        "Put your boots on the dryer. You will say thanks in the morning. Not to me — to your feet."
+      ]
+    },
+    "nyura_stvor": {
+      "title": "Nyura the neighbour",
+      "lines": [
+        "I write letters for the neighbours. For some I hold the pen, for some I write it all.",
+        "Do not push the gate. It has a temper, just like its owner."
+      ]
+    },
+    "agnia_stvor": {
+      "title": "Agnia Lvovna",
+      "lines": [
+        "The branch is open. Hours of business — while I am on my feet.",
+        "Do not overload the bag. Watch your feet."
+      ]
     }
   },
   "stories": {
@@ -2644,7 +2672,8 @@
               "label": "Give it in at the branch",
               "result": "Agnia takes it poste restante and will set it aside without a word."
             }
-          }
+          },
+          "fallback": "No jar on hand. Nyura shrugs: “Well, not for me, then.”"
         },
         "p_l8": {
           "title": "Vera's note",
@@ -2702,6 +2731,12 @@
           "lines": [
             {
               "text": "Nina's letter can be left in the branch box, a chance downstream."
+            },
+            {
+              "text": "Agnia took the jar of bream poste restante. Set it aside without a word."
+            },
+            {
+              "text": "The jar of bream was left on the counter, “for Nyura.”"
             }
           ],
           "push": [
@@ -2740,12 +2775,142 @@
           "title": "The Upper",
           "lines": [
             {
-              "text": "There is no road beyond. The post is still ahead, in the haze. The storeroom key has not been issued."
+              "text": "There is no road beyond. The post is still ahead, in the haze."
+            },
+            {
+              "text": "At parting A.L. said: “Do not go through the cordon. Carry the mail. Watch your feet.”"
+            },
+            {
+              "text": "The storeroom key has not been issued."
             }
           ],
           "push": [
             {
               "text": "The Upper. The chapter is finished."
+            }
+          ]
+        },
+        "s_kolya_dam": {
+          "title": "The far dike",
+          "text": "Kolya walks the far dike with the key. The dog runs ahead.",
+          "lines": [
+            {
+              "who": "Kolya",
+              "text": "You again. Same dike, same me. Same dog too."
+            },
+            {
+              "who": "Kolya",
+              "text": "Give me the tag. It is from the third pond. The key is mine, the tag always walks off."
+            },
+            {
+              "who": "Kolya",
+              "text": "The sluice went, by the way. Without you."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Settling Ponds. Kolya on the far dike."
+            }
+          ]
+        },
+        "s_nyura": {
+          "title": "Nyura at the gate",
+          "text": "Nyura sits at the gate with an exercise book. She writes for the neighbours.",
+          "lines": [
+            {
+              "who": "Nyura",
+              "text": "The postman? Sit on the bench. Leave the gate, it has a temper."
+            },
+            {
+              "who": "",
+              "text": "Nyura looks at the scrap of the form for a long time, then nods."
+            },
+            {
+              "who": "Nyura",
+              "text": "That is how we write: now me, now the neighbour. The hand gets muddled."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Yards. Nyura at the gate."
+            }
+          ]
+        },
+        "s_agnia": {
+          "title": "Eat first",
+          "text": "Behind the branch counter, a woman in a knitted cardigan. A violet pencil behind her ear.",
+          "lines": [
+            {
+              "who": "Agnia",
+              "text": "Dear postman. Eat first. The mail will wait, it is used to it."
+            },
+            {
+              "who": "",
+              "text": "On the counter: a bowl, a spoon and a form under the bowl. The postman eats. Agnia writes."
+            },
+            {
+              "who": "",
+              "text": "Agnia holds the notice stub longer than usual."
+            },
+            {
+              "who": "Agnia",
+              "text": "Stubs are kept here. Accepted for processing."
+            },
+            {
+              "who": "Agnia",
+              "text": "A branch form. Noted."
+            },
+            {
+              "who": "Agnia",
+              "text": "Eaten? The storeroom is behind the counter. Watch your feet."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Branch. A.L. at the counter: “Eat first.”"
+            }
+          ]
+        },
+        "e_wet": {
+          "title": "The wet envelope",
+          "text": "A wet envelope from the Marshes in the bag. Postmark “N. Stvor.”",
+          "push": [
+            {
+              "text": "A wet envelope with the Stvor postmark. Show it to A.L.?"
+            }
+          ],
+          "options": {
+            "show": {
+              "label": "Show the envelope",
+              "result": "Agnia takes the envelope for processing. She explains nothing.",
+              "auto": "The postman showed the envelope."
+            },
+            "keep": {
+              "label": "Keep it",
+              "result": "The envelope stays in the bag. Agnia looks at the postmark and says nothing."
+            }
+          }
+        },
+        "s_kladovaya": {
+          "title": "The storeroom",
+          "text": "A door behind the counter. Agnia opens it with her own key and does not let go of it.",
+          "lines": [
+            {
+              "who": "Agnia",
+              "text": "Held mail. 3 (three) sacks. We do not burn mail here."
+            },
+            {
+              "who": "",
+              "text": "String, sealing wax, live postmarks. The key hangs on a cord around her neck."
+            },
+            {
+              "who": "Agnia",
+              "text": "You may look. Opening — no."
+            }
+          ],
+          "push": [
+            {
+              "text": "The Branch. Agnia opens the storeroom."
             }
           ]
         }
@@ -2761,8 +2926,8 @@
       "residents": {
         "kolya": "Kolya",
         "pavel": "Pavel",
-        "nyura": "Nyura",
-        "agnia": "Agnia"
+        "nyura_stvor": "Nyura",
+        "agnia_stvor": "Agnia"
       },
       "fates": {
         "otstoyniki|inBag:l1": "A.L.'s note is still in the bag. Its place is the box at the Settling Ponds, “to the branch.”",

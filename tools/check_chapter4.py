@@ -97,7 +97,7 @@ drops = {
     "l2": "d_kotelnaya",
     "l3": "d_sarai",
     "l4": "d_sarai",
-    "l5": "e_address",
+    "l5": "d_otdelenie",  # Nyura gets it only through the e_address answer (effects)
     "l7": "d_otdelenie",
 }
 read_here = {"l6", "l8", "l10"}
@@ -139,7 +139,7 @@ if "l9" in drops:
 for cid, default, typ in (
     ("e_sluice", "help", "choice"),
     ("e_kotel", "stay", "choice"),
-    ("e_address", "nyura", "choice"),
+    ("e_address", "nyura", "choice"),  # option id; the resident is nyura_stvor
     ("e_believe", "agnia", "choice"),
 ):
     ev = events.get(cid)
@@ -181,7 +181,7 @@ if len(join) != 2 or abs(join[0] - 551.5) > 0.05 or abs(join[1] - 2100.8) > 0.05
 
 # Residents and approved animals only, placed once.
 res = {r["id"]: r for r in story["residents"]}
-expect_res = {"kolya": 4000, "pavel": 23000, "nyura": 36500, "agnia": 39500}
+expect_res = {"kolya": 4000, "pavel": 23000, "nyura_stvor": 36500, "agnia_stvor": 39500}
 if set(res) != set(expect_res):
     fail(f"residents {sorted(res)} != {sorted(expect_res)}")
 for rid, step in expect_res.items():
@@ -189,6 +189,33 @@ for rid, step in expect_res.items():
         fail(f"{rid} at {res[rid]['step']}, expected {step}")
     if res[rid].get("height") != 430:
         fail(f"{rid} height {res[rid].get('height')}")
+
+# People pass: own ids, lore, choices tied to residents, e_address only with the jar.
+lore = json.loads((ROOT / "Postman/GameAssets/Data/resident_lore.json").read_text(encoding="utf-8"))
+for rid in expect_res:
+    if rid not in lore or not lore[rid].get("lines"):
+        fail(f"no resident lore for {rid}")
+for cid, rid in (("e_sluice", "kolya"), ("e_kotel", "pavel"), ("e_address", "nyura_stvor"),
+                 ("e_believe", "agnia_stvor"), ("e_wet", "agnia_stvor")):
+    if events.get(cid, {}).get("resident") != rid:
+        fail(f"{cid} is not tied to {rid}")
+ea = events["e_address"]
+if ea.get("requires") != "inBag:l5" or not ea.get("fallback"):
+    fail("e_address must need the jar in the bag and have a fallback")
+for o in ea["options"]:
+    eff = o.get("effects") or []
+    if o["id"] == "nyura" and {"item": "l5", "status": "delivered"} not in eff:
+        fail("only Nyura's answer delivers l5")
+    if o["id"] != "nyura" and any(e.get("item") == "l5" for e in eff):
+        fail(f"e_address.{o['id']} must not deliver l5")
+for sid in ("s_kolya_dam", "s_nyura", "s_agnia", "s_kladovaya"):
+    if events.get(sid, {}).get("type") != "scene":
+        fail(f"missing scene {sid}")
+if events["s_agnia"]["step"] >= events["p_l9"]["step"] or events["s_kladovaya"]["step"] >= events["p_l9"]["step"]:
+    fail("Agnia and the storeroom must come before the stack")
+for find, ev_id in (("find_sluice", "s_kolya_dam"), ("find_blank", "s_nyura"), ("find_stub", "s_agnia")):
+    if f'case (4, "{find}")' not in bag or ev_id not in bag:
+        fail(f"BagPolicy does not hand {find} at {ev_id}")
 
 # Asset existence for world props, residents, map, taps.
 assets = ROOT / "Postman/GameAssets"

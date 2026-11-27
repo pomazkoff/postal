@@ -67,8 +67,12 @@ enum BagPolicy {
         case (4, "l1"): return [Drop(event: "d_otstoyniki", step: 4000)]
         case (4, "l2"): return [Drop(event: "d_kotelnaya", step: 21000)]
         case (4, "l3"), (4, "l4"): return [Drop(event: "d_sarai", step: 28000)]
-        case (4, "l5"): return [Drop(event: "e_address", step: 36500),
-                                Drop(event: "d_otdelenie", step: 39500)]
+        // Нюре банка уходит только ответом «Отдать Нюре» (effects в e_address); иначе — на стойку отделения.
+        case (4, "l5"): return [Drop(event: "d_otdelenie", step: 39500)]
+        case (4, "find_sluice"): return [Drop(event: "s_kolya_dam", step: 6500)]
+        case (4, "find_blank"): return [Drop(event: "s_nyura", step: 36500),
+                                        Drop(event: "s_agnia", step: 39550)]
+        case (4, "find_stub"): return [Drop(event: "s_agnia", step: 39550)]
         case (4, "l7"): return [Drop(event: "d_otdelenie", step: 39500)]
         default:
             return []
@@ -251,6 +255,9 @@ enum BagPolicy {
         case "d_barge": return "bag.handed.d_barge"
         case "d_reeds": return "bag.handed.d_reeds"
         case "d_otstoy": return "bag.handed.d_otstoy"
+        case "s_kolya_dam": return "bag.handed.s_kolya_dam"
+        case "s_nyura": return "bag.handed.s_nyura"
+        case "s_agnia": return "bag.handed.s_agnia"
         default: return "bag.handed.other"
         }
     }

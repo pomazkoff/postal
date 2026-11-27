@@ -15,6 +15,17 @@ final class ChapterEngine: ObservableObject {
     /// Шаги главы, до которых обработаны события (не убывает).
     private(set) var currentStep = 0
 
+    /// Находки прошлых глав, которые почтальон ещё носит (сейвы глав читаются один раз).
+    private lazy var keptEarlier: Set<String> = {
+        var kept = Set<String>()
+        guard self.story.chapter > 1 else { return kept }
+        for chapterID in 1..<self.story.chapter {
+            guard let saved = ChapterStateStore(fileName: "chapter\(chapterID)_state.json").load() else { continue }
+            for (id, s) in saved.items where s == .inBag || s == .inPocket { kept.insert(id) }
+        }
+        return kept
+    }()
+
     /// Как решаются выборы без игрока. Источник — story json `choicePolicy` (переключается в DEBUG).
     enum ChoiceMode: String, CaseIterable {
         /// Пуш с кнопками; нет ответа до следующей остановки или timeoutSteps — выбирает почтальон (default).
@@ -247,6 +258,8 @@ final class ChapterEngine: ObservableObject {
         case "left": return s == .leftBehind
         case "flag": return state.flags.contains(id)
         case "carried": return state.carried.contains(id)
+        // "kept:find_wet" — находка прошлой главы ещё в сумке или в кармане (мокрый конверт гл.3 у Агнии).
+        case "kept": return keptEarlier.contains(id)
         // "choice:e_wind=chase" — в событии выбран этот вариант (игроком или почтальоном).
         case "choice":
             let p = id.split(separator: "=", maxSplits: 1).map(String.init)

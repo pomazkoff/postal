@@ -53,6 +53,9 @@
 "bag.handed.d_barge" = "Left in the box on the barge";
 "bag.handed.d_reeds" = "Left in the box at the Reeds";
 "bag.handed.d_otstoy" = "Left in the box at the Settling Pool";
+"bag.handed.s_kolya_dam" = "Given to Kolya on the dike";
+"bag.handed.s_nyura" = "Given to Nyura at the gate";
+"bag.handed.s_agnia" = "Handed in at the branch counter";
 "bag.handed.other" = "Handed in";
 "bag.keep.animal_cat_stamp" = "Brass stamp";
 "bag.keep.animal_raven_scrap" = "A scrap of cloth";
@@ -105,6 +108,7 @@
 "bag.act.2.l9" = "Read";
 "bag.act.drop.2.e_khomut" = "Leave it in the hut at the Collar";
 "bag.act.drop.2.finale" = "Carry it to the Throat";
+"bag.act.drop.4.s_agnia" = "Hand it in at the branch counter";
 
 "hud.map" = "Map";
 "hud.postman.left" = "The postman is off to the left — go back to him";
@@ -492,6 +496,18 @@
 "history.main.graphgift.body" = "The scrap of graph paper was left for Mitya. He writes: pilot, like his own at 7.3, only the hand is not his. Someone had already measured.";
 "history.main.passgift.title" = "The pass";
 "history.main.passgift.body" = "The pass was left for old Fedya. He knows the shop, not the person: the lower yard, an old pattern of pass. He has not gone there since autumn.";
+"history.main.kolyagift.title" = "The tag";
+"history.main.kolyagift.body" = "The tag went back to Kolya on the far dike. “It is from the third pond. The key is mine, the tag always walks off.”";
+"history.main.blankgift.title" = "Two hands";
+"history.main.blankgift.body" = "The scrap of the form went to Nyura at the gate. “That is how we write: now me, now the neighbour. The hand gets muddled.”";
+"history.main.eatfirst.title" = "Eat first";
+"history.main.eatfirst.body" = "At the branch counter A.L. is alive, not just a signature. First the bowl, then the mail. She writes in violet, as in the notes.";
+"history.main.stubgift.title" = "The stub";
+"history.main.stubgift.body" = "The notice stub went to A.L. She held it longer than usual. “Stubs are kept here. Accepted for processing.”";
+"history.main.wetgift.title" = "The wet envelope";
+"history.main.wetgift.body" = "A.L. took the wet envelope from the Marshes, with the Stvor postmark, for processing. She did not explain.";
+"history.main.storeroom.title" = "The storeroom";
+"history.main.storeroom.body" = "Behind the counter, three sacks of held mail. On top, a stack “from Ksenia, to her brother,” thirty-one letters. Opening was not allowed; the key stayed on her cord.";
 
 "bag.act.4.l1" = "Leave A.L.'s note in the box at the Settling Ponds";
 "bag.act.4.l2" = "To the Boiler House, a chance downstream";

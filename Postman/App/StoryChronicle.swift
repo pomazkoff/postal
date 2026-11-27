@@ -49,7 +49,8 @@ enum HistoryReading {
 
 /// Основная линия по `docs/canon/story-bible.md` §§5 и 5б и по `docs/canon/ideas.md`
 /// (акт I: быт, адресаты, первые странные письма и замеченные противоречия).
-/// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни того, кто включил К-2, ни глав 4–5.
+/// Авторская правда §§1–2 в свиток не попадает: ни мотива, ни того, кто включил К-2, ни главы 5.
+/// Глава 4 — только то, что почтальон видел сам: стойка, кладовая и кому что отдал.
 /// Каждый абзац ждёт своё событие и состояние сейва. Это не перебор doneEvents и не цитатник писем.
 enum StoryChronicle {
     struct Progress {
@@ -109,6 +110,12 @@ enum StoryChronicle {
         Beat(id: "polegift", chapterID: 3, step: 12500, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
         Beat(id: "graphgift", chapterID: 3, step: 12501, eventID: "d_torf", residentID: nil, placeID: "torfyanik"),
         Beat(id: "passgift", chapterID: 3, step: 16500, eventID: "d_barge", residentID: nil, placeID: "staraya_protoka"),
+        Beat(id: "kolyagift", chapterID: 4, step: 6500, eventID: "s_kolya_dam", residentID: "kolya", placeID: "otstoyniki"),
+        Beat(id: "blankgift", chapterID: 4, step: 36500, eventID: "s_nyura", residentID: "nyura_stvor", placeID: "dvory"),
+        Beat(id: "eatfirst", chapterID: 4, step: 39550, eventID: "s_agnia", residentID: "agnia_stvor", placeID: "otdelenie"),
+        Beat(id: "stubgift", chapterID: 4, step: 39551, eventID: "s_agnia", residentID: "agnia_stvor", placeID: nil),
+        Beat(id: "wetgift", chapterID: 4, step: 40500, eventID: "e_wet", residentID: "agnia_stvor", placeID: nil),
+        Beat(id: "storeroom", chapterID: 4, step: 39950, eventID: "s_kladovaya", residentID: nil, placeID: "otdelenie"),
     ]
 
     static func facts(world: WorldConfig, activeIndex: Int, activeSteps: Int,
@@ -179,6 +186,12 @@ enum StoryChronicle {
         case "polegift": return "history.main.polegift.title"
         case "graphgift": return "history.main.graphgift.title"
         case "passgift": return "history.main.passgift.title"
+        case "kolyagift": return "history.main.kolyagift.title"
+        case "blankgift": return "history.main.blankgift.title"
+        case "eatfirst": return "history.main.eatfirst.title"
+        case "stubgift": return "history.main.stubgift.title"
+        case "wetgift": return "history.main.wetgift.title"
+        case "storeroom": return "history.main.storeroom.title"
         default: return "history.title"
         }
     }
@@ -323,6 +336,22 @@ enum StoryChronicle {
         case "passgift":
             guard here.items["find_pass"] == .delivered else { return nil }
             return L10n.text("history.main.passgift.body")
+        case "kolyagift":
+            guard here.items["find_sluice"] == .delivered else { return nil }
+            return L10n.text("history.main.kolyagift.body")
+        case "blankgift":
+            guard here.items["find_blank"] == .delivered else { return nil }
+            return L10n.text("history.main.blankgift.body")
+        case "eatfirst":
+            return L10n.text("history.main.eatfirst.body")
+        case "stubgift":
+            guard here.items["find_stub"] == .delivered else { return nil }
+            return L10n.text("history.main.stubgift.body")
+        case "wetgift":
+            guard here.choices["e_wet"] == "show" else { return nil }
+            return L10n.text("history.main.wetgift.body")
+        case "storeroom":
+            return L10n.text("history.main.storeroom.body")
         default:
             return nil
         }

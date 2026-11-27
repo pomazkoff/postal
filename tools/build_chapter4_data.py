@@ -369,6 +369,11 @@ def build_story():
     }
     (DATA / "chapter4_story.json").write_text(json.dumps(story, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("chapter4_story.json written, items", len(items), "events", len(events))
+    # People pass on top: own resident ids, lore, Agnia's scene, finds handed to people (RU + EN).
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_chapter4_people
+    build_chapter4_people.main()
 
     # update ch3 next chapter title
     p = DATA / "chapter3_story.json"
